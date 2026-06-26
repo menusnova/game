@@ -47,6 +47,7 @@ var done        : bool  = false
 var can_press   : bool  = false
 var shader_time : float = 0.0
 var pulse_time  : float = 0.0
+var bar_alpha   : float = 1.0
 
 # ──────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
@@ -99,69 +100,69 @@ func _process(delta: float) -> void:
 
 	queue_redraw()
 
-	if progress >= 1.0:
+	if progress >= 1.0 and not done:
 		_finish()
 
 
-# ── Custom draw (วาดบาร์ทั้งหมดด้วย code) ─────────────────────────────────
+# ── Custom draw ────────────────────────────────────────────────────────────
 func _draw() -> void:
-	var fw    := BAR_W * progress
-	var pulse := 0.85 + 0.15 * sin(pulse_time * 3.0)
-	var fill  := Rect2(BAR_X, BAR_Y, fw, BAR_H)
-	var track := Rect2(BAR_X, BAR_Y, BAR_W, BAR_H)
-	var r     := BAR_H * 0.5
+	if bar_alpha <= 0.0:
+		return
 
-	# ── Track (ร่องบาร์พื้นหลัง) ─────────────────────────────────────────
-	_pill(track.grow(3), Color(0.04, 0.09, 0.22, 0.85), r + 3)
-	_pill(track,         Color(0.01, 0.04, 0.12, 1.00), r)
-	# inner rim
-	_pill(track.grow(-1), Color(0.06, 0.18, 0.45, 0.30), r - 1, false, 1.0)
+	var fw    : float = BAR_W * progress
+	var pulse : float = 0.85 + 0.15 * sin(pulse_time * 3.0)
+	var a     : float = bar_alpha
+	var track := Rect2(BAR_X, BAR_Y, BAR_W, BAR_H)
+	var r     : float = BAR_H * 0.5
+
+	# ── Track ─────────────────────────────────────────────────────────────
+	_pill(track.grow(2), Color(0.04, 0.09, 0.22, 0.85 * a), r + 2)
+	_pill(track,         Color(0.01, 0.04, 0.12, 1.00 * a), r)
 
 	if fw < 2.0:
 		return
 
-	# ── Outer glow layers (ออร่าเรืองแสงรอบๆ บาร์) ────────────────────
+	# ── Outer glow ────────────────────────────────────────────────────────
 	for i in range(8):
-		var ex    := float(8 - i) * 4.0
-		var alpha := (0.04 + i * 0.016) * pulse
-		_pill(fill.grow(ex), Color(0.05, 0.42, 1.00, alpha), r + ex)
+		var ex    : float = float(8 - i) * 4.0
+		var alpha : float = (0.04 + i * 0.016) * pulse * a
+		draw_rect(Rect2(BAR_X, BAR_Y - ex, fw, BAR_H + ex * 2.0),
+				  Color(0.05, 0.42, 1.00, alpha))
 
-	# ── Floor bloom (แสงสะท้อนใต้บาร์) ──────────────────────────────────
-	for i in range(6):
-		var ry    := BAR_Y + BAR_H + float(i) * 5.0
-		var alpha := (0.11 - i * 0.017) * pulse
+	# ── Floor bloom ───────────────────────────────────────────────────────
+	for i in range(5):
+		var ry    : float = BAR_Y + BAR_H + float(i) * 5.0
+		var alpha : float = (0.10 - i * 0.018) * pulse * a
 		if alpha <= 0.0:
 			break
-		draw_rect(Rect2(BAR_X + 10, ry, fw - 10, 4.0), Color(0.1, 0.55, 1.0, alpha))
+		draw_rect(Rect2(BAR_X + 8, ry, fw - 8, 4.0), Color(0.1, 0.55, 1.0, alpha))
 
-	# ── Fill gradient (deep navy → bright cyan, left to right) ───────────
-	var steps := 16
+	# ── Fill gradient (navy → cyan) ───────────────────────────────────────
+	var steps : int = 16
 	for s in range(steps):
-		var t0  := float(s)     / float(steps)
-		var t1  := float(s + 1) / float(steps)
-		var tm  := (t0 + t1) * 0.5
+		var t0  : float = float(s)     / float(steps)
+		var t1  : float = float(s + 1) / float(steps)
+		var tm  : float = (t0 + t1) * 0.5
 		var col := Color(
 			lerp(0.06, 0.20, tm),
 			lerp(0.45, 0.88, tm) * 0.70,
 			1.0,
-			1.0
+			a
 		)
-		var sx := BAR_X + BAR_W * t0 * progress
-		var sw := BAR_W * (t1 - t0) * progress + 1.5
+		var sx : float = BAR_X + BAR_W * t0 * progress
+		var sw : float = BAR_W * (t1 - t0) * progress + 1.5
 		draw_rect(Rect2(sx, BAR_Y, sw, BAR_H), col)
 
-	# ── Top highlight strip ───────────────────────────────────────────────
-	draw_rect(Rect2(BAR_X, BAR_Y, fw, BAR_H * 0.30), Color(0.80, 0.97, 1.0, 0.48))
-	# razor-thin bright line at top edge
-	draw_line(
-		Vector2(BAR_X + 1, BAR_Y + 1.5),
-		Vector2(BAR_X + fw - 1, BAR_Y + 1.5),
-		Color(1.0, 1.0, 1.0, 0.40), 1.5
-	)
+	# ── Top highlight ─────────────────────────────────────────────────────
+	draw_rect(Rect2(BAR_X, BAR_Y, fw, BAR_H * 0.28),
+			  Color(0.80, 0.97, 1.0, 0.45 * a))
+	draw_line(Vector2(BAR_X + 1, BAR_Y + 1.5),
+			  Vector2(BAR_X + fw - 1, BAR_Y + 1.5),
+			  Color(1.0, 1.0, 1.0, 0.38 * a), 1.5)
 
-	# ── Frame borders ─────────────────────────────────────────────────────
-	_pill(track,         Color(0.30, 0.78, 1.00, 0.75), r, false, 1.5)
-	_pill(track.grow(1), Color(0.10, 0.42, 0.90, 0.28), r + 1, false, 1.0)
+	# ── Frame border ──────────────────────────────────────────────────────
+	_pill(track,         Color(0.30, 0.78, 1.00, 0.75 * a), r, false, 1.5)
+	_pill(track.grow(1), Color(0.10, 0.42, 0.90, 0.28 * a), r + 1, false, 1.0)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -227,11 +228,20 @@ func _finish() -> void:
 
 	await get_tree().create_timer(0.5).timeout
 
+	# Fade out bar + labels พร้อมกัน
 	var t1 := create_tween().set_parallel()
 	t1.tween_property(plasma_ring, "modulate:a", 0.0, 0.6)
 	t1.tween_property(glow_core,   "modulate:a", 0.0, 0.6)
 	t1.tween_property(msg_label,   "modulate:a", 0.0, 0.5)
 	t1.tween_property(pct_label,   "modulate:a", 0.0, 0.5)
+	# bar_alpha tween แล้วเรียก queue_redraw ทุก frame ระหว่าง fade
+	var bar_tween := create_tween()
+	bar_tween.tween_method(
+		func(v: float) -> void:
+			bar_alpha = v
+			queue_redraw(),
+		1.0, 0.0, 0.6
+	)
 	await get_tree().create_timer(0.7).timeout
 
 	quote_label.text       = QUOTES[randi() % QUOTES.size()]
