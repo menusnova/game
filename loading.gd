@@ -212,7 +212,7 @@ func _arc(center: Vector2, radius: float, from_a: float, to_a: float,
 
 
 func _move_particles(tip_x: float) -> void:
-	var py := BAR_Y + BAR_H * 0.5
+	var py : float = BAR_Y + BAR_H * 0.5
 	particles_trail.position = Vector2(tip_x, py)
 	particles_spark.position = Vector2(tip_x, py)
 
