@@ -203,10 +203,10 @@ func _pill(rect: Rect2, color: Color, corner: float,
 
 func _arc(center: Vector2, radius: float, from_a: float, to_a: float,
 		  color: Color, width: float = 1.0, segs: int = 12) -> void:
-	var prev := center + Vector2(cos(from_a), sin(from_a)) * radius
+	var prev : Vector2 = center + Vector2(cos(from_a), sin(from_a)) * radius
 	for i in range(1, segs + 1):
-		var a    := lerp(from_a, to_a, float(i) / float(segs))
-		var next := center + Vector2(cos(a), sin(a)) * radius
+		var a    : float   = from_a + (to_a - from_a) * float(i) / float(segs)
+		var next : Vector2 = center + Vector2(cos(a), sin(a)) * radius
 		draw_line(prev, next, color, width)
 		prev = next
 
@@ -255,9 +255,9 @@ func _input(event: InputEvent) -> void:
 	if not can_press:
 		return
 	var pressed := false
-	if event is InputEventMouseButton and event.pressed:                  pressed = true
+	if event is InputEventMouseButton and event.pressed:                    pressed = true
 	if event is InputEventKey         and event.pressed and not event.echo: pressed = true
-	if event is InputEventScreenTouch and event.pressed:                  pressed = true
+	if event is InputEventScreenTouch and event.pressed:                    pressed = true
 	if pressed:
 		can_press = false
 		_go()
