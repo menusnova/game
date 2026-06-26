@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://c7hj205hynaai"]
+
+[ext_resource type="Script" uid="uid://bpphbdr8ph66h" path="res://loading.gd" id="1_1dm06"]
+[ext_resource type="Texture2D" uid="uid://cysmd67nvfr30" path="res://che.png" id="1_3d0vp"]
+[ext_resource type="Texture2D" uid="uid://tlbw6okad1li" path="res://download.png" id="3_ei5iv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1dm06"]
+bg_color = Color(0.023529412, 0.0627451, 0.1254902, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.40392157, 0.8745098, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0.78431374, 1, 1)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ei5iv"]
+bg_color = Color(0.29803923, 0.9254902, 1, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_qx4wl"]
+blend_mode = 1
+
+[node name="Loading" type="Control" unique_id=270790556]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_1dm06")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1584813994]
+layout_mode = 0
+offset_right = 1151.0
+offset_bottom = 649.0
+texture = ExtResource("1_3d0vp")
+expand_mode = 2
+
+[node name="BarBG" type="Panel" parent="." unique_id=103172650]
+custom_minimum_size = Vector2(1030, 40)
+layout_mode = 0
+offset_left = 68.0
+offset_top = 563.0
+offset_right = 1098.0
+offset_bottom = 603.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1dm06")
+
+[node name="BarFill" type="Panel" parent="." unique_id=1806046643]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 568.0
+offset_right = 1093.0
+offset_bottom = 599.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ei5iv")
+
+[node name="Glow" type="TextureRect" parent="." unique_id=83278133]
+modulate = Color(0.53478247, 1.0628474, 1.1288555, 0.43137255)
+material = SubResource("CanvasItemMaterial_qx4wl")
+layout_mode = 0
+offset_left = 74.0
+offset_top = 548.0
+offset_right = 144.0
+offset_bottom = 618.0
+texture = ExtResource("3_ei5iv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LoadingLabel" type="Label" parent="." unique_id=707367219]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 525.0
+offset_right = 758.0
+offset_bottom = 564.0
+theme_override_colors/font_color = Color(0.78431374, 0.9372549, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "SYNTHESIZING ELEMENTS....."
+horizontal_alignment = 1
+
+[node name="Fade" type="ColorRect" parent="." unique_id=153282704]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.003921569)
+
+[node name="DotTimer" type="Timer" parent="." unique_id=519545552]
+wait_time = 0.3
+autostart = true
+
+[connection signal="timeout" from="DotTimer" to="." method="_on_dot_timer_timeout"]

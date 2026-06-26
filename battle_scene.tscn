@@ -1,0 +1,244 @@
+[gd_scene format=3 uid="uid://bo4hfu7en6plg"]
+
+[ext_resource type="Script" uid="uid://cy28iwu5ao7wb" path="res://battle_scene.gd" id="1_fw8re"]
+[ext_resource type="Texture2D" uid="uid://by7op448cw5mj" path="res://image/1.webp" id="2_5joda"]
+[ext_resource type="Texture2D" uid="uid://rgfct4vrm0bs" path="res://image/download (1).png" id="3_gf131"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5joda"]
+bg_color = Color(0.72448075, 0.23713607, 0.9888851, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gf131"]
+bg_color = Color(0.94761366, 0.27158698, 0.29513004, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sl17i"]
+bg_color = Color(0, 0.65235585, 0.886512, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x5h4l"]
+bg_color = Color(0, 0.71554476, 0.4068094, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtmj2"]
+bg_color = Color(0.79293954, 0.7421205, 0.40918776, 1)
+
+[node name="BattleScene" type="Control" unique_id=1142902169]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+script = ExtResource("1_fw8re")
+
+[node name="Background" type="TextureRect" parent="." unique_id=229430123]
+layout_mode = 0
+offset_top = -1.0
+offset_right = 1152.0
+offset_bottom = 647.0
+texture = ExtResource("2_5joda")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="EnemyNameLabel" type="Label" parent="." unique_id=865880325]
+layout_mode = 0
+offset_left = 1042.0
+offset_top = 212.0
+offset_right = 1148.0
+offset_bottom = 261.0
+text = "Goblin
+Enemy HP: 80"
+
+[node name="EnemySprite" type="TextureRect" parent="." unique_id=76910044]
+layout_mode = 0
+offset_left = 773.0
+offset_top = 67.0
+offset_right = 1044.0
+offset_bottom = 614.0
+texture = ExtResource("3_gf131")
+
+[node name="EnemyHP" type="Label" parent="." unique_id=837013101]
+layout_mode = 0
+offset_left = 837.0
+offset_top = 19.0
+offset_right = 953.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(1, 0.27217823, 0.40458536, 1)
+text = "Enemy HP: 100"
+
+[node name="EnemyHPBar" type="ProgressBar" parent="." unique_id=21131649]
+layout_mode = 0
+offset_left = 625.0
+offset_top = 42.0
+offset_right = 1148.0
+offset_bottom = 84.0
+theme_override_colors/font_color = Color(0.63180685, 0, 0.3278098, 1)
+theme_override_styles/background = SubResource("StyleBoxFlat_5joda")
+value = 100.0
+
+[node name="PlayerSprite" type="TextureRect" parent="." unique_id=643203981]
+layout_mode = 0
+offset_left = 123.0
+offset_top = 126.0
+offset_right = 428.0
+offset_bottom = 673.0
+
+[node name="PlayerHP" type="Label" parent="." unique_id=887965016]
+layout_mode = 0
+offset_left = 181.0
+offset_top = 19.0
+offset_right = 292.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.048096634, 0.5055492, 0.6134092, 1)
+text = "Player HP: 100"
+
+[node name="PlayerHPBar" type="ProgressBar" parent="." unique_id=1905580610]
+layout_mode = 0
+offset_top = 42.0
+offset_right = 482.0
+offset_bottom = 84.0
+theme_override_colors/font_color = Color(0, 0.57730234, 0.47744876, 1)
+theme_override_styles/background = SubResource("StyleBoxFlat_gf131")
+value = 100.0
+
+[node name="TurnLabel" type="Label" parent="." unique_id=357909208]
+layout_mode = 0
+offset_left = 516.0
+offset_top = 43.0
+offset_right = 593.0
+offset_bottom = 66.0
+theme_override_colors/font_color = Color(0.8712087, 0.2937198, 0.46337742, 1)
+text = "Your Turn"
+
+[node name="MessageLabel" type="Label" parent="." unique_id=1744914360]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 68.0
+offset_right = 612.0
+offset_bottom = 91.0
+theme_override_colors/font_color = Color(0.022021456, 0.69757044, 0.79371727, 1)
+text = "Battle Start"
+
+[node name="AttackButton" type="Button" parent="." unique_id=508266778]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 327.0
+offset_right = 123.0
+offset_bottom = 358.0
+theme_override_colors/font_color = Color(1, 0.5183664, 0.25482658, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_sl17i")
+text = "Attack"
+
+[node name="DefendButton" type="Button" parent="." unique_id=708576709]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 375.0
+offset_right = 130.0
+offset_bottom = 406.0
+theme_override_colors/font_color = Color(0.46579403, 0.8357183, 0.9808541, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_x5h4l")
+text = "Defend"
+
+[node name="SkillButton" type="Button" parent="." unique_id=366022134]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 428.0
+offset_right = 105.0
+offset_bottom = 459.0
+theme_override_colors/font_color = Color(0.52170783, 0.27196813, 0.872642, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_vtmj2")
+text = "Skill"
+
+[node name="EndTurnButton" type="Button" parent="." unique_id=1769979839]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 521.0
+offset_right = 1065.0
+offset_bottom = 552.0
+text = "End Turn"
+
+[node name="HandContainer" type="HBoxContainer" parent="." unique_id=15556767]
+layout_mode = 0
+offset_left = 331.0
+offset_top = 474.0
+offset_right = 523.0
+offset_bottom = 569.0
+alignment = 1
+
+[node name="DeckLabel" type="Label" parent="." unique_id=1071559639]
+layout_mode = 0
+offset_left = 977.0
+offset_top = 610.0
+offset_right = 1042.0
+offset_bottom = 633.0
+text = "Deck: 10"
+
+[node name="DiscardLabel" type="Label" parent="." unique_id=2008404169]
+layout_mode = 0
+offset_left = 977.0
+offset_top = 588.0
+offset_right = 1053.0
+offset_bottom = 611.0
+text = "Discard: 0"
+
+[node name="EnergyLabel" type="Label" parent="." unique_id=1731681624]
+layout_mode = 0
+offset_left = 977.0
+offset_top = 560.0
+offset_right = 1063.0
+offset_bottom = 583.0
+text = "Energy: 5/5"
+
+[node name="CharacterNameLabel" type="Label" parent="." unique_id=123773644]
+layout_mode = 0
+offset_left = 242.0
+offset_top = 126.0
+offset_right = 282.0
+offset_bottom = 149.0
+
+[node name="PassiveLabel" type="Label" parent="." unique_id=612422995]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 212.0
+offset_right = 53.0
+offset_bottom = 235.0
+
+[node name="UltimateLabel" type="Label" parent="." unique_id=1970780803]
+layout_mode = 0
+offset_left = 53.0
+offset_top = 521.0
+offset_right = 93.0
+offset_bottom = 544.0
+
+[node name="UltimateButton" type="Button" parent="." unique_id=1704560771]
+layout_mode = 0
+offset_left = 69.0
+offset_top = 474.0
+offset_right = 145.0
+offset_bottom = 505.0
+text = "Ultimate"
+
+[node name="PlayerStatusLabel" type="Label" parent="." unique_id=1750661573]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 189.0
+offset_right = 105.0
+offset_bottom = 212.0
+
+[node name="EnemyStatusLabel" type="Label" parent="." unique_id=2062384533]
+layout_mode = 0
+offset_left = 1026.0
+offset_top = 272.0
+offset_right = 1066.0
+offset_bottom = 295.0
+
+[node name="StageLabel" type="Label" parent="." unique_id=1283675522]
+layout_mode = 0
+offset_left = 519.0
+offset_top = 98.0
+offset_right = 599.0
+offset_bottom = 130.0
+theme_override_colors/font_color = Color(0.06696265, 0.5735324, 0.699481, 1)
+theme_override_font_sizes/font_size = 23
+text = "Stage 1"
+
+[connection signal="pressed" from="AttackButton" to="." method="_on_attack_button_pressed"]
+[connection signal="pressed" from="DefendButton" to="." method="_on_defend_button_pressed"]
+[connection signal="pressed" from="SkillButton" to="." method="_on_skill_button_pressed"]
+[connection signal="pressed" from="EndTurnButton" to="." method="_on_end_turn_button_pressed"]
+[connection signal="pressed" from="UltimateButton" to="." method="_on_ultimate_button_pressed"]
