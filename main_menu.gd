@@ -93,20 +93,20 @@ func _build_char_stage() -> void:
 	tog.pressed.connect(_on_toggle_char)
 	add_child(tog)
 
-# ── Top bar  y=0 h=46  (4 floating currency labels, no background bar) ────────
+# ── Top bar  y=0  (4 floating currency labels spread across screen) ───────────
 func _build_top_bar() -> void:
-	# Currencies — 4 individual floating items, spread across top
+	# Each item floats independently — positions spread across full width
 	var cur : Array = [
-		["✦", "12,450",     C_ACCENT,  200.0],
-		["🪙", "2,840,530",  C_GOLD,    380.0],
-		["💎", "18,760",     C_DIAMOND, 580.0],
-		["⚡", "240/240",    C_GREEN,   760.0],
+		["✦", "12,450",    C_ACCENT,   80.0],
+		["🪙", "2,840,530", C_GOLD,    350.0],
+		["💎", "18,760",    C_DIAMOND, 660.0],
+		["⚡", "240/240",   C_GREEN,   940.0],
 	]
 	for c : Array in cur:
 		var x : float = c[3]
-		_lbl_at(self, c[0], 15, c[2], Vector2(x,     9))
-		_lbl_at(self, c[1], 12, C_TEXT,  Vector2(x+20, 11))
-		_lbl_at(self, "+",  12, c[2],    Vector2(x+20+_sw(c[1],12)+3, 11))
+		_lbl_at(self, c[0], 14, c[2],   Vector2(x,     10))
+		_lbl_at(self, c[1], 11, C_TEXT,  Vector2(x+18, 12))
+		_lbl_at(self, "+",  11, c[2],    Vector2(x+18+_sw(c[1],11)+2, 12))
 
 # ── Profile card  x=8 y=54 w=240 h=68 ───────────────────────────────────────
 func _build_profile() -> void:
@@ -319,9 +319,7 @@ func _build_bottom_nav() -> void:
 		["⚔",  "Lineup",    false],
 		["🔮", "Arcanum",   false],
 		["🎒", "Inventory", false],
-		["📖", "Database",  false],
 		["🛡",  "Guild",     false],
-		["📚", "Archive",   false],
 	]
 	var iw : float = NW / nav.size()
 	for i in range(nav.size()):
