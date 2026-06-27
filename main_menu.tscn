@@ -1,33 +1,12 @@
 [gd_scene format=3 uid="uid://r8uhvpetutfn"]
 
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
-[ext_resource type="Texture2D" uid="uid://b7yu7r6kqgbdk" path="res://image/4199c3a8-2fd3-40ef-97c1-5a2a7ad278ea.png" id="2_7vrkn"]
 
-[node name="MainMenu" type="Control" unique_id=1918000428]
+[node name="MainMenu" type="Control"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_7vrkn")
-
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1543181144]
-layout_mode = 0
-offset_left = -264.0
-offset_top = -111.0
-offset_right = 1424.0
-offset_bottom = 716.0
-texture = ExtResource("2_7vrkn")
-expand_mode = 1
-stretch_mode = 6
-
-[node name="StartButton" type="Button" parent="." unique_id=1340461262]
-layout_mode = 0
-offset_left = 518.0
-offset_top = 610.0
-offset_right = 614.0
-offset_bottom = 641.0
-text = "Start Battle"
-
-[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
