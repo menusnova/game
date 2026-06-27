@@ -405,8 +405,8 @@ func _build_bottom_nav() -> void:
 	]
 	var item_w : float = W / nav_items.size()
 	for i in range(nav_items.size()):
-		var item  := nav_items[i]
-		var active: bool = item[2]
+		var item  : Array = nav_items[i]
+		var active: bool  = item[2]
 		var nx    : float = item_w * i
 		var nc    := Color(C_ACCENT.r, C_ACCENT.g, C_ACCENT.b, 0.15) if active else Color(0,0,0,0)
 		var nb    := C_BORDER if not active else C_ACCENT
