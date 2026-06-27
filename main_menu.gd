@@ -118,7 +118,8 @@ func _left_panel() -> void:
 func _profile_card() -> Control:
 	var card := _panel(Vector2(240, 68), C_CARD, C_BORDER, 8.0)
 
-	var av := _portrait(Color(0.50, 0.72, 1.0), Vector2(8, 7), Vector2(50, 50))
+	var av := _portrait(Color(0,0,0,0), Vector2(8, 7), Vector2(50, 50))
+	av.name = "Avatar"
 	card.add_child(av)
 	var av_ring := _panel_at(Rect2(6, 5, 54, 54), Color(0,0,0,0), C_ACCENT, 27.0)
 	card.add_child(av_ring)
@@ -168,7 +169,8 @@ func _event_banner() -> Control:
 	for d in range(7):
 		_rect(card, Vector2(8 + d*11, 82), Vector2(8, 4), C_PURPLE if d==0 else Color(1,1,1,0.20))
 
-	var art := _portrait(Color(0.65, 0.35, 1.0), Vector2(148, 4), Vector2(86, 88))
+	var art := _portrait(Color(0,0,0,0), Vector2(148, 4), Vector2(86, 88))
+	art.name = "EventArt"
 	card.add_child(art)
 	return card
 
@@ -197,7 +199,8 @@ func _right_panel() -> void:
 	_lbl_at(hdr, "NEW CHARACTER", 8, C_TEXT2, Vector2(6, 2))
 	_lbl_at(nc,  "LUXIA",         17, C_GOLD,   Vector2(8, 19))
 	_lbl_at(nc,  "✦ WHITE STAR ✦", 8, C_ACCENT, Vector2(8, 40))
-	var nc_art := _portrait(Color(1.0, 0.85, 0.28), Vector2(100, 2), Vector2(60, 74))
+	var nc_art := _portrait(Color(0,0,0,0), Vector2(100, 2), Vector2(60, 74))
+	nc_art.name = "NewCharArt"
 	nc.add_child(nc_art)
 	for d in range(7):
 		_rect(nc, Vector2(8 + d*9, 68), Vector2(6, 4), C_GOLD if d==0 else Color(1,1,1,0.20))
@@ -227,7 +230,8 @@ func _right_panel() -> void:
 	_lbl_at(chr, "Chronicle",  14, C_TEXT,   Vector2(10, 6))
 	_lbl_at(chr, "SIDE STORY",  9, C_TEXT2,  Vector2(10, 24))
 	_lbl_at(chr, "▶",          13, C_PURPLE, Vector2(234, 18))
-	var chr_art := _portrait(Color(0.65,0.35,1.0), Vector2(144,2), Vector2(106,52))
+	var chr_art := _portrait(Color(0,0,0,0), Vector2(144,2), Vector2(106,52))
+	chr_art.name = "ChronicleArt"
 	chr.add_child(chr_art)
 	col.add_child(chr)
 
@@ -379,12 +383,11 @@ func _style(node: Control, fill: Color, border: Color, radius: float) -> void:
 	sb.set_border_width_all(1); sb.set_corner_radius_all(int(radius))
 	node.add_theme_stylebox_override("panel", sb)
 
-func _portrait(accent: Color, pos: Vector2, sz: Vector2) -> TextureRect:
+func _portrait(_accent: Color, pos: Vector2, sz: Vector2) -> TextureRect:
 	var t := TextureRect.new()
 	t.position    = pos; t.size = sz
 	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	t.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	t.texture     = PortraitGen.make(accent, int(sz.x), int(sz.y))
 	t.mouse_filter= Control.MOUSE_FILTER_IGNORE
 	return t
 
