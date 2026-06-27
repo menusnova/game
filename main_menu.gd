@@ -151,59 +151,49 @@ func _build_top_bar() -> void:
 			div.size     = Vector2(1, 26)
 			bar.add_child(div)
 
-	# Right icons: Friends, Mail, Megaphone, Settings
+	# Right icons: Friends, Mail, Megaphone, Settings  — small 26×26 icons
 	var ricons : Array = ["👥", "✉", "📢", "⚙"]
 	for i in range(ricons.size()):
 		var btn := Button.new()
 		btn.text     = ricons[i]
-		btn.size     = Vector2(32, 32)
-		btn.position = Vector2(W - 44 - i * 38, 8)
-		btn.add_theme_font_size_override("font_size", 17)
+		btn.size     = Vector2(26, 26)
+		btn.position = Vector2(W - 34 - i * 30, 11)
+		btn.add_theme_font_size_override("font_size", 14)
 		_apply_style(btn, Color(0,0,0,0), Color(0,0,0,0), 0.0)
 		bar.add_child(btn)
 
 # ── Profile card  (x=8, y=52, w=248, h=80) ──────────────────────────────────
 func _build_profile() -> void:
-	var card := _card(Rect2(8, 52, 248, 80), C_CARD, C_BORDER, 8.0)
+	var card := _card(Rect2(8, 52, 242, 68), C_CARD, C_BORDER, 8.0)
 	add_child(card)
 
-	# Avatar circle
-	var av := Button.new()
-	av.text = ""; av.position = Vector2(8, 8); av.size = Vector2(56, 56)
-	_apply_style(av, Color(0.08, 0.15, 0.30, 0.95), C_ACCENT, 28.0)
-	# Notification badge
-	var badge := ColorRect.new()
-	badge.position = Vector2(40, 0); badge.size = Vector2(16, 16); badge.color = C_RED
-	var sb_b := StyleBoxFlat.new(); sb_b.bg_color = C_RED; sb_b.set_corner_radius_all(8)
-	badge.add_theme_stylebox_override("panel", sb_b)
-	var badge_l := _lbl("!", 10, Color(1,1,1,1))
-	badge_l.position = Vector2(40, 0); card.add_child(badge_l)
-	card.add_child(av)
-
-	# Portrait inside avatar
+	# Avatar — 52×52 circle, top-left of card
 	var av_port := TextureRect.new()
-	av_port.position    = Vector2(8, 8); av_port.size = Vector2(56, 56)
+	av_port.position    = Vector2(8, 8); av_port.size = Vector2(52, 52)
 	av_port.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	av_port.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	av_port.texture     = PortraitGen.make(Color(0.55, 0.75, 1.0), 56, 56)
+	av_port.texture     = PortraitGen.make(Color(0.55, 0.75, 1.0), 52, 52)
 	av_port.mouse_filter= Control.MOUSE_FILTER_IGNORE
 	card.add_child(av_port)
 
-	# Text info
-	_lbl_at(card, "CHEMIA",        14, C_TEXT,  Vector2(70, 8))
-	_lbl_at(card, "Lv.70",         11, C_TEXT2, Vector2(70, 27))
-	_lbl_at(card, "MAX",           10, C_RED,   Vector2(108, 27))
+	# Notif badge on avatar
+	var badge_l := _lbl("!", 8, Color(1,1,1,1))
+	badge_l.position = Vector2(50, 6); card.add_child(badge_l)
 
-	# EXP bar
-	var exp_bg := ColorRect.new()
-	exp_bg.position = Vector2(70, 42); exp_bg.size = Vector2(164, 6); exp_bg.color = C_DARK
+	# Text — right of avatar
+	_lbl_at(card, "CHEMIA",  13, C_TEXT,  Vector2(66, 6))
+	_lbl_at(card, "Lv.70",   10, C_TEXT2, Vector2(66, 23))
+	_lbl_at(card, "MAX",      9, C_RED,   Vector2(100, 23))
+
+	# EXP bar (narrow, 4px tall)
+	var exp_bg   := ColorRect.new()
+	exp_bg.position = Vector2(66, 38); exp_bg.size = Vector2(166, 4); exp_bg.color = C_DARK
 	card.add_child(exp_bg)
 	var exp_fill := ColorRect.new()
-	exp_fill.position = Vector2(70, 42); exp_fill.size = Vector2(164, 6)
-	exp_fill.color    = C_RED
+	exp_fill.position = Vector2(66, 38); exp_fill.size = Vector2(166, 4); exp_fill.color = C_RED
 	card.add_child(exp_fill)
 
-	_lbl_at(card, "UID 10000001  📋", 9, C_TEXT2, Vector2(70, 52))
+	_lbl_at(card, "UID 10000001  📋", 8, C_TEXT3, Vector2(66, 46))
 
 # ── Left menu items (floating, NO background panel) ──────────────────────────
 # Each item: icon + text, with optional notification dot
@@ -219,24 +209,23 @@ func _build_left_menu() -> void:
 	]
 	for i in range(items.size()):
 		var m  : Array = items[i]
-		var my : float = 144.0 + i * 37.0
+		var my : float = 130.0 + i * 33.0   # tighter: 33px gap, start y=130
 
-		var ic := _lbl(m[0], 14, m[2])
-		ic.position = Vector2(16, my); add_child(ic)
+		var ic := _lbl(m[0], 13, m[2])
+		ic.position = Vector2(14, my); add_child(ic)
 
-		var tx := _lbl(m[1], 13, C_TEXT)
-		tx.position = Vector2(40, my + 1); add_child(tx)
+		var tx := _lbl(m[1], 12, C_TEXT)
+		tx.position = Vector2(36, my + 1); add_child(tx)
 
 		if m[3]:
+			# Small red dot notification top-right of icon
 			var dot := ColorRect.new()
-			dot.position = Vector2(36, my + 1); dot.size = Vector2(8, 8)
-			dot.color    = C_RED
-			var sb := StyleBoxFlat.new(); sb.bg_color = C_RED; sb.set_corner_radius_all(4)
+			dot.position = Vector2(24, my); dot.size = Vector2(6, 6); dot.color = C_RED
 			add_child(dot)
 
 # ── Limited Event banner  (x=8, y=488, w=248, h=102) ─────────────────────────
 func _build_limited_event() -> void:
-	var card := _card(Rect2(8, 488, 248, 102), Color(0.12, 0.04, 0.26, 0.94), C_PURPLE, 8.0)
+	var card := _card(Rect2(8, 492, 242, 96), Color(0.12, 0.04, 0.26, 0.94), C_PURPLE, 8.0)
 	add_child(card)
 
 	# "LIMITED EVENT" tag
@@ -277,39 +266,40 @@ func _build_limited_event() -> void:
 # Guide: x=888, y=52, w=86, h=86
 # NewChar: x=982, y=52, w=162, h=86
 func _build_top_right() -> void:
-	# Guide widget
-	var guide := _card(Rect2(888, 52, 86, 86), Color(0.06, 0.10, 0.26, 0.92), C_BORDER, 7.0)
+	# Guide widget — small square, 80×80, top-right
+	var guide := _card(Rect2(892, 52, 80, 80), Color(0.06, 0.10, 0.26, 0.92), C_BORDER, 7.0)
 	add_child(guide)
-	_lbl_at(guide, "🛡", 28, C_ACCENT,  Vector2(24, 6))
-	_lbl_at(guide, "Guide",       11, C_TEXT,   Vector2(14, 46))
-	_lbl_at(guide, "New Player",   8, C_TEXT2,  Vector2(8, 62))
+	_lbl_at(guide, "🛡",        24, C_ACCENT, Vector2(26, 6))
+	_lbl_at(guide, "Guide",     11, C_TEXT,   Vector2(18, 40))
+	_lbl_at(guide, "New Player", 8, C_TEXT2,  Vector2(12, 56))
 
-	# New Character banner
-	var nc := _card(Rect2(982, 52, 162, 86), Color(0.08, 0.04, 0.20, 0.94), C_GOLD, 7.0)
+	# New Character banner — 152×80, right of guide
+	var nc := _card(Rect2(980, 52, 164, 80), Color(0.08, 0.04, 0.20, 0.94), C_GOLD, 7.0)
 	add_child(nc)
 
-	# Header tag
-	var nc_tag := _card(Rect2(0, 0, 162, 18), Color(0.10, 0.06, 0.28, 1), Color(0,0,0,0), 0.0)
+	# Top label strip
+	var nc_tag := ColorRect.new()
+	nc_tag.position = Vector2(0, 0); nc_tag.size = Vector2(164, 16); nc_tag.color = Color(0.10, 0.06, 0.28, 0.95)
 	nc.add_child(nc_tag)
-	_lbl_at(nc_tag, "NEW CHARACTER", 8, C_TEXT2, Vector2(6, 3))
+	_lbl_at(nc_tag, "NEW CHARACTER", 8, C_TEXT2, Vector2(6, 2))
 
-	_lbl_at(nc, "LUXIA",          18, C_GOLD,   Vector2(8, 22))
-	_lbl_at(nc, "✦ WHITE STAR ✦",  9, C_ACCENT, Vector2(8, 46))
+	_lbl_at(nc, "LUXIA",         17, C_GOLD,   Vector2(8, 20))
+	_lbl_at(nc, "✦ WHITE STAR ✦", 8, C_ACCENT, Vector2(8, 42))
 
-	# Art
+	# Art right side
 	var art := TextureRect.new()
-	art.position    = Vector2(96, 4); art.size = Vector2(62, 78)
+	art.position    = Vector2(98, 4); art.size = Vector2(62, 72)
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.texture     = PortraitGen.make(Color(1.0, 0.85, 0.3), 62, 78)
+	art.texture     = PortraitGen.make(Color(1.0, 0.85, 0.3), 62, 72)
 	art.mouse_filter= Control.MOUSE_FILTER_IGNORE
 	nc.add_child(art)
 
-	# Dots
+	# Pagination dots
 	for d in range(7):
 		var dot := ColorRect.new()
-		dot.position = Vector2(8 + d * 9, 74); dot.size = Vector2(6, 4)
-		dot.color    = C_GOLD if d == 0 else Color(1,1,1,0.25)
+		dot.position = Vector2(8 + d * 9, 68); dot.size = Vector2(6, 4)
+		dot.color    = C_GOLD if d == 0 else Color(1,1,1,0.22)
 		nc.add_child(dot)
 
 	nc.gui_input.connect(func(ev: InputEvent):
@@ -321,96 +311,91 @@ func _build_top_right() -> void:
 # Adventure y=146 h=70 | Chronicle y=222 h=60 | Simulation y=288 h=60
 # Arena y=354 w=122 h=68 | Expedition x=1018 w=126 h=68
 func _build_content_cards() -> void:
-	var rx  : float = 888.0
-	var cw  : float = 256.0   # card width
-	var iw  : float = 240.0   # inner width
+	var rx  : float = 892.0
+	var cw  : float = 252.0   # card width
+	var iw  : float = 236.0   # inner width
 
-	# ── Adventure ────────────────────────────────────────────────────────
-	var adv := _card(Rect2(rx, 146, cw, 70), C_CARD2, C_BORDER, 7.0)
+	# ── Adventure  y=140, h=68 ───────────────────────────────────────────
+	var adv := _card(Rect2(rx, 140, cw, 68), C_CARD2, C_BORDER, 7.0)
 	add_child(adv)
-	_lbl_at(adv, "Adventure",  16, C_TEXT,   Vector2(10, 8))
-	_lbl_at(adv, "MAIN STORY",  9, C_TEXT2,  Vector2(10, 28))
-	_lbl_at(adv, "CHAPTER 12-9",8, C_TEXT3,  Vector2(10, 52))
-	_lbl_at(adv, "▶",          14, C_ACCENT, Vector2(iw - 6, 24))
-	# Art thumbnail
-	var adv_art := _card(Rect2(130, 4, 100, 62), Color(0.04,0.08,0.22,0.8), Color(0,0,0,0), 5.0)
+	_lbl_at(adv, "Adventure",   15, C_TEXT,  Vector2(10, 7))
+	_lbl_at(adv, "MAIN STORY",   9, C_TEXT2, Vector2(10, 26))
+	_lbl_at(adv, "CHAPTER 12-9", 8, C_TEXT3, Vector2(10, 50))
+	_lbl_at(adv, "▶",           13, C_ACCENT,Vector2(iw - 4, 24))
+	var adv_art := _card(Rect2(136, 2, 108, 64), Color(0.04,0.08,0.22,0.8), Color(0,0,0,0), 5.0)
 	adv.add_child(adv_art)
-	_lbl_at(adv_art, "💠", 28, C_ACCENT, Vector2(34, 14))
+	_lbl_at(adv_art, "💠", 28, C_ACCENT, Vector2(38, 16))
 	adv.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed: _goto(SC_BATTLE))
 	adv.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# ── Chronicle ────────────────────────────────────────────────────────
-	var chr := _card(Rect2(rx, 222, cw, 60), C_CARD2, C_BORDER, 7.0)
+	# ── Chronicle  y=214, h=58 ───────────────────────────────────────────
+	var chr := _card(Rect2(rx, 214, cw, 58), C_CARD2, C_BORDER, 7.0)
 	add_child(chr)
-	_lbl_at(chr, "Chronicle",  14, C_TEXT,   Vector2(10, 8))
-	_lbl_at(chr, "SIDE STORY",  9, C_TEXT2,  Vector2(10, 26))
-	_lbl_at(chr, "▶",          14, C_PURPLE, Vector2(iw - 6, 18))
-	var chr_art := _card(Rect2(130, 4, 100, 52), Color(0.08,0.04,0.22,0.8), Color(0,0,0,0), 5.0)
+	_lbl_at(chr, "Chronicle",  14, C_TEXT,   Vector2(10, 7))
+	_lbl_at(chr, "SIDE STORY",  9, C_TEXT2,  Vector2(10, 25))
+	_lbl_at(chr, "▶",          13, C_PURPLE, Vector2(iw - 4, 19))
+	var chr_art := _card(Rect2(136, 2, 108, 54), Color(0.08,0.04,0.22,0.8), Color(0,0,0,0), 5.0)
 	chr.add_child(chr_art)
 	var chr_tex := TextureRect.new()
-	chr_tex.position=Vector2(0,0); chr_tex.size=Vector2(100,52)
-	chr_tex.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-	chr_tex.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	chr_tex.texture=PortraitGen.make(Color(0.65,0.35,1.0),100,52)
-	chr_tex.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	chr_tex.position    = Vector2(0,0); chr_tex.size = Vector2(108,54)
+	chr_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	chr_tex.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	chr_tex.texture     = PortraitGen.make(Color(0.65,0.35,1.0), 108, 54)
+	chr_tex.mouse_filter= Control.MOUSE_FILTER_IGNORE
 	chr_art.add_child(chr_tex)
 
-	# ── Simulation ────────────────────────────────────────────────────────
-	var sim := _card(Rect2(rx, 288, cw, 60), C_CARD2, C_BORDER, 7.0)
+	# ── Simulation  y=278, h=58 ──────────────────────────────────────────
+	var sim := _card(Rect2(rx, 278, cw, 58), C_CARD2, C_BORDER, 7.0)
 	add_child(sim)
-	_lbl_at(sim, "Simulation",  14, C_TEXT,  Vector2(10, 8))
-	_lbl_at(sim, "RESOURCE",     9, C_TEXT2, Vector2(10, 26))
-	_lbl_at(sim, "▶",           14, C_GREEN, Vector2(iw - 6, 18))
-	var sim_art := _card(Rect2(130, 4, 100, 52), Color(0.03,0.12,0.10,0.8), Color(0,0,0,0), 5.0)
+	_lbl_at(sim, "Simulation",  14, C_TEXT,  Vector2(10, 7))
+	_lbl_at(sim, "RESOURCE",     9, C_TEXT2, Vector2(10, 25))
+	_lbl_at(sim, "▶",           13, C_GREEN, Vector2(iw - 4, 19))
+	var sim_art := _card(Rect2(136, 2, 108, 54), Color(0.03,0.12,0.10,0.8), Color(0,0,0,0), 5.0)
 	sim.add_child(sim_art)
-	_lbl_at(sim_art, "🔬", 26, C_GREEN, Vector2(34, 10))
+	_lbl_at(sim_art, "🔬", 26, C_GREEN, Vector2(38, 12))
 
-	# ── Arena (x=888, y=354, w=122, h=68) ────────────────────────────────
-	var arena := _card(Rect2(rx, 354, 122, 68), C_CARD2, C_BORDER, 7.0)
+	# ── Arena  x=892, y=342, w=120, h=66 ─────────────────────────────────
+	var arena := _card(Rect2(rx, 342, 120, 66), C_CARD2, C_BORDER, 7.0)
 	add_child(arena)
-	_lbl_at(arena, "Arena",    14, C_TEXT,  Vector2(10, 6))
-	_lbl_at(arena, "PVP",       9, C_TEXT2, Vector2(10, 24))
-	_lbl_at(arena, "💠",       18, C_DIAMOND, Vector2(10, 36))
-	_lbl_at(arena, "Diamond I", 9, C_TEXT2, Vector2(36, 38))
-	_lbl_at(arena, "3200/3500", 8, C_TEXT3, Vector2(36, 50))
-	_lbl_at(arena, "▶",        12, C_ACCENT, Vector2(104, 26))
+	_lbl_at(arena, "Arena",    13, C_TEXT,    Vector2(8, 6))
+	_lbl_at(arena, "PVP",       9, C_TEXT2,   Vector2(8, 22))
+	_lbl_at(arena, "💠",       16, C_DIAMOND, Vector2(8, 34))
+	_lbl_at(arena, "Diamond I", 8, C_TEXT2,   Vector2(32, 36))
+	_lbl_at(arena, "3200/3500", 7, C_TEXT3,   Vector2(32, 48))
+	_lbl_at(arena, "▶",        11, C_ACCENT,  Vector2(102, 24))
 	arena.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed: _goto(SC_BATTLE))
 	arena.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# ── Expedition (x=1018, y=354, w=126, h=68) ──────────────────────────
-	var exp := _card(Rect2(1018, 354, 126, 68), C_CARD2, C_BORDER, 7.0)
+	# ── Expedition  x=1020, y=342, w=124, h=66 ───────────────────────────
+	var exp := _card(Rect2(1020, 342, 124, 66), C_CARD2, C_BORDER, 7.0)
 	add_child(exp)
-	_lbl_at(exp, "Expedition",  13, C_TEXT,   Vector2(10, 6))
-	_lbl_at(exp, "CHALLENGE",    9, C_TEXT2,  Vector2(10, 24))
-	var exp_art := _card(Rect2(64, 4, 56, 60), Color(0.06,0.06,0.18,0.8), Color(0,0,0,0), 4.0)
+	_lbl_at(exp, "Expedition", 12, C_TEXT,   Vector2(8, 6))
+	_lbl_at(exp, "CHALLENGE",   9, C_TEXT2,  Vector2(8, 22))
+	var exp_art := _card(Rect2(62, 4, 56, 58), Color(0.06,0.06,0.18,0.8), Color(0,0,0,0), 4.0)
 	exp.add_child(exp_art)
-	_lbl_at(exp_art, "🤖", 20, C_ORANGE, Vector2(14, 14))
-	_lbl_at(exp, "▶", 12, C_ORANGE, Vector2(108, 26))
+	_lbl_at(exp_art, "🤖", 22, C_ORANGE, Vector2(14, 14))
+	_lbl_at(exp, "▶", 11, C_ORANGE, Vector2(106, 24))
 
 # ── Domain widget  (x=1016, y=472, w=128, h=120) — overlaps above nav ────────
 func _build_domain() -> void:
-	# Outer ring decoration
-	var ring := ColorRect.new()
-	ring.position   = Vector2(1010, 468)
-	ring.size       = Vector2(134, 134)
-	ring.color      = Color(0, 0, 0, 0)
-	ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ring)
+	# Domain — circular card bottom-right, overlapping nav area
+	# Outer glow ring (decorative)
+	var ring_outer := _card(Rect2(1016, 470, 128, 128), Color(0,0,0,0), C_ACCENT, 64.0)
+	add_child(ring_outer)
 
-	# Main domain card
-	var dom := _card(Rect2(1016, 474, 120, 116), Color(0.04,0.08,0.22,0.92), C_ACCENT, 60.0)
+	# Inner dark circle
+	var dom := _card(Rect2(1022, 476, 116, 116), Color(0.04,0.08,0.22,0.94), C_ACCENT, 58.0)
 	add_child(dom)
+	_lbl_at(dom, "🛡",           20, C_ACCENT, Vector2(40, 8))
+	_lbl_at(dom, "Domain",       13, C_TEXT,   Vector2(26, 38))
+	_lbl_at(dom, "BONUS REWARD",  7, C_TEXT2,  Vector2(16, 56))
 
-	_lbl_at(dom, "🛡",            22, C_ACCENT, Vector2(38, 12))
-	_lbl_at(dom, "Domain",        13, C_TEXT,   Vector2(22, 44))
-	_lbl_at(dom, "BONUS REWARD",   7, C_TEXT2,  Vector2(14, 62))
-
-	# 100% circle indicator (using a colored arc via concentric panels)
-	var circ_bg := _card(Rect2(14, 74, 92, 34), Color(0,0,0,0.5), C_GOLD, 17.0)
-	dom.add_child(circ_bg)
-	_lbl_at(circ_bg, "100%", 12, C_GOLD, Vector2(24, 8))
+	# 100% indicator (right side small circle-ish)
+	var pct := _card(Rect2(1148, 504, 54, 54), Color(0.02,0.04,0.12,0.92), C_GOLD, 27.0)
+	add_child(pct)
+	_lbl_at(pct, "100%", 10, C_GOLD, Vector2(6, 20))
 
 # ── Chat bar  (y=566, h=26) ──────────────────────────────────────────────────
 func _build_chat() -> void:
