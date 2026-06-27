@@ -45,11 +45,6 @@ func _ready() -> void:
 
 # ── Background ────────────────────────────────────────────────────────────────
 func _add_bg() -> void:
-	var fill := ColorRect.new()
-	fill.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	fill.color = C_BG; fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(fill)
-
 	var bg := TextureRect.new()
 	bg.name = "Background"
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -57,20 +52,6 @@ func _add_bg() -> void:
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
-
-	# Subtle left-side dark vignette so left UI is readable
-	var vl := ColorRect.new()
-	vl.position = Vector2(0, 0); vl.size = Vector2(300, H)
-	vl.color    = Color(0.01, 0.03, 0.10, 0.55)
-	vl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(vl)
-
-	# Right-side vignette
-	var vr := ColorRect.new()
-	vr.position = Vector2(W - 280, 0); vr.size = Vector2(280, H)
-	vr.color    = Color(0.01, 0.02, 0.08, 0.60)
-	vr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(vr)
 
 # ── Character stage ───────────────────────────────────────────────────────────
 func _build_char_stage() -> void:
@@ -112,41 +93,20 @@ func _build_char_stage() -> void:
 	tog.pressed.connect(_on_toggle_char)
 	add_child(tog)
 
-# ── Top bar  y=0 h=46 ────────────────────────────────────────────────────────
+# ── Top bar  y=0 h=46  (4 floating currency labels, no background bar) ────────
 func _build_top_bar() -> void:
-	var bar := ColorRect.new()
-	bar.position = Vector2(0,0); bar.size = Vector2(W, 46)
-	bar.color    = Color(0.02, 0.04, 0.14, 0.85)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bar)
-	_hline(bar, 0, 45, W, Color(0.18, 0.45, 0.85, 0.32))
-
-	# Currencies — centered block  x=296..900
-	# Each slot: icon(16) gap(4) value(auto) +(10) | divider(8) | next
+	# Currencies — 4 individual floating items, spread across top
 	var cur : Array = [
-		["✦", "12,450",     C_ACCENT,  296.0],
-		["🪙", "2,840,530",  C_GOLD,    458.0],
-		["💎", "18,760",     C_DIAMOND, 646.0],
-		["⚡", "240/240",    C_GREEN,   800.0],
+		["✦", "12,450",     C_ACCENT,  200.0],
+		["🪙", "2,840,530",  C_GOLD,    380.0],
+		["💎", "18,760",     C_DIAMOND, 580.0],
+		["⚡", "240/240",    C_GREEN,   760.0],
 	]
 	for c : Array in cur:
 		var x : float = c[3]
-		_lbl_at(bar, c[0], 15, c[2], Vector2(x,     9))
-		_lbl_at(bar, c[1], 12, C_TEXT,  Vector2(x+20, 11))
-		_lbl_at(bar, "+",  12, c[2],    Vector2(x+20+_sw(c[1],12)+3, 11))
-		if c[3] < 800.0:
-			_rect(bar, Vector2(x+20+_sw(c[1],12)+18, 11), Vector2(1,22), C_BDR2)
-
-	# Right icons — 4 small icon-buttons 26×26 spaced 32px apart
-	var ricons : Array = ["👥", "✉", "📢", "⚙"]
-	for i in range(ricons.size()):
-		var b := Button.new()
-		b.text     = ricons[i]
-		b.size     = Vector2(26, 26)
-		b.position = Vector2(W - 36 - i*32, 10)
-		b.add_theme_font_size_override("font_size", 14)
-		_style(b, Color(0,0,0,0), Color(0,0,0,0), 0.0)
-		bar.add_child(b)
+		_lbl_at(self, c[0], 15, c[2], Vector2(x,     9))
+		_lbl_at(self, c[1], 12, C_TEXT,  Vector2(x+20, 11))
+		_lbl_at(self, "+",  12, c[2],    Vector2(x+20+_sw(c[1],12)+3, 11))
 
 # ── Profile card  x=8 y=54 w=240 h=68 ───────────────────────────────────────
 func _build_profile() -> void:
@@ -346,12 +306,13 @@ func _build_chat() -> void:
 
 # ── Bottom nav  y=592 h=56 ───────────────────────────────────────────────────
 func _build_bottom_nav() -> void:
+	const NW : float = W * 0.5   # nav bar: left half only (~576px)
 	var bar := ColorRect.new()
-	bar.position = Vector2(0, 592); bar.size = Vector2(W, 56)
+	bar.position = Vector2(0, 592); bar.size = Vector2(NW, 56)
 	bar.color    = Color(0.02, 0.04, 0.14, 0.94)
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bar)
-	_hline(bar, 0, 0, W, C_BORDER)
+	_hline(bar, 0, 0, NW, C_BORDER)
 
 	var nav : Array = [
 		["⚗",  "Alchemist", true ],
@@ -362,7 +323,7 @@ func _build_bottom_nav() -> void:
 		["🛡",  "Guild",     false],
 		["📚", "Archive",   false],
 	]
-	var iw : float = W / nav.size()
+	var iw : float = NW / nav.size()
 	for i in range(nav.size()):
 		var item   : Array = nav[i]
 		var active : bool  = item[2]
