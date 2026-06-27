@@ -1,97 +1,15 @@
 [gd_scene format=3 uid="uid://r8uhvpetutfn"]
 
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
-
-[sub_resource type="StyleBoxFlat" id="SB_Card"]
-bg_color = Color(0.04, 0.08, 0.20, 0.88)
-border_color = Color(0.18, 0.50, 0.90, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="StyleBoxFlat" id="SB_Card2"]
-bg_color = Color(0.06, 0.11, 0.26, 0.92)
-border_color = Color(0.18, 0.50, 0.90, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 7
-corner_radius_top_right = 7
-corner_radius_bottom_right = 7
-corner_radius_bottom_left = 7
-
-[sub_resource type="StyleBoxFlat" id="SB_Card2R8"]
-bg_color = Color(0.06, 0.11, 0.26, 0.92)
-border_color = Color(0.18, 0.50, 0.90, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="StyleBoxFlat" id="SB_Event"]
-bg_color = Color(0.10, 0.03, 0.24, 0.94)
-border_color = Color(0.65, 0.35, 1.00, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="StyleBoxFlat" id="SB_NewChar"]
-bg_color = Color(0.08, 0.04, 0.20, 0.94)
-border_color = Color(1.00, 0.82, 0.28, 0.45)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="StyleBoxFlat" id="SB_AvatarRing"]
-bg_color = Color(0, 0, 0, 0)
-border_color = Color(0.22, 0.72, 1.00, 1.00)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 28
-corner_radius_top_right = 28
-corner_radius_bottom_right = 28
-corner_radius_bottom_left = 28
-
-[sub_resource type="StyleBoxFlat" id="SB_EventTag"]
-bg_color = Color(0.44, 0.07, 0.66, 1.00)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+[ext_resource type="Texture2D" uid="uid://cnctj12w3c7m0" path="res://image/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png" id="2_7vrkn"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
-border_color = Color(0.22, 0.62, 1.00, 0.25)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
+border_color = Color(0.22, 0.62, 1, 0.25)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -99,60 +17,132 @@ corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="SB_Blank"]
 bg_color = Color(0, 0, 0, 0)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
 
 [sub_resource type="StyleBoxFlat" id="SB_CurrPill"]
 bg_color = Color(0.03, 0.06, 0.18, 0.85)
-border_color = Color(0.22, 0.62, 1.00, 0.35)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
+border_color = Color(0.22, 0.62, 1, 0.35)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="SB_NavPill"]
-bg_color = Color(0.02, 0.04, 0.14, 0.72)
-border_color = Color(0.22, 0.62, 1.00, 0.22)
+[sub_resource type="StyleBoxFlat" id="SB_Card"]
+bg_color = Color(0.04, 0.08, 0.2, 0.88)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
-border_width_bottom = 0
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
+[sub_resource type="StyleBoxFlat" id="SB_AvatarRing"]
 bg_color = Color(0, 0, 0, 0)
-border_color = Color(0.22, 0.72, 1.00, 1.00)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(0.22, 0.72, 1, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="SB_Event"]
+bg_color = Color(0.1, 0.03, 0.24, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.65, 0.35, 1, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_EventTag"]
+bg_color = Color(0.44, 0.07, 0.66, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2R8"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_NewChar"]
+bg_color = Color(0.08, 0.04, 0.2, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.82, 0.28, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="SB_NavPill"]
+bg_color = Color(0.02, 0.04, 0.14, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_color = Color(0.22, 0.62, 1, 0.22)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+
+[sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.72, 1, 1)
 corner_radius_top_left = 68
 corner_radius_top_right = 68
 corner_radius_bottom_right = 68
 corner_radius_bottom_left = 68
 
 [sub_resource type="StyleBoxFlat" id="SB_DomInner"]
-bg_color = Color(0.04, 0.07, 0.20, 0.96)
-border_color = Color(0.22, 0.72, 1.00, 1.00)
+bg_color = Color(0.04, 0.07, 0.2, 0.96)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(0.22, 0.72, 1, 1)
 corner_radius_top_left = 62
 corner_radius_top_right = 62
 corner_radius_bottom_right = 62
 corner_radius_bottom_left = 62
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=1743482336]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -161,53 +151,52 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7vrkn")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=808464426]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_7vrkn")
 expand_mode = 2
 stretch_mode = 6
-mouse_filter = 2
 
-[node name="FemaleCharacter" type="TextureRect" parent="."]
+[node name="FemaleCharacter" type="TextureRect" parent="." unique_id=312128909]
 layout_mode = 0
 offset_left = 260.0
-offset_top = 0.0
 offset_right = 890.0
 offset_bottom = 648.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="MaleCharacter" type="TextureRect" parent="."]
+[node name="MaleCharacter" type="TextureRect" parent="." unique_id=953256853]
 visible = false
 layout_mode = 0
 offset_left = 260.0
-offset_top = 0.0
 offset_right = 890.0
 offset_bottom = 648.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="ToggleBtn" type="Button" parent="."]
+[node name="ToggleBtn" type="Button" parent="." unique_id=835957511]
 layout_mode = 0
 offset_left = 540.0
 offset_top = 582.0
 offset_right = 612.0
 offset_bottom = 604.0
-theme_override_styles/normal = SubResource("SB_TogBtn")
-theme_override_styles/hover = SubResource("SB_TogBtn")
-theme_override_styles/pressed = SubResource("SB_TogBtn")
-theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+theme_override_styles/normal = SubResource("SB_TogBtn")
+theme_override_styles/pressed = SubResource("SB_TogBtn")
+theme_override_styles/hover = SubResource("SB_TogBtn")
+theme_override_styles/focus = SubResource("SB_Blank")
 text = "♀ · ♂"
 
-[node name="CurrBox1" type="Panel" parent="."]
+[node name="CurrBox1" type="Panel" parent="." unique_id=1464954599]
 layout_mode = 0
 offset_left = 320.0
 offset_top = 7.0
@@ -216,39 +205,37 @@ offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
-[node name="CurrIcon1" type="TextureRect" parent="CurrBox1"]
+[node name="CurrIcon1" type="TextureRect" parent="CurrBox1" unique_id=1488611840]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="CurrVal1" type="Label" parent="CurrBox1"]
+[node name="CurrVal1" type="Label" parent="CurrBox1" unique_id=1636922136]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 9.0
 offset_right = 98.0
 offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "12,450"
-mouse_filter = 2
 
-[node name="CurrPlus1" type="Label" parent="CurrBox1"]
+[node name="CurrPlus1" type="Label" parent="CurrBox1" unique_id=494581591]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
 text = "+"
-mouse_filter = 2
 
-[node name="CurrBox2" type="Panel" parent="."]
+[node name="CurrBox2" type="Panel" parent="." unique_id=1961644868]
 layout_mode = 0
 offset_left = 448.0
 offset_top = 7.0
@@ -257,39 +244,37 @@ offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
-[node name="CurrIcon2" type="TextureRect" parent="CurrBox2"]
+[node name="CurrIcon2" type="TextureRect" parent="CurrBox2" unique_id=1033820548]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="CurrVal2" type="Label" parent="CurrBox2"]
+[node name="CurrVal2" type="Label" parent="CurrBox2" unique_id=994946769]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 9.0
 offset_right = 98.0
 offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "2,840,530"
-mouse_filter = 2
 
-[node name="CurrPlus2" type="Label" parent="CurrBox2"]
+[node name="CurrPlus2" type="Label" parent="CurrBox2" unique_id=229464890]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
+theme_override_colors/font_color = Color(1, 0.82, 0.28, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
 text = "+"
-mouse_filter = 2
 
-[node name="CurrBox3" type="Panel" parent="."]
+[node name="CurrBox3" type="Panel" parent="." unique_id=157021780]
 layout_mode = 0
 offset_left = 576.0
 offset_top = 7.0
@@ -298,39 +283,37 @@ offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
-[node name="CurrIcon3" type="TextureRect" parent="CurrBox3"]
+[node name="CurrIcon3" type="TextureRect" parent="CurrBox3" unique_id=324355364]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="CurrVal3" type="Label" parent="CurrBox3"]
+[node name="CurrVal3" type="Label" parent="CurrBox3" unique_id=2143750906]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 9.0
 offset_right = 98.0
 offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "18,760"
-mouse_filter = 2
 
-[node name="CurrPlus3" type="Label" parent="CurrBox3"]
+[node name="CurrPlus3" type="Label" parent="CurrBox3" unique_id=1913953434]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.55, 0.78, 1.00, 1.00)
 text = "+"
-mouse_filter = 2
 
-[node name="CurrBox4" type="Panel" parent="."]
+[node name="CurrBox4" type="Panel" parent="." unique_id=144192260]
 layout_mode = 0
 offset_left = 704.0
 offset_top = 7.0
@@ -339,91 +322,89 @@ offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
-[node name="CurrIcon4" type="TextureRect" parent="CurrBox4"]
+[node name="CurrIcon4" type="TextureRect" parent="CurrBox4" unique_id=1720555261]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="CurrVal4" type="Label" parent="CurrBox4"]
+[node name="CurrVal4" type="Label" parent="CurrBox4" unique_id=815542728]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 9.0
 offset_right = 98.0
 offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "240/240"
-mouse_filter = 2
 
-[node name="CurrPlus4" type="Label" parent="CurrBox4"]
+[node name="CurrPlus4" type="Label" parent="CurrBox4" unique_id=751668686]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.25, 1, 0.55, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.25, 1.00, 0.55, 1.00)
 text = "+"
-mouse_filter = 2
 
-[node name="BtnPeople" type="Button" parent="."]
+[node name="BtnPeople" type="Button" parent="." unique_id=612209923]
 layout_mode = 0
 offset_left = 978.0
 offset_top = 8.0
 offset_right = 1008.0
 offset_bottom = 42.0
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
 theme_override_font_sizes/font_size = 16
-text = "\U0001F465"
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = " 65"
 
-[node name="BtnMail" type="Button" parent="."]
+[node name="BtnMail" type="Button" parent="." unique_id=1021252319]
 layout_mode = 0
 offset_left = 1014.0
 offset_top = 8.0
 offset_right = 1044.0
 offset_bottom = 42.0
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
 theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
 text = "✉"
 
-[node name="BtnMega" type="Button" parent="."]
+[node name="BtnMega" type="Button" parent="." unique_id=1274612004]
 layout_mode = 0
 offset_left = 1048.0
 offset_top = 8.0
 offset_right = 1078.0
 offset_bottom = 42.0
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
 theme_override_font_sizes/font_size = 16
-text = "\U0001F4E2"
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = " E2"
 
-[node name="BtnSettings" type="Button" parent="."]
+[node name="BtnSettings" type="Button" parent="." unique_id=1883020327]
 layout_mode = 0
 offset_left = 1082.0
 offset_top = 8.0
 offset_right = 1112.0
 offset_bottom = 42.0
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
 theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
 text = "⚙"
 
-[node name="ProfileCard" type="Panel" parent="."]
+[node name="ProfileCard" type="Panel" parent="." unique_id=1502547384]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 58.0
@@ -432,17 +413,17 @@ offset_bottom = 130.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card")
 
-[node name="Avatar" type="TextureRect" parent="ProfileCard"]
+[node name="Avatar" type="TextureRect" parent="ProfileCard" unique_id=926039462]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 60.0
 offset_bottom = 60.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="AvatarRing" type="Panel" parent="ProfileCard"]
+[node name="AvatarRing" type="Panel" parent="ProfileCard" unique_id=243186877]
 layout_mode = 0
 offset_left = 6.0
 offset_top = 6.0
@@ -451,51 +432,47 @@ offset_bottom = 62.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_AvatarRing")
 
-[node name="NotifDot" type="Label" parent="ProfileCard"]
+[node name="NotifDot" type="Label" parent="ProfileCard" unique_id=1652614734]
 layout_mode = 0
 offset_left = 52.0
 offset_top = 5.0
 offset_right = 62.0
 offset_bottom = 16.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(1.00, 0.30, 0.30, 1.00)
 text = "!"
-mouse_filter = 2
 
-[node name="PlayerName" type="Label" parent="ProfileCard"]
+[node name="PlayerName" type="Label" parent="ProfileCard" unique_id=1675923923]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 6.0
 offset_right = 240.0
 offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "CHEMIA"
-mouse_filter = 2
 
-[node name="LevelLabel" type="Label" parent="ProfileCard"]
+[node name="LevelLabel" type="Label" parent="ProfileCard" unique_id=1749506213]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 24.0
 offset_right = 100.0
 offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "Lv.70"
-mouse_filter = 2
 
-[node name="MaxLabel" type="Label" parent="ProfileCard"]
+[node name="MaxLabel" type="Label" parent="ProfileCard" unique_id=77741968]
 layout_mode = 0
 offset_left = 104.0
 offset_top = 24.0
 offset_right = 130.0
 offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(1.00, 0.30, 0.30, 1.00)
 text = "MAX"
-mouse_filter = 2
 
-[node name="ExpBg" type="ColorRect" parent="ProfileCard"]
+[node name="ExpBg" type="ColorRect" parent="ProfileCard" unique_id=1340243707]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 40.0
@@ -504,219 +481,206 @@ offset_bottom = 44.0
 mouse_filter = 2
 color = Color(0.02, 0.04, 0.12, 0.96)
 
-[node name="ExpBar" type="ColorRect" parent="ProfileCard"]
+[node name="ExpBar" type="ColorRect" parent="ProfileCard" unique_id=1455851219]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 40.0
 offset_right = 246.0
 offset_bottom = 44.0
 mouse_filter = 2
-color = Color(1.00, 0.30, 0.30, 1.00)
+color = Color(1, 0.3, 0.3, 1)
 
-[node name="UIDLabel" type="Label" parent="ProfileCard"]
+[node name="UIDLabel" type="Label" parent="ProfileCard" unique_id=1965427362]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 48.0
 offset_right = 246.0
 offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "UID 10000001"
-mouse_filter = 2
 
-[node name="MenuItem_Notice" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_Notice" type="Control" parent="." unique_id=802706443]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 142.0
 offset_right = 268.0
 offset_bottom = 178.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_Notice"]
+[node name="Icon" type="TextureRect" parent="MenuItem_Notice" unique_id=414290015]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_Notice"]
+[node name="Text" type="Label" parent="MenuItem_Notice" unique_id=129403983]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Notice"
-mouse_filter = 2
 
-[node name="Dot" type="ColorRect" parent="MenuItem_Notice"]
+[node name="Dot" type="ColorRect" parent="MenuItem_Notice" unique_id=1721981280]
 layout_mode = 0
 offset_left = 15.0
 offset_top = 1.0
 offset_right = 23.0
 offset_bottom = 9.0
 mouse_filter = 2
-color = Color(1.00, 0.30, 0.30, 1.00)
+color = Color(1, 0.3, 0.3, 1)
 
-[node name="MenuItem_Missions" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_Missions" type="Control" parent="." unique_id=1648236542]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 182.0
 offset_right = 268.0
 offset_bottom = 218.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_Missions"]
+[node name="Icon" type="TextureRect" parent="MenuItem_Missions" unique_id=1209083572]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_Missions"]
+[node name="Text" type="Label" parent="MenuItem_Missions" unique_id=2016122916]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Missions"
-mouse_filter = 2
 
-[node name="Dot" type="ColorRect" parent="MenuItem_Missions"]
+[node name="Dot" type="ColorRect" parent="MenuItem_Missions" unique_id=1483586683]
 layout_mode = 0
 offset_left = 15.0
 offset_top = 1.0
 offset_right = 23.0
 offset_bottom = 9.0
 mouse_filter = 2
-color = Color(1.00, 0.30, 0.30, 1.00)
+color = Color(1, 0.3, 0.3, 1)
 
-[node name="MenuItem_Event" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_Event" type="Control" parent="." unique_id=575111913]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 222.0
 offset_right = 268.0
 offset_bottom = 258.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_Event"]
+[node name="Icon" type="TextureRect" parent="MenuItem_Event" unique_id=503480489]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_Event"]
+[node name="Text" type="Label" parent="MenuItem_Event" unique_id=269105067]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Event"
-mouse_filter = 2
 
-[node name="MenuItem_Pass" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_Pass" type="Control" parent="." unique_id=504243076]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 262.0
 offset_right = 268.0
 offset_bottom = 298.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_Pass"]
+[node name="Icon" type="TextureRect" parent="MenuItem_Pass" unique_id=2057894540]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_Pass"]
+[node name="Text" type="Label" parent="MenuItem_Pass" unique_id=2127806526]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Pass"
-mouse_filter = 2
 
-[node name="MenuItem_Shop" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_Shop" type="Control" parent="." unique_id=1051712999]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 302.0
 offset_right = 268.0
 offset_bottom = 338.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_Shop"]
+[node name="Icon" type="TextureRect" parent="MenuItem_Shop" unique_id=1647414986]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_Shop"]
+[node name="Text" type="Label" parent="MenuItem_Shop" unique_id=409609419]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Shop"
-mouse_filter = 2
 
-[node name="MenuItem_FirstPurchase" type="Control" parent="."]
-layout_mode = 0
+[node name="MenuItem_FirstPurchase" type="Control" parent="." unique_id=1452133927]
+anchors_preset = 0
 offset_left = 10.0
 offset_top = 342.0
 offset_right = 268.0
 offset_bottom = 378.0
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="MenuItem_FirstPurchase"]
+[node name="Icon" type="TextureRect" parent="MenuItem_FirstPurchase" unique_id=1711555147]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="MenuItem_FirstPurchase"]
+[node name="Text" type="Label" parent="MenuItem_FirstPurchase" unique_id=211096525]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 19.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "First Purchase"
-mouse_filter = 2
 
-[node name="EventBanner" type="Panel" parent="."]
+[node name="EventBanner" type="Panel" parent="." unique_id=1029562533]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 390.0
@@ -725,7 +689,7 @@ offset_bottom = 538.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Event")
 
-[node name="TagBg" type="Panel" parent="EventBanner"]
+[node name="TagBg" type="Panel" parent="EventBanner" unique_id=1936235381]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 7.0
@@ -734,60 +698,56 @@ offset_bottom = 21.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_EventTag")
 
-[node name="TagText" type="Label" parent="EventBanner/TagBg"]
+[node name="TagText" type="Label" parent="EventBanner/TagBg" unique_id=2039297185]
 layout_mode = 0
 offset_left = 6.0
 offset_top = 2.0
 offset_right = 96.0
 offset_bottom = 13.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 7
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "LIMITED EVENT"
-mouse_filter = 2
 
-[node name="Title1" type="Label" parent="EventBanner"]
+[node name="Title1" type="Label" parent="EventBanner" unique_id=124480356]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 26.0
 offset_right = 148.0
 offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "STARFALL"
-mouse_filter = 2
 
-[node name="Title2" type="Label" parent="EventBanner"]
+[node name="Title2" type="Label" parent="EventBanner" unique_id=1157286411]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 48.0
 offset_right = 148.0
 offset_bottom = 68.0
+theme_override_colors/font_color = Color(0.65, 0.35, 1, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
 text = "INVOCATION"
-mouse_filter = 2
 
-[node name="SubText" type="Label" parent="EventBanner"]
+[node name="SubText" type="Label" parent="EventBanner" unique_id=1962334947]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 76.0
 offset_right = 148.0
 offset_bottom = 88.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "New Character Rate UP!"
-mouse_filter = 2
 
-[node name="Dot0" type="ColorRect" parent="EventBanner"]
+[node name="Dot0" type="ColorRect" parent="EventBanner" unique_id=873806564]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 130.0
 offset_right = 17.0
 offset_bottom = 135.0
 mouse_filter = 2
-color = Color(0.65, 0.35, 1.00, 1.00)
+color = Color(0.65, 0.35, 1, 1)
 
-[node name="Dot1" type="ColorRect" parent="EventBanner"]
+[node name="Dot1" type="ColorRect" parent="EventBanner" unique_id=259165016]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 130.0
@@ -796,7 +756,7 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="Dot2" type="ColorRect" parent="EventBanner"]
+[node name="Dot2" type="ColorRect" parent="EventBanner" unique_id=1564158927]
 layout_mode = 0
 offset_left = 32.0
 offset_top = 130.0
@@ -805,7 +765,7 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="Dot3" type="ColorRect" parent="EventBanner"]
+[node name="Dot3" type="ColorRect" parent="EventBanner" unique_id=976419711]
 layout_mode = 0
 offset_left = 44.0
 offset_top = 130.0
@@ -814,7 +774,7 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="Dot4" type="ColorRect" parent="EventBanner"]
+[node name="Dot4" type="ColorRect" parent="EventBanner" unique_id=353775627]
 layout_mode = 0
 offset_left = 56.0
 offset_top = 130.0
@@ -823,7 +783,7 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="Dot5" type="ColorRect" parent="EventBanner"]
+[node name="Dot5" type="ColorRect" parent="EventBanner" unique_id=653742762]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 130.0
@@ -832,7 +792,7 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="Dot6" type="ColorRect" parent="EventBanner"]
+[node name="Dot6" type="ColorRect" parent="EventBanner" unique_id=2140999950]
 layout_mode = 0
 offset_left = 80.0
 offset_top = 130.0
@@ -841,17 +801,17 @@ offset_bottom = 135.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="EventArt" type="TextureRect" parent="EventBanner"]
+[node name="EventArt" type="TextureRect" parent="EventBanner" unique_id=237482752]
 layout_mode = 0
 offset_left = 155.0
 offset_top = 8.0
 offset_right = 251.0
 offset_bottom = 140.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="GuideCard" type="Panel" parent="."]
+[node name="GuideCard" type="Panel" parent="." unique_id=371042015]
 layout_mode = 0
 offset_left = 828.0
 offset_top = 58.0
@@ -860,39 +820,37 @@ offset_bottom = 140.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2R8")
 
-[node name="GuideIcon" type="TextureRect" parent="GuideCard"]
+[node name="GuideIcon" type="TextureRect" parent="GuideCard" unique_id=1089559194]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 6.0
 offset_right = 66.0
 offset_bottom = 50.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Title" type="Label" parent="GuideCard"]
+[node name="Title" type="Label" parent="GuideCard" unique_id=1547828448]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 52.0
 offset_right = 80.0
 offset_bottom = 65.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Guide"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="GuideCard"]
+[node name="Sub" type="Label" parent="GuideCard" unique_id=1412378614]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 66.0
 offset_right = 80.0
 offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "New Player"
-mouse_filter = 2
 
-[node name="NewCharCard" type="Panel" parent="."]
+[node name="NewCharCard" type="Panel" parent="." unique_id=743354178]
 layout_mode = 0
 offset_left = 918.0
 offset_top = 58.0
@@ -901,58 +859,53 @@ offset_bottom = 140.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NewChar")
 
-[node name="Header" type="ColorRect" parent="NewCharCard"]
+[node name="Header" type="ColorRect" parent="NewCharCard" unique_id=494674066]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 226.0
 offset_bottom = 18.0
 mouse_filter = 2
-color = Color(0.10, 0.06, 0.28, 0.96)
+color = Color(0.1, 0.06, 0.28, 0.96)
 
-[node name="HeaderText" type="Label" parent="NewCharCard/Header"]
+[node name="HeaderText" type="Label" parent="NewCharCard/Header" unique_id=84808557]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 3.0
 offset_right = 220.0
 offset_bottom = 15.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "NEW CHARACTER"
-mouse_filter = 2
 
-[node name="Title" type="Label" parent="NewCharCard"]
+[node name="Title" type="Label" parent="NewCharCard" unique_id=493044204]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 20.0
 offset_right = 160.0
 offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.82, 0.28, 1)
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
 text = "LUXIA"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="NewCharCard"]
+[node name="Sub" type="Label" parent="NewCharCard" unique_id=321867465]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 46.0
 offset_right = 160.0
 offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
 text = "✦ WHITE STAR ✦"
-mouse_filter = 2
 
-[node name="NCDot0" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot0" type="ColorRect" parent="NewCharCard" unique_id=2069331227]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 68.0
 offset_right = 15.0
 offset_bottom = 73.0
 mouse_filter = 2
-color = Color(1.00, 0.82, 0.28, 1.00)
+color = Color(1, 0.82, 0.28, 1)
 
-[node name="NCDot1" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot1" type="ColorRect" parent="NewCharCard" unique_id=543039138]
 layout_mode = 0
 offset_left = 18.0
 offset_top = 68.0
@@ -961,7 +914,7 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NCDot2" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot2" type="ColorRect" parent="NewCharCard" unique_id=1032709371]
 layout_mode = 0
 offset_left = 28.0
 offset_top = 68.0
@@ -970,7 +923,7 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NCDot3" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot3" type="ColorRect" parent="NewCharCard" unique_id=660278046]
 layout_mode = 0
 offset_left = 38.0
 offset_top = 68.0
@@ -979,7 +932,7 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NCDot4" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot4" type="ColorRect" parent="NewCharCard" unique_id=176433663]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 68.0
@@ -988,7 +941,7 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NCDot5" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot5" type="ColorRect" parent="NewCharCard" unique_id=1009505212]
 layout_mode = 0
 offset_left = 58.0
 offset_top = 68.0
@@ -997,7 +950,7 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NCDot6" type="ColorRect" parent="NewCharCard"]
+[node name="NCDot6" type="ColorRect" parent="NewCharCard" unique_id=669269774]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 68.0
@@ -1006,89 +959,84 @@ offset_bottom = 73.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.22)
 
-[node name="NewCharArt" type="TextureRect" parent="NewCharCard"]
+[node name="NewCharArt" type="TextureRect" parent="NewCharCard" unique_id=827129997]
 layout_mode = 0
 offset_left = 168.0
 offset_top = 2.0
 offset_right = 224.0
 offset_bottom = 80.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="AdventureCard" type="Panel" parent="."]
+[node name="AdventureCard" type="Panel" parent="." unique_id=760607397]
 layout_mode = 0
 offset_left = 828.0
 offset_top = 150.0
 offset_right = 1144.0
 offset_bottom = 245.0
-mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
-[node name="Title" type="Label" parent="AdventureCard"]
+[node name="Title" type="Label" parent="AdventureCard" unique_id=545153171]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 200.0
 offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Adventure"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="AdventureCard"]
+[node name="Sub" type="Label" parent="AdventureCard" unique_id=1948971470]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 30.0
 offset_right = 200.0
 offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "MAIN STORY"
-mouse_filter = 2
 
-[node name="Chapter" type="Label" parent="AdventureCard"]
+[node name="Chapter" type="Label" parent="AdventureCard" unique_id=1872702596]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 70.0
 offset_right = 200.0
 offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "CHAPTER 12-9"
-mouse_filter = 2
 
-[node name="Arrow" type="Label" parent="AdventureCard"]
+[node name="Arrow" type="Label" parent="AdventureCard" unique_id=802940588]
 layout_mode = 0
 offset_left = 296.0
 offset_top = 36.0
 offset_right = 314.0
 offset_bottom = 54.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
 text = "▶"
-mouse_filter = 2
 
-[node name="ArtBg" type="ColorRect" parent="AdventureCard"]
+[node name="ArtBg" type="ColorRect" parent="AdventureCard" unique_id=356579752]
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
 offset_right = 314.0
 offset_bottom = 93.0
 mouse_filter = 2
-color = Color(0.04, 0.08, 0.22, 0.60)
+color = Color(0.04, 0.08, 0.22, 0.6)
 
-[node name="AdventureArt" type="TextureRect" parent="AdventureCard"]
+[node name="AdventureArt" type="TextureRect" parent="AdventureCard" unique_id=1283019413]
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
 offset_right = 312.0
 offset_bottom = 91.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="ChronicleCard" type="Panel" parent="."]
+[node name="ChronicleCard" type="Panel" parent="." unique_id=501547849]
 layout_mode = 0
 offset_left = 828.0
 offset_top = 253.0
@@ -1097,59 +1045,56 @@ offset_bottom = 335.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
-[node name="Title" type="Label" parent="ChronicleCard"]
+[node name="Title" type="Label" parent="ChronicleCard" unique_id=639115030]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 200.0
 offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Chronicle"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="ChronicleCard"]
+[node name="Sub" type="Label" parent="ChronicleCard" unique_id=1436291648]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 30.0
 offset_right = 200.0
 offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "SIDE STORY"
-mouse_filter = 2
 
-[node name="Arrow" type="Label" parent="ChronicleCard"]
+[node name="Arrow" type="Label" parent="ChronicleCard" unique_id=574622777]
 layout_mode = 0
 offset_left = 296.0
 offset_top = 30.0
 offset_right = 314.0
 offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.65, 0.35, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
 text = "▶"
-mouse_filter = 2
 
-[node name="ArtBg" type="ColorRect" parent="ChronicleCard"]
+[node name="ArtBg" type="ColorRect" parent="ChronicleCard" unique_id=490531522]
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
 offset_right = 314.0
 offset_bottom = 80.0
 mouse_filter = 2
-color = Color(0.08, 0.04, 0.22, 0.60)
+color = Color(0.08, 0.04, 0.22, 0.6)
 
-[node name="ChronicleArt" type="TextureRect" parent="ChronicleCard"]
+[node name="ChronicleArt" type="TextureRect" parent="ChronicleCard" unique_id=1584171115]
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
 offset_right = 312.0
 offset_bottom = 78.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="SimulationCard" type="Panel" parent="."]
+[node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
 offset_left = 828.0
 offset_top = 343.0
@@ -1158,143 +1103,134 @@ offset_bottom = 425.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
-[node name="Title" type="Label" parent="SimulationCard"]
+[node name="Title" type="Label" parent="SimulationCard" unique_id=539456200]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 200.0
 offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Simulation"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="SimulationCard"]
+[node name="Sub" type="Label" parent="SimulationCard" unique_id=1577960465]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 30.0
 offset_right = 200.0
 offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "RESOURCE"
-mouse_filter = 2
 
-[node name="Arrow" type="Label" parent="SimulationCard"]
+[node name="Arrow" type="Label" parent="SimulationCard" unique_id=1961993866]
 layout_mode = 0
 offset_left = 296.0
 offset_top = 30.0
 offset_right = 314.0
 offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.25, 1, 0.55, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.25, 1.00, 0.55, 1.00)
 text = "▶"
-mouse_filter = 2
 
-[node name="ArtBg" type="ColorRect" parent="SimulationCard"]
+[node name="ArtBg" type="ColorRect" parent="SimulationCard" unique_id=1553582026]
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
 offset_right = 314.0
 offset_bottom = 80.0
 mouse_filter = 2
-color = Color(0.03, 0.12, 0.10, 0.60)
+color = Color(0.03, 0.12, 0.1, 0.6)
 
-[node name="SimulationArt" type="TextureRect" parent="SimulationCard"]
+[node name="SimulationArt" type="TextureRect" parent="SimulationCard" unique_id=2022707788]
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
 offset_right = 312.0
 offset_bottom = 78.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="ArenaCard" type="Panel" parent="."]
+[node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
 offset_left = 828.0
 offset_top = 433.0
 offset_right = 980.0
 offset_bottom = 523.0
-mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
-[node name="Title" type="Label" parent="ArenaCard"]
+[node name="Title" type="Label" parent="ArenaCard" unique_id=7828574]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 6.0
 offset_right = 100.0
 offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Arena"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="ArenaCard"]
+[node name="Sub" type="Label" parent="ArenaCard" unique_id=909394885]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 24.0
 offset_right = 100.0
 offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "PVP"
-mouse_filter = 2
 
-[node name="DiamondIcon" type="TextureRect" parent="ArenaCard"]
+[node name="DiamondIcon" type="TextureRect" parent="ArenaCard" unique_id=1027677153]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 44.0
 offset_right = 30.0
 offset_bottom = 64.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="DiamondText" type="Label" parent="ArenaCard"]
+[node name="DiamondText" type="Label" parent="ArenaCard" unique_id=1676329087]
 layout_mode = 0
 offset_left = 34.0
 offset_top = 46.0
 offset_right = 140.0
 offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "Diamond I"
-mouse_filter = 2
 
-[node name="RatingText" type="Label" parent="ArenaCard"]
+[node name="RatingText" type="Label" parent="ArenaCard" unique_id=44737698]
 layout_mode = 0
 offset_left = 34.0
 offset_top = 59.0
 offset_right = 140.0
 offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "3200/3500"
-mouse_filter = 2
 
-[node name="Arrow" type="Label" parent="ArenaCard"]
+[node name="Arrow" type="Label" parent="ArenaCard" unique_id=991533476]
 layout_mode = 0
 offset_left = 132.0
 offset_top = 34.0
 offset_right = 150.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
 text = "▶"
-mouse_filter = 2
 
-[node name="ArenaArt" type="TextureRect" parent="ArenaCard"]
+[node name="ArenaArt" type="TextureRect" parent="ArenaCard" unique_id=221280184]
 layout_mode = 0
 offset_left = 78.0
 offset_top = 2.0
 offset_right = 150.0
 offset_bottom = 88.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="ExpeditionCard" type="Panel" parent="."]
+[node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
 offset_left = 988.0
 offset_top = 433.0
@@ -1303,345 +1239,303 @@ offset_bottom = 523.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
-[node name="Title" type="Label" parent="ExpeditionCard"]
+[node name="Title" type="Label" parent="ExpeditionCard" unique_id=1092544986]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 6.0
 offset_right = 120.0
 offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Expedition"
-mouse_filter = 2
 
-[node name="Sub" type="Label" parent="ExpeditionCard"]
+[node name="Sub" type="Label" parent="ExpeditionCard" unique_id=809949886]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 24.0
 offset_right = 120.0
 offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "CHALLENGE"
-mouse_filter = 2
 
-[node name="Arrow" type="Label" parent="ExpeditionCard"]
+[node name="Arrow" type="Label" parent="ExpeditionCard" unique_id=553799822]
 layout_mode = 0
 offset_left = 138.0
 offset_top = 34.0
 offset_right = 156.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(1, 0.58, 0.14, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(1.00, 0.58, 0.14, 1.00)
 text = "▶"
-mouse_filter = 2
 
-[node name="ExpeditionArt" type="TextureRect" parent="ExpeditionCard"]
+[node name="ExpeditionArt" type="TextureRect" parent="ExpeditionCard" unique_id=593617963]
 layout_mode = 0
 offset_left = 76.0
 offset_top = 2.0
 offset_right = 154.0
 offset_bottom = 88.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="ChatBar" type="ColorRect" parent="."]
+[node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 556.0
 offset_right = 820.0
 offset_bottom = 584.0
 mouse_filter = 2
 color = Color(0.02, 0.05, 0.15, 0.88)
 
-[node name="ChatLine" type="ColorRect" parent="ChatBar"]
+[node name="ChatLine" type="ColorRect" parent="ChatBar" unique_id=601221272]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 820.0
 offset_bottom = 1.0
 mouse_filter = 2
-color = Color(0.22, 0.62, 1.00, 0.25)
+color = Color(0.22, 0.62, 1, 0.25)
 
-[node name="ChatIcon" type="Label" parent="ChatBar"]
+[node name="ChatIcon" type="Label" parent="ChatBar" unique_id=1512941828]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 5.0
 offset_right = 26.0
 offset_bottom = 23.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
-text = "\U0001F4AC"
-mouse_filter = 2
+text = " AC"
 
-[node name="ChatText" type="Label" parent="ChatBar"]
+[node name="ChatText" type="Label" parent="ChatBar" unique_id=507499625]
 layout_mode = 0
 offset_left = 28.0
 offset_top = 7.0
 offset_right = 810.0
 offset_bottom = 21.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "[World] Alchemist : สวัสดีทุกคน!"
-mouse_filter = 2
 
-[node name="NavBar" type="Panel" parent="."]
+[node name="NavBar" type="Panel" parent="." unique_id=729974613]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 596.0
 offset_right = 560.0
 offset_bottom = 648.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NavPill")
 
-[node name="Nav0_Alchemist" type="Control" parent="NavBar"]
-layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
+[node name="Nav0_Alchemist" type="Control" parent="NavBar" unique_id=152951613]
+anchors_preset = 0
 offset_right = 80.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=1479650524]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 80.0
 offset_bottom = 52.0
 mouse_filter = 2
-color = Color(0.22, 0.72, 1.00, 0.12)
+color = Color(0.22, 0.72, 1, 0.12)
 
-[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=828936899]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 80.0
 offset_bottom = 2.0
 mouse_filter = 2
-color = Color(0.22, 0.72, 1.00, 1.00)
+color = Color(0.22, 0.72, 1, 1)
 
-[node name="NotifDot" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=859417099]
 layout_mode = 0
 offset_left = 44.0
 offset_top = 5.0
 offset_right = 52.0
 offset_bottom = 13.0
 mouse_filter = 2
-color = Color(1.00, 0.30, 0.30, 1.00)
+color = Color(1, 0.3, 0.3, 1)
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav0_Alchemist"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav0_Alchemist" unique_id=867149864]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav0_Alchemist"]
+[node name="Text" type="Label" parent="NavBar/Nav0_Alchemist" unique_id=1908789204]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
 text = "Alchemist"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav1_Lineup" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav1_Lineup" type="Control" parent="NavBar" unique_id=859749142]
+anchors_preset = 0
 offset_left = 80.0
-offset_top = 0.0
 offset_right = 160.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav1_Lineup"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav1_Lineup" unique_id=760996363]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav1_Lineup"]
+[node name="Text" type="Label" parent="NavBar/Nav1_Lineup" unique_id=803664527]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Lineup"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav2_Arcanum" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
+anchors_preset = 0
 offset_left = 160.0
-offset_top = 0.0
 offset_right = 240.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Arcanum"]
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Arcanum" unique_id=850425920]
 layout_mode = 0
 offset_left = 44.0
 offset_top = 5.0
 offset_right = 52.0
 offset_bottom = 13.0
 mouse_filter = 2
-color = Color(1.00, 0.30, 0.30, 1.00)
+color = Color(1, 0.3, 0.3, 1)
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav2_Arcanum"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav2_Arcanum" unique_id=1254535148]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav2_Arcanum"]
+[node name="Text" type="Label" parent="NavBar/Nav2_Arcanum" unique_id=1419121623]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Arcanum"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav3_Inventory" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
+anchors_preset = 0
 offset_left = 240.0
-offset_top = 0.0
 offset_right = 320.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav3_Inventory"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav3_Inventory" unique_id=968096375]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav3_Inventory"]
+[node name="Text" type="Label" parent="NavBar/Nav3_Inventory" unique_id=2023141049]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Inventory"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav4_Database" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav4_Database" type="Control" parent="NavBar" unique_id=483944133]
+anchors_preset = 0
 offset_left = 320.0
-offset_top = 0.0
 offset_right = 400.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav4_Database"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav4_Database" unique_id=794539360]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav4_Database"]
+[node name="Text" type="Label" parent="NavBar/Nav4_Database" unique_id=1555726201]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Database"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav5_Guild" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav5_Guild" type="Control" parent="NavBar" unique_id=1675595296]
+anchors_preset = 0
 offset_left = 400.0
-offset_top = 0.0
 offset_right = 480.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav5_Guild"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav5_Guild" unique_id=1652080278]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav5_Guild"]
+[node name="Text" type="Label" parent="NavBar/Nav5_Guild" unique_id=1202741847]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Guild"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="Nav6_Archive" type="Control" parent="NavBar"]
-layout_mode = 0
+[node name="Nav6_Archive" type="Control" parent="NavBar" unique_id=775056348]
+anchors_preset = 0
 offset_left = 480.0
-offset_top = 0.0
 offset_right = 560.0
 offset_bottom = 52.0
-mouse_filter = 0
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav6_Archive"]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav6_Archive" unique_id=700392957]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
 offset_right = 56.0
 offset_bottom = 35.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Text" type="Label" parent="NavBar/Nav6_Archive"]
+[node name="Text" type="Label" parent="NavBar/Nav6_Archive" unique_id=1358237559]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Archive"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="DomainOuter" type="Panel" parent="."]
+[node name="DomainOuter" type="Panel" parent="." unique_id=353296407]
 layout_mode = 0
 offset_left = 985.0
 offset_top = 518.0
@@ -1650,47 +1544,44 @@ offset_bottom = 648.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_DomOuter")
 
-[node name="DomainInner" type="Panel" parent="."]
+[node name="DomainInner" type="Panel" parent="." unique_id=1636978829]
 layout_mode = 0
 offset_left = 991.0
 offset_top = 524.0
 offset_right = 1109.0
 offset_bottom = 642.0
-mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_DomInner")
 
-[node name="DomainIcon" type="TextureRect" parent="DomainInner"]
+[node name="DomainIcon" type="TextureRect" parent="DomainInner" unique_id=1810761776]
 layout_mode = 0
 offset_left = 29.0
 offset_top = 8.0
 offset_right = 89.0
 offset_bottom = 62.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="DomainTitle" type="Label" parent="DomainInner"]
+[node name="DomainTitle" type="Label" parent="DomainInner" unique_id=409520499]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 64.0
 offset_right = 102.0
 offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
 text = "Domain"
 horizontal_alignment = 1
-mouse_filter = 2
 
-[node name="DomainSub" type="Label" parent="DomainInner"]
+[node name="DomainSub" type="Label" parent="DomainInner" unique_id=349307072]
 layout_mode = 0
 offset_left = 6.0
 offset_top = 82.0
 offset_right = 112.0
 offset_bottom = 92.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 7
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
 text = "BONUS REWARD"
 horizontal_alignment = 1
-mouse_filter = 2
 
 [connection signal="pressed" from="ToggleBtn" to="." method="_on_toggle_char"]
