@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 const W := 1152.0
@@ -27,6 +28,9 @@ var _char_male   : TextureRect
 var _show_female := true
 
 func _ready() -> void:
+	# ล้าง node เก่าก่อนสร้างใหม่ (ป้องกัน node ซ้อนกันเมื่อ editor reload)
+	for child in get_children():
+		child.free()
 	_char_stage()
 	_top_bar()
 	_left_panel()
@@ -53,7 +57,8 @@ func _char_stage() -> void:
 	tog.add_theme_font_size_override("font_size", 10)
 	tog.add_theme_color_override("font_color", C_TEXT2)
 	_style(tog, Color(0, 0, 0, 0.55), C_BDR2, 6.0)
-	tog.pressed.connect(_on_toggle_char)
+	if not Engine.is_editor_hint():
+		tog.pressed.connect(_on_toggle_char)
 	add_child(tog)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -191,9 +196,10 @@ func _right_panel() -> void:
 	_rect(adv, Vector2(CW * 0.50, 2), Vector2(CW * 0.50 - 2, 91), Color(0.04, 0.08, 0.22, 0.60))
 	var adv_art := _tex_rect("AdventureArt", Vector2(CW * 0.50 + 2, 2), Vector2(CW * 0.50 - 4, 91))
 	adv.add_child(adv_art)
-	adv.gui_input.connect(func(ev):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			_goto(SC_BATTLE))
+	if not Engine.is_editor_hint():
+		adv.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto(SC_BATTLE))
 	adv.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Chronicle  h=82  y=253
@@ -228,9 +234,10 @@ func _right_panel() -> void:
 	_lbl_at(arena, "▶",        11, C_ACCENT,  Vector2(AW - 16, 36))
 	var arena_art := _tex_rect("ArenaArt", Vector2(AW * 0.52, 2), Vector2(AW * 0.46, 86))
 	arena.add_child(arena_art)
-	arena.gui_input.connect(func(ev):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			_goto(SC_BATTLE))
+	if not Engine.is_editor_hint():
+		arena.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto(SC_BATTLE))
 	arena.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var exped := _panel_at(Rect2(RX + AW + 6, 433, EW, 90), C_CARD2, C_BORDER, 7.0)
@@ -324,6 +331,7 @@ func _domain() -> void:
 # Toggle ♀/♂
 # ─────────────────────────────────────────────────────────────────────────────
 func _on_toggle_char() -> void:
+	if Engine.is_editor_hint(): return
 	_show_female       = not _show_female
 	_char_female.visible = _show_female
 	_char_male.visible   = not _show_female
@@ -332,6 +340,7 @@ func _on_toggle_char() -> void:
 # Scene transition
 # ─────────────────────────────────────────────────────────────────────────────
 func _goto(path: String) -> void:
+	if Engine.is_editor_hint(): return
 	if not ResourceLoader.exists(path): return
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
