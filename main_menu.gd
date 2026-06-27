@@ -1,11 +1,8 @@
 extends Control
 
-# ── Screen 1152 × 648 ─────────────────────────────────────────────────────────
-const W : float = 1152.0
-const H : float = 648.0
+const W := 1152.0
+const H := 648.0
 
-# ── Palette ───────────────────────────────────────────────────────────────────
-const C_BG      := Color(0.02, 0.04, 0.13, 1.00)
 const C_CARD    := Color(0.04, 0.08, 0.20, 0.88)
 const C_CARD2   := Color(0.06, 0.11, 0.26, 0.92)
 const C_DARK    := Color(0.02, 0.04, 0.12, 0.96)
@@ -25,26 +22,22 @@ const C_TEAL    := Color(0.10, 0.80, 0.75, 1.00)
 
 const SC_BATTLE := "res://battle_scene.tscn"
 
-var _show_female : bool = true
 var _char_female : TextureRect
 var _char_male   : TextureRect
+var _show_female := true
 
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	_add_bg()
-	_build_char_stage()
-	_build_top_bar()
-	_build_profile()
-	_build_left_menu()
-	_build_limited_event()
-	_build_top_right()
-	_build_content_cards()
-	_build_domain()
-	_build_chat()
-	_build_bottom_nav()
+	_bg()
+	_char_stage()
+	_top_currencies()
+	_left_panel()
+	_right_panel()
+	_chat_bar()
+	_bottom_nav()
 
 # ── Background ────────────────────────────────────────────────────────────────
-func _add_bg() -> void:
+func _bg() -> void:
 	var bg := TextureRect.new()
 	bg.name = "Background"
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -53,36 +46,17 @@ func _add_bg() -> void:
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 
-# ── Character stage ───────────────────────────────────────────────────────────
-func _build_char_stage() -> void:
-	var glow := ColorRect.new()
-	glow.position   = Vector2(180, 440); glow.size = Vector2(800, 210)
-	glow.color      = Color(C_ACCENT.r, C_ACCENT.g, C_ACCENT.b, 0.05)
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(glow)
-
-	_char_female = TextureRect.new()
-	_char_female.name         = "FemaleCharacter"
-	_char_female.position     = Vector2(310, 20)
-	_char_female.size         = Vector2(500, 608)
-	_char_female.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	_char_female.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_char_female.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_female.texture      = PortraitGen.make(Color(0.55, 0.80, 1.00), 500, 608)
+# ── Character stage (center, behind UI) ──────────────────────────────────────
+func _char_stage() -> void:
+	_char_female = _portrait(Color(0.55, 0.80, 1.00), Vector2(310, 20), Vector2(500, 608))
+	_char_female.name = "FemaleCharacter"
 	add_child(_char_female)
 
-	_char_male = TextureRect.new()
-	_char_male.name         = "MaleCharacter"
-	_char_male.position     = Vector2(310, 20)
-	_char_male.size         = Vector2(500, 608)
-	_char_male.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	_char_male.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_char_male.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_male.texture      = PortraitGen.make(Color(1.00, 0.60, 0.20), 500, 608)
-	_char_male.visible      = false
+	_char_male = _portrait(Color(1.00, 0.60, 0.20), Vector2(310, 20), Vector2(500, 608))
+	_char_male.name    = "MaleCharacter"
+	_char_male.visible = false
 	add_child(_char_male)
 
-	# Small ♀/♂ toggle — sits just above bottom nav, center-bottom of stage
 	var tog := Button.new()
 	tog.text     = "♀ · ♂"
 	tog.position = Vector2(530, 584)
@@ -93,208 +67,224 @@ func _build_char_stage() -> void:
 	tog.pressed.connect(_on_toggle_char)
 	add_child(tog)
 
-# ── Top bar  y=0  (4 floating currency labels spread across screen) ───────────
-func _build_top_bar() -> void:
-	# Each item floats independently — positions spread across full width
-	var cur : Array = [
+# ── Top: 4 floating currency labels ──────────────────────────────────────────
+func _top_currencies() -> void:
+	var data : Array = [
 		["✦", "12,450",    C_ACCENT,   80.0],
-		["🪙", "2,840,530", C_GOLD,    350.0],
-		["💎", "18,760",    C_DIAMOND, 660.0],
-		["⚡", "240/240",   C_GREEN,   940.0],
+		["🪙","2,840,530",  C_GOLD,    340.0],
+		["💎","18,760",     C_DIAMOND, 640.0],
+		["⚡","240/240",    C_GREEN,   930.0],
 	]
-	for c : Array in cur:
-		var x : float = c[3]
-		_lbl_at(self, c[0], 14, c[2],   Vector2(x,     10))
-		_lbl_at(self, c[1], 11, C_TEXT,  Vector2(x+18, 12))
-		_lbl_at(self, "+",  11, c[2],    Vector2(x+18+_sw(c[1],11)+2, 12))
+	for d : Array in data:
+		var x : float = d[3]
+		# small semi-transparent pill behind each currency
+		var pill := ColorRect.new()
+		pill.position = Vector2(x - 4, 6)
+		pill.size     = Vector2(130, 24)
+		pill.color    = Color(0.01, 0.03, 0.10, 0.55)
+		pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(pill)
 
-# ── Profile card  x=8 y=54 w=240 h=68 ───────────────────────────────────────
-func _build_profile() -> void:
-	var card := _card(Rect2(8, 54, 240, 68), C_CARD, C_BORDER, 8.0)
-	add_child(card)
+		_lbl_at(self, d[0], 13, d[2],  Vector2(x,     10))
+		_lbl_at(self, d[1], 11, C_TEXT, Vector2(x+17,  12))
+		_lbl_at(self, "+",  10, d[2],   Vector2(x+17 + d[1].length()*6.5, 12))
 
-	# Avatar (generated portrait cropped to circle feel)
-	var av := TextureRect.new()
-	av.position    = Vector2(8, 7); av.size = Vector2(50, 50)
-	av.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	av.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	av.texture     = PortraitGen.make(Color(0.50, 0.72, 1.0), 50, 50)
-	av.mouse_filter= Control.MOUSE_FILTER_IGNORE
-	card.add_child(av)
-	# Avatar circle border
-	var av_ring := _card(Rect2(6, 5, 54, 54), Color(0,0,0,0), C_ACCENT, 27.0)
-	card.add_child(av_ring)
+# ── Left panel ────────────────────────────────────────────────────────────────
+func _left_panel() -> void:
+	var col := VBoxContainer.new()
+	col.position = Vector2(8, 54)
+	col.add_theme_constant_override("separation", 6)
+	add_child(col)
 
-	# Notification !
-	_lbl_at(card, "!", 8, C_RED, Vector2(50, 5))
+	# Profile card
+	col.add_child(_profile_card())
 
-	# Info
-	_lbl_at(card, "CHEMIA",          13, C_TEXT,  Vector2(64, 5))
-	_lbl_at(card, "Lv.70",           10, C_TEXT2, Vector2(64, 21))
-	_lbl_at(card, "MAX",              9, C_RED,   Vector2(96, 21))
-	_rect(card, Vector2(64, 35), Vector2(166, 4), C_DARK)
-	_rect(card, Vector2(64, 35), Vector2(166, 4), C_RED)   # full bar = MAX
-	_lbl_at(card, "UID 10000001  📋", 8, C_TEXT3, Vector2(64, 43))
+	# Spacer
+	var sp := Control.new(); sp.custom_minimum_size = Vector2(0, 4)
+	col.add_child(sp)
 
-# ── Left menu  (floating, no panel bg) ───────────────────────────────────────
-func _build_left_menu() -> void:
-	var items : Array = [
+	# Left menu items
+	var menu_items : Array = [
 		["🔔", "Notice",         C_RED,    true ],
 		["🎁", "Missions",       C_GOLD,   true ],
 		["🎉", "Event",          C_ORANGE, false],
 		["⭐", "Pass",           C_PURPLE, false],
 		["🛒", "Shop",           C_TEAL,   false],
-		["💎", "First Purchase", C_PURPLE, false],
 	]
-	for i in range(items.size()):
-		var m  : Array = items[i]
-		var my : float = 134.0 + i * 34.0
-		_lbl_at(self, m[0], 13, m[2],  Vector2(14, my))
-		_lbl_at(self, m[1], 12, C_TEXT, Vector2(36, my+1))
-		if m[3]:
-			_rect(self, Vector2(27, my), Vector2(7, 7), C_RED)
+	for m : Array in menu_items:
+		col.add_child(_menu_row(m[0], m[1], m[2], m[3]))
 
-# ── Limited Event banner  x=8 y=494 w=240 h=96 ───────────────────────────────
-func _build_limited_event() -> void:
-	var card := _card(Rect2(8, 494, 240, 96), Color(0.10, 0.03, 0.24, 0.94), C_PURPLE, 8.0)
-	add_child(card)
+	# Spacer to push event banner down
+	var sp2 := Control.new(); sp2.custom_minimum_size = Vector2(0, 8)
+	col.add_child(sp2)
 
-	var tag := _card(Rect2(8, 6, 88, 13), Color(0.44, 0.07, 0.66, 1), Color(0,0,0,0), 3.0)
+	# Limited event banner
+	col.add_child(_event_banner())
+
+func _profile_card() -> Control:
+	var card := _panel(Vector2(240, 68), C_CARD, C_BORDER, 8.0)
+
+	var av := _portrait(Color(0.50, 0.72, 1.0), Vector2(8, 7), Vector2(50, 50))
+	card.add_child(av)
+	var av_ring := _panel_at(Rect2(6, 5, 54, 54), Color(0,0,0,0), C_ACCENT, 27.0)
+	card.add_child(av_ring)
+
+	_lbl_at(card, "!",              8,  C_RED,   Vector2(50, 5))
+	_lbl_at(card, "CHEMIA",        13,  C_TEXT,  Vector2(64, 5))
+	_lbl_at(card, "Lv.70",        10,  C_TEXT2, Vector2(64, 21))
+	_lbl_at(card, "MAX",            9,  C_RED,   Vector2(96, 21))
+	_rect(card, Vector2(64, 35), Vector2(166, 4), C_DARK)
+	_rect(card, Vector2(64, 35), Vector2(166, 4), C_RED)
+	_lbl_at(card, "UID 10000001  📋", 8, C_TEXT3, Vector2(64, 43))
+	return card
+
+func _menu_row(icon: String, label: String, color: Color, has_dot: bool) -> Control:
+	var row := HBoxContainer.new()
+	row.custom_minimum_size = Vector2(240, 28)
+	row.add_theme_constant_override("separation", 6)
+
+	var ic := _lbl(icon, 13, color)
+	ic.custom_minimum_size = Vector2(22, 0)
+	row.add_child(ic)
+
+	var tx := _lbl(label, 12, C_TEXT)
+	row.add_child(tx)
+
+	if has_dot:
+		var dot := ColorRect.new()
+		dot.custom_minimum_size = Vector2(7, 7)
+		dot.color = C_RED
+		dot.position = Vector2(0, 0)
+		# place dot as overlay after building
+		row.add_child(dot)
+
+	return row
+
+func _event_banner() -> Control:
+	var card := _panel(Vector2(240, 96), Color(0.10, 0.03, 0.24, 0.94), C_PURPLE, 8.0)
+
+	var tag := _panel_at(Rect2(8, 6, 88, 13), Color(0.44, 0.07, 0.66, 1), Color(0,0,0,0), 3.0)
 	card.add_child(tag)
-	_lbl_at(tag, "LIMITED EVENT", 7, Color(1,1,1,1), Vector2(6, 2))
+	_lbl_at(tag, "LIMITED EVENT", 7, C_TEXT, Vector2(6, 2))
 
-	_lbl_at(card, "STARFALL",     14, Color(1,1,1,1), Vector2(8, 22))
-	_lbl_at(card, "INVOCATION",   14, C_PURPLE,       Vector2(8, 40))
-	_lbl_at(card, "New Character Rate UP!", 8, C_TEXT2, Vector2(8, 62))
+	_lbl_at(card, "STARFALL",              14, C_TEXT,   Vector2(8, 22))
+	_lbl_at(card, "INVOCATION",            14, C_PURPLE, Vector2(8, 40))
+	_lbl_at(card, "New Character Rate UP!",  8, C_TEXT2, Vector2(8, 62))
 
 	for d in range(7):
-		_rect(card, Vector2(8 + d*11, 82), Vector2(8, 4),
-			  C_PURPLE if d == 0 else Color(1,1,1,0.20))
+		_rect(card, Vector2(8 + d*11, 82), Vector2(8, 4), C_PURPLE if d==0 else Color(1,1,1,0.20))
 
-	# Character art right
-	var art := TextureRect.new()
-	art.position    = Vector2(148, 4); art.size = Vector2(86, 88)
-	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	art.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.texture     = PortraitGen.make(Color(0.65, 0.35, 1.0), 86, 88)
-	art.mouse_filter= Control.MOUSE_FILTER_IGNORE
+	var art := _portrait(Color(0.65, 0.35, 1.0), Vector2(148, 4), Vector2(86, 88))
 	card.add_child(art)
+	return card
 
-# ── Top-right: Guide (80×80) + New Character banner (162×80) ─────────────────
-func _build_top_right() -> void:
-	# Guide
-	var g := _card(Rect2(892, 54, 80, 80), C_CARD2, C_BORDER, 8.0)
-	add_child(g)
+# ── Right panel ───────────────────────────────────────────────────────────────
+func _right_panel() -> void:
+	const RX := 892.0
+
+	# Guide + New Char — side by side
+	var top_row := HBoxContainer.new()
+	top_row.position = Vector2(RX, 54)
+	top_row.add_theme_constant_override("separation", 8)
+	add_child(top_row)
+
+	# Guide 80×80
+	var g := _panel(Vector2(80, 80), C_CARD2, C_BORDER, 8.0)
 	_lbl_at(g, "🛡",        24, C_ACCENT, Vector2(26, 6))
 	_lbl_at(g, "Guide",     11, C_TEXT,   Vector2(20, 40))
 	_lbl_at(g, "New Player", 8, C_TEXT2,  Vector2(12, 56))
+	top_row.add_child(g)
 
-	# New Character
-	var nc := _card(Rect2(980, 54, 164, 80), Color(0.08, 0.04, 0.20, 0.94), C_GOLD, 8.0)
-	add_child(nc)
-
-	var hdr := ColorRect.new()
-	hdr.position = Vector2(0,0); hdr.size = Vector2(164, 16); hdr.color = Color(0.10, 0.06, 0.28, 0.96)
+	# New Char 164×80
+	var nc := _panel(Vector2(164, 80), Color(0.08, 0.04, 0.20, 0.94), C_GOLD, 8.0)
+	var hdr := ColorRect.new(); hdr.position = Vector2(0,0); hdr.size = Vector2(164,16)
+	hdr.color = Color(0.10, 0.06, 0.28, 0.96)
 	nc.add_child(hdr)
 	_lbl_at(hdr, "NEW CHARACTER", 8, C_TEXT2, Vector2(6, 2))
-
-	_lbl_at(nc, "LUXIA",         17, C_GOLD,   Vector2(8, 19))
-	_lbl_at(nc, "✦ WHITE STAR ✦", 8, C_ACCENT, Vector2(8, 40))
-
-	var art := TextureRect.new()
-	art.position    = Vector2(100, 2); art.size = Vector2(60, 74)
-	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	art.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.texture     = PortraitGen.make(Color(1.0, 0.85, 0.28), 60, 74)
-	art.mouse_filter= Control.MOUSE_FILTER_IGNORE
-	nc.add_child(art)
-
+	_lbl_at(nc,  "LUXIA",         17, C_GOLD,   Vector2(8, 19))
+	_lbl_at(nc,  "✦ WHITE STAR ✦", 8, C_ACCENT, Vector2(8, 40))
+	var nc_art := _portrait(Color(1.0, 0.85, 0.28), Vector2(100, 2), Vector2(60, 74))
+	nc.add_child(nc_art)
 	for d in range(7):
-		_rect(nc, Vector2(8 + d*9, 68), Vector2(6, 4),
-			  C_GOLD if d == 0 else Color(1,1,1,0.20))
+		_rect(nc, Vector2(8 + d*9, 68), Vector2(6, 4), C_GOLD if d==0 else Color(1,1,1,0.20))
+	top_row.add_child(nc)
 
-# ── Content cards right side ──────────────────────────────────────────────────
-func _build_content_cards() -> void:
-	const RX  : float = 892.0
-	const CW  : float = 252.0
-	const AW  : float = 108.0   # art panel width
+	# Content cards stacked vertically
+	var col := VBoxContainer.new()
+	col.position = Vector2(RX, 142)
+	col.add_theme_constant_override("separation", 6)
+	add_child(col)
 
-	# Adventure  y=142 h=66
-	var adv := _card(Rect2(RX, 142, CW, 66), C_CARD2, C_BORDER, 7.0)
-	add_child(adv)
-	_lbl_at(adv, "Adventure",    15, C_TEXT,  Vector2(10, 6))
-	_lbl_at(adv, "MAIN STORY",    9, C_TEXT2, Vector2(10, 25))
-	_lbl_at(adv, "CHAPTER 12-9",  8, C_TEXT3, Vector2(10, 48))
-	_lbl_at(adv, "▶",            13, C_ACCENT,Vector2(CW-16, 24))
-	var adv_a := _card(Rect2(CW-AW-2, 2, AW, 62), Color(0.04,0.08,0.22,0.82), Color(0,0,0,0), 6.0)
-	adv.add_child(adv_a); _lbl_at(adv_a, "💠", 28, C_ACCENT, Vector2(38, 16))
-	adv.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT: _goto(SC_BATTLE))
+	# Adventure
+	var adv := _panel(Vector2(252, 66), C_CARD2, C_BORDER, 7.0)
+	_lbl_at(adv, "Adventure",   15, C_TEXT,   Vector2(10, 6))
+	_lbl_at(adv, "MAIN STORY",   9, C_TEXT2,  Vector2(10, 25))
+	_lbl_at(adv, "CHAPTER 12-9", 8, C_TEXT3,  Vector2(10, 46))
+	_lbl_at(adv, "▶",           13, C_ACCENT, Vector2(234, 24))
+	_rect(adv, Vector2(144, 2), Vector2(106, 62), Color(0.04,0.08,0.22,0.55))
+	_lbl_at(adv, "💠", 28, C_ACCENT, Vector2(182, 16))
+	adv.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index==MOUSE_BUTTON_LEFT: _goto(SC_BATTLE))
 	adv.mouse_filter = Control.MOUSE_FILTER_STOP
+	col.add_child(adv)
 
-	# Chronicle  y=214 h=56
-	var chr := _card(Rect2(RX, 214, CW, 56), C_CARD2, C_BORDER, 7.0)
-	add_child(chr)
-	_lbl_at(chr, "Chronicle",    14, C_TEXT,   Vector2(10, 6))
-	_lbl_at(chr, "SIDE STORY",    9, C_TEXT2,  Vector2(10, 24))
-	_lbl_at(chr, "▶",            13, C_PURPLE, Vector2(CW-16, 18))
-	var chr_a := _card(Rect2(CW-AW-2, 2, AW, 52), Color(0.08,0.04,0.22,0.82), Color(0,0,0,0), 6.0)
-	chr.add_child(chr_a)
-	var chr_t := TextureRect.new()
-	chr_t.position=Vector2(0,0); chr_t.size=Vector2(AW,52)
-	chr_t.expand_mode=TextureRect.EXPAND_IGNORE_SIZE; chr_t.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	chr_t.texture=PortraitGen.make(Color(0.65,0.35,1.0),int(AW),52); chr_t.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	chr_a.add_child(chr_t)
+	# Chronicle
+	var chr := _panel(Vector2(252, 56), C_CARD2, C_BORDER, 7.0)
+	_lbl_at(chr, "Chronicle",  14, C_TEXT,   Vector2(10, 6))
+	_lbl_at(chr, "SIDE STORY",  9, C_TEXT2,  Vector2(10, 24))
+	_lbl_at(chr, "▶",          13, C_PURPLE, Vector2(234, 18))
+	var chr_art := _portrait(Color(0.65,0.35,1.0), Vector2(144,2), Vector2(106,52))
+	chr.add_child(chr_art)
+	col.add_child(chr)
 
-	# Simulation  y=276 h=56
-	var sim := _card(Rect2(RX, 276, CW, 56), C_CARD2, C_BORDER, 7.0)
-	add_child(sim)
-	_lbl_at(sim, "Simulation",   14, C_TEXT,  Vector2(10, 6))
-	_lbl_at(sim, "RESOURCE",      9, C_TEXT2, Vector2(10, 24))
-	_lbl_at(sim, "▶",            13, C_GREEN, Vector2(CW-16, 18))
-	var sim_a := _card(Rect2(CW-AW-2, 2, AW, 52), Color(0.03,0.12,0.10,0.82), Color(0,0,0,0), 6.0)
-	sim.add_child(sim_a); _lbl_at(sim_a, "🔬", 26, C_GREEN, Vector2(38, 12))
+	# Simulation
+	var sim := _panel(Vector2(252, 56), C_CARD2, C_BORDER, 7.0)
+	_lbl_at(sim, "Simulation", 14, C_TEXT,  Vector2(10, 6))
+	_lbl_at(sim, "RESOURCE",    9, C_TEXT2, Vector2(10, 24))
+	_lbl_at(sim, "▶",          13, C_GREEN, Vector2(234, 18))
+	_rect(sim, Vector2(144, 2), Vector2(106, 52), Color(0.03,0.12,0.10,0.55))
+	_lbl_at(sim, "🔬", 26, C_GREEN, Vector2(178, 12))
+	col.add_child(sim)
 
-	# Arena  x=892 y=338 w=120 h=66
-	var arena := _card(Rect2(RX, 338, 120, 66), C_CARD2, C_BORDER, 7.0)
-	add_child(arena)
-	_lbl_at(arena, "Arena",     13, C_TEXT,    Vector2(8, 5))
-	_lbl_at(arena, "PVP",        9, C_TEXT2,   Vector2(8, 21))
-	_lbl_at(arena, "💠",        16, C_DIAMOND, Vector2(8, 32))
-	_lbl_at(arena, "Diamond I",  8, C_TEXT2,   Vector2(32, 34))
-	_lbl_at(arena, "3200/3500",  7, C_TEXT3,   Vector2(32, 46))
-	_lbl_at(arena, "▶",         11, C_ACCENT,  Vector2(102, 22))
-	arena.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT: _goto(SC_BATTLE))
+	# Arena + Expedition side by side
+	var battle_row := HBoxContainer.new()
+	battle_row.add_theme_constant_override("separation", 6)
+	col.add_child(battle_row)
+
+	var arena := _panel(Vector2(120, 66), C_CARD2, C_BORDER, 7.0)
+	_lbl_at(arena, "Arena",    13, C_TEXT,    Vector2(8, 5))
+	_lbl_at(arena, "PVP",       9, C_TEXT2,   Vector2(8, 21))
+	_lbl_at(arena, "💠",       16, C_DIAMOND, Vector2(8, 32))
+	_lbl_at(arena, "Diamond I", 8, C_TEXT2,   Vector2(32, 34))
+	_lbl_at(arena, "3200/3500", 7, C_TEXT3,   Vector2(32, 46))
+	_lbl_at(arena, "▶",        11, C_ACCENT,  Vector2(102, 22))
+	arena.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index==MOUSE_BUTTON_LEFT: _goto(SC_BATTLE))
 	arena.mouse_filter = Control.MOUSE_FILTER_STOP
+	battle_row.add_child(arena)
 
-	# Expedition  x=1020 y=338 w=124 h=66
-	var exp := _card(Rect2(1020, 338, 124, 66), C_CARD2, C_BORDER, 7.0)
-	add_child(exp)
-	_lbl_at(exp, "Expedition",  12, C_TEXT,   Vector2(8, 5))
-	_lbl_at(exp, "CHALLENGE",    9, C_TEXT2,  Vector2(8, 21))
-	var exp_a := _card(Rect2(62, 4, 56, 58), Color(0.06,0.06,0.18,0.82), Color(0,0,0,0), 4.0)
-	exp.add_child(exp_a); _lbl_at(exp_a, "🤖", 22, C_ORANGE, Vector2(14, 14))
-	_lbl_at(exp, "▶", 11, C_ORANGE, Vector2(106, 22))
+	var exped := _panel(Vector2(126, 66), C_CARD2, C_BORDER, 7.0)
+	_lbl_at(exped, "Expedition", 12, C_TEXT,   Vector2(8, 5))
+	_lbl_at(exped, "CHALLENGE",   9, C_TEXT2,  Vector2(8, 21))
+	_rect(exped, Vector2(62, 4), Vector2(60, 58), Color(0.06,0.06,0.18,0.55))
+	_lbl_at(exped, "🤖", 22, C_ORANGE, Vector2(76, 14))
+	_lbl_at(exped, "▶",  11, C_ORANGE, Vector2(108, 22))
+	battle_row.add_child(exped)
 
-# ── Domain widget  bottom-right circular ─────────────────────────────────────
-func _build_domain() -> void:
-	# Outer ring
-	var outer := _card(Rect2(1014, 466, 132, 132), Color(0,0,0,0), C_ACCENT, 66.0)
+	# Domain circle — bottom right
+	var outer := _panel_at(Rect2(1014, 466, 132, 132), Color(0,0,0,0), C_ACCENT, 66.0)
 	add_child(outer)
-	# Inner
-	var inner := _card(Rect2(1020, 472, 120, 120), Color(0.04,0.07,0.20,0.94), C_ACCENT, 60.0)
+	var inner := _panel_at(Rect2(1020, 472, 120, 120), Color(0.04,0.07,0.20,0.94), C_ACCENT, 60.0)
 	add_child(inner)
 	_lbl_at(inner, "🛡",          20, C_ACCENT, Vector2(40, 8))
 	_lbl_at(inner, "Domain",      13, C_TEXT,   Vector2(26, 38))
 	_lbl_at(inner, "BONUS REWARD", 7, C_TEXT2,  Vector2(18, 57))
-	# 100% badge
-	var pct := _card(Rect2(1148, 502, 52, 52), Color(0.02,0.04,0.12,0.94), C_GOLD, 26.0)
+	var pct := _panel_at(Rect2(1148, 502, 52, 52), Color(0.02,0.04,0.12,0.94), C_GOLD, 26.0)
 	add_child(pct)
 	_lbl_at(pct, "100%", 10, C_GOLD, Vector2(6, 19))
 
-# ── Chat bar  y=566 h=26 ─────────────────────────────────────────────────────
-func _build_chat() -> void:
+# ── Chat bar ──────────────────────────────────────────────────────────────────
+func _chat_bar() -> void:
 	var bar := ColorRect.new()
 	bar.position = Vector2(0, 566); bar.size = Vector2(982, 26)
 	bar.color    = Color(0.02, 0.05, 0.15, 0.88)
@@ -304,9 +294,10 @@ func _build_chat() -> void:
 	_lbl_at(bar, "💬", 12, C_ACCENT, Vector2(8, 5))
 	_lbl_at(bar, "[World] Alchemist : สวัสดีทุกคน!", 10, C_TEXT2, Vector2(28, 6))
 
-# ── Bottom nav  y=592 h=56 ───────────────────────────────────────────────────
-func _build_bottom_nav() -> void:
-	const NW : float = W * 0.5   # nav bar: left half only (~576px)
+# ── Bottom nav  left half only (576px) ───────────────────────────────────────
+func _bottom_nav() -> void:
+	const NW := W * 0.5
+
 	var bar := ColorRect.new()
 	bar.position = Vector2(0, 592); bar.size = Vector2(NW, 56)
 	bar.color    = Color(0.02, 0.04, 0.14, 0.94)
@@ -315,37 +306,54 @@ func _build_bottom_nav() -> void:
 	_hline(bar, 0, 0, NW, C_BORDER)
 
 	var nav : Array = [
-		["⚗",  "Alchemist", true ],
-		["⚔",  "Lineup",    false],
-		["🔮", "Arcanum",   false],
-		["🎒", "Inventory", false],
-		["🛡",  "Guild",     false],
+		["⚗",  "Alchemist", C_ACCENT, true ],
+		["⚔",  "Lineup",    C_TEXT2,  false],
+		["🔮", "Arcanum",   C_TEXT2,  false],
+		["🎒", "Inventory", C_TEXT2,  false],
+		["🛡",  "Guild",     C_TEXT2,  false],
 	]
-	var iw : float = NW / nav.size()
+
+	# Use HBoxContainer so items fill evenly
+	var hbox := HBoxContainer.new()
+	hbox.position = Vector2(0, 0)
+	hbox.size     = Vector2(NW, 56)
+	hbox.add_theme_constant_override("separation", 0)
+	bar.add_child(hbox)
+
 	for i in range(nav.size()):
-		var item   : Array = nav[i]
-		var active : bool  = item[2]
-		var nx     : float = iw * i
+		var n : Array = nav[i]
+		var active : bool = n[3]
+
+		var slot := Control.new()
+		slot.custom_minimum_size = Vector2(NW / nav.size(), 56)
+		hbox.add_child(slot)
 
 		if active:
-			_rect(bar, Vector2(nx, 0), Vector2(iw, 56), Color(C_ACCENT.r,C_ACCENT.g,C_ACCENT.b,0.12))
-			_rect(bar, Vector2(nx, 0), Vector2(iw, 2),  C_ACCENT)
+			var hi := ColorRect.new()
+			hi.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			hi.color = Color(C_ACCENT.r, C_ACCENT.g, C_ACCENT.b, 0.12)
+			hi.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			slot.add_child(hi)
+			_rect(slot, Vector2(0, 0), Vector2(NW / nav.size(), 2), C_ACCENT)
 
-		# Notif dot (first two)
+		# notification dot
 		if i == 0 or i == 2:
-			_rect(bar, Vector2(nx + iw*0.5 + 8, 7), Vector2(7, 7), C_RED)
+			_rect(slot, Vector2(slot.custom_minimum_size.x * 0.5 + 8, 7), Vector2(7, 7), C_RED)
 
-		var ic := _lbl(item[0], 20, C_ACCENT if active else C_TEXT2)
-		ic.position = Vector2(nx, 7); ic.size = Vector2(iw, 24)
+		var ic := _lbl(n[0], 20, n[2])
+		ic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		ic.position = Vector2(0, 5)
+		ic.size     = Vector2(NW / nav.size(), 24)
 		ic.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		bar.add_child(ic)
+		slot.add_child(ic)
 
-		var tx := _lbl(item[1], 9, C_ACCENT if active else C_TEXT3)
-		tx.position = Vector2(nx, 33); tx.size = Vector2(iw, 14)
+		var tx := _lbl(n[1], 9, C_ACCENT if active else C_TEXT3)
+		tx.position = Vector2(0, 33)
+		tx.size     = Vector2(NW / nav.size(), 14)
 		tx.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		bar.add_child(tx)
+		slot.add_child(tx)
 
-# ── Toggle ♀/♂ ───────────────────────────────────────────────────────────────
+# ── Toggle character ──────────────────────────────────────────────────────────
 func _on_toggle_char() -> void:
 	_show_female       = not _show_female
 	_char_female.visible = _show_female
@@ -363,7 +371,11 @@ func _goto(path: String) -> void:
 	get_tree().change_scene_to_file(path)
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
-func _card(r: Rect2, fill: Color, border: Color, radius: float) -> PanelContainer:
+func _panel(sz: Vector2, fill: Color, border: Color, radius: float) -> PanelContainer:
+	var p := PanelContainer.new(); p.size = sz
+	_style(p, fill, border, radius); return p
+
+func _panel_at(r: Rect2, fill: Color, border: Color, radius: float) -> PanelContainer:
 	var p := PanelContainer.new(); p.position = r.position; p.size = r.size
 	_style(p, fill, border, radius); return p
 
@@ -372,6 +384,15 @@ func _style(node: Control, fill: Color, border: Color, radius: float) -> void:
 	sb.bg_color = fill; sb.border_color = border
 	sb.set_border_width_all(1); sb.set_corner_radius_all(int(radius))
 	node.add_theme_stylebox_override("panel", sb)
+
+func _portrait(accent: Color, pos: Vector2, sz: Vector2) -> TextureRect:
+	var t := TextureRect.new()
+	t.position    = pos; t.size = sz
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	t.texture     = PortraitGen.make(accent, int(sz.x), int(sz.y))
+	t.mouse_filter= Control.MOUSE_FILTER_IGNORE
+	return t
 
 func _lbl(text: String, size: int, color: Color) -> Label:
 	var l := Label.new(); l.text = text
@@ -388,7 +409,3 @@ func _rect(p: Control, pos: Vector2, sz: Vector2, color: Color) -> void:
 
 func _hline(p: Control, x: float, y: float, w: float, color: Color) -> void:
 	_rect(p, Vector2(x, y), Vector2(w, 1), color)
-
-# Rough string pixel width estimate
-func _sw(s: String, size: int) -> float:
-	return s.length() * size * 0.60
