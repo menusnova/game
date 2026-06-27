@@ -13,127 +13,154 @@ const C_GOLD   := Color(1.00, 0.82, 0.30, 1.0)
 const C_GREEN  := Color(0.28, 1.00, 0.55, 1.0)
 const C_PURPLE := Color(0.65, 0.35, 1.00, 1.0)
 
-# Demo character roster
 const CHARS : Array = [
-	{"name": "LUXIA",   "element": "✦ LIGHT",  "rarity": 5, "lv": 80, "atk": 2840, "color": Color(1.0, 0.82, 0.30, 1)},
-	{"name": "EMBER",   "element": "🔥 FIRE",   "rarity": 4, "lv": 70, "atk": 1920, "color": Color(1.0, 0.40, 0.20, 1)},
-	{"name": "AQUA",    "element": "💧 WATER",  "rarity": 4, "lv": 60, "atk": 1680, "color": Color(0.20, 0.60, 1.00, 1)},
-	{"name": "TERRA",   "element": "🌿 EARTH",  "rarity": 3, "lv": 40, "atk": 1100, "color": Color(0.30, 0.85, 0.40, 1)},
-	{"name": "VOLT",    "element": "⚡ LIGHTNING","rarity": 4, "lv": 55, "atk": 1740, "color": Color(0.90, 0.85, 0.10, 1)},
-	{"name": "FROST",   "element": "❄ CRYO",   "rarity": 5, "lv": 75, "atk": 2560, "color": Color(0.60, 0.90, 1.00, 1)},
+	{"name":"LUXIA",  "element":"✦ LIGHT",    "rarity":5, "lv":80, "atk":2840, "def":1100, "hp":18400, "color":Color(1.00,0.82,0.30,1)},
+	{"name":"EMBER",  "element":"🔥 FIRE",    "rarity":4, "lv":70, "atk":1920, "def":840,  "hp":14200, "color":Color(1.00,0.40,0.20,1)},
+	{"name":"AQUA",   "element":"💧 WATER",   "rarity":4, "lv":60, "atk":1680, "def":960,  "hp":16800, "color":Color(0.20,0.60,1.00,1)},
+	{"name":"TERRA",  "element":"🌿 EARTH",   "rarity":3, "lv":40, "atk":1100, "def":1200, "hp":20000, "color":Color(0.30,0.85,0.40,1)},
+	{"name":"VOLT",   "element":"⚡ LIGHTNING","rarity":4, "lv":55, "atk":1740, "def":720,  "hp":13600, "color":Color(0.90,0.85,0.10,1)},
+	{"name":"FROST",  "element":"❄ CRYO",    "rarity":5, "lv":75, "atk":2560, "def":880,  "hp":15800, "color":Color(0.60,0.90,1.00,1)},
 ]
 
 var _selected : int = 0
+var _detail   : Control
 
 func _ready() -> void:
 	_build()
 
 func _build() -> void:
-	var bg := ColorRect.new(); bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG; bg.mouse_filter = Control.MOUSE_FILTER_IGNORE; add_child(bg)
+	var bg := ColorRect.new()
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.color = C_BG; bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(bg)
 
-	# Top bar
-	var top := _panel(Rect2(0, 0, 1152, 52), Color(0.03, 0.07, 0.18, 0.98), C_ACCENT, 0.0)
+	# ── Top bar ───────────────────────────────────────────────────────────
+	var top := _panel(Rect2(0, 0, 1152, 52), Color(0.03,0.07,0.18,0.98), C_ACCENT, 0.0)
 	add_child(top)
-	var back := Button.new(); back.text = "◀  LOBBY"; back.position = Vector2(10,10); back.size = Vector2(100,32)
-	back.add_theme_font_size_override("font_size", 12)
-	back.add_theme_color_override("font_color", C_TEXT)
-	_apply_style(back, Color(C_ACCENT.r,C_ACCENT.g,C_ACCENT.b,0.22), C_ACCENT, 5.0)
-	back.pressed.connect(_go_lobby); top.add_child(back)
-	_lbl_at(top, "👤  ALCHEMIST", 20, C_ACCENT, Vector2(450, 8))
-	_lbl_at(top, "Character Collection", 10, C_TEXT2, Vector2(470, 34))
+	_back_btn(top, C_ACCENT)
+	_lbl_at(top, "👤  ALCHEMIST",        20, C_ACCENT, Vector2(460, 8))
+	_lbl_at(top, "Character Collection",  10, C_TEXT2,  Vector2(468, 34))
 	var sep := ColorRect.new(); sep.position = Vector2(0,51); sep.size = Vector2(1152,1); sep.color = C_ACCENT
 	top.add_child(sep)
 
-	# Character grid (left)
-	var grid := _panel(Rect2(8, 62, 460, 572), C_PANEL, C_BORDER, 8.0)
+	# ── Roster grid  (x=8, y=60, w=460, h=580) ───────────────────────────
+	# Card size 108×130, gap 4, 4 cols → 4×112=448 fits in 460
+	# 2 rows needed for 6 chars
+	var grid := _panel(Rect2(8, 60, 460, 300), C_PANEL, C_BORDER, 8.0)
 	add_child(grid)
-	_lbl_at(grid, "ROSTER  (%d / 50)" % CHARS.size(), 11, C_TEXT2, Vector2(12, 8))
+	_lbl_at(grid, "ROSTER  (%d / 50)" % CHARS.size(), 10, C_TEXT2, Vector2(12, 8))
 
 	for i in range(CHARS.size()):
-		var ch : Dictionary = CHARS[i]
-		var col : int = i % 4
-		var row : int = i / 4
-		var cx  : float = 10 + col * 110.0
-		var cy  : float = 32 + row * 120.0
-		var card := _panel(Rect2(cx, cy, 100, 110),
-							Color(ch.color.r*0.1, ch.color.g*0.1, ch.color.b*0.1, 0.9),
-							ch.color if i == _selected else C_BDR2, 7.0)
+		var ch    : Dictionary = CHARS[i]
+		var col   : int = i % 4
+		var row   : int = i / 4
+		var card  := _panel(Rect2(10 + col * 112, 26 + row * 132, 108, 128),
+							Color(ch.color.r*0.10, ch.color.g*0.10, ch.color.b*0.10, 0.92),
+							ch.color if i == _selected else C_BDR2, 6.0)
 		grid.add_child(card)
 
-		# Star rarity
+		# Portrait (small generated)
+		var port := TextureRect.new()
+		port.position    = Vector2(8, 16); port.size = Vector2(92, 80)
+		port.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		port.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		port.texture     = PortraitGen.make(ch.color, 92, 80)
+		port.mouse_filter= Control.MOUSE_FILTER_IGNORE
+		card.add_child(port)
+
+		# Stars
 		var stars := "★".repeat(ch.rarity) + "☆".repeat(5 - ch.rarity)
-		_lbl_at(card, stars, 8, ch.color, Vector2(4, 4))
-		# Placeholder art box
-		var art := _panel(Rect2(20, 18, 60, 60), Color(0,0,0,0.4), ch.color, 4.0)
-		card.add_child(art)
-		_lbl_at(art, ch.element.split(" ")[0], 22, ch.color, Vector2(12, 10))
-		_lbl_at(card, ch.name,           10, C_TEXT,   Vector2(4, 84))
-		_lbl_at(card, "Lv.%d" % ch.lv,   8, C_TEXT2,  Vector2(60, 86))
+		_lbl_at(card, stars, 7, C_GOLD, Vector2(4, 4))
+		_lbl_at(card, ch.name,         10, C_TEXT,  Vector2(4, 100))
+		_lbl_at(card, "Lv.%d" % ch.lv,  8, C_TEXT2, Vector2(4, 114))
 
 		var idx : int = i
 		card.gui_input.connect(func(ev: InputEvent):
-			if ev is InputEventMouseButton and ev.pressed:
-				_selected = idx; _refresh_detail())
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_selected = idx
+				_refresh_detail())
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# Detail panel (right)
-	var detail := _panel(Rect2(478, 62, 666, 572), C_PANEL, C_BORDER, 8.0)
-	detail.name = "Detail"; add_child(detail)
-	_build_detail(detail)
+	# ── Detail panel  (x=478, y=60, w=666, h=580) ────────────────────────
+	_detail = _panel(Rect2(478, 60, 666, 576), C_PANEL, C_BORDER, 8.0)
+	_detail.name = "Detail"
+	add_child(_detail)
+	_fill_detail()
 
-func _build_detail(detail: Control) -> void:
-	for c in detail.get_children(): c.queue_free()
+func _fill_detail() -> void:
+	for c in _detail.get_children(): c.queue_free()
 	var ch : Dictionary = CHARS[_selected]
+	var iw : float = 650.0   # inner width (666 - 8 padding each side)
 
-	_lbl_at(detail, ch.name, 32, ch.color, Vector2(20, 16))
-	_lbl_at(detail, ch.element, 14, ch.color, Vector2(22, 58))
-	var stars := "★".repeat(ch.rarity)
-	_lbl_at(detail, stars, 16, C_GOLD, Vector2(22, 76))
+	# Character name + stars
+	_lbl_at(_detail, ch.name,                   32, ch.color, Vector2(16, 12))
+	_lbl_at(_detail, ch.element,                 13, ch.color, Vector2(18, 52))
+	_lbl_at(_detail, "★".repeat(ch.rarity),      14, C_GOLD,  Vector2(18, 70))
 
-	# Art placeholder
-	var art := _panel(Rect2(20, 100, 280, 340), Color(ch.color.r*0.08, ch.color.g*0.08, ch.color.b*0.08, 0.9), ch.color, 10.0)
-	detail.add_child(art)
-	_lbl_at(art, ch.element.split(" ")[0], 80, Color(ch.color.r,ch.color.g,ch.color.b,0.3), Vector2(60, 100))
-	_lbl_at(art, "[ Art Placeholder ]", 12, ch.color, Vector2(60, 280))
+	# Portrait (large)
+	var port := TextureRect.new()
+	port.position    = Vector2(16, 94); port.size = Vector2(260, 380)
+	port.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	port.stretch_mode= TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	port.texture     = PortraitGen.make(ch.color, 260, 380)
+	port.mouse_filter= Control.MOUSE_FILTER_IGNORE
+	_detail.add_child(port)
 
-	# Stats
-	var stats_panel := _panel(Rect2(316, 100, 330, 200), C_PANEL2, C_BORDER, 8.0)
-	detail.add_child(stats_panel)
-	_lbl_at(stats_panel, "STATS", 11, C_TEXT2, Vector2(12, 10))
-	var stats_data : Array = [
-		["Level",    "Lv. %d / 90" % ch.lv],
-		["ATK",      str(ch.atk)],
-		["DEF",      "1,240"],
-		["HP",       "14,800"],
-		["Crit Rate","62.5%"],
-		["Crit DMG", "148.2%"],
+	# ── Stats panel  (x=288, y=94, w=358, h=200) ─────────────────────────
+	var sp := _panel(Rect2(288, 94, 358, 196), C_PANEL2, C_BORDER, 8.0)
+	_detail.add_child(sp)
+	_lbl_at(sp, "STATS", 11, C_TEXT2, Vector2(12, 8))
+
+	var stats : Array = [
+		["Level",     "Lv. %d / 90" % ch.lv],
+		["ATK",       _fmt(ch.atk)],
+		["DEF",       _fmt(ch.def)],
+		["HP",        _fmt(ch.hp)],
+		["Crit Rate", "62.5%"],
+		["Crit DMG",  "148.2%"],
 	]
-	for i in range(stats_data.size()):
-		var sd : Array = stats_data[i]
-		_lbl_at(stats_panel, sd[0], 10, C_TEXT2, Vector2(12, 32 + i*26))
-		_lbl_at(stats_panel, sd[1], 11, C_TEXT,  Vector2(160, 32 + i*26))
+	for i in range(stats.size()):
+		var sd : Array = stats[i]
+		_lbl_at(sp, sd[0], 10, C_TEXT2, Vector2(12, 30 + i * 26))
+		_lbl_at(sp, sd[1], 11, C_TEXT,  Vector2(175, 30 + i * 26))
 
-	# Skill icons
-	var skills_panel := _panel(Rect2(316, 310, 330, 130), C_PANEL2, C_BORDER, 8.0)
-	detail.add_child(skills_panel)
-	_lbl_at(skills_panel, "SKILLS", 11, C_TEXT2, Vector2(12, 10))
-	var skill_icons : Array = ["⚔ Attack", "💥 Skill", "✨ Burst", "🔮 Passive"]
-	for i in range(skill_icons.size()):
-		var sb := _panel(Rect2(10 + i*76, 30, 68, 80), C_DARK, ch.color, 6.0)
-		skills_panel.add_child(sb)
-		_lbl_at(sb, skill_icons[i].split(" ")[0], 22, ch.color, Vector2(18, 10))
-		_lbl_at(sb, skill_icons[i].split(" ")[1], 8, C_TEXT2, Vector2(6, 56))
+	# ── Skills  (x=288, y=300, w=358, h=140) ─────────────────────────────
+	var skp := _panel(Rect2(288, 300, 358, 140), C_PANEL2, C_BORDER, 8.0)
+	_detail.add_child(skp)
+	_lbl_at(skp, "SKILLS", 11, C_TEXT2, Vector2(12, 8))
 
-	# Level up button
-	var lvup := Button.new(); lvup.text = "▲  LEVEL UP"; lvup.size = Vector2(300, 40)
-	lvup.position = Vector2(20, 458); lvup.add_theme_font_size_override("font_size", 13)
-	lvup.add_theme_color_override("font_color", C_DARK)
-	_apply_style(lvup, ch.color, ch.color, 8.0); detail.add_child(lvup)
+	var skills : Array = [["⚔","Atk"],["💥","Skill"],["✨","Burst"],["🔮","Passive"]]
+	for i in range(skills.size()):
+		var sk    : Array  = skills[i]
+		var sx    : float  = 12.0 + i * 84.0
+		var scard := _panel(Rect2(sx, 28, 78, 100), C_DARK, ch.color, 6.0)
+		skp.add_child(scard)
+		_lbl_at(scard, sk[0], 24, ch.color, Vector2(22, 12))
+		_lbl_at(scard, sk[1],  9, C_TEXT2,  Vector2(20, 58))
+		_lbl_at(scard, "Lv.10", 8, C_TEXT,  Vector2(18, 74))
+
+	# ── Level up button ───────────────────────────────────────────────────
+	var lbu := Button.new()
+	lbu.text     = "▲  LEVEL UP"
+	lbu.position = Vector2(16, 482); lbu.size = Vector2(260, 42)
+	lbu.add_theme_font_size_override("font_size", 13)
+	lbu.add_theme_color_override("font_color", C_DARK)
+	_apply_style(lbu, ch.color, ch.color, 8.0)
+	_detail.add_child(lbu)
+
+func _fmt(n: int) -> String:
+	if n >= 1000: return "%d,%03d" % [n/1000, n%1000]
+	return str(n)
 
 func _refresh_detail() -> void:
-	var detail := get_node_or_null("Detail")
-	if detail: _build_detail(detail)
+	_fill_detail()
+
+func _back_btn(parent: Control, accent: Color) -> void:
+	var b := Button.new(); b.text = "◀  LOBBY"; b.position = Vector2(10,10); b.size = Vector2(100,32)
+	b.add_theme_font_size_override("font_size", 12)
+	b.add_theme_color_override("font_color", Color(0.82,0.93,1,1))
+	_apply_style(b, Color(accent.r,accent.g,accent.b,0.22), accent, 5.0)
+	b.pressed.connect(_go_lobby); parent.add_child(b)
 
 func _go_lobby() -> void:
 	var t := create_tween()
