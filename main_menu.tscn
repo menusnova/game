@@ -85,41 +85,6 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
-bg_color = Color(0, 0, 0, 0)
-border_color = Color(0.22, 0.72, 1.00, 1.00)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 68
-corner_radius_top_right = 68
-corner_radius_bottom_right = 68
-corner_radius_bottom_left = 68
-
-[sub_resource type="StyleBoxFlat" id="SB_DomInner"]
-bg_color = Color(0.04, 0.07, 0.20, 0.96)
-border_color = Color(0.22, 0.72, 1.00, 1.00)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 62
-corner_radius_top_right = 62
-corner_radius_bottom_right = 62
-corner_radius_bottom_left = 62
-
-[sub_resource type="StyleBoxFlat" id="SB_Badge"]
-bg_color = Color(0.02, 0.04, 0.12, 0.96)
-border_color = Color(1.00, 0.82, 0.28, 1.00)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -148,6 +113,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7vrkn")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 2
+stretch_mode = 6
+mouse_filter = 2
 
 [node name="FemaleCharacter" type="TextureRect" parent="."]
 layout_mode = 0
@@ -1364,7 +1340,7 @@ offset_top = 584.0
 offset_right = 1152.0
 offset_bottom = 648.0
 mouse_filter = 2
-color = Color(0.02, 0.04, 0.14, 0.94)
+color = Color(0, 0, 0, 0)
 
 [node name="NavLine" type="ColorRect" parent="NavBar"]
 layout_mode = 0
@@ -1633,77 +1609,6 @@ theme_override_font_sizes/font_size = 9
 theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
 text = "Archive"
 horizontal_alignment = 1
-mouse_filter = 2
-
-[node name="DomainOuter" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 985.0
-offset_top = 518.0
-offset_right = 1115.0
-offset_bottom = 648.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("SB_DomOuter")
-
-[node name="DomainInner" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 991.0
-offset_top = 524.0
-offset_right = 1109.0
-offset_bottom = 642.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("SB_DomInner")
-
-[node name="DomainIcon" type="Label" parent="DomainInner"]
-layout_mode = 0
-offset_left = 38.0
-offset_top = 10.0
-offset_right = 82.0
-offset_bottom = 40.0
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
-text = "\U0001F6E1"
-mouse_filter = 2
-
-[node name="DomainTitle" type="Label" parent="DomainInner"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 46.0
-offset_right = 100.0
-offset_bottom = 62.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
-text = "Domain"
-mouse_filter = 2
-
-[node name="DomainSub" type="Label" parent="DomainInner"]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 64.0
-offset_right = 110.0
-offset_bottom = 74.0
-theme_override_font_sizes/font_size = 7
-theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
-text = "BONUS REWARD"
-mouse_filter = 2
-
-[node name="DomainBadge" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 1068.0
-offset_top = 556.0
-offset_right = 1128.0
-offset_bottom = 616.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("SB_Badge")
-
-[node name="BadgeText" type="Label" parent="DomainBadge"]
-layout_mode = 0
-offset_left = 6.0
-offset_top = 20.0
-offset_right = 54.0
-offset_bottom = 36.0
-theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
-text = "100%"
 mouse_filter = 2
 
 [connection signal="pressed" from="ToggleBtn" to="." method="_on_toggle_char"]
