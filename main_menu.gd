@@ -36,15 +36,9 @@ func _ready() -> void:
 	_chat_bar()
 	_bottom_nav()
 
-# ── Background ────────────────────────────────────────────────────────────────
+# ── Background — ไม่มี node พื้นหลัง ผู้ใช้ใส่เองใน scene ────────────────────
 func _bg() -> void:
-	var bg := TextureRect.new()
-	bg.name = "Background"
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	pass
 
 # ── Character stage (center, behind UI) ──────────────────────────────────────
 func _char_stage() -> void:
