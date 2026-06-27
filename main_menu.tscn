@@ -2,6 +2,144 @@
 
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
 
+[sub_resource type="StyleBoxFlat" id="SB_Card"]
+bg_color = Color(0.04, 0.08, 0.20, 0.88)
+border_color = Color(0.18, 0.50, 0.90, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_color = Color(0.18, 0.50, 0.90, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2R8"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_color = Color(0.18, 0.50, 0.90, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Event"]
+bg_color = Color(0.10, 0.03, 0.24, 0.94)
+border_color = Color(0.65, 0.35, 1.00, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_NewChar"]
+bg_color = Color(0.08, 0.04, 0.20, 0.94)
+border_color = Color(1.00, 0.82, 0.28, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_AvatarRing"]
+bg_color = Color(0, 0, 0, 0)
+border_color = Color(0.22, 0.72, 1.00, 1.00)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="SB_EventTag"]
+bg_color = Color(0.44, 0.07, 0.66, 1.00)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
+bg_color = Color(0, 0, 0, 0)
+border_color = Color(0.22, 0.72, 1.00, 1.00)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 68
+corner_radius_top_right = 68
+corner_radius_bottom_right = 68
+corner_radius_bottom_left = 68
+
+[sub_resource type="StyleBoxFlat" id="SB_DomInner"]
+bg_color = Color(0.04, 0.07, 0.20, 0.96)
+border_color = Color(0.22, 0.72, 1.00, 1.00)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 62
+corner_radius_top_right = 62
+corner_radius_bottom_right = 62
+corner_radius_bottom_left = 62
+
+[sub_resource type="StyleBoxFlat" id="SB_Badge"]
+bg_color = Color(0.02, 0.04, 0.12, 0.96)
+border_color = Color(1.00, 0.82, 0.28, 1.00)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
+bg_color = Color(0, 0, 0, 0.55)
+border_color = Color(0.22, 0.62, 1.00, 0.25)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -10,3 +148,1562 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7vrkn")
+
+[node name="FemaleCharacter" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 0.0
+offset_right = 890.0
+offset_bottom = 648.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="MaleCharacter" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 260.0
+offset_top = 0.0
+offset_right = 890.0
+offset_bottom = 648.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ToggleBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 582.0
+offset_right = 612.0
+offset_bottom = 604.0
+theme_override_styles/normal = SubResource("SB_TogBtn")
+theme_override_styles/hover = SubResource("SB_TogBtn")
+theme_override_styles/pressed = SubResource("SB_TogBtn")
+theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "♀ · ♂"
+
+[node name="TopBar" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 50.0
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.14, 0.82)
+
+[node name="Line" type="ColorRect" parent="TopBar"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 49.0
+offset_right = 1152.0
+offset_bottom = 50.0
+mouse_filter = 2
+color = Color(0.20, 0.50, 0.90, 0.25)
+
+[node name="Cur1Icon" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 10.0
+offset_right = 400.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "✦"
+mouse_filter = 2
+
+[node name="Cur1Val" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 398.0
+offset_top = 12.0
+offset_right = 460.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "12,450"
+mouse_filter = 2
+
+[node name="Cur1Plus" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 462.0
+offset_top = 12.0
+offset_right = 480.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "+"
+mouse_filter = 2
+
+[node name="Cur2Icon" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
+text = "\U0001F7E1"
+mouse_filter = 2
+
+[node name="Cur2Val" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 558.0
+offset_top = 12.0
+offset_right = 638.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "2,840,530"
+mouse_filter = 2
+
+[node name="Cur2Plus" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 640.0
+offset_top = 12.0
+offset_right = 658.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
+text = "+"
+mouse_filter = 2
+
+[node name="Cur3Icon" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 710.0
+offset_top = 10.0
+offset_right = 730.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.78, 1.00, 1.00)
+text = "◆"
+mouse_filter = 2
+
+[node name="Cur3Val" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 728.0
+offset_top = 12.0
+offset_right = 788.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "18,760"
+mouse_filter = 2
+
+[node name="Cur3Plus" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 12.0
+offset_right = 808.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.55, 0.78, 1.00, 1.00)
+text = "+"
+mouse_filter = 2
+
+[node name="Cur4Icon" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 870.0
+offset_top = 10.0
+offset_right = 890.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.25, 1.00, 0.55, 1.00)
+text = "⚡"
+mouse_filter = 2
+
+[node name="Cur4Val" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 888.0
+offset_top = 12.0
+offset_right = 948.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "240/240"
+mouse_filter = 2
+
+[node name="Cur4Plus" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 950.0
+offset_top = 12.0
+offset_right = 968.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.25, 1.00, 0.55, 1.00)
+text = "+"
+mouse_filter = 2
+
+[node name="BtnPeople" type="Button" parent="TopBar"]
+layout_mode = 0
+offset_left = 1012.0
+offset_top = 10.0
+offset_right = 1042.0
+offset_bottom = 40.0
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_font_sizes/font_size = 16
+text = "\U0001F465"
+
+[node name="BtnMail" type="Button" parent="TopBar"]
+layout_mode = 0
+offset_left = 1048.0
+offset_top = 10.0
+offset_right = 1078.0
+offset_bottom = 40.0
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_font_sizes/font_size = 16
+text = "✉"
+
+[node name="BtnMega" type="Button" parent="TopBar"]
+layout_mode = 0
+offset_left = 1082.0
+offset_top = 10.0
+offset_right = 1112.0
+offset_bottom = 40.0
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_font_sizes/font_size = 16
+text = "\U0001F4E2"
+
+[node name="BtnSettings" type="Button" parent="TopBar"]
+layout_mode = 0
+offset_left = 1116.0
+offset_top = 10.0
+offset_right = 1146.0
+offset_bottom = 40.0
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+theme_override_font_sizes/font_size = 16
+text = "⚙"
+
+[node name="ProfileCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 58.0
+offset_right = 268.0
+offset_bottom = 130.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Card")
+
+[node name="Avatar" type="TextureRect" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 60.0
+offset_bottom = 60.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="AvatarRing" type="Panel" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 62.0
+offset_bottom = 62.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_AvatarRing")
+
+[node name="NotifDot" type="Label" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 52.0
+offset_top = 5.0
+offset_right = 62.0
+offset_bottom = 16.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(1.00, 0.30, 0.30, 1.00)
+text = "!"
+mouse_filter = 2
+
+[node name="PlayerName" type="Label" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 6.0
+offset_right = 240.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "CHEMIA"
+mouse_filter = 2
+
+[node name="LevelLabel" type="Label" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 24.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "Lv.70"
+mouse_filter = 2
+
+[node name="MaxLabel" type="Label" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 24.0
+offset_right = 130.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1.00, 0.30, 0.30, 1.00)
+text = "MAX"
+mouse_filter = 2
+
+[node name="ExpBg" type="ColorRect" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 40.0
+offset_right = 246.0
+offset_bottom = 44.0
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.12, 0.96)
+
+[node name="ExpBar" type="ColorRect" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 40.0
+offset_right = 246.0
+offset_bottom = 44.0
+mouse_filter = 2
+color = Color(1.00, 0.30, 0.30, 1.00)
+
+[node name="UIDLabel" type="Label" parent="ProfileCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 48.0
+offset_right = 246.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "UID 10000001"
+mouse_filter = 2
+
+[node name="MenuItem_Notice" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 142.0
+offset_right = 268.0
+offset_bottom = 178.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_Notice"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1.00, 0.30, 0.30, 1.00)
+text = "\U0001F514"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_Notice"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Notice"
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="MenuItem_Notice"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 1.0
+offset_right = 23.0
+offset_bottom = 9.0
+mouse_filter = 2
+color = Color(1.00, 0.30, 0.30, 1.00)
+
+[node name="MenuItem_Missions" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 182.0
+offset_right = 268.0
+offset_bottom = 218.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_Missions"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
+text = "\U0001F381"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_Missions"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Missions"
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="MenuItem_Missions"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 1.0
+offset_right = 23.0
+offset_bottom = 9.0
+mouse_filter = 2
+color = Color(1.00, 0.30, 0.30, 1.00)
+
+[node name="MenuItem_Event" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 222.0
+offset_right = 268.0
+offset_bottom = 258.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_Event"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1.00, 0.58, 0.14, 1.00)
+text = "\U0001F389"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_Event"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Event"
+mouse_filter = 2
+
+[node name="MenuItem_Pass" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 262.0
+offset_right = 268.0
+offset_bottom = 298.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_Pass"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
+text = "★"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_Pass"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Pass"
+mouse_filter = 2
+
+[node name="MenuItem_Shop" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 302.0
+offset_right = 268.0
+offset_bottom = 338.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_Shop"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.10, 0.80, 0.75, 1.00)
+text = "\U0001F6D2"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_Shop"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Shop"
+mouse_filter = 2
+
+[node name="MenuItem_FirstPurchase" type="Control" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 342.0
+offset_right = 268.0
+offset_bottom = 378.0
+mouse_filter = 2
+
+[node name="Icon" type="Label" parent="MenuItem_FirstPurchase"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 2.0
+offset_right = 22.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
+text = "\U0001F48E"
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="MenuItem_FirstPurchase"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 19.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "First Purchase"
+mouse_filter = 2
+
+[node name="EventBanner" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 498.0
+offset_right = 268.0
+offset_bottom = 646.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Event")
+
+[node name="TagBg" type="Panel" parent="EventBanner"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 104.0
+offset_bottom = 21.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_EventTag")
+
+[node name="TagText" type="Label" parent="EventBanner/TagBg"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 2.0
+offset_right = 96.0
+offset_bottom = 13.0
+theme_override_font_sizes/font_size = 7
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "LIMITED EVENT"
+mouse_filter = 2
+
+[node name="Title1" type="Label" parent="EventBanner"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 26.0
+offset_right = 148.0
+offset_bottom = 46.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "STARFALL"
+mouse_filter = 2
+
+[node name="Title2" type="Label" parent="EventBanner"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 48.0
+offset_right = 148.0
+offset_bottom = 68.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
+text = "INVOCATION"
+mouse_filter = 2
+
+[node name="SubText" type="Label" parent="EventBanner"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 76.0
+offset_right = 148.0
+offset_bottom = 88.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "New Character Rate UP!"
+mouse_filter = 2
+
+[node name="Dot0" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 130.0
+offset_right = 17.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(0.65, 0.35, 1.00, 1.00)
+
+[node name="Dot1" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 130.0
+offset_right = 29.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot2" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 130.0
+offset_right = 41.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot3" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 130.0
+offset_right = 53.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot4" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 130.0
+offset_right = 65.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot5" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 130.0
+offset_right = 77.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot6" type="ColorRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 130.0
+offset_right = 89.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="EventArt" type="TextureRect" parent="EventBanner"]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 8.0
+offset_right = 251.0
+offset_bottom = 140.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="GuideCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 828.0
+offset_top = 58.0
+offset_right = 910.0
+offset_bottom = 140.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Card2R8")
+
+[node name="Icon" type="Label" parent="GuideCard"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 6.0
+offset_right = 78.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "\U0001F6E1"
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="GuideCard"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 44.0
+offset_right = 80.0
+offset_bottom = 57.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Guide"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="GuideCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 58.0
+offset_right = 80.0
+offset_bottom = 68.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "New Player"
+mouse_filter = 2
+
+[node name="NewCharCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 918.0
+offset_top = 58.0
+offset_right = 1144.0
+offset_bottom = 140.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_NewChar")
+
+[node name="Header" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 226.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.10, 0.06, 0.28, 0.96)
+
+[node name="HeaderText" type="Label" parent="NewCharCard/Header"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 3.0
+offset_right = 220.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "NEW CHARACTER"
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 20.0
+offset_right = 160.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
+text = "LUXIA"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 46.0
+offset_right = 160.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "✦ WHITE STAR ✦"
+mouse_filter = 2
+
+[node name="NCDot0" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 68.0
+offset_right = 15.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1.00, 0.82, 0.28, 1.00)
+
+[node name="NCDot1" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 68.0
+offset_right = 25.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NCDot2" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 68.0
+offset_right = 35.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NCDot3" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 68.0
+offset_right = 45.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NCDot4" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 68.0
+offset_right = 55.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NCDot5" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 68.0
+offset_right = 65.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NCDot6" type="ColorRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 68.0
+offset_right = 75.0
+offset_bottom = 73.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="NewCharArt" type="TextureRect" parent="NewCharCard"]
+layout_mode = 0
+offset_left = 168.0
+offset_top = 2.0
+offset_right = 224.0
+offset_bottom = 80.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="AdventureCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 828.0
+offset_top = 150.0
+offset_right = 1144.0
+offset_bottom = 245.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Adventure"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "MAIN STORY"
+mouse_filter = 2
+
+[node name="Chapter" type="Label" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 70.0
+offset_right = 200.0
+offset_bottom = 82.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "CHAPTER 12-9"
+mouse_filter = 2
+
+[node name="Arrow" type="Label" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 296.0
+offset_top = 36.0
+offset_right = 314.0
+offset_bottom = 54.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "▶"
+mouse_filter = 2
+
+[node name="ArtBg" type="ColorRect" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 2.0
+offset_right = 314.0
+offset_bottom = 93.0
+mouse_filter = 2
+color = Color(0.04, 0.08, 0.22, 0.60)
+
+[node name="AdventureArt" type="TextureRect" parent="AdventureCard"]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 312.0
+offset_bottom = 91.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ChronicleCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 828.0
+offset_top = 253.0
+offset_right = 1144.0
+offset_bottom = 335.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="ChronicleCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 26.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Chronicle"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="ChronicleCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "SIDE STORY"
+mouse_filter = 2
+
+[node name="Arrow" type="Label" parent="ChronicleCard"]
+layout_mode = 0
+offset_left = 296.0
+offset_top = 30.0
+offset_right = 314.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.65, 0.35, 1.00, 1.00)
+text = "▶"
+mouse_filter = 2
+
+[node name="ArtBg" type="ColorRect" parent="ChronicleCard"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 2.0
+offset_right = 314.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.08, 0.04, 0.22, 0.60)
+
+[node name="ChronicleArt" type="TextureRect" parent="ChronicleCard"]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 312.0
+offset_bottom = 78.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="SimulationCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 828.0
+offset_top = 343.0
+offset_right = 1144.0
+offset_bottom = 425.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="SimulationCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 26.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Simulation"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="SimulationCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "RESOURCE"
+mouse_filter = 2
+
+[node name="Arrow" type="Label" parent="SimulationCard"]
+layout_mode = 0
+offset_left = 296.0
+offset_top = 30.0
+offset_right = 314.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.25, 1.00, 0.55, 1.00)
+text = "▶"
+mouse_filter = 2
+
+[node name="ArtBg" type="ColorRect" parent="SimulationCard"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 2.0
+offset_right = 314.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.03, 0.12, 0.10, 0.60)
+
+[node name="SimulationArt" type="TextureRect" parent="SimulationCard"]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 312.0
+offset_bottom = 78.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ArenaCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 828.0
+offset_top = 433.0
+offset_right = 980.0
+offset_bottom = 523.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 100.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Arena"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "PVP"
+mouse_filter = 2
+
+[node name="DiamondIcon" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 44.0
+offset_right = 30.0
+offset_bottom = 62.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.55, 0.78, 1.00, 1.00)
+text = "◆"
+mouse_filter = 2
+
+[node name="DiamondText" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 46.0
+offset_right = 140.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "Diamond I"
+mouse_filter = 2
+
+[node name="RatingText" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 59.0
+offset_right = 140.0
+offset_bottom = 70.0
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "3200/3500"
+mouse_filter = 2
+
+[node name="Arrow" type="Label" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 132.0
+offset_top = 34.0
+offset_right = 150.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "▶"
+mouse_filter = 2
+
+[node name="ArenaArt" type="TextureRect" parent="ArenaCard"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 2.0
+offset_right = 150.0
+offset_bottom = 88.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ExpeditionCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 988.0
+offset_top = 433.0
+offset_right = 1144.0
+offset_bottom = 523.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="ExpeditionCard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 120.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Expedition"
+mouse_filter = 2
+
+[node name="Sub" type="Label" parent="ExpeditionCard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = 120.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "CHALLENGE"
+mouse_filter = 2
+
+[node name="Arrow" type="Label" parent="ExpeditionCard"]
+layout_mode = 0
+offset_left = 138.0
+offset_top = 34.0
+offset_right = 156.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1.00, 0.58, 0.14, 1.00)
+text = "▶"
+mouse_filter = 2
+
+[node name="ExpeditionArt" type="TextureRect" parent="ExpeditionCard"]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 2.0
+offset_right = 154.0
+offset_bottom = 88.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="ChatBar" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 556.0
+offset_right = 820.0
+offset_bottom = 584.0
+mouse_filter = 2
+color = Color(0.02, 0.05, 0.15, 0.88)
+
+[node name="ChatLine" type="ColorRect" parent="ChatBar"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 820.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.22, 0.62, 1.00, 0.25)
+
+[node name="ChatIcon" type="Label" parent="ChatBar"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 26.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "\U0001F4AC"
+mouse_filter = 2
+
+[node name="ChatText" type="Label" parent="ChatBar"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 7.0
+offset_right = 810.0
+offset_bottom = 21.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "[World] Alchemist : สวัสดีทุกคน!"
+mouse_filter = 2
+
+[node name="NavBar" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 584.0
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.14, 0.94)
+
+[node name="NavLine" type="ColorRect" parent="NavBar"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.18, 0.50, 0.90, 0.45)
+
+[node name="Nav0_Alchemist" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 165.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 165.0
+offset_bottom = 64.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1.00, 0.12)
+
+[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 165.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1.00, 1.00)
+
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav0_Alchemist"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 7.0
+offset_right = 100.0
+offset_bottom = 15.0
+mouse_filter = 2
+color = Color(1.00, 0.30, 0.30, 1.00)
+
+[node name="Icon" type="Label" parent="NavBar/Nav0_Alchemist"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "⚗"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav0_Alchemist"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "Alchemist"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav1_Lineup" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 165.0
+offset_top = 0.0
+offset_right = 330.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="Icon" type="Label" parent="NavBar/Nav1_Lineup"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "⚔"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav1_Lineup"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Lineup"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav2_Arcanum" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 0.0
+offset_right = 495.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Arcanum"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 7.0
+offset_right = 100.0
+offset_bottom = 15.0
+mouse_filter = 2
+color = Color(1.00, 0.30, 0.30, 1.00)
+
+[node name="Icon" type="Label" parent="NavBar/Nav2_Arcanum"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "\U0001F52E"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav2_Arcanum"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Arcanum"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav3_Inventory" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 495.0
+offset_top = 0.0
+offset_right = 660.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="Icon" type="Label" parent="NavBar/Nav3_Inventory"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "\U0001F392"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav3_Inventory"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Inventory"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav4_Database" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 660.0
+offset_top = 0.0
+offset_right = 825.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="Icon" type="Label" parent="NavBar/Nav4_Database"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "\U0001F4D6"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav4_Database"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Database"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav5_Guild" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 825.0
+offset_top = 0.0
+offset_right = 990.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="Icon" type="Label" parent="NavBar/Nav5_Guild"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 165.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "\U0001F6E1"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav5_Guild"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 165.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Guild"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Nav6_Archive" type="Control" parent="NavBar"]
+layout_mode = 0
+offset_left = 990.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 64.0
+mouse_filter = 0
+
+[node name="Icon" type="Label" parent="NavBar/Nav6_Archive"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 5.0
+offset_right = 162.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "\U0001F4DA"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Text" type="Label" parent="NavBar/Nav6_Archive"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 162.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.70)
+text = "Archive"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="DomainOuter" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 985.0
+offset_top = 518.0
+offset_right = 1115.0
+offset_bottom = 648.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_DomOuter")
+
+[node name="DomainInner" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 991.0
+offset_top = 524.0
+offset_right = 1109.0
+offset_bottom = 642.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_DomInner")
+
+[node name="DomainIcon" type="Label" parent="DomainInner"]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 10.0
+offset_right = 82.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.22, 0.72, 1.00, 1.00)
+text = "\U0001F6E1"
+mouse_filter = 2
+
+[node name="DomainTitle" type="Label" parent="DomainInner"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 46.0
+offset_right = 100.0
+offset_bottom = 62.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.93, 0.96, 1.00, 1.00)
+text = "Domain"
+mouse_filter = 2
+
+[node name="DomainSub" type="Label" parent="DomainInner"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 64.0
+offset_right = 110.0
+offset_bottom = 74.0
+theme_override_font_sizes/font_size = 7
+theme_override_colors/font_color = Color(0.58, 0.78, 1.00, 1.00)
+text = "BONUS REWARD"
+mouse_filter = 2
+
+[node name="DomainBadge" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 1068.0
+offset_top = 556.0
+offset_right = 1128.0
+offset_bottom = 616.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Badge")
+
+[node name="BadgeText" type="Label" parent="DomainBadge"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 20.0
+offset_right = 54.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.00, 0.82, 0.28, 1.00)
+text = "100%"
+mouse_filter = 2
+
+[connection signal="pressed" from="ToggleBtn" to="." method="_on_toggle_char"]
