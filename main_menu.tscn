@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
 [ext_resource type="Texture2D" uid="uid://cnctj12w3c7m0" path="res://image/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png" id="2_7vrkn"]
+[ext_resource type="Texture2D" uid="uid://lock_chain_x" path="res://image/lock_chain_x.png" id="3_lockchain"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -546,23 +547,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="MenuItem_Notice/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Notice/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuItem_Missions" type="Control" parent="." unique_id=1648236542]
 anchors_preset = 0
@@ -637,23 +636,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="MenuItem_Event/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Event/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuItem_Pass" type="Control" parent="." unique_id=504243076]
 anchors_preset = 0
@@ -692,23 +689,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="MenuItem_Pass/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Pass/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuItem_Shop" type="Control" parent="." unique_id=1051712999]
 anchors_preset = 0
@@ -774,23 +769,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="MenuItem_FirstPurchase/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="MenuItem_FirstPurchase/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="EventBanner" type="Panel" parent="." unique_id=1029562533]
 layout_mode = 0
@@ -1216,23 +1209,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="ChronicleCard/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="ChronicleCard/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
@@ -1302,23 +1293,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="SimulationCard/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="SimulationCard/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
@@ -1408,23 +1397,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="ArenaCard/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="ArenaCard/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
@@ -1485,23 +1472,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="ExpeditionCard/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="ExpeditionCard/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
 layout_mode = 0
@@ -1630,23 +1615,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="NavBar/Nav1_Lineup/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav1_Lineup/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
 anchors_preset = 0
@@ -1719,23 +1702,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="NavBar/Nav3_Inventory/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav3_Inventory/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Nav4_Database" type="Control" parent="NavBar" unique_id=483944133]
 anchors_preset = 0
@@ -1799,23 +1780,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="NavBar/Nav5_Guild/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav5_Guild/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Nav6_Archive" type="Control" parent="NavBar" unique_id=775056348]
 anchors_preset = 0
@@ -1853,23 +1832,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.60)
 
-[node name="LockIcon" type="Label" parent="NavBar/Nav6_Archive/LockOverlay"]
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav6_Archive/LockOverlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="DomainOuter" type="Panel" parent="." unique_id=353296407]
 layout_mode = 0
