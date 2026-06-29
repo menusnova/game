@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bvtbdjlhtskvc"]
 
 [ext_resource type="Script" uid="uid://ccvjko2qief6a" path="res://loading.gd" id="1_script"]
-[ext_resource type="Script" path="res://bar_layer.gd" id="2_barlayer"]
-[ext_resource type="Shader" path="res://bar_fill.gdshader" id="3_barshader"]
+[ext_resource type="Script" uid="uid://d830attg16wu" path="res://bar_layer.gd" id="2_barlayer"]
+[ext_resource type="Shader" uid="uid://hb6nb1ldfy7f" path="res://bar_fill.gdshader" id="3_barshader"]
 [ext_resource type="Texture2D" uid="uid://boqag71cesmw3" path="res://bar_textures/glow_core.png" id="7_core"]
 [ext_resource type="Texture2D" uid="uid://omytdfr4lkpm" path="res://bar_textures/particle_trail.png" id="8_trail"]
 [ext_resource type="Texture2D" uid="uid://jjmih2jw2aq8" path="res://bar_textures/particle_spark.png" id="9_spark"]
@@ -10,10 +10,10 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
 shader = ExtResource("3_barshader")
-shader_parameter/progress  = 0.0
+shader_parameter/progress = 0.0
 shader_parameter/bar_alpha = 1.0
 shader_parameter/pulse_val = 1.0
-shader_parameter/time_val  = 0.0
+shader_parameter/time_val = 0.0
 
 [sub_resource type="CanvasItemMaterial" id="Mat_add"]
 blend_mode = 1
@@ -59,11 +59,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 expand_mode = 2
 stretch_mode = 6
-mouse_filter = 2
 
-[node name="BarFillRect" type="ColorRect" parent="." unique_id=4001000001]
+[node name="BarFillRect" type="ColorRect" parent="." unique_id=-293967295]
 material = SubResource("ShaderMaterial_bar")
 layout_mode = 0
 offset_left = 80.0
@@ -71,9 +71,8 @@ offset_top = 562.0
 offset_right = 1072.0
 offset_bottom = 606.0
 mouse_filter = 2
-color = Color(1, 1, 1, 1)
 
-[node name="BarLayer" type="Control" parent="." unique_id=3001000001]
+[node name="BarLayer" type="Control" parent="." unique_id=-1293967295]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -129,7 +128,7 @@ offset_left = 80.0
 offset_top = 526.0
 offset_right = 1072.0
 offset_bottom = 552.0
-theme_override_colors/font_color = Color(0.65, 0.90, 1, 1)
+theme_override_colors/font_color = Color(0.65, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 17
 text = "SYNTHESIZING ELEMENTS"
 horizontal_alignment = 1

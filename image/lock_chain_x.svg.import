@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4hscoe02b0gn"
-path="res://.godot/imported/lock_chain_x.png-aa8a97d603d0be09f2e4981f1beb0163.ctex"
+uid="uid://28cukaptjvye"
+path="res://.godot/imported/lock_chain_x.svg-cece63f6783fd802cb3b3d751ef1d8eb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://image/lock_chain_x.png"
-dest_files=["res://.godot/imported/lock_chain_x.png-aa8a97d603d0be09f2e4981f1beb0163.ctex"]
+source_file="res://image/lock_chain_x.svg"
+dest_files=["res://.godot/imported/lock_chain_x.svg-cece63f6783fd802cb3b3d751ef1d8eb.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false
