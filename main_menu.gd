@@ -9,26 +9,13 @@ const MENU_ITEMS := [
 	"MenuItem_Pass", "MenuItem_Shop", "MenuItem_FirstPurchase"
 ]
 
-# dialogue data for chapter 1 intro
-const CH1_SPEAKERS: Array[String] = ["Lyra", "Lyra", "Lyra", "Kael", "Lyra"]
-const CH1_LINES: Array[String] = [
-	"สูตรนี้... มันไม่ธรรมดาเลย",
-	"ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง",
-	"ถ้าปล่อยไว้อีกคืนเดียว ห้องทดลองทั้งหมดจะระเบิด",
-	"รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ",
-	"ไม่ว่าจะเป็นใครก็ตาม... เราต้องหยุดพวกเขาที่นี่",
-]
-
 
 func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	_setup_menu_items()
 	_setup_domain()
-	_setup_dialogue()
 
-func _setup_dialogue() -> void:
-	pass  # dialogue และ pre_battle ย้ายไปเป็น scene แยกแล้ว
 
 func _setup_domain() -> void:
 	DomainManager.domain_changed.connect(_on_domain_changed)

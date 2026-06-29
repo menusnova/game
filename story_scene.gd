@@ -1,12 +1,11 @@
 extends Control
 
-const SC_MAIN := "res://main_menu.tscn"
 const TYPEWRITER_SPEED := 0.032
 
-# ── ใส่ภาพพื้นหลัง VN และ portrait ตัวละครตรงนี้ ──
-const BG_TEXTURE:    Texture2D = null   # ภาพพื้นหลัง scene สนทนา
-const CHAR_LYRA:     Texture2D = null   # portrait Lyra (ซ้าย)
-const CHAR_KAEL:     Texture2D = null   # portrait Kael (ขวา)
+# ── ใส่ภาพตรงนี้เมื่อมีไฟล์: เปลี่ยน null เป็น preload("res://image/xxx.png") ──
+var bg_texture:   Texture2D = null   # ภาพพื้นหลัง scene สนทนา
+var char_lyra:    Texture2D = null   # portrait Lyra (ซ้าย)
+var char_kael:    Texture2D = null   # portrait Kael (ขวา)
 
 # map ชื่อตัวละคร → side ("left" / "right")
 const CHAR_SIDE := {
@@ -15,7 +14,7 @@ const CHAR_SIDE := {
 }
 
 # ── บทสนทนา: Array ของ {speaker, text} ──
-const LINES: Array[Dictionary] = [
+const LINES: Array = [
 	{"speaker": "Lyra",  "text": "สูตรนี้... มันไม่ธรรมดาเลย"},
 	{"speaker": "Lyra",  "text": "ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง"},
 	{"speaker": "Kael",  "text": "รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ"},
@@ -38,9 +37,9 @@ var _full_text := ""
 @onready var _fade:       ColorRect     = $FadeOverlay
 
 func _ready() -> void:
-	_bg.texture = BG_TEXTURE
-	_char_l.texture = CHAR_LYRA
-	_char_r.texture = CHAR_KAEL
+	_bg.texture = bg_texture
+	_char_l.texture = char_lyra
+	_char_r.texture = char_kael
 	_next_btn.pressed.connect(_on_next)
 	# fade in
 	var ti := create_tween()

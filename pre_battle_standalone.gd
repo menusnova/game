@@ -1,27 +1,29 @@
 extends Control
 
-const SC_BATTLE    := "res://battle_scene.tscn"
-const CARD_TOP     := 280.0
-const CARD_BOTTOM  := 648.0
+const SC_BATTLE   := "res://battle_scene.tscn"
+const CARD_HEIGHT := 368.0   # ความสูงของ Card
+const SCREEN_H    := 648.0   # ความสูงหน้าจอ
+const CARD_TOP    := 280.0   # ตำแหน่ง y เมื่อ slide ขึ้นมาแล้ว
 
 @onready var _card:  Panel      = $Card
 @onready var _fade:  ColorRect  = $FadeOverlay
 @onready var _start: Button     = $Card/BtnRow/BtnStart
 
 func _ready() -> void:
-	_card.offset_top    = CARD_BOTTOM
-	_card.offset_bottom = CARD_BOTTOM
+	# ซ่อน Card ไว้ล่างจอก่อน
+	_card.offset_top    = SCREEN_H
+	_card.offset_bottom = SCREEN_H + CARD_HEIGHT
 	_start.pressed.connect(_on_start)
 
-	# fade in scene + slide card up
+	# fade in ก่อน แล้วค่อย slide card ขึ้น
 	var tf := create_tween()
 	tf.tween_property(_fade, "color:a", 0.0, 0.3)
 	await tf.finished
 
 	var tc := create_tween()
 	tc.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	tc.tween_property(_card, "offset_top",   CARD_TOP,    0.38)
-	tc.parallel().tween_property(_card, "offset_bottom", CARD_TOP + 368.0, 0.38)
+	tc.tween_property(_card, "offset_top",    CARD_TOP,                0.38)
+	tc.parallel().tween_property(_card, "offset_bottom", CARD_TOP + CARD_HEIGHT, 0.38)
 	await tc.finished
 
 func _on_start() -> void:
