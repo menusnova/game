@@ -111,13 +111,16 @@ corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
 [sub_resource type="StyleBoxFlat" id="SB_NavPill"]
-bg_color = Color(0.02, 0.04, 0.14, 0.72)
+bg_color = Color(1, 1, 1, 0.08)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
-border_color = Color(0.22, 0.62, 1, 0.22)
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
 bg_color = Color(0, 0, 0, 0)
@@ -1685,6 +1688,7 @@ offset_right = 80.0
 offset_bottom = 52.0
 
 [node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=1479650524]
+visible = false
 layout_mode = 0
 offset_right = 80.0
 offset_bottom = 52.0
@@ -1692,6 +1696,7 @@ mouse_filter = 2
 color = Color(0.22, 0.72, 1, 0.12)
 
 [node name="ActiveBar" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=828936899]
+visible = false
 layout_mode = 0
 offset_right = 80.0
 offset_bottom = 2.0
