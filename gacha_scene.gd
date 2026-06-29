@@ -5,10 +5,6 @@ const PULL_COST_1  := 160
 const PULL_COST_10 := 1600
 const PITY_HARD    := 90
 const PITY_SOFT    := 75
-const RATE_5_BASE  := 0.016
-const RATE_5_SOFT  := 0.016 + 0.06  # soft pity boost per pull after 75
-
-# rarity weights ถ้าไม่ถึง pity
 const RATE_5 := 0.016
 const RATE_4 := 0.051
 # ที่เหลือเป็น 3★
@@ -47,16 +43,16 @@ func _refresh_ui() -> void:
 	_pull10.disabled = _gems < PULL_COST_10
 
 func _do_pull(count: int) -> void:
-	var cost := PULL_COST_1 * count
+	var cost := PULL_COST_10 if count == 10 else PULL_COST_1 * count
 	if _gems < cost:
 		return
 	_gems -= cost
-	var results: Array[String] = []
-	var rarities: Array[int]   = []
+	var results:  Array[String] = []
+	var rarities: Array[int]    = []
 	for i in count:
-		var r := _roll()
-		results.append(r[0])
-		rarities.append(r[1])
+		var r: Array = _roll()
+		results.append(str(r[0]))
+		rarities.append(int(r[1]))
 	DomainManager.add_points("gacha")
 	_refresh_ui()
 	_show_results(results, rarities)
