@@ -1,0 +1,144 @@
+[gd_scene load_steps=11 format=3 uid="uid://quest_panel_001"]
+
+[ext_resource type="Script" path="res://quest_panel.gd" id="1_qp"]
+
+[sub_resource type="StyleBoxFlat" id="SB_Sheet"]
+bg_color = Color(0.024, 0.047, 0.102, 0.97)
+border_width_top = 1
+border_color = Color(0.388, 0.624, 1, 0.1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+
+[sub_resource type="StyleBoxFlat" id="SB_TabActive"]
+bg_color = Color(0.37, 0.62, 1.0, 0.18)
+border_width_bottom = 2
+border_color = Color(0.37, 0.62, 1.0, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_TabInactive"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="SB_Close"]
+bg_color = Color(1, 1, 1, 0.06)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="SB_Scroll"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxEmpty" id="SB_Empty"]
+
+[node name="QuestPanel" type="CanvasLayer"]
+layer = 8
+script = ExtResource("1_qp")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.55)
+mouse_filter = 0
+
+[node name="Sheet" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 648.0
+offset_right = 1152.0
+offset_bottom = 1028.0
+theme_override_styles/panel = SubResource("SB_Sheet")
+
+[node name="Header" type="HBoxContainer" parent="Sheet"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 52.0
+theme_override_constants/separation = 0
+
+[node name="TitleLabel" type="Label" parent="Sheet/Header"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_font_sizes/font_size = 15
+text = "  ภารกิจ"
+vertical_alignment = 1
+
+[node name="Tabs" type="HBoxContainer" parent="Sheet/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="TabDaily" type="Button" parent="Sheet/Header/Tabs"]
+custom_minimum_size = Vector2(100, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("SB_TabActive")
+theme_override_styles/hover = SubResource("SB_TabActive")
+theme_override_styles/pressed = SubResource("SB_TabActive")
+theme_override_colors/font_color = Color(0.7, 0.87, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "รายวัน"
+
+[node name="TabStory" type="Button" parent="Sheet/Header/Tabs"]
+custom_minimum_size = Vector2(100, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("SB_TabInactive")
+theme_override_styles/hover = SubResource("SB_TabInactive")
+theme_override_styles/pressed = SubResource("SB_TabInactive")
+theme_override_colors/font_color = Color(0.7, 0.87, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "เนื้อเรื่อง"
+modulate = Color(1, 1, 1, 0.4)
+
+[node name="TabWeekly" type="Button" parent="Sheet/Header/Tabs"]
+custom_minimum_size = Vector2(100, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("SB_TabInactive")
+theme_override_styles/hover = SubResource("SB_TabInactive")
+theme_override_styles/pressed = SubResource("SB_TabInactive")
+theme_override_colors/font_color = Color(0.7, 0.87, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "รายสัปดาห์"
+modulate = Color(1, 1, 1, 0.4)
+
+[node name="Spacer" type="Control" parent="Sheet/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseBtn" type="Button" parent="Sheet/Header"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("SB_Close")
+theme_override_styles/hover = SubResource("SB_Close")
+theme_override_styles/pressed = SubResource("SB_Close")
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+theme_override_font_sizes/font_size = 18
+text = "✕"
+margin_right = 16
+
+[node name="Divider" type="ColorRect" parent="Sheet"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 52.0
+offset_right = 1152.0
+offset_bottom = 53.0
+color = Color(1, 1, 1, 0.07)
+mouse_filter = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Sheet"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 54.0
+offset_right = 1152.0
+offset_bottom = 380.0
+theme_override_styles/panel = SubResource("SB_Scroll")
+
+[node name="QuestList" type="VBoxContainer" parent="Sheet/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0

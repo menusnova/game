@@ -3,6 +3,7 @@ extends Control
 const SC_BATTLE     := "res://battle_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
 var _show_female := true
+var _quest_panel: CanvasLayer
 
 const MENU_ITEMS := [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
@@ -15,6 +16,11 @@ func _ready() -> void:
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	_setup_menu_items()
 	_setup_domain()
+	_setup_quest_panel()
+
+func _setup_quest_panel() -> void:
+	_quest_panel = preload("res://quest_panel.tscn").instantiate()
+	add_child(_quest_panel)
 
 
 func _setup_domain() -> void:
@@ -48,12 +54,14 @@ func _on_menu_hover(item: Control, orig_y: float, hovered: bool) -> void:
 func _on_menu_click(ev: InputEvent, item: Control) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		var flash: ColorRect = item.get_node_or_null("BloomFlash")
-		if flash == null:
-			return
-		flash.color = Color(1, 1, 1, 0.45)
-		var t := flash.create_tween()
-		t.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
-		t.tween_property(flash, "color:a", 0.0, 0.35)
+		if flash:
+			flash.color = Color(1, 1, 1, 0.45)
+			var t := flash.create_tween()
+			t.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
+			t.tween_property(flash, "color:a", 0.0, 0.35)
+		# เปิด Quest panel เมื่อกด Missions
+		if item.name == "MenuItem_Missions":
+			_quest_panel.open()
 
 func _on_adv_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
