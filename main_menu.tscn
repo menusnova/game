@@ -406,10 +406,10 @@ text = "⚙"
 
 [node name="ProfileCard" type="Panel" parent="." unique_id=1502547384]
 layout_mode = 0
-offset_left = 10.0
-offset_top = 58.0
-offset_right = 268.0
-offset_bottom = 130.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 263.0
+offset_bottom = 77.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card")
 
@@ -813,10 +813,10 @@ stretch_mode = 5
 
 [node name="GuideCard" type="Panel" parent="." unique_id=371042015]
 layout_mode = 0
-offset_left = 828.0
-offset_top = 58.0
-offset_right = 910.0
-offset_bottom = 140.0
+offset_left = 840.0
+offset_top = 52.0
+offset_right = 918.0
+offset_bottom = 128.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2R8")
 
@@ -852,16 +852,16 @@ text = "New Player"
 
 [node name="NewCharCard" type="Panel" parent="." unique_id=743354178]
 layout_mode = 0
-offset_left = 918.0
-offset_top = 58.0
-offset_right = 1144.0
-offset_bottom = 140.0
+offset_left = 924.0
+offset_top = 52.0
+offset_right = 1145.0
+offset_bottom = 128.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NewChar")
 
 [node name="Header" type="ColorRect" parent="NewCharCard" unique_id=494674066]
 layout_mode = 0
-offset_right = 226.0
+offset_right = 221.0
 offset_bottom = 18.0
 mouse_filter = 2
 color = Color(0.1, 0.06, 0.28, 0.96)
@@ -971,10 +971,10 @@ stretch_mode = 5
 
 [node name="AdventureCard" type="Panel" parent="." unique_id=760607397]
 layout_mode = 0
-offset_left = 828.0
-offset_top = 150.0
-offset_right = 1144.0
-offset_bottom = 245.0
+offset_left = 840.0
+offset_top = 136.0
+offset_right = 1145.0
+offset_bottom = 228.0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="AdventureCard" unique_id=545153171]
@@ -1009,9 +1009,9 @@ text = "CHAPTER 12-9"
 
 [node name="Arrow" type="Label" parent="AdventureCard" unique_id=802940588]
 layout_mode = 0
-offset_left = 296.0
+offset_left = 287.0
 offset_top = 36.0
-offset_right = 314.0
+offset_right = 305.0
 offset_bottom = 54.0
 theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -1021,8 +1021,8 @@ text = "▶"
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
-offset_right = 314.0
-offset_bottom = 93.0
+offset_right = 303.0
+offset_bottom = 90.0
 mouse_filter = 2
 color = Color(0.04, 0.08, 0.22, 0.6)
 
@@ -1030,18 +1030,18 @@ color = Color(0.04, 0.08, 0.22, 0.6)
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
-offset_right = 312.0
-offset_bottom = 91.0
+offset_right = 301.0
+offset_bottom = 88.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ChronicleCard" type="Panel" parent="." unique_id=501547849]
 layout_mode = 0
-offset_left = 828.0
-offset_top = 253.0
-offset_right = 1144.0
-offset_bottom = 335.0
+offset_left = 840.0
+offset_top = 236.0
+offset_right = 1145.0
+offset_bottom = 315.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1067,9 +1067,9 @@ text = "SIDE STORY"
 
 [node name="Arrow" type="Label" parent="ChronicleCard" unique_id=574622777]
 layout_mode = 0
-offset_left = 296.0
+offset_left = 287.0
 offset_top = 30.0
-offset_right = 314.0
+offset_right = 305.0
 offset_bottom = 48.0
 theme_override_colors/font_color = Color(0.65, 0.35, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -1079,8 +1079,8 @@ text = "▶"
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
-offset_right = 314.0
-offset_bottom = 80.0
+offset_right = 303.0
+offset_bottom = 77.0
 mouse_filter = 2
 color = Color(0.08, 0.04, 0.22, 0.6)
 
@@ -1088,18 +1088,18 @@ color = Color(0.08, 0.04, 0.22, 0.6)
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
-offset_right = 312.0
-offset_bottom = 78.0
+offset_right = 301.0
+offset_bottom = 75.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
-offset_left = 828.0
-offset_top = 343.0
-offset_right = 1144.0
-offset_bottom = 425.0
+offset_left = 840.0
+offset_top = 323.0
+offset_right = 1145.0
+offset_bottom = 402.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1125,9 +1125,9 @@ text = "RESOURCE"
 
 [node name="Arrow" type="Label" parent="SimulationCard" unique_id=1961993866]
 layout_mode = 0
-offset_left = 296.0
+offset_left = 287.0
 offset_top = 30.0
-offset_right = 314.0
+offset_right = 305.0
 offset_bottom = 48.0
 theme_override_colors/font_color = Color(0.25, 1, 0.55, 1)
 theme_override_font_sizes/font_size = 14
@@ -1137,8 +1137,8 @@ text = "▶"
 layout_mode = 0
 offset_left = 160.0
 offset_top = 2.0
-offset_right = 314.0
-offset_bottom = 80.0
+offset_right = 303.0
+offset_bottom = 77.0
 mouse_filter = 2
 color = Color(0.03, 0.12, 0.1, 0.6)
 
@@ -1146,18 +1146,18 @@ color = Color(0.03, 0.12, 0.1, 0.6)
 layout_mode = 0
 offset_left = 162.0
 offset_top = 4.0
-offset_right = 312.0
-offset_bottom = 78.0
+offset_right = 301.0
+offset_bottom = 75.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
-offset_left = 828.0
-offset_top = 433.0
-offset_right = 980.0
-offset_bottom = 523.0
+offset_left = 840.0
+offset_top = 410.0
+offset_right = 990.0
+offset_bottom = 494.0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="ArenaCard" unique_id=7828574]
@@ -1232,10 +1232,10 @@ stretch_mode = 5
 
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
-offset_left = 988.0
-offset_top = 433.0
-offset_right = 1144.0
-offset_bottom = 523.0
+offset_left = 996.0
+offset_top = 410.0
+offset_right = 1145.0
+offset_bottom = 494.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_Card2")
 
