@@ -1,0 +1,136 @@
+[gd_scene load_steps=5 format=3 uid="uid://story_scene_001"]
+
+[ext_resource type="Script" path="res://story_scene.gd" id="1_story"]
+
+[sub_resource type="StyleBoxFlat" id="SB_DialogueBg"]
+bg_color = Color(0.024, 0.043, 0.094, 0.93)
+border_width_top = 1
+border_color = Color(0.388, 0.624, 1, 0.14)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+
+[sub_resource type="StyleBoxFlat" id="SB_NameTag"]
+bg_color = Color(0.133, 0.267, 0.6, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_NextBtn"]
+bg_color = Color(1, 1, 1, 0.0)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(0.388, 0.624, 1, 0.25)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="StoryScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_story")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BgDim" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.35)
+mouse_filter = 2
+
+[node name="CharacterLeft" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = -40.0
+offset_top = 60.0
+offset_right = 420.0
+offset_bottom = 530.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(1, 1, 1, 0)
+
+[node name="CharacterRight" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 730.0
+offset_top = 60.0
+offset_right = 1190.0
+offset_bottom = 530.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(1, 1, 1, 0)
+
+[node name="DialoguePanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 480.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("SB_DialogueBg")
+mouse_filter = 0
+
+[node name="NameTag" type="Panel" parent="DialoguePanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = -34.0
+offset_right = 180.0
+offset_bottom = -6.0
+theme_override_styles/panel = SubResource("SB_NameTag")
+
+[node name="SpeakerName" type="Label" parent="DialoguePanel/NameTag"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DialogueText" type="RichTextLabel" parent="DialoguePanel"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 1100.0
+offset_bottom = 120.0
+theme_override_colors/default_color = Color(0.925, 0.949, 1, 0.97)
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = ""
+
+[node name="NextBtn" type="Button" parent="DialoguePanel"]
+layout_mode = 0
+offset_left = 1040.0
+offset_top = 126.0
+offset_right = 1138.0
+offset_bottom = 152.0
+theme_override_styles/normal = SubResource("SB_NextBtn")
+theme_override_styles/hover = SubResource("SB_NextBtn")
+theme_override_styles/pressed = SubResource("SB_NextBtn")
+theme_override_colors/font_color = Color(0.388, 0.624, 1, 0.7)
+theme_override_font_sizes/font_size = 11
+text = "ถัดไป ›"
+visible = false
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 1)
+mouse_filter = 2

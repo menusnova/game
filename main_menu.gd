@@ -1,6 +1,7 @@
 extends Control
 
-const SC_BATTLE := "res://battle_scene.tscn"
+const SC_BATTLE     := "res://battle_scene.tscn"
+const SC_TRANSITION := "res://transition_scene.tscn"
 var _show_female := true
 
 const MENU_ITEMS := [
@@ -18,8 +19,6 @@ const CH1_LINES: Array[String] = [
 	"ไม่ว่าจะเป็นใครก็ตาม... เราต้องหยุดพวกเขาที่นี่",
 ]
 
-var _dialogue_box: CanvasLayer
-var _pre_battle: CanvasLayer
 
 func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
@@ -29,14 +28,7 @@ func _ready() -> void:
 	_setup_dialogue()
 
 func _setup_dialogue() -> void:
-	_dialogue_box = preload("res://dialogue_box.tscn").instantiate()
-	_dialogue_box.visible = false
-	add_child(_dialogue_box)
-
-	_pre_battle = preload("res://pre_battle.tscn").instantiate()
-	_pre_battle.visible = false
-	add_child(_pre_battle)
-	_pre_battle.start_battle.connect(_on_battle_start)
+	pass  # dialogue และ pre_battle ย้ายไปเป็น scene แยกแล้ว
 
 func _setup_domain() -> void:
 	DomainManager.domain_changed.connect(_on_domain_changed)
@@ -81,13 +73,7 @@ func _on_adv_input(ev: InputEvent) -> void:
 		_start_adventure()
 
 func _start_adventure() -> void:
-	_dialogue_box.start(CH1_LINES, CH1_SPEAKERS)
-	await _dialogue_box.dialogue_finished
-	_pre_battle.show_for_mission("ห้องปฏิบัติการต้องห้าม", "MISSION · 1-1")
-
-func _on_battle_start() -> void:
-	DomainManager.add_points("battle")
-	_goto(SC_BATTLE)
+	_goto(SC_TRANSITION)
 
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:

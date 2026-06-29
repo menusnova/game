@@ -1,0 +1,198 @@
+[gd_scene load_steps=6 format=3 uid="uid://prebattle_standalone_001"]
+
+[ext_resource type="Script" path="res://pre_battle_standalone.gd" id="1_pbs"]
+
+[sub_resource type="StyleBoxFlat" id="SB_Bg"]
+bg_color = Color(0.024, 0.043, 0.094, 1.0)
+
+[sub_resource type="StyleBoxFlat" id="SB_Card"]
+bg_color = Color(0.031, 0.055, 0.118, 1.0)
+border_width_top = 1
+border_color = Color(0.388, 0.624, 1, 0.12)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+
+[sub_resource type="StyleBoxFlat" id="SB_EnemyChip"]
+bg_color = Color(1, 0.31, 0.31, 0.07)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1, 0.31, 0.31, 0.18)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_StartBtn"]
+bg_color = Color(0.133, 0.333, 0.8, 1.0)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_EditBtn"]
+bg_color = Color(1, 1, 1, 0.04)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1, 1, 1, 0.1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="PreBattleStandalone" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_pbs")
+
+[node name="Bg" type="Panel" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("SB_Bg")
+
+[node name="Card" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 648.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("SB_Card")
+
+[node name="MissionLabel" type="Label" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 14.0
+offset_right = 600.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.478, 0.722, 1, 0.5)
+theme_override_font_sizes/font_size = 10
+text = "MISSION · 1-1"
+
+[node name="MissionName" type="Label" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 30.0
+offset_right = 700.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "ห้องปฏิบัติการต้องห้าม"
+
+[node name="EnemyRow" type="HBoxContainer" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 68.0
+offset_right = 500.0
+offset_bottom = 148.0
+theme_override_constants/separation = 10
+
+[node name="Enemy1" type="Panel" parent="Card/EnemyRow"]
+custom_minimum_size = Vector2(140, 72)
+theme_override_styles/panel = SubResource("SB_EnemyChip")
+
+[node name="EnemyName" type="Label" parent="Card/EnemyRow/Enemy1"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 132.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(1, 0.627, 0.627, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "BONE GOLEM"
+horizontal_alignment = 1
+
+[node name="EnemyWeak" type="Label" parent="Card/EnemyRow/Enemy1"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 38.0
+offset_right = 132.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.478, 0.784, 1, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "อ่อนแอ: ไฟ"
+horizontal_alignment = 1
+
+[node name="Enemy2" type="Panel" parent="Card/EnemyRow"]
+custom_minimum_size = Vector2(140, 72)
+theme_override_styles/panel = SubResource("SB_EnemyChip")
+
+[node name="EnemyName" type="Label" parent="Card/EnemyRow/Enemy2"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 132.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(1, 0.627, 0.627, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "VOID SHADE"
+horizontal_alignment = 1
+
+[node name="EnemyWeak" type="Label" parent="Card/EnemyRow/Enemy2"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 38.0
+offset_right = 132.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.478, 0.784, 1, 0.8)
+theme_override_font_sizes/font_size = 10
+text = "อ่อนแอ: แสง"
+horizontal_alignment = 1
+
+[node name="TeamLabel" type="Label" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 160.0
+offset_right = 300.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(0.478, 0.722, 1, 0.5)
+theme_override_font_sizes/font_size = 10
+text = "ทีมของคุณ"
+
+[node name="TeamRow" type="HBoxContainer" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 182.0
+offset_right = 600.0
+offset_bottom = 250.0
+theme_override_constants/separation = 8
+
+[node name="BtnRow" type="HBoxContainer" parent="Card"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 262.0
+offset_right = 600.0
+offset_bottom = 306.0
+theme_override_constants/separation = 10
+
+[node name="BtnEdit" type="Button" parent="Card/BtnRow"]
+custom_minimum_size = Vector2(100, 44)
+theme_override_styles/normal = SubResource("SB_EditBtn")
+theme_override_styles/hover = SubResource("SB_EditBtn")
+theme_override_styles/pressed = SubResource("SB_EditBtn")
+theme_override_colors/font_color = Color(0.784, 0.863, 1, 0.6)
+theme_override_font_sizes/font_size = 13
+text = "แก้ทีม"
+
+[node name="BtnStart" type="Button" parent="Card/BtnRow"]
+custom_minimum_size = Vector2(300, 44)
+theme_override_styles/normal = SubResource("SB_StartBtn")
+theme_override_styles/hover = SubResource("SB_StartBtn")
+theme_override_styles/pressed = SubResource("SB_StartBtn")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "⚔  เริ่มต่อสู้"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 1)
+mouse_filter = 2
