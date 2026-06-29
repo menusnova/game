@@ -1094,6 +1094,34 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
+[node name="LockOverlay" type="ColorRect" parent="ChronicleCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="ChronicleCard/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
 offset_left = 840.0
@@ -1151,6 +1179,34 @@ offset_bottom = 75.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="LockOverlay" type="ColorRect" parent="SimulationCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="SimulationCard/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
 
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
@@ -1230,6 +1286,34 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
+[node name="LockOverlay" type="ColorRect" parent="ArenaCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="ArenaCard/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
 offset_left = 996.0
@@ -1278,6 +1362,34 @@ offset_bottom = 88.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="LockOverlay" type="ColorRect" parent="ExpeditionCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="ExpeditionCard/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
 
 [node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
 layout_mode = 0
@@ -1396,6 +1508,34 @@ theme_override_font_sizes/font_size = 8
 text = "Lineup"
 horizontal_alignment = 1
 
+[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav1_Lineup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="NavBar/Nav1_Lineup/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
 anchors_preset = 0
 offset_left = 160.0
@@ -1457,6 +1597,34 @@ theme_override_font_sizes/font_size = 8
 text = "Inventory"
 horizontal_alignment = 1
 
+[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav3_Inventory"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="NavBar/Nav3_Inventory/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="Nav4_Database" type="Control" parent="NavBar" unique_id=483944133]
 anchors_preset = 0
 offset_left = 320.0
@@ -1509,6 +1677,34 @@ theme_override_font_sizes/font_size = 8
 text = "Guild"
 horizontal_alignment = 1
 
+[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav5_Guild"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="NavBar/Nav5_Guild/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="Nav6_Archive" type="Control" parent="NavBar" unique_id=775056348]
 anchors_preset = 0
 offset_left = 480.0
@@ -1534,6 +1730,34 @@ theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
 theme_override_font_sizes/font_size = 8
 text = "Archive"
 horizontal_alignment = 1
+
+[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav6_Archive"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.60)
+
+[node name="LockIcon" type="Label" parent="NavBar/Nav6_Archive/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 0.90)
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
 
 [node name="DomainOuter" type="Panel" parent="." unique_id=353296407]
 layout_mode = 0
