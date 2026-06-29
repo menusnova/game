@@ -24,7 +24,7 @@ func _ready() -> void:
 
 func add_points(source: String) -> void:
 	_check_daily_reset()
-	var gain: float = POINTS.get(source, 5)
+	var gain: float = float(POINTS.get(source, 5))
 	_points = minf(_points + gain, MAX_POINTS)
 	_save()
 	domain_changed.emit(get_percent())

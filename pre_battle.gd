@@ -3,8 +3,6 @@ extends CanvasLayer
 signal start_battle
 signal edit_team
 
-const SC_BATTLE := "res://battle_scene.tscn"
-
 func show_for_mission(mission_title: String, mission_id: String) -> void:
 	$Root/Card/MissionLabel.text = mission_id
 	$Root/Card/MissionName.text = mission_title

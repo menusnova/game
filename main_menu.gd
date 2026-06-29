@@ -81,7 +81,7 @@ func _on_adv_input(ev: InputEvent) -> void:
 		_start_adventure()
 
 func _start_adventure() -> void:
-	_dialogue_box.start(Array(CH1_LINES), Array(CH1_SPEAKERS))
+	_dialogue_box.start(Array[String](CH1_LINES), Array[String](CH1_SPEAKERS))
 	await _dialogue_box.dialogue_finished
 	_pre_battle.show_for_mission("ห้องปฏิบัติการต้องห้าม", "MISSION · 1-1")
 
