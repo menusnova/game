@@ -423,9 +423,9 @@ vertical_alignment = 1
 # ── CHARACTER SHOWCASE ─────────────────────────────────────────
 [node name="ShowcaseLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 20.0
+offset_left = 392.0
 offset_top = 350.0
-offset_right = 380.0
+offset_right = 760.0
 offset_bottom = 370.0
 theme_override_colors/font_color = Color(0.388, 0.624, 1, 0.55)
 theme_override_font_sizes/font_size = 10
@@ -433,10 +433,10 @@ text = "CHARACTER SHOWCASE"
 
 [node name="ShowcaseRow" type="HBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 20.0
+offset_left = 392.0
 offset_top = 374.0
 offset_right = 1132.0
-offset_bottom = 600.0
+offset_bottom = 560.0
 theme_override_constants/separation = 12
 
 # ── RIGHT COLUMN: recent activity ──────────────────────────────

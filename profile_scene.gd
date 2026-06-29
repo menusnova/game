@@ -56,7 +56,7 @@ func _build_showcase() -> void:
 
 func _make_showcase_card(data: Dictionary) -> Control:
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(264, 220)
+	card.custom_minimum_size = Vector2(170, 186)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var is_empty: bool = str(data.get("name", "")) == ""
