@@ -582,12 +582,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.58)
 offset_right = -159.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0)
+color = Color(0, 0, 0, 0.58)
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Notice/LockOverlay" unique_id=1155824030]
 layout_mode = 1
@@ -706,13 +705,12 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.58)
 offset_right = -201.0
 offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0)
+color = Color(0, 0, 0, 0.58)
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Event/LockOverlay" unique_id=1444874310]
 layout_mode = 1
@@ -774,12 +772,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.58)
 offset_right = -182.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0)
+color = Color(0, 0, 0, 0.58)
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Pass/LockOverlay" unique_id=2480587]
 layout_mode = 1
@@ -888,12 +885,11 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.58)
 offset_right = -139.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0)
+color = Color(0, 0, 0, 0.58)
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_FirstPurchase/LockOverlay" unique_id=14151895]
 layout_mode = 1
