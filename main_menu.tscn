@@ -143,6 +143,18 @@ corner_radius_top_right = 62
 corner_radius_bottom_right = 62
 corner_radius_bottom_left = 62
 
+[sub_resource type="StyleBoxFlat" id="SB_MenuItem"]
+bg_color = Color(1, 1, 1, 0.04)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="MainMenu" type="Control" unique_id=1743482336]
 layout_mode = 3
 anchors_preset = 15
@@ -405,6 +417,15 @@ theme_override_styles/hover = SubResource("SB_Blank")
 theme_override_styles/focus = SubResource("SB_Blank")
 text = "⚙"
 
+[node name="LeftLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 90.0
+offset_right = 2.0
+offset_bottom = 558.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.12)
+
 [node name="ProfileCard" type="Panel" parent="." unique_id=1502547384]
 layout_mode = 0
 offset_left = 5.0
@@ -509,6 +530,16 @@ offset_right = 268.0
 offset_bottom = 178.0
 mouse_filter = 2
 
+[node name="Bg" type="Panel" parent="MenuItem_Notice"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
 [node name="Icon" type="TextureRect" parent="MenuItem_Notice" unique_id=414290015]
 layout_mode = 0
 offset_top = 2.0
@@ -574,6 +605,16 @@ offset_right = 268.0
 offset_bottom = 218.0
 mouse_filter = 2
 
+[node name="Bg" type="Panel" parent="MenuItem_Missions"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
 [node name="Icon" type="TextureRect" parent="MenuItem_Missions" unique_id=1209083572]
 layout_mode = 0
 offset_top = 2.0
@@ -609,6 +650,16 @@ offset_top = 222.0
 offset_right = 268.0
 offset_bottom = 258.0
 mouse_filter = 2
+
+[node name="Bg" type="Panel" parent="MenuItem_Event"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Event" unique_id=503480489]
 layout_mode = 0
@@ -667,6 +718,16 @@ offset_right = 268.0
 offset_bottom = 298.0
 mouse_filter = 2
 
+[node name="Bg" type="Panel" parent="MenuItem_Pass"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
 [node name="Icon" type="TextureRect" parent="MenuItem_Pass" unique_id=2057894540]
 layout_mode = 0
 offset_top = 2.0
@@ -723,6 +784,16 @@ offset_right = 268.0
 offset_bottom = 338.0
 mouse_filter = 2
 
+[node name="Bg" type="Panel" parent="MenuItem_Shop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
 [node name="Icon" type="TextureRect" parent="MenuItem_Shop" unique_id=1647414986]
 layout_mode = 0
 offset_top = 2.0
@@ -749,6 +820,16 @@ offset_top = 342.0
 offset_right = 268.0
 offset_bottom = 378.0
 mouse_filter = 2
+
+[node name="Bg" type="Panel" parent="MenuItem_FirstPurchase"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_FirstPurchase" unique_id=1711555147]
 layout_mode = 0
