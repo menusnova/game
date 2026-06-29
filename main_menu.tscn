@@ -462,6 +462,7 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_AvatarRing")
 
 [node name="NotifDot" type="Label" parent="ProfileCard" unique_id=1652614734]
+visible = false
 layout_mode = 0
 offset_left = 52.0
 offset_top = 5.0
@@ -567,6 +568,7 @@ theme_override_font_sizes/font_size = 13
 text = "Notice"
 
 [node name="Dot" type="ColorRect" parent="MenuItem_Notice" unique_id=1721981280]
+visible = false
 layout_mode = 0
 offset_left = 15.0
 offset_top = 1.0
@@ -642,6 +644,7 @@ theme_override_font_sizes/font_size = 13
 text = "Missions"
 
 [node name="Dot" type="ColorRect" parent="MenuItem_Missions" unique_id=1483586683]
+visible = false
 layout_mode = 0
 offset_left = 15.0
 offset_top = 1.0
@@ -1708,6 +1711,7 @@ mouse_filter = 2
 color = Color(0.22, 0.72, 1, 1)
 
 [node name="NotifDot" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=859417099]
+visible = false
 layout_mode = 0
 offset_left = 44.0
 offset_top = 5.0
@@ -1797,6 +1801,7 @@ offset_right = 240.0
 offset_bottom = 52.0
 
 [node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Arcanum" unique_id=850425920]
+visible = false
 layout_mode = 0
 offset_left = 44.0
 offset_top = 5.0
