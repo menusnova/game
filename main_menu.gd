@@ -9,8 +9,8 @@ const MENU_ITEMS := [
 ]
 
 # dialogue data for chapter 1 intro
-const CH1_SPEAKERS := ["Lyra", "Lyra", "Lyra", "Kael", "Lyra"]
-const CH1_LINES := [
+const CH1_SPEAKERS: Array[String] = ["Lyra", "Lyra", "Lyra", "Kael", "Lyra"]
+const CH1_LINES: Array[String] = [
 	"สูตรนี้... มันไม่ธรรมดาเลย",
 	"ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง",
 	"ถ้าปล่อยไว้อีกคืนเดียว ห้องทดลองทั้งหมดจะระเบิด",
@@ -81,7 +81,7 @@ func _on_adv_input(ev: InputEvent) -> void:
 		_start_adventure()
 
 func _start_adventure() -> void:
-	_dialogue_box.start(Array[String](CH1_LINES), Array[String](CH1_SPEAKERS))
+	_dialogue_box.start(CH1_LINES, CH1_SPEAKERS)
 	await _dialogue_box.dialogue_finished
 	_pre_battle.show_for_mission("ห้องปฏิบัติการต้องห้าม", "MISSION · 1-1")
 
