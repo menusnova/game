@@ -16,6 +16,10 @@ run/disable_stdout=true
 run/disable_stderr=true
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
+
 [file_customization]
 
 folder_colors={

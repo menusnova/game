@@ -3,17 +3,40 @@ extends Control
 const SC_BATTLE := "res://battle_scene.tscn"
 var _show_female := true
 
-# ชื่อ MenuItem ทั้งหมดที่ต้องการ hover/click effect
 const MENU_ITEMS := [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
 	"MenuItem_Pass", "MenuItem_Shop", "MenuItem_FirstPurchase"
 ]
+
+# dialogue data for chapter 1 intro
+const CH1_SPEAKERS := ["Lyra", "Lyra", "Lyra", "Kael", "Lyra"]
+const CH1_LINES := [
+	"สูตรนี้... มันไม่ธรรมดาเลย",
+	"ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง",
+	"ถ้าปล่อยไว้อีกคืนเดียว ห้องทดลองทั้งหมดจะระเบิด",
+	"รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ",
+	"ไม่ว่าจะเป็นใครก็ตาม... เราต้องหยุดพวกเขาที่นี่",
+]
+
+var _dialogue_box: CanvasLayer
+var _pre_battle: CanvasLayer
 
 func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	_setup_menu_items()
 	_setup_domain()
+	_setup_dialogue()
+
+func _setup_dialogue() -> void:
+	_dialogue_box = preload("res://dialogue_box.tscn").instantiate()
+	_dialogue_box.visible = false
+	add_child(_dialogue_box)
+
+	_pre_battle = preload("res://pre_battle.tscn").instantiate()
+	_pre_battle.visible = false
+	add_child(_pre_battle)
+	_pre_battle.start_battle.connect(_on_battle_start)
 
 func _setup_domain() -> void:
 	DomainManager.domain_changed.connect(_on_domain_changed)
@@ -23,7 +46,6 @@ func _on_domain_changed(percent: float) -> void:
 	var label: Label = get_node_or_null("DomainInner/DomainPercent")
 	if label:
 		label.text = "%d%%" % int(percent)
-		# สีเปลี่ยนตาม % — น้ำเงินอ่อน → ฟ้าสว่าง → ขาว
 		var t := percent / 100.0
 		label.add_theme_color_override("font_color",
 			Color(0.4 + t * 0.6, 0.85 + t * 0.15, 1.0, 1.0))
@@ -56,7 +78,16 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 
 func _on_adv_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-		_goto(SC_BATTLE)
+		_start_adventure()
+
+func _start_adventure() -> void:
+	_dialogue_box.start(Array(CH1_LINES), Array(CH1_SPEAKERS))
+	await _dialogue_box.dialogue_finished
+	_pre_battle.show_for_mission("ห้องปฏิบัติการต้องห้าม", "MISSION · 1-1")
+
+func _on_battle_start() -> void:
+	DomainManager.add_points("battle")
+	_goto(SC_BATTLE)
 
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
