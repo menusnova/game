@@ -1,6 +1,5 @@
 extends CanvasLayer
 
-signal close_requested
 
 const PANEL_HEIGHT := 380.0
 const SCREEN_H     := 648.0
@@ -156,9 +155,9 @@ class _QuestRow extends Control:
 			sb.corner_radius_top_right   = 8
 			sb.corner_radius_bottom_right = 8
 			sb.corner_radius_bottom_left  = 8
-			btn.add_theme_style_override("normal",  sb)
-			btn.add_theme_style_override("hover",   sb)
-			btn.add_theme_style_override("pressed", sb)
+			btn.add_theme_stylebox_override("normal",  sb)
+			btn.add_theme_stylebox_override("hover",   sb)
+			btn.add_theme_stylebox_override("pressed", sb)
 			btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 			btn.add_theme_font_size_override("font_size", 12)
 			btn.text = "ไป ›"
