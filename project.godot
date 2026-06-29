@@ -27,6 +27,10 @@ folder_colors={
 
 3d/physics_engine="Jolt Physics"
 
+[autoload]
+
+DomainManager="*res://domain_manager.gd"
+
 [rendering]
 
 rendering_device/driver.windows="d3d12"

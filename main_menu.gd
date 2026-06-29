@@ -13,6 +13,20 @@ func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	_setup_menu_items()
+	_setup_domain()
+
+func _setup_domain() -> void:
+	DomainManager.domain_changed.connect(_on_domain_changed)
+	_on_domain_changed(DomainManager.get_percent())
+
+func _on_domain_changed(percent: float) -> void:
+	var label: Label = get_node_or_null("DomainInner/DomainPercent")
+	if label:
+		label.text = "%d%%" % int(percent)
+		# สีเปลี่ยนตาม % — น้ำเงินอ่อน → ฟ้าสว่าง → ขาว
+		var t := percent / 100.0
+		label.add_theme_color_override("font_color",
+			Color(0.4 + t * 0.6, 0.85 + t * 0.15, 1.0, 1.0))
 
 func _setup_menu_items() -> void:
 	for item_name in MENU_ITEMS:
