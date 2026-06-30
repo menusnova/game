@@ -446,7 +446,7 @@ offset_left = 5.0
 offset_top = 5.0
 offset_right = 263.0
 offset_bottom = 77.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card")
 
 [node name="Avatar" type="TextureRect" parent="ProfileCard" unique_id=926039462]
