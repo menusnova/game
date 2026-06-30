@@ -525,7 +525,7 @@ offset_top = 40.0
 offset_right = 246.0
 offset_bottom = 44.0
 mouse_filter = 2
-color = Color(1, 0.3, 0.3, 1)
+color = Color(0.22, 0.62, 1.0, 1)
 
 [node name="UIDLabel" type="Label" parent="ProfileCard" unique_id=1965427362]
 layout_mode = 0
