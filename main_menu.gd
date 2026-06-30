@@ -3,6 +3,7 @@ extends Control
 const SC_BATTLE     := "res://battle_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
 const SC_PROFILE    := "res://profile_scene.tscn"
+const SC_GACHA      := "res://gacha_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 
@@ -21,6 +22,7 @@ func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	$ProfileCard.gui_input.connect(_on_profile_input)
+	$NewCharCard.gui_input.connect(_on_gacha_input)
 	_setup_menu_items()
 	_setup_cards_fx()
 	_setup_domain()
@@ -133,6 +135,10 @@ func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 func _on_profile_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_goto(SC_PROFILE)
+
+func _on_gacha_input(ev: InputEvent) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_goto(SC_GACHA)
 
 func _on_adv_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
