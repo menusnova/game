@@ -4,6 +4,7 @@ const SC_BATTLE     := "res://battle_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
 const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
+const SC_SHOP       := "res://shop_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 
@@ -68,6 +69,8 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 		_fx_ripple(item, ev.position)
 		if item.name == "MenuItem_Missions":
 			_quest_panel.open()
+		elif item.name == "MenuItem_Shop":
+			_goto(SC_SHOP)
 
 # ── Cards (ripple + scale on tap) ────────────────────────────────
 func _setup_cards_fx() -> void:
