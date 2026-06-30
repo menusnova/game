@@ -49,7 +49,8 @@ var _edit_popup:   Control # edit name/sig popup
 var _avatar_popup: Control # avatar picker popup
 
 func _ready() -> void:
-	_back.pressed.connect(_go_back)
+	if _back:
+		_back.pressed.connect(_go_back)
 	_build_showcase()
 	_build_activity()
 	_update_domain()
@@ -62,11 +63,14 @@ func _ready() -> void:
 	_avatar_label.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	_avatar_label.add_theme_font_size_override("font_size", 26)
 	_avatar_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_avatar_icon.add_child(_avatar_label)
+	if _avatar_icon:
+		_avatar_icon.add_child(_avatar_label)
 	_refresh_avatar()
 
-	_edit_btn.pressed.connect(_open_edit_popup)
-	_avatar_icon.gui_input.connect(_on_avatar_click)
+	if _edit_btn:
+		_edit_btn.pressed.connect(_open_edit_popup)
+	if _avatar_icon:
+		_avatar_icon.gui_input.connect(_on_avatar_click)
 
 	var t := create_tween()
 	t.tween_property(_fade, "color:a", 0.0, 0.35)
@@ -466,7 +470,8 @@ func _make_activity_row(data: Dictionary) -> Control:
 
 # ── Navigation ───────────────────────────────────────────────────
 func _go_back() -> void:
-	DomainManager.domain_changed.disconnect(_on_domain_changed)
+	if DomainManager.domain_changed.is_connected(_on_domain_changed):
+		DomainManager.domain_changed.disconnect(_on_domain_changed)
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ov.color = Color(0, 0, 0, 0)

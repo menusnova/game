@@ -40,14 +40,21 @@ var _is_open := false
 @onready var _close_btn: Button       = $Sheet/Header/CloseBtn
 
 func _ready() -> void:
-	_sheet.position.y = SCREEN_H
-	_dim.modulate.a   = 0.0
-	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_tab_daily.pressed.connect(func(): _switch_tab(Tab.DAILY))
-	_tab_story.pressed.connect(func(): _switch_tab(Tab.STORY))
-	_tab_week.pressed.connect(func():  _switch_tab(Tab.WEEKLY))
-	_close_btn.pressed.connect(close)
-	_dim.gui_input.connect(_on_dim_input)
+	if _sheet:
+		_sheet.position.y = SCREEN_H
+	if _dim:
+		_dim.modulate.a   = 0.0
+		_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if _tab_daily:
+		_tab_daily.pressed.connect(func(): _switch_tab(Tab.DAILY))
+	if _tab_story:
+		_tab_story.pressed.connect(func(): _switch_tab(Tab.STORY))
+	if _tab_week:
+		_tab_week.pressed.connect(func():  _switch_tab(Tab.WEEKLY))
+	if _close_btn:
+		_close_btn.pressed.connect(close)
+	if _dim:
+		_dim.gui_input.connect(_on_dim_input)
 	_rebuild_list()
 
 func open() -> void:

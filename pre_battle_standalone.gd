@@ -11,9 +11,11 @@ const CARD_TOP    := 280.0   # ตำแหน่ง y เมื่อ slide ข
 
 func _ready() -> void:
 	# ซ่อน Card ไว้ล่างจอก่อน
-	_card.offset_top    = SCREEN_H
-	_card.offset_bottom = SCREEN_H + CARD_HEIGHT
-	_start.pressed.connect(_on_start)
+	if _card:
+		_card.offset_top    = SCREEN_H
+		_card.offset_bottom = SCREEN_H + CARD_HEIGHT
+	if _start:
+		_start.pressed.connect(_on_start)
 
 	# fade in ก่อน แล้วค่อย slide card ขึ้น
 	var tf := create_tween()

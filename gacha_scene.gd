@@ -30,11 +30,16 @@ var _skip_to_end := false
 @onready var _skip_btn:   Button        = $ResultOverlay/SkipBtn
 
 func _ready() -> void:
-	_pull1.pressed.connect(func(): _do_pull(1))
-	_pull10.pressed.connect(func(): _do_pull(10))
-	_back.pressed.connect(_go_back)
-	_skip_btn.pressed.connect(_on_skip)
-	_result_ov.visible = false
+	if _pull1:
+		_pull1.pressed.connect(func(): _do_pull(1))
+	if _pull10:
+		_pull10.pressed.connect(func(): _do_pull(10))
+	if _back:
+		_back.pressed.connect(_go_back)
+	if _skip_btn:
+		_skip_btn.pressed.connect(_on_skip)
+	if _result_ov:
+		_result_ov.visible = false
 	_refresh_ui()
 
 func _input(ev: InputEvent) -> void:

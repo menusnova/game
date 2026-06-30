@@ -37,10 +37,14 @@ var _full_text := ""
 @onready var _fade:       ColorRect     = $FadeOverlay
 
 func _ready() -> void:
-	_bg.texture = bg_texture
-	_char_l.texture = char_lyra
-	_char_r.texture = char_kael
-	_next_btn.pressed.connect(_on_next)
+	if _bg:
+		_bg.texture = bg_texture
+	if _char_l:
+		_char_l.texture = char_lyra
+	if _char_r:
+		_char_r.texture = char_kael
+	if _next_btn:
+		_next_btn.pressed.connect(_on_next)
 	# fade in
 	var ti := create_tween()
 	ti.tween_property(_fade, "color:a", 0.0, 0.4)
