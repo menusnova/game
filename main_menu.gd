@@ -92,19 +92,18 @@ func _fx_flash(node: Control) -> void:
 		t.tween_property(flash, "color:a", 0.0, 0.35)
 
 func _fx_scale(node: Control) -> void:
-	var orig := node.scale
 	var t := node.create_tween()
 	t.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	t.tween_property(node, "scale", Vector2(0.93, 0.93), 0.08)
-	t.tween_property(node, "scale", orig, 0.18)
+	t.tween_property(node, "scale", Vector2(1.0,  1.0),  0.18)
 
 func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 	const SPARK_COLORS := [
-		Color(0.55, 0.75, 1.0, 1.0),   # ฟ้า
-		Color(0.75, 0.45, 1.0, 1.0),   # ม่วง
-		Color(1.0,  1.0,  1.0, 1.0),   # ขาว
-		Color(0.4,  0.6,  1.0, 1.0),   # ฟ้าเข้ม
-		Color(0.9,  0.6,  1.0, 1.0),   # ม่วงอ่อน
+		Color(0.55, 0.75, 1.0, 1.0),
+		Color(0.75, 0.45, 1.0, 1.0),
+		Color(1.0,  1.0,  1.0, 1.0),
+		Color(0.4,  0.6,  1.0, 1.0),
+		Color(0.9,  0.6,  1.0, 1.0),
 	]
 	const SPARK_SYMBOLS := ["✦", "✧", "⋆", "·", "✦"]
 	const COUNT := 10
@@ -112,8 +111,7 @@ func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 	for i in COUNT:
 		var lbl := Label.new()
 		lbl.text = SPARK_SYMBOLS[i % SPARK_SYMBOLS.size()]
-		var sz := randf_range(9.0, 16.0)
-		lbl.add_theme_font_size_override("font_size", int(sz))
+		lbl.add_theme_font_size_override("font_size", int(randf_range(9.0, 16.0)))
 		lbl.add_theme_color_override("font_color", SPARK_COLORS[i % SPARK_COLORS.size()])
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lbl.position = local_pos + Vector2(-6, -6)
@@ -121,15 +119,13 @@ func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 		node.add_child(lbl)
 
 		var angle := (TAU / COUNT) * i + randf_range(-0.4, 0.4)
-		var dist  := randf_range(28.0, 62.0)
-		var dest  := local_pos + Vector2(cos(angle), sin(angle)) * dist
+		var dest  := local_pos + Vector2(cos(angle), sin(angle)) * randf_range(28.0, 62.0)
 
 		var t := lbl.create_tween().set_parallel(true)
-		t.tween_property(lbl, "position", dest, 0.42).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-		t.tween_property(lbl, "modulate:a", 0.0, 0.42).set_ease(Tween.EASE_IN)
-		t.tween_property(lbl, "scale", Vector2(0.3, 0.3), 0.42).set_ease(Tween.EASE_IN)
-		await t.finished
-		lbl.queue_free()
+		t.tween_property(lbl, "position",   dest,             0.42).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		t.tween_property(lbl, "modulate:a", 0.0,              0.42).set_ease(Tween.EASE_IN)
+		t.tween_property(lbl, "scale",      Vector2(0.3, 0.3), 0.42).set_ease(Tween.EASE_IN)
+		t.finished.connect(lbl.queue_free)
 
 # ── Navigation ────────────────────────────────────────────────────
 func _on_profile_input(ev: InputEvent) -> void:
