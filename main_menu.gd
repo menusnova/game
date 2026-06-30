@@ -2,6 +2,7 @@ extends Control
 
 const SC_BATTLE     := "res://battle_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
+const SC_PROFILE    := "res://profile_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 
@@ -14,6 +15,7 @@ const MENU_ITEMS := [
 func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
 	$ArenaCard.gui_input.connect(_on_arena_input)
+	$ProfileCard.gui_input.connect(_on_profile_input)
 	_setup_menu_items()
 	_setup_domain()
 	_setup_quest_panel()
@@ -62,6 +64,10 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 		# เปิด Quest panel เมื่อกด Missions
 		if item.name == "MenuItem_Missions":
 			_quest_panel.open()
+
+func _on_profile_input(ev: InputEvent) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_goto(SC_PROFILE)
 
 func _on_adv_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
