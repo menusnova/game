@@ -211,12 +211,12 @@ stretch_mode = 5
 
 [node name="ToggleBtn" type="Button" parent="." unique_id=835957511]
 layout_mode = 0
-offset_left = 833.0
-offset_top = 557.0
-offset_right = 905.0
-offset_bottom = 579.0
+offset_left = 470.0
+offset_top = 570.0
+offset_right = 690.0
+offset_bottom = 610.0
 theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("SB_TogBtn")
 theme_override_styles/pressed = SubResource("SB_TogBtn")
 theme_override_styles/hover = SubResource("SB_TogBtn")
