@@ -314,8 +314,12 @@ func _update_domain() -> void:
 	_on_domain_changed(pct)
 
 func _on_domain_changed(pct: float) -> void:
+	if not is_inside_tree(): return
 	_domain_pct.text = "%d%%" % int(pct)
-	await get_tree().process_frame
+	_apply_domain_bar.call_deferred(pct)
+
+func _apply_domain_bar(pct: float) -> void:
+	if not is_inside_tree() or not is_instance_valid(_domain_bar_bg): return
 	var bar_w: float = _domain_bar_bg.size.x
 	_domain_fill.size.x = bar_w * (pct / 100.0)
 
@@ -462,6 +466,7 @@ func _make_activity_row(data: Dictionary) -> Control:
 
 # ── Navigation ───────────────────────────────────────────────────
 func _go_back() -> void:
+	DomainManager.domain_changed.disconnect(_on_domain_changed)
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ov.color = Color(0, 0, 0, 0)

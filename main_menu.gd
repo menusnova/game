@@ -166,6 +166,8 @@ func _on_toggle_char() -> void:
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
 	_navigating = true
+	if DomainManager.domain_changed.is_connected(_on_domain_changed):
+		DomainManager.domain_changed.disconnect(_on_domain_changed)
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ov.color = Color(0, 0, 0, 0)
