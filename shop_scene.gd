@@ -505,7 +505,6 @@ func _open_confirm() -> void:
 	if _selected_item.is_empty():
 		return
 	var item := _selected_item
-	_confirm_ov.get_node("../..") # make sure parented correctly — already done in _build
 	var box: Panel = _confirm_ov.get_child(1)
 	box.get_node("ItemLabel").text = item["name"]
 	if item["cost"] == 0:
