@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://omytdfr4lkpm" path="res://bar_textures/particle_trail.png" id="8_trail"]
 [ext_resource type="Texture2D" uid="uid://jjmih2jw2aq8" path="res://bar_textures/particle_spark.png" id="9_spark"]
 [ext_resource type="Shader" uid="uid://clmpdwfenctxe" path="res://bar_textures/plasma_ring.gdshader" id="10_shader"]
+[ext_resource type="Texture2D" path="res://image/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png" id="11_logo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
 shader = ExtResource("3_barshader")
@@ -62,6 +63,17 @@ grow_vertical = 2
 mouse_filter = 2
 expand_mode = 2
 stretch_mode = 6
+
+[node name="Logo" type="TextureRect" parent="." unique_id=1100000001]
+layout_mode = 0
+offset_left = 276.0
+offset_top = 140.0
+offset_right = 876.0
+offset_bottom = 500.0
+mouse_filter = 2
+texture = ExtResource("11_logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="BarFillRect" type="ColorRect" parent="." unique_id=-293967295]
 material = SubResource("ShaderMaterial_bar")
