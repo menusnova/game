@@ -917,7 +917,7 @@ offset_left = 10.0
 offset_top = 390.0
 offset_right = 268.0
 offset_bottom = 538.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Event")
 
 [node name="TagBg" type="Panel" parent="EventBanner" unique_id=1936235381]
@@ -1076,7 +1076,7 @@ offset_left = 840.0
 offset_top = 52.0
 offset_right = 918.0
 offset_bottom = 128.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2R8")
 
 [node name="GuideIcon" type="TextureRect" parent="GuideCard" unique_id=1089559194]
@@ -1141,7 +1141,7 @@ offset_left = 924.0
 offset_top = 52.0
 offset_right = 1145.0
 offset_bottom = 128.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_NewChar")
 
 [node name="Header" type="ColorRect" parent="NewCharCard" unique_id=494674066]
@@ -1327,7 +1327,7 @@ offset_left = 840.0
 offset_top = 236.0
 offset_right = 1145.0
 offset_bottom = 315.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="ChronicleCard" unique_id=639115030]
@@ -1413,7 +1413,7 @@ offset_left = 840.0
 offset_top = 323.0
 offset_right = 1145.0
 offset_bottom = 402.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="SimulationCard" unique_id=539456200]
@@ -1605,7 +1605,7 @@ offset_left = 996.0
 offset_top = 410.0
 offset_right = 1145.0
 offset_bottom = 494.0
-mouse_filter = 2
+mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="ExpeditionCard" unique_id=1092544986]
