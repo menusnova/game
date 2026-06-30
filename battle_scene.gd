@@ -5,7 +5,7 @@ extends Control
 
 var current_stage = 1
 var enemy_data = {}
-var card_scene = preload("res://Card.tscn")
+var card_scene = preload("res://card.tscn")
 var card_database = {
 
 	"Hydrogen":{
