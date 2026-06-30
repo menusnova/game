@@ -2,12 +2,15 @@
 
 [ext_resource type="Script" uid="uid://ccvjko2qief6a" path="res://loading.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://d830attg16wu" path="res://bar_layer.gd" id="2_barlayer"]
+[ext_resource type="Texture2D" uid="uid://bs2vh0q5gkyqr" path="res://image/0ef05712-8898-4c56-9557-a58c058e02db.png" id="2_mrh31"]
 [ext_resource type="Shader" uid="uid://hb6nb1ldfy7f" path="res://bar_fill.gdshader" id="3_barshader"]
 [ext_resource type="Texture2D" uid="uid://boqag71cesmw3" path="res://bar_textures/glow_core.png" id="7_core"]
 [ext_resource type="Texture2D" uid="uid://omytdfr4lkpm" path="res://bar_textures/particle_trail.png" id="8_trail"]
 [ext_resource type="Texture2D" uid="uid://jjmih2jw2aq8" path="res://bar_textures/particle_spark.png" id="9_spark"]
 [ext_resource type="Shader" uid="uid://clmpdwfenctxe" path="res://bar_textures/plasma_ring.gdshader" id="10_shader"]
-[ext_resource type="Texture2D" path="res://image/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png" id="11_logo"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_u524s"]
+load_path = "res://.godot/imported/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png-dc2c48fc8888bb27a51b892e5c532d00.ctex"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
 shader = ExtResource("3_barshader")
@@ -61,6 +64,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("2_mrh31")
 expand_mode = 2
 stretch_mode = 6
 
@@ -71,7 +75,7 @@ offset_top = 140.0
 offset_right = 876.0
 offset_bottom = 500.0
 mouse_filter = 2
-texture = ExtResource("11_logo")
+texture = SubResource("CompressedTexture2D_u524s")
 expand_mode = 1
 stretch_mode = 5
 
