@@ -13,7 +13,7 @@ const MENU_ITEMS := [
 ]
 
 const CARDS := [
-	"AdventureCard", "ArenaCard", "ProfileCard",
+	"AdventureCard", "ArenaCard",
 	"ChronicleCard", "SimulationCard", "ExpeditionCard",
 	"EventBanner", "NewCharCard", "GuideCard"
 ]
@@ -127,9 +127,16 @@ func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 		t.tween_property(lbl, "scale",      Vector2(0.3, 0.3), 0.42).set_ease(Tween.EASE_IN)
 		t.finished.connect(lbl.queue_free)
 
+# ── Global click sparkle ─────────────────────────────────────────
+func _input(ev: InputEvent) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_fx_ripple(self, get_local_mouse_position())
+
 # ── Navigation ────────────────────────────────────────────────────
 func _on_profile_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_fx_scale($ProfileCard)
+		_fx_ripple($ProfileCard, ev.position)
 		_goto(SC_PROFILE)
 
 func _on_gacha_input(ev: InputEvent) -> void:
