@@ -150,6 +150,13 @@ corner_radius_top_right = 62
 corner_radius_bottom_right = 62
 corner_radius_bottom_left = 62
 
+[sub_resource type="StyleBoxFlat" id="SB_LockOverlay"]
+bg_color = Color(0, 0, 0, 0.65)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="SB_MenuItem"]
 bg_color = Color(1, 1, 1, 0.04)
 border_width_left = 1
@@ -526,7 +533,7 @@ offset_left = 68.0
 offset_top = 48.0
 offset_right = 246.0
 offset_bottom = 60.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "UID 10000001"
 
@@ -577,7 +584,7 @@ offset_bottom = 9.0
 mouse_filter = 2
 color = Color(1, 0.3, 0.3, 1)
 
-[node name="LockOverlay" type="ColorRect" parent="MenuItem_Notice" unique_id=1579286546]
+[node name="LockOverlay" type="Panel" parent="MenuItem_Notice" unique_id=1579286546]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -585,7 +592,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.65)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Notice/LockOverlay" unique_id=1155824030]
 layout_mode = 1
@@ -699,7 +706,7 @@ theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = "Event"
 
-[node name="LockOverlay" type="ColorRect" parent="MenuItem_Event" unique_id=1930892657]
+[node name="LockOverlay" type="Panel" parent="MenuItem_Event" unique_id=1930892657]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -707,7 +714,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.65)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Event/LockOverlay" unique_id=1444874310]
 layout_mode = 1
@@ -764,7 +771,7 @@ theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = "Pass"
 
-[node name="LockOverlay" type="ColorRect" parent="MenuItem_Pass" unique_id=349557708]
+[node name="LockOverlay" type="Panel" parent="MenuItem_Pass" unique_id=349557708]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -772,7 +779,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.65)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_Pass/LockOverlay" unique_id=2480587]
 layout_mode = 1
@@ -876,7 +883,7 @@ theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = "First Purchase"
 
-[node name="LockOverlay" type="ColorRect" parent="MenuItem_FirstPurchase" unique_id=840209567]
+[node name="LockOverlay" type="Panel" parent="MenuItem_FirstPurchase" unique_id=840209567]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -884,7 +891,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.65)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="MenuItem_FirstPurchase/LockOverlay" unique_id=14151895]
 layout_mode = 1
@@ -1281,7 +1288,7 @@ offset_left = 12.0
 offset_top = 70.0
 offset_right = 200.0
 offset_bottom = 82.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 9
 text = "CHAPTER 12-9"
 
@@ -1540,7 +1547,7 @@ offset_left = 34.0
 offset_top = 59.0
 offset_right = 140.0
 offset_bottom = 70.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "3200/3500"
 
@@ -1784,7 +1791,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Lineup"
 horizontal_alignment = 1
@@ -1848,7 +1855,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Arcanum"
 horizontal_alignment = 1
@@ -1874,7 +1881,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Inventory"
 horizontal_alignment = 1
@@ -1928,7 +1935,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Database"
 horizontal_alignment = 1
@@ -1954,7 +1961,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Guild"
 horizontal_alignment = 1
@@ -2008,7 +2015,7 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.38, 0.58, 0.88, 0.7)
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
 text = "Archive"
 horizontal_alignment = 1
