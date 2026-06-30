@@ -112,7 +112,7 @@ func _make_card(char_name: String, rarity: int, total: int) -> Panel:
 		_:
 			sb.bg_color = Color(0.06, 0.1, 0.2, 0.95)
 			sb.border_color = Color(0.37, 0.62, 1.0, 0.3)
-	card.add_theme_style_override("panel", sb)
+	card.add_theme_stylebox_override("panel", sb)
 
 	var stars_lbl := Label.new()
 	var star_char := "★"

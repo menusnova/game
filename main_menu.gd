@@ -99,25 +99,16 @@ func _fx_scale(node: Control) -> void:
 	t.tween_property(node, "scale", orig, 0.18)
 
 func _fx_ripple(node: Control, local_pos: Vector2) -> void:
-	var ripple := ColorRect.new()
-	ripple.color = Color(1, 1, 1, 0.18)
-	ripple.size  = Vector2(0, 0)
-	ripple.pivot_offset = Vector2(0, 0)
-	ripple.position = local_pos
-	ripple.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	# make it a circle via clip/corner using a Panel instead
 	var rp := Panel.new()
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(1, 1, 1, 0.18)
+	sb.bg_color = Color(1, 1, 1, 0.22)
 	sb.corner_radius_top_left    = 200
 	sb.corner_radius_top_right   = 200
 	sb.corner_radius_bottom_right = 200
 	sb.corner_radius_bottom_left  = 200
-	rp.add_theme_style_override("panel", sb)
+	rp.add_theme_stylebox_override("panel", sb)
 	rp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# size to cover the node diagonal
 	var max_r: float = node.size.length() * 1.1
 	rp.pivot_offset = Vector2(max_r / 2.0, max_r / 2.0)
 	rp.position = local_pos - Vector2(max_r / 2.0, max_r / 2.0)
@@ -126,8 +117,8 @@ func _fx_ripple(node: Control, local_pos: Vector2) -> void:
 	node.add_child(rp)
 
 	var t := rp.create_tween().set_parallel(true)
-	t.tween_property(rp, "scale", Vector2(1.0, 1.0), 0.38).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	t.tween_property(sb, "bg_color:a", 0.0, 0.38).set_ease(Tween.EASE_IN)
+	t.tween_property(rp, "scale",      Vector2(1.0, 1.0), 0.38).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(rp, "modulate:a", 0.0,               0.38).set_ease(Tween.EASE_IN)
 	await t.finished
 	rp.queue_free()
 

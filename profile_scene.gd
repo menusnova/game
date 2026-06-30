@@ -99,7 +99,7 @@ func _make_avatar_popup() -> Control:
 	sb.border_color = Color(0.4, 0.6, 1, 0.25)
 	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
 	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
-	panel.add_theme_style_override("panel", sb)
+	panel.add_theme_stylebox_override("panel", sb)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	panel.offset_left = -180; panel.offset_right = 180
 	panel.offset_top  = -110; panel.offset_bottom = 110
@@ -158,7 +158,7 @@ func _make_avatar_btn(idx: int) -> Control:
 		sb.border_width_top = 2; sb.border_width_right = 2
 		sb.border_width_bottom = 2; sb.border_width_left = 2
 		sb.border_color = Color(1, 1, 1, 0.9)
-	p.add_theme_style_override("panel", sb)
+	p.add_theme_stylebox_override("panel", sb)
 
 	var lbl := Label.new()
 	lbl.text = AVATAR_ICONS[idx]
@@ -198,7 +198,7 @@ func _make_edit_popup() -> Control:
 	sb.border_color = Color(0.4, 0.6, 1, 0.25)
 	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
 	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
-	panel.add_theme_style_override("panel", sb)
+	panel.add_theme_stylebox_override("panel", sb)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	panel.offset_left = -220; panel.offset_right  = 220
 	panel.offset_top  = -140; panel.offset_bottom = 140
@@ -344,7 +344,7 @@ func _make_showcase_card(data: Dictionary) -> Control:
 	if is_empty:
 		sb.bg_color    = Color(1, 1, 1, 0.025)
 		sb.border_color = Color(1, 1, 1, 0.06)
-		card.add_theme_style_override("panel", sb)
+		card.add_theme_stylebox_override("panel", sb)
 		var plus := Label.new()
 		plus.text = "+"
 		plus.add_theme_font_size_override("font_size", 28)
@@ -358,7 +358,7 @@ func _make_showcase_card(data: Dictionary) -> Control:
 
 	sb.bg_color = Color(0.031, 0.063, 0.137, 0.92)
 	sb.border_color = Color(0.388, 0.624, 1, 0.12)
-	card.add_theme_style_override("panel", sb)
+	card.add_theme_stylebox_override("panel", sb)
 
 	var art := TextureRect.new()
 	art.texture = data.get("art", null)
