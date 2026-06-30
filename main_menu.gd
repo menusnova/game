@@ -7,6 +7,7 @@ const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
+var _navigating := false
 
 const MENU_ITEMS := [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
@@ -16,7 +17,7 @@ const MENU_ITEMS := [
 const CARDS := [
 	"AdventureCard", "ArenaCard",
 	"ChronicleCard", "SimulationCard", "ExpeditionCard",
-	"EventBanner", "NewCharCard", "GuideCard"
+	"EventBanner", "NewCharCard"
 ]
 
 func _ready() -> void:
@@ -163,7 +164,8 @@ func _on_toggle_char() -> void:
 	$MaleCharacter.visible   = not _show_female
 
 func _goto(path: String) -> void:
-	if not ResourceLoader.exists(path): return
+	if _navigating or not ResourceLoader.exists(path): return
+	_navigating = true
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ov.color = Color(0, 0, 0, 0)
