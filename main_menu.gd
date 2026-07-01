@@ -6,6 +6,7 @@ const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 const SC_CODEX      := "res://codex_scene.tscn"
+const SC_CHARACTER  := "res://character_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 var _navigating := false
@@ -53,6 +54,14 @@ func _setup_navbar() -> void:
 				_goto(SC_CODEX)
 		)
 		_attach_hover_bounce(db_node)
+
+	var char_node: Control = get_node_or_null("NavBar/Nav2_Character")
+	if char_node and not _is_locked(char_node):
+		char_node.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto(SC_CHARACTER)
+		)
+		_attach_hover_bounce(char_node)
 
 func _setup_quest_panel() -> void:
 	_quest_panel = preload("res://quest_panel.tscn").instantiate()
