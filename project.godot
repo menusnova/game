@@ -16,6 +16,22 @@ run/disable_stdout=true
 run/disable_stderr=true
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/size/resizable=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation="sensor_portrait"
+window/size/window_width_override=540
+window/size/window_height_override=960
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+pointing/emulate_touch_from_mouse=true
+
 [autoload]
 
 DomainManager="*res://domain_manager.gd"
