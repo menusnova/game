@@ -35,6 +35,7 @@ func _ready() -> void:
 	$ArenaCard.gui_input.connect(_on_arena_input)
 	$ProfileCard.gui_input.connect(_on_profile_input)
 	$NewCharCard.gui_input.connect(_on_gacha_input)
+	_setup_locked_nodes()
 	_setup_menu_items()
 	_setup_cards_fx()
 	_setup_domain()
@@ -57,11 +58,26 @@ func _on_domain_changed(percent: float) -> void:
 		label.add_theme_color_override("font_color",
 			Color(0.4 + t * 0.6, 0.85 + t * 0.15, 1.0, 1.0))
 
+# ── Locked-node helper ───────────────────────────────────────────
+func _is_locked(node: Control) -> bool:
+	return node.get_node_or_null("LockOverlay") != null
+
+func _setup_locked_nodes() -> void:
+	# Disable all nodes that have a LockOverlay child
+	var all_names := MENU_ITEMS + CARDS + [
+		"NavBar/Nav1_Lineup", "NavBar/Nav3_Inventory",
+		"NavBar/Nav5_Guild",  "NavBar/Nav6_Archive",
+	]
+	for n in all_names:
+		var node: Control = get_node_or_null(n)
+		if node and _is_locked(node):
+			node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 # ── Menu items (left sidebar) ────────────────────────────────────
 func _setup_menu_items() -> void:
 	for item_name in MENU_ITEMS:
 		var item: Control = get_node_or_null(item_name)
-		if item == null:
+		if item == null or _is_locked(item):
 			continue
 		var orig_y: float = item.position.y
 		item.mouse_entered.connect(_on_menu_hover.bind(item, orig_y, true))
@@ -88,7 +104,7 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 func _setup_cards_fx() -> void:
 	for card_name in CARDS:
 		var card: Control = get_node_or_null(card_name)
-		if card == null:
+		if card == null or _is_locked(card):
 			continue
 		card.gui_input.connect(_on_card_fx.bind(card))
 
@@ -182,8 +198,8 @@ func _setup_char_switcher() -> void:
 
 	_char_switcher = Control.new()
 	_char_switcher.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_switcher.position = Vector2(460, 548)
-	_char_switcher.size = Vector2(280, 84)
+	_char_switcher.position = Vector2(472, 558)
+	_char_switcher.size = Vector2(160, 68)
 	add_child(_char_switcher)
 
 	_build_char_circles()
@@ -195,19 +211,18 @@ func _build_char_circles() -> void:
 		c.queue_free()
 	_char_circles.clear()
 
-	var spacing := 82.0
 	for i in CHAR_DATA.size():
 		var btn := Panel.new()
 		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		_char_switcher.add_child(btn)
 		_char_circles.append(btn)
 
-		# Label inside circle (placeholder text / future chibi)
+		# placeholder label (replace with chibi TextureRect later)
 		var lbl := Label.new()
 		lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.add_theme_font_size_override("font_size", 9)
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lbl.text = ""
 		btn.add_child(lbl)
@@ -215,11 +230,12 @@ func _build_char_circles() -> void:
 		btn.gui_input.connect(_on_char_circle_input.bind(i))
 
 func _refresh_char_circles(animate: bool = true) -> void:
-	var spacing := 82.0
+	const SPACING := 70.0
+	const H := 68.0
 	for i in _char_circles.size():
 		var btn: Panel = _char_circles[i]
 		var active := (i == _char_index)
-		var size := Vector2(68, 68) if active else Vector2(48, 48)
+		var sz := Vector2(58, 58) if active else Vector2(42, 42)
 		var col: Color = CHAR_DATA[i]["color"]
 
 		var sb := StyleBoxFlat.new()
@@ -227,7 +243,7 @@ func _refresh_char_circles(animate: bool = true) -> void:
 		sb.corner_radius_top_right    = 50
 		sb.corner_radius_bottom_right = 50
 		sb.corner_radius_bottom_left  = 50
-		sb.bg_color = col if active else Color(col.r, col.g, col.b, 0.35)
+		sb.bg_color = col if active else Color(col.r, col.g, col.b, 0.30)
 		if active:
 			sb.border_width_left   = 3
 			sb.border_width_right  = 3
@@ -236,14 +252,14 @@ func _refresh_char_circles(animate: bool = true) -> void:
 			sb.border_color = Color(1, 1, 1, 0.9)
 		btn.add_theme_stylebox_override("panel", sb)
 
-		var target_pos := Vector2(i * spacing + (spacing - size.x) / 2.0, (84.0 - size.y) / 2.0)
+		var target_pos := Vector2(i * SPACING + (SPACING - sz.x) / 2.0, (H - sz.y) / 2.0)
 
 		if animate:
 			var t := btn.create_tween().set_parallel(true)
-			t.tween_property(btn, "size", size, 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			t.tween_property(btn, "size",     sz,         0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 			t.tween_property(btn, "position", target_pos, 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		else:
-			btn.size = size
+			btn.size     = sz
 			btn.position = target_pos
 
 func _update_char_sprites() -> void:
