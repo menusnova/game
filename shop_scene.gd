@@ -335,8 +335,8 @@ func _rebuild_wallet() -> void:
 	for c in _wallet_row.get_children():
 		c.queue_free()
 	_add_wallet_pill("💰", str(CurrencyManager.gold),         Color(1.00, 0.82, 0.25, 1.0))
-	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
 	_add_wallet_pill("💠", str(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
+	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
 	_add_wallet_pill("⚡", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY],
 		Color(0.95, 0.95, 0.35, 1.0))
 
