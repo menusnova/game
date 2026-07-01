@@ -99,13 +99,27 @@ func _rebuild_list() -> void:
 	for q in quests:
 		_list.add_child(_make_row(q))
 
+const _GO_SCENES := {
+	"battle":    "res://battle_scene.tscn",
+	"gacha":     "res://gacha_scene.tscn",
+	"adventure": "res://transition_scene.tscn",
+	"arena":     "res://battle_scene.tscn",
+}
+
 func _make_row(q: Dictionary) -> Control:
-	var row := _QuestRow.new(q)
+	var go_key: String = str(q.get("go", ""))
+	var scene_path: String = _GO_SCENES.get(go_key, "")
+	var nav: Callable = Callable()
+	if scene_path != "":
+		nav = func():
+			close()
+			get_tree().change_scene_to_file(scene_path)
+	var row := _QuestRow.new(q, nav)
 	return row
 
 # ── Inner class: one quest row ────────────────────────────────
 class _QuestRow extends Control:
-	func _init(q: Dictionary) -> void:
+	func _init(q: Dictionary, nav: Callable = Callable()) -> void:
 		custom_minimum_size = Vector2(0, 64)
 
 		# background
@@ -154,7 +168,7 @@ class _QuestRow extends Control:
 		add_child(cnt)
 
 		# "ไป" button (only if not done)
-		if not done and str(q.get("go", "")) != "":
+		if not done and nav.is_valid():
 			var btn := Button.new()
 			var sb := StyleBoxFlat.new()
 			sb.bg_color = Color(0.15, 0.33, 0.78, 1.0)
@@ -170,6 +184,7 @@ class _QuestRow extends Control:
 			btn.text = "ไป ›"
 			btn.size = Vector2(64, 32)
 			btn.position = Vector2(1060, 16)
+			btn.pressed.connect(nav)
 			add_child(btn)
 
 		# divider
