@@ -846,71 +846,6 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.0)
 
-[node name="MenuItem_FirstPurchase" type="Control" parent="." unique_id=1452133927]
-anchors_preset = 0
-offset_left = 10.0
-offset_top = 342.0
-offset_right = 162.0
-offset_bottom = 378.0
-mouse_filter = 0
-
-[node name="Bg" type="Panel" parent="MenuItem_FirstPurchase"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_styles/panel = SubResource("SB_MenuItem")
-
-[node name="Icon" type="TextureRect" parent="MenuItem_FirstPurchase" unique_id=1711555147]
-layout_mode = 0
-offset_top = 2.0
-offset_right = 22.0
-offset_bottom = 24.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Text" type="Label" parent="MenuItem_FirstPurchase" unique_id=211096525]
-layout_mode = 0
-offset_left = 26.0
-offset_top = 3.0
-offset_right = 148.0
-offset_bottom = 19.0
-theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "First Purchase"
-
-[node name="LockOverlay" type="Panel" parent="MenuItem_FirstPurchase" unique_id=840209567]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_styles/panel = SubResource("SB_LockOverlay")
-
-[node name="LockIcon" type="TextureRect" parent="MenuItem_FirstPurchase/LockOverlay" unique_id=14151895]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -9.0
-offset_top = -9.0
-offset_right = 9.0
-offset_bottom = 9.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_lockchain")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="EventBanner" type="Panel" parent="." unique_id=1029562533]
 layout_mode = 0
 offset_left = 10.0
@@ -1706,60 +1641,6 @@ theme_override_font_sizes/font_size = 8
 text = "Alchemist"
 horizontal_alignment = 1
 
-[node name="Nav1_Lineup" type="Control" parent="NavBar" unique_id=859749142]
-anchors_preset = 0
-offset_left = 80.0
-offset_right = 160.0
-offset_bottom = 52.0
-
-[node name="Icon" type="TextureRect" parent="NavBar/Nav1_Lineup" unique_id=760996363]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Text" type="Label" parent="NavBar/Nav1_Lineup" unique_id=803664527]
-layout_mode = 0
-offset_top = 36.0
-offset_right = 80.0
-offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
-theme_override_font_sizes/font_size = 8
-text = "Lineup"
-horizontal_alignment = 1
-
-[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav1_Lineup" unique_id=1824230191]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
-
-[node name="LockIcon" type="TextureRect" parent="NavBar/Nav1_Lineup/LockOverlay" unique_id=136703510]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -39.0
-offset_top = -24.0
-offset_right = 41.0
-offset_bottom = 26.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_lockchain")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
 anchors_preset = 0
 offset_left = 160.0
@@ -1923,60 +1804,6 @@ offset_left = -39.0
 offset_top = -23.0
 offset_right = 38.0
 offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_lockchain")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Nav6_Archive" type="Control" parent="NavBar" unique_id=775056348]
-anchors_preset = 0
-offset_left = 480.0
-offset_right = 560.0
-offset_bottom = 52.0
-
-[node name="Icon" type="TextureRect" parent="NavBar/Nav6_Archive" unique_id=700392957]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Text" type="Label" parent="NavBar/Nav6_Archive" unique_id=1358237559]
-layout_mode = 0
-offset_top = 36.0
-offset_right = 80.0
-offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
-theme_override_font_sizes/font_size = 8
-text = "Archive"
-horizontal_alignment = 1
-
-[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav6_Archive" unique_id=1954836291]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
-
-[node name="LockIcon" type="TextureRect" parent="NavBar/Nav6_Archive/LockOverlay" unique_id=1314178177]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -45.0
-offset_top = -24.0
-offset_right = 39.0
-offset_bottom = 24.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2

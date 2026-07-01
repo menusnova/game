@@ -21,7 +21,7 @@ const CHAR_DATA := [
 
 const MENU_ITEMS := [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
-	"MenuItem_Pass", "MenuItem_Shop", "MenuItem_FirstPurchase"
+	"MenuItem_Pass", "MenuItem_Shop"
 ]
 
 const CARDS := [
@@ -65,8 +65,8 @@ func _is_locked(node: Control) -> bool:
 func _setup_locked_nodes() -> void:
 	# Disable all nodes that have a LockOverlay child
 	var all_names := MENU_ITEMS + CARDS + [
-		"NavBar/Nav1_Lineup", "NavBar/Nav3_Inventory",
-		"NavBar/Nav5_Guild",  "NavBar/Nav6_Archive",
+		"NavBar/Nav3_Inventory",
+		"NavBar/Nav5_Guild",
 	]
 	for n in all_names:
 		var node: Control = get_node_or_null(n)
