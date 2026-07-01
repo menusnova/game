@@ -225,9 +225,9 @@ text = "♀ · ♂"
 
 [node name="CurrBox1" type="Panel" parent="." unique_id=1464954599]
 layout_mode = 0
-offset_left = 320.0
+offset_left = 240.0
 offset_top = 7.0
-offset_right = 440.0
+offset_right = 360.0
 offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
@@ -264,9 +264,9 @@ text = "+"
 
 [node name="CurrBox2" type="Panel" parent="." unique_id=1961644868]
 layout_mode = 0
-offset_left = 448.0
+offset_left = 368.0
 offset_top = 7.0
-offset_right = 568.0
+offset_right = 488.0
 offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
@@ -303,9 +303,9 @@ text = "+"
 
 [node name="CurrBox3" type="Panel" parent="." unique_id=157021780]
 layout_mode = 0
-offset_left = 576.0
+offset_left = 496.0
 offset_top = 7.0
-offset_right = 696.0
+offset_right = 616.0
 offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
@@ -342,9 +342,9 @@ text = "+"
 
 [node name="CurrBox4" type="Panel" parent="." unique_id=144192260]
 layout_mode = 0
-offset_left = 704.0
+offset_left = 624.0
 offset_top = 7.0
-offset_right = 824.0
+offset_right = 744.0
 offset_bottom = 43.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
