@@ -32,7 +32,7 @@ var _signature:   String = "\"ความลับของสูตรนั�
 var _avatar_idx:  int    = 0
 
 @onready var _back:          Button        = $TopBar/BackBtn
-@onready var _showcase_row:  HBoxContainer = $ShowcaseRow
+@onready var _showcase_row:  GridContainer = $ShowcaseRow
 @onready var _activity_list: VBoxContainer = $ActivityCard/ActivityList
 @onready var _fade:          ColorRect     = $FadeOverlay
 @onready var _domain_fill:   ColorRect     = $PlayerCard/DomainRow/DomainBarBg/DomainBarFill
@@ -337,7 +337,7 @@ func _build_showcase() -> void:
 
 func _make_showcase_card(data: Dictionary) -> Control:
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(170, 186)
+	card.custom_minimum_size = Vector2(168, 255)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var is_empty: bool = str(data.get("name", "")) == ""
