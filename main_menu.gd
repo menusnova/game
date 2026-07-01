@@ -59,7 +59,7 @@ func _setup_navbar() -> void:
 		)
 		_attach_hover_bounce(db_node)
 
-	var char_node: Control = get_node_or_null("NavBar/Nav2_Character")
+	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum")
 	if char_node and not _is_locked(char_node):
 		char_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
