@@ -38,12 +38,12 @@ const _GO_SCENES := {
 
 @onready var _sheet:        Panel         = $Sheet
 @onready var _dim:          ColorRect     = $Dim
-@onready var _tab_daily:    Button        = $Sheet/Body/TabCol/TabDaily
-@onready var _tab_exp:      Button        = $Sheet/Body/TabCol/TabExpedition
-@onready var _tab_end:      Button        = $Sheet/Body/TabCol/TabEndgame
-@onready var _tab_chal:     Button        = $Sheet/Body/TabCol/TabChallenge
+@onready var _tab_daily:    Button        = $Sheet/Body/TabColWrap/TabCol/TabDaily
+@onready var _tab_exp:      Button        = $Sheet/Body/TabColWrap/TabCol/TabExpedition
+@onready var _tab_end:      Button        = $Sheet/Body/TabColWrap/TabCol/TabEndgame
+@onready var _tab_chal:     Button        = $Sheet/Body/TabColWrap/TabCol/TabChallenge
 @onready var _list:         VBoxContainer = $Sheet/Body/Content/QuestList
-@onready var _close_btn:    Button        = $Sheet/Header/CloseBtn
+@onready var _close_btn:    Button        = $Sheet/Header/HeaderRow/CloseBtn
 
 func _ready() -> void:
 	if _sheet:
@@ -92,8 +92,8 @@ func _switch_tab(tab: Tab) -> void:
 	_rebuild_list()
 
 func _update_tab_style() -> void:
-	var tabs: Array = [_tab_daily, _tab_exp, _tab_end, _tab_chal]
-	var actives: Array = [
+	var tabs: Array[Button] = [_tab_daily, _tab_exp, _tab_end, _tab_chal]
+	var actives: Array[bool] = [
 		_current_tab == Tab.DAILY,
 		_current_tab == Tab.EXPEDITION,
 		_current_tab == Tab.ENDGAME,
@@ -135,7 +135,7 @@ func _rebuild_list() -> void:
 		return
 	for child in _list.get_children():
 		child.queue_free()
-	var quests: Array = QUESTS.get(_current_tab, [])
+	var quests: Array = QUESTS.get(_current_tab, []) as Array
 	for q in quests:
 		var nav: Callable = Callable()
 		var go_key: String = str(q.get("go", ""))

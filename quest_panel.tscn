@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://quest_panel_001"]
+[gd_scene load_steps=9 format=3 uid="uid://quest_panel_001"]
 
 [ext_resource type="Script" path="res://quest_panel.gd" id="1_qp"]
 
@@ -82,29 +82,34 @@ offset_right = 1016.0
 offset_bottom = 584.0
 theme_override_styles/panel = SubResource("SB_Sheet")
 
-[node name="Header" type="HBoxContainer" parent="Sheet"]
+[node name="Header" type="PanelContainer" parent="Sheet"]
 layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 880.0
 offset_bottom = 52.0
 theme_override_styles/panel = SubResource("SB_Header")
+
+[node name="HeaderRow" type="HBoxContainer" parent="Sheet/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 0
 
-[node name="TitleLabel" type="Label" parent="Sheet/Header"]
+[node name="TitleLabel" type="Label" parent="Sheet/Header/HeaderRow"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 15
-text = "  ภารกิจ"
+text = "ภารกิจ"
 vertical_alignment = 1
 
-[node name="Spacer" type="Control" parent="Sheet/Header"]
+[node name="Spacer" type="Control" parent="Sheet/Header/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CloseBtn" type="Button" parent="Sheet/Header"]
+[node name="CloseBtn" type="Button" parent="Sheet/Header/HeaderRow"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
@@ -124,15 +129,20 @@ offset_right = 880.0
 offset_bottom = 520.0
 theme_override_constants/separation = 0
 
-[node name="TabCol" type="VBoxContainer" parent="Sheet/Body"]
+[node name="TabColWrap" type="PanelContainer" parent="Sheet/Body"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("SB_TabCol")
+
+[node name="TabCol" type="VBoxContainer" parent="Sheet/Body/TabColWrap"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 2
 
-[node name="TabDaily" type="Button" parent="Sheet/Body/TabCol"]
+[node name="TabDaily" type="Button" parent="Sheet/Body/TabColWrap/TabCol"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("SB_TabActive")
@@ -144,7 +154,7 @@ theme_override_font_sizes/font_size = 13
 text = "รายวัน"
 alignment = 0
 
-[node name="TabExpedition" type="Button" parent="Sheet/Body/TabCol"]
+[node name="TabExpedition" type="Button" parent="Sheet/Body/TabColWrap/TabCol"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("SB_TabInactive")
@@ -156,7 +166,7 @@ theme_override_font_sizes/font_size = 13
 text = "สำรวจ"
 alignment = 0
 
-[node name="TabEndgame" type="Button" parent="Sheet/Body/TabCol"]
+[node name="TabEndgame" type="Button" parent="Sheet/Body/TabColWrap/TabCol"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("SB_TabInactive")
@@ -168,7 +178,7 @@ theme_override_font_sizes/font_size = 13
 text = "Endgame"
 alignment = 0
 
-[node name="TabChallenge" type="Button" parent="Sheet/Body/TabCol"]
+[node name="TabChallenge" type="Button" parent="Sheet/Body/TabColWrap/TabCol"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("SB_TabInactive")
@@ -180,7 +190,7 @@ theme_override_font_sizes/font_size = 13
 text = "Challenge"
 alignment = 0
 
-[node name="TabColPad" type="Control" parent="Sheet/Body/TabCol"]
+[node name="TabColPad" type="Control" parent="Sheet/Body/TabColWrap/TabCol"]
 layout_mode = 2
 size_flags_vertical = 3
 
