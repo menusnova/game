@@ -319,7 +319,7 @@ func _update_domain() -> void:
 
 func _on_domain_changed(pct: float) -> void:
 	if not is_inside_tree(): return
-	_domain_pct.text = "%d%%" % int(pct)
+	if _domain_pct: _domain_pct.text = "%d%%" % int(pct)
 	_apply_domain_bar.call_deferred(pct)
 
 func _apply_domain_bar(pct: float) -> void:
@@ -329,6 +329,7 @@ func _apply_domain_bar(pct: float) -> void:
 
 # ── Showcase ─────────────────────────────────────────────────────
 func _build_showcase() -> void:
+	if not _showcase_row: return
 	for q in _showcase_row.get_children():
 		q.queue_free()
 	for entry in SHOWCASE:
@@ -426,6 +427,7 @@ func _make_showcase_card(data: Dictionary) -> Control:
 
 # ── Activity ─────────────────────────────────────────────────────
 func _build_activity() -> void:
+	if not _activity_list: return
 	for a in ACTIVITY:
 		_activity_list.add_child(_make_activity_row(a))
 

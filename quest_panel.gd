@@ -93,6 +93,7 @@ func _update_tab_style() -> void:
 		Tab.WEEKLY: if _tab_week:  _tab_week.modulate  = Color(1, 1, 1, 1.0)
 
 func _rebuild_list() -> void:
+	if not _list: return
 	for child in _list.get_children():
 		child.queue_free()
 	var quests: Array = QUESTS.get(_current_tab, [])
