@@ -242,8 +242,8 @@ func _setup_char_switcher() -> void:
 
 	_char_switcher = Control.new()
 	_char_switcher.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_switcher.position = Vector2(472, 558)
-	_char_switcher.size = Vector2(160, 68)
+	_char_switcher.position = Vector2(412, 604)
+	_char_switcher.size = Vector2(88, 36)
 	add_child(_char_switcher)
 
 	_build_char_circles()
@@ -274,12 +274,12 @@ func _build_char_circles() -> void:
 		btn.gui_input.connect(_on_char_circle_input.bind(i))
 
 func _refresh_char_circles(animate: bool = true) -> void:
-	const SPACING := 70.0
-	const H := 68.0
+	const SPACING := 40.0
+	const H := 36.0
 	for i in _char_circles.size():
 		var btn: Panel = _char_circles[i]
 		var active := (i == _char_index)
-		var sz := Vector2(58, 58) if active else Vector2(42, 42)
+		var sz := Vector2(30, 30) if active else Vector2(22, 22)
 		var col: Color = CHAR_DATA[i]["color"]
 
 		var sb := StyleBoxFlat.new()
