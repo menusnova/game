@@ -24,25 +24,25 @@ const SC_STORY := "res://story_scene.tscn"
 @onready var _label: Label     = $SlideLabel
 
 func _ready() -> void:
-	_fade.color.a = 1.0
+	if _fade: _fade.color.a = 1.0
 	_run()
 
 func _run() -> void:
 	for i in SLIDES.size():
 		# ตั้งฉากและข้อความ
-		_bg.texture = SLIDES[i]
-		_label.text = SLIDE_LABELS[i] if i < SLIDE_LABELS.size() else ""
+		if _bg:    _bg.texture = SLIDES[i]
+		if _label: _label.text = SLIDE_LABELS[i] if i < SLIDE_LABELS.size() else ""
 
-		# fade in
-		var ti := create_tween()
-		ti.tween_property(_fade, "color:a", 0.0, FADE_TIME)
-		await ti.finished
+		if _fade:
+			var ti := create_tween()
+			ti.tween_property(_fade, "color:a", 0.0, FADE_TIME)
+			await ti.finished
 
 		await get_tree().create_timer(HOLD_TIME).timeout
 
-		# fade out
-		var to := create_tween()
-		to.tween_property(_fade, "color:a", 1.0, FADE_TIME)
-		await to.finished
+		if _fade:
+			var to := create_tween()
+			to.tween_property(_fade, "color:a", 1.0, FADE_TIME)
+			await to.finished
 
 	get_tree().change_scene_to_file(SC_STORY)

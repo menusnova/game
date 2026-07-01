@@ -58,7 +58,7 @@ func _ready() -> void:
 	_rebuild_list()
 
 func open() -> void:
-	if _is_open:
+	if _is_open or not _sheet or not _dim:
 		return
 	_is_open = true
 	_dim.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -67,7 +67,7 @@ func open() -> void:
 	t.tween_property(_dim, "modulate:a", 1.0, 0.22)
 
 func close() -> void:
-	if not _is_open:
+	if not _is_open or not _sheet or not _dim:
 		return
 	_is_open = false
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -86,11 +86,11 @@ func _switch_tab(tab: Tab) -> void:
 
 func _update_tab_style() -> void:
 	for btn in [_tab_daily, _tab_story, _tab_week]:
-		btn.modulate = Color(1, 1, 1, 0.4)
+		if btn: btn.modulate = Color(1, 1, 1, 0.4)
 	match _current_tab:
-		Tab.DAILY: _tab_daily.modulate = Color(1, 1, 1, 1.0)
-		Tab.STORY: _tab_story.modulate = Color(1, 1, 1, 1.0)
-		Tab.WEEKLY: _tab_week.modulate = Color(1, 1, 1, 1.0)
+		Tab.DAILY:  if _tab_daily: _tab_daily.modulate = Color(1, 1, 1, 1.0)
+		Tab.STORY:  if _tab_story: _tab_story.modulate = Color(1, 1, 1, 1.0)
+		Tab.WEEKLY: if _tab_week:  _tab_week.modulate  = Color(1, 1, 1, 1.0)
 
 func _rebuild_list() -> void:
 	for child in _list.get_children():

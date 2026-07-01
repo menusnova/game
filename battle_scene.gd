@@ -317,7 +317,9 @@ func check_battle():
 
 	if player_hp <= 0:
 		$MessageLabel.text = "Defeat!"
-		$AttackButton.disabled = true
+		for btn_name in ["AttackButton","SkillButton","DefendButton","EndTurnButton","UltimateButton"]:
+			var b = get_node_or_null(btn_name)
+			if b: b.disabled = true
 		
 		
 func _on_attack_button_pressed():

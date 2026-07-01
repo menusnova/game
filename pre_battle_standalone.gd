@@ -18,9 +18,10 @@ func _ready() -> void:
 		_start.pressed.connect(_on_start)
 
 	# fade in ก่อน แล้วค่อย slide card ขึ้น
-	var tf := create_tween()
-	tf.tween_property(_fade, "color:a", 0.0, 0.3)
-	await tf.finished
+	if _fade:
+		var tf := create_tween()
+		tf.tween_property(_fade, "color:a", 0.0, 0.3)
+		await tf.finished
 
 	var tc := create_tween()
 	tc.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)

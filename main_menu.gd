@@ -33,11 +33,15 @@ const CARDS := [
 ]
 
 func _ready() -> void:
-	$AdventureCard.gui_input.connect(_on_adv_input)
-	if not _is_locked($ArenaCard):
-		$ArenaCard.gui_input.connect(_on_arena_input)
-	$ProfileCard.gui_input.connect(_on_profile_input)
-	$NewCharCard.gui_input.connect(_on_gacha_input)
+	var _adv = get_node_or_null("AdventureCard")
+	if _adv: _adv.gui_input.connect(_on_adv_input)
+	var _arena = get_node_or_null("ArenaCard")
+	if _arena and not _is_locked(_arena):
+		_arena.gui_input.connect(_on_arena_input)
+	var _prof = get_node_or_null("ProfileCard")
+	if _prof: _prof.gui_input.connect(_on_profile_input)
+	var _newchar = get_node_or_null("NewCharCard")
+	if _newchar: _newchar.gui_input.connect(_on_gacha_input)
 	_setup_locked_nodes()
 	_setup_menu_items()
 	_setup_cards_fx()
@@ -225,8 +229,10 @@ func _on_arena_input(ev: InputEvent) -> void:
 
 func _on_toggle_char() -> void:
 	_show_female = not _show_female
-	$FemaleCharacter.visible = _show_female
-	$MaleCharacter.visible   = not _show_female
+	var fc = get_node_or_null("FemaleCharacter")
+	var mc = get_node_or_null("MaleCharacter")
+	if fc: fc.visible = _show_female
+	if mc: mc.visible = not _show_female
 
 # ── Character Switcher (carousel) ────────────────────────────────
 func _setup_char_switcher() -> void:

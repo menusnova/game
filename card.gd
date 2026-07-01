@@ -15,10 +15,17 @@ func setup(data):
 	card_name = data["name"]
 	cost = data["cost"]
 	description = data["description"]
-	$VBoxContainer/CardImage.texture = load(data["image"])
-	$VBoxContainer/NameLabel.text = card_name
-	$VBoxContainer/CostLabel.text = "Cost: " + str(cost)
-	$VBoxContainer/DescLabel.text = description
+	var img_node = get_node_or_null("VBoxContainer/CardImage")
+	if img_node and data.has("image") and data["image"] != "":
+		var tex = load(data["image"])
+		if tex:
+			img_node.texture = tex
+	var name_node = get_node_or_null("VBoxContainer/NameLabel")
+	var cost_node = get_node_or_null("VBoxContainer/CostLabel")
+	var desc_node = get_node_or_null("VBoxContainer/DescLabel")
+	if name_node: name_node.text = card_name
+	if cost_node: cost_node.text = "Cost: " + str(cost)
+	if desc_node: desc_node.text = description
 	
 	
 signal card_clicked(card_name)

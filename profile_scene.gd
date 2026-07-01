@@ -72,15 +72,15 @@ func _ready() -> void:
 	if _avatar_icon:
 		_avatar_icon.gui_input.connect(_on_avatar_click)
 
-	var t := create_tween()
-	t.tween_property(_fade, "color:a", 0.0, 0.35)
+	if _fade:
+		var t := create_tween()
+		t.tween_property(_fade, "color:a", 0.0, 0.35)
 
 # ── Avatar ────────────────────────────────────────────────────────
 func _refresh_avatar() -> void:
-	_avatar_label.text = AVATAR_ICONS[_avatar_idx]
-	# tint the ring panel background via modulate
-	_avatar_icon.modulate = AVATAR_COLORS[_avatar_idx]
-	_avatar_label.modulate = Color(1, 1, 1, 1)  # keep icon white
+	if _avatar_label: _avatar_label.text = AVATAR_ICONS[_avatar_idx]
+	if _avatar_icon:  _avatar_icon.modulate = AVATAR_COLORS[_avatar_idx]
+	if _avatar_label: _avatar_label.modulate = Color(1, 1, 1, 1)
 
 func _on_avatar_click(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:

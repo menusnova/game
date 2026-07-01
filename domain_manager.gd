@@ -13,6 +13,7 @@ const POINTS := {
 	"mission":   20,
 	"arena":      8,
 	"expedition": 6,
+	"shop":        5,
 }
 
 var _points: float = 0.0

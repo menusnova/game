@@ -46,9 +46,10 @@ func _ready() -> void:
 	if _next_btn:
 		_next_btn.pressed.connect(_on_next)
 	# fade in
-	var ti := create_tween()
-	ti.tween_property(_fade, "color:a", 0.0, 0.4)
-	await ti.finished
+	if _fade:
+		var ti := create_tween()
+		ti.tween_property(_fade, "color:a", 0.0, 0.4)
+		await ti.finished
 	_show_line(0)
 
 func _show_line(idx: int) -> void:
@@ -78,8 +79,9 @@ func _typewrite(text: String) -> void:
 	_next_btn.visible = true
 
 func _update_portraits(active_speaker: String) -> void:
+	if not _char_l or not _char_r:
+		return
 	var side: String = CHAR_SIDE.get(active_speaker, "left")
-	# ตัวพูดสว่าง ตัวอื่นจาง
 	var t := create_tween().set_parallel(true)
 	if side == "left":
 		t.tween_property(_char_l, "modulate:a", 1.0, 0.2)
@@ -104,8 +106,8 @@ func _unhandled_input(ev: InputEvent) -> void:
 
 func _finish() -> void:
 	# fade แล้วโหลด pre_battle เป็น overlay บน main_menu
-	var t := create_tween()
-	t.tween_property(_fade, "color:a", 1.0, 0.35)
-	await t.finished
-	# โหลด pre_battle scene แยก (standalone)
+	if _fade:
+		var t := create_tween()
+		t.tween_property(_fade, "color:a", 1.0, 0.35)
+		await t.finished
 	get_tree().change_scene_to_file("res://pre_battle_standalone.tscn")
