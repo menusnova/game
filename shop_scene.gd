@@ -309,8 +309,8 @@ func _switch_tab(tab: String) -> void:
 		_item_grid.add_child(_make_item_card(item))
 
 func _make_item_card(item: Dictionary) -> Control:
-	var remaining := _stock.get(item["id"], item["stock"])
-	var sold_out  := item["stock"] > 0 and remaining <= 0
+	var remaining: int = _stock.get(item["id"], item["stock"])
+	var sold_out: bool = item["stock"] > 0 and remaining <= 0
 
 	var card := Panel.new()
 	card.custom_minimum_size = Vector2(208, 90)
@@ -398,9 +398,9 @@ func _build_detail(item: Dictionary) -> void:
 	for c in _detail_box.get_children():
 		c.queue_free()
 
-	var remaining := _stock.get(item["id"], item["stock"])
-	var sold_out  := item["stock"] > 0 and remaining <= 0
-	var can_afford := item["cost"] == 0 or _wallet.get(item["currency"], 0) >= item["cost"]
+	var remaining: int  = _stock.get(item["id"], item["stock"])
+	var sold_out: bool  = item["stock"] > 0 and remaining <= 0
+	var can_afford: bool = item["cost"] == 0 or _wallet.get(item["currency"], 0) >= item["cost"]
 
 	# icon big
 	var icon := Label.new()
