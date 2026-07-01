@@ -339,7 +339,7 @@ func _build_action_row() -> void:
 	var sx := (1152.0 - total) / 2.0
 
 	for i in defs.size():
-		var id  := defs[i][0]; var txt := defs[i][1]; var col: Color = defs[i][2]
+		var id: String  = defs[i][0]; var txt: String = defs[i][1]; var col: Color = defs[i][2]
 		var btn := Button.new()
 		btn.text = txt
 		btn.size = Vector2(bw, 62)
@@ -481,7 +481,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	panel.add_child(tag)
 
 	# Big symbol
-	var sym := data.get("symbol", data.get("name","?"))
+	var sym: String = data.get("symbol", data.get("name","?"))
 	var sym_lbl := Label.new()
 	sym_lbl.text = sym
 	sym_lbl.size = Vector2(112, 52)
@@ -567,7 +567,7 @@ func _handle_element_select(id: String) -> void:
 func _try_reaction(a: String, b: String) -> void:
 	var pair := [a, b]
 	pair.sort()
-	var key := pair[0] + "+" + pair[1]
+	var key: String = str(pair[0]) + "+" + str(pair[1])
 
 	_selected_elem = ""
 	_hide_react_hint()
