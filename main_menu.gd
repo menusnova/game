@@ -33,7 +33,8 @@ const CARDS := [
 
 func _ready() -> void:
 	$AdventureCard.gui_input.connect(_on_adv_input)
-	$ArenaCard.gui_input.connect(_on_arena_input)
+	if not _is_locked($ArenaCard):
+		$ArenaCard.gui_input.connect(_on_arena_input)
 	$ProfileCard.gui_input.connect(_on_profile_input)
 	$NewCharCard.gui_input.connect(_on_gacha_input)
 	_setup_locked_nodes()

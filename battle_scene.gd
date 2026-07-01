@@ -216,38 +216,23 @@ func use_compound(card_name):
 
 	if card_name == "Water":
 		player_hp += 20
-
-	if player_hp > 100:
-		player_hp = 100
-
+		if player_hp > 100:
+			player_hp = 100
 		$MessageLabel.text = "Water Heal +20"
 
 	elif card_name == "Salt":
-
 		player_shield += 20
-
 		$MessageLabel.text = "Salt Shield +20"
 
 	elif card_name == "Rust":
-
 		enemy_hp -= 10
-
 		enemy_poison += 5
-
 		$MessageLabel.text = "Rust Corrosion!"
 
 	remove_card_from_hand(card_name)
-
 	check_battle()
-
 	update_ui()
-
 	update_hand()
-
-
-
-
-	$MessageLabel.text = "Used " + card_name
 
 
 
@@ -413,26 +398,19 @@ func enemy_turn():
 	player_hp -= damage
 
 	ultimate_gauge += 10
-
 	if ultimate_gauge > max_ultimate_gauge:
 		ultimate_gauge = max_ultimate_gauge
-		
-		$PlayerSprite.modulate = Color(1,0.3,0.3)
 
-		await get_tree().create_timer(0.1).timeout
+	$PlayerSprite.modulate = Color(1, 0.3, 0.3)
+	await get_tree().create_timer(0.1).timeout
+	$PlayerSprite.modulate = Color(1, 1, 1)
 
-		$PlayerSprite.modulate = Color(1,1,1)
+	if skill_cooldown > 0:
+		skill_cooldown -= 1
 
-
-		if skill_cooldown > 0:
-			skill_cooldown -= 1
-
-		if enemy_poison > 0:
-
-			enemy_hp -= enemy_poison
-
-			$MessageLabel.text = "Poison deals " + str(enemy_poison)
-
+	if enemy_poison > 0:
+		enemy_hp -= enemy_poison
+		$MessageLabel.text = "Poison deals " + str(enemy_poison)
 
 	check_battle()
 

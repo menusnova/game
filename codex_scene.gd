@@ -141,9 +141,14 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = col
 	sb.border_color = border
-	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
-		sb.set_corner_radius_all(r)
-		sb.set_border_width_all(bw)
+	sb.corner_radius_top_left     = r
+	sb.corner_radius_top_right    = r
+	sb.corner_radius_bottom_right = r
+	sb.corner_radius_bottom_left  = r
+	sb.border_width_left   = bw
+	sb.border_width_right  = bw
+	sb.border_width_top    = bw
+	sb.border_width_bottom = bw
 	return sb
 
 # ── Header ────────────────────────────────────────────────────────
