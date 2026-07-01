@@ -410,7 +410,14 @@ func _build_deck() -> void:
 # ════════════════════════════════════════════════════════════
 func _draw_n(n: int) -> void:
 	for _i in n:
-		_draw_one()
+		if _deck.is_empty():
+			_reshuffle()
+			if _deck.is_empty():
+				break
+		var idx := randi() % _deck.size()
+		_hand.append(_deck[idx])
+		_deck.remove_at(idx)
+	_refresh_hand()
 
 func _draw_one() -> void:
 	if _deck.is_empty():
@@ -436,6 +443,7 @@ func _reshuffle() -> void:
 # ════════════════════════════════════════════════════════════
 func _refresh_hand() -> void:
 	for c in _hand_container.get_children():
+		_hand_container.remove_child(c)
 		c.queue_free()
 	for i in _hand.size():
 		var id: String = _hand[i]
