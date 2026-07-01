@@ -5,6 +5,7 @@ const SC_TRANSITION := "res://transition_scene.tscn"
 const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
+const SC_CODEX      := "res://codex_scene.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 var _navigating := false
@@ -41,6 +42,16 @@ func _ready() -> void:
 	_setup_domain()
 	_setup_quest_panel()
 	_setup_char_switcher()
+	_setup_navbar()
+
+func _setup_navbar() -> void:
+	var db_node: Control = get_node_or_null("NavBar/Nav4_Database")
+	if db_node and not _is_locked(db_node):
+		db_node.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto(SC_CODEX)
+		)
+		_attach_hover_bounce(db_node)
 
 func _setup_quest_panel() -> void:
 	_quest_panel = preload("res://quest_panel.tscn").instantiate()
