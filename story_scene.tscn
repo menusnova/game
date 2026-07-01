@@ -55,9 +55,9 @@ mouse_filter = 2
 [node name="CharacterLeft" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = -40.0
-offset_top = 60.0
-offset_right = 420.0
-offset_bottom = 530.0
+offset_top = 200.0
+offset_right = 520.0
+offset_bottom = 1320.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
@@ -65,10 +65,10 @@ modulate = Color(1, 1, 1, 0)
 
 [node name="CharacterRight" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 730.0
-offset_top = 60.0
-offset_right = 1190.0
-offset_bottom = 530.0
+offset_left = 560.0
+offset_top = 200.0
+offset_right = 1120.0
+offset_bottom = 1320.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
@@ -77,17 +77,17 @@ modulate = Color(1, 1, 1, 0)
 [node name="DialoguePanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 480.0
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_top = 1340.0
+offset_right = 1080.0
+offset_bottom = 1900.0
 theme_override_styles/panel = SubResource("SB_DialogueBg")
 mouse_filter = 0
 
 [node name="NameTag" type="Panel" parent="DialoguePanel"]
 layout_mode = 0
 offset_left = 20.0
-offset_top = -34.0
-offset_right = 180.0
+offset_top = -38.0
+offset_right = 220.0
 offset_bottom = -6.0
 theme_override_styles/panel = SubResource("SB_NameTag")
 
@@ -97,33 +97,33 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="DialogueText" type="RichTextLabel" parent="DialoguePanel"]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 16.0
-offset_right = 1100.0
-offset_bottom = 120.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = 1040.0
+offset_bottom = 480.0
 theme_override_colors/default_color = Color(0.925, 0.949, 1, 0.97)
-theme_override_font_sizes/normal_font_size = 17
+theme_override_font_sizes/normal_font_size = 20
 bbcode_enabled = true
 text = ""
 
 [node name="NextBtn" type="Button" parent="DialoguePanel"]
 layout_mode = 0
-offset_left = 1040.0
-offset_top = 126.0
-offset_right = 1138.0
-offset_bottom = 152.0
+offset_left = 920.0
+offset_top = 510.0
+offset_right = 1052.0
+offset_bottom = 548.0
 theme_override_styles/normal = SubResource("SB_NextBtn")
 theme_override_styles/hover = SubResource("SB_NextBtn")
 theme_override_styles/pressed = SubResource("SB_NextBtn")
 theme_override_colors/font_color = Color(0.388, 0.624, 1, 0.7)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 text = "ถัดไป ›"
 visible = false
 
