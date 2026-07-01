@@ -33,6 +33,7 @@ pointing/emulate_touch_from_mouse=true
 [autoload]
 
 DomainManager="*res://domain_manager.gd"
+CurrencyManager="*res://currency_manager.gd"
 
 [editor_plugins]
 

@@ -18,50 +18,49 @@ const TAB_ICONS := {
 
 const ITEMS := {
 	"SUPPLIES": [
-		{"id": "s1", "name": "Originite Prime",   "icon": "◈", "rarity": 5,
-		 "desc": "Premium currency. Used for Headhunting.", "cost": 0,   "currency": "💎", "stock": -1},
-		{"id": "s2", "name": "LMD ×10,000",       "icon": "◎", "rarity": 3,
-		 "desc": "Lungmen Dollars. Used for Operator promotion and crafting.", "cost": 200, "currency": "🧪", "stock": -1},
-		{"id": "s3", "name": "EXP Card (Small)",   "icon": "▲", "rarity": 2,
-		 "desc": "Grants 1,000 EXP to an Operator.", "cost": 80,  "currency": "🧪", "stock": -1},
-		{"id": "s4", "name": "EXP Card (Medium)",  "icon": "▲", "rarity": 3,
-		 "desc": "Grants 5,000 EXP to an Operator.", "cost": 360, "currency": "🧪", "stock": -1},
-		{"id": "s5", "name": "Skill Upgrade I",    "icon": "✦", "rarity": 3,
-		 "desc": "Material for upgrading Operator skills to rank 2–4.", "cost": 50,  "currency": "🧪", "stock": -1},
-		{"id": "s6", "name": "Skill Upgrade II",   "icon": "✦", "rarity": 4,
-		 "desc": "Material for upgrading Operator skills to rank 5–7.", "cost": 150, "currency": "🧪", "stock": -1},
+		{"id": "s1", "name": "เพชรฟรี ×60",       "icon": "◈", "rarity": 4,
+		 "desc": "เพชรฟรีสำหรับสุ่มกาชา ได้รับจากการเติม", "cost": 0,      "currency": "gold", "stock": -1},
+		{"id": "s2", "name": "เงิน ×10,000",       "icon": "◎", "rarity": 3,
+		 "desc": "เงินสำหรับอัปเกรดและสังเคราะห์", "cost": 200,  "currency": "gems", "stock": -1},
+		{"id": "s3", "name": "EXP Card (เล็ก)",    "icon": "▲", "rarity": 2,
+		 "desc": "เพิ่ม EXP 1,000 ให้ตัวละคร",    "cost": 5000, "currency": "gold", "stock": -1},
+		{"id": "s4", "name": "EXP Card (กลาง)",    "icon": "▲", "rarity": 3,
+		 "desc": "เพิ่ม EXP 5,000 ให้ตัวละคร",    "cost": 20000,"currency": "gold", "stock": -1},
+		{"id": "s5", "name": "วัสดุอัปสกิล I",    "icon": "✦", "rarity": 3,
+		 "desc": "วัสดุอัปเกรดสกิลระดับ 2–4",     "cost": 3000, "currency": "gold", "stock": -1},
+		{"id": "s6", "name": "วัสดุอัปสกิล II",   "icon": "✦", "rarity": 4,
+		 "desc": "วัสดุอัปเกรดสกิลระดับ 5–7",     "cost": 8000, "currency": "gold", "stock": -1},
 		{"id": "s7", "name": "Compound Catalyst",  "icon": "⬡", "rarity": 5,
-		 "desc": "Advanced synthesis material. Required for elite promotion.", "cost": 600, "currency": "🧪", "stock": -1},
-		{"id": "s8", "name": "Headhunting Permit", "icon": "⊛", "rarity": 5,
-		 "desc": "Can be exchanged for 1 Headhunting pull.", "cost": 600, "currency": "⭐", "stock": 5},
+		 "desc": "วัสดุสังเคราะห์ขั้นสูง สำหรับ Elite Promotion", "cost": 30000,"currency": "gold", "stock": -1},
+		{"id": "s8", "name": "ใบอนุญาตสุ่ม",      "icon": "⊛", "rarity": 5,
+		 "desc": "แลกได้ 1 ครั้งสุ่มกาชา",         "cost": 160,  "currency": "gems", "stock": 5},
 	],
 	"OPERATOR": [
 		{"id": "o1", "name": "Lyra",  "icon": "★", "rarity": 5,
-		 "desc": "5★ Sniper — Marksman.\nHigh single-target DPS with extended range.", "cost": 3000, "currency": "⭐", "stock": 1},
+		 "desc": "5★ Sniper — Marksman.\nDPS ระยะไกลสูง", "cost": 3000, "currency": "gems", "stock": 1},
 		{"id": "o2", "name": "Kael",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Defender — Guardian.\nSturdy frontline with area taunt ability.", "cost": 1200, "currency": "⭐", "stock": 1},
+		 "desc": "4★ Defender — Guardian.\nแนวหน้าแข็งแกร่ง ยั่วศัตรู AOE", "cost": 1200, "currency": "gems", "stock": 1},
 		{"id": "o3", "name": "Mira",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Medic — Therapist.\nAOE healing for deployed units.", "cost": 1200, "currency": "⭐", "stock": 1},
+		 "desc": "4★ Medic — Therapist.\nรักษา AOE ให้ทีม", "cost": 1200, "currency": "gems", "stock": 1},
 		{"id": "o4", "name": "Voss",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Caster — Core.\nMagic damage dealer, low cost deployment.", "cost": 1200, "currency": "⭐", "stock": 1},
+		 "desc": "4★ Caster — Core.\nดีลเวทย์ ใช้พลังงานน้อย", "cost": 1200, "currency": "gems", "stock": 1},
 	],
 	"EVENT": [
 		{"id": "e1", "name": "Event Token ×5",   "icon": "◆", "rarity": 3,
-		 "desc": "Exchange tokens from the current limited event.", "cost": 0,   "currency": "🎫", "stock": -1},
-		{"id": "e2", "name": "Seraph (Limited)",  "icon": "★", "rarity": 5,
-		 "desc": "5★ Limited Operator.\nOnly available during this event.", "cost": 600, "currency": "🎫", "stock": 1},
-		{"id": "e3", "name": "Outfit: Eclipse",   "icon": "◈", "rarity": 4,
-		 "desc": "Alternative outfit for Lyra.\nCosmetic only.", "cost": 300, "currency": "🎫", "stock": 1},
-		{"id": "e4", "name": "Compound Catalyst", "icon": "⬡", "rarity": 4,
-		 "desc": "Advanced synthesis material.", "cost": 120, "currency": "🎫", "stock": 3},
-		{"id": "e5", "name": "LMD ×30,000",      "icon": "◎", "rarity": 3,
-		 "desc": "Lungmen Dollars.", "cost": 180, "currency": "🎫", "stock": 2},
+		 "desc": "โทเค็นกิจกรรมพิเศษปัจจุบัน", "cost": 0,    "currency": "gold", "stock": -1},
+		{"id": "e2", "name": "Seraph (จำกัด)",   "icon": "★", "rarity": 5,
+		 "desc": "5★ ตัวละครจำกัด มีแค่ช่วงกิจกรรมนี้", "cost": 600, "currency": "gems", "stock": 1},
+		{"id": "e3", "name": "Outfit: Eclipse",  "icon": "◈", "rarity": 4,
+		 "desc": "ชุดทางเลือกของ Lyra (Cosmetic)", "cost": 300, "currency": "gems", "stock": 1},
+		{"id": "e4", "name": "Compound Catalyst","icon": "⬡", "rarity": 4,
+		 "desc": "วัสดุสังเคราะห์ขั้นสูง",        "cost": 15000,"currency": "gold", "stock": 3},
+		{"id": "e5", "name": "เงิน ×30,000",     "icon": "◎", "rarity": 3,
+		 "desc": "Lungmen Dollars",               "cost": 180,  "currency": "gems", "stock": 2},
 	],
 }
 
-# ── Currency ──────────────────────────────────────────────────────
-var _wallet := {"💎": 90, "🧪": 2400, "⭐": 3600, "🎫": 0}
-var _stock   := {}
+# currency key: "gold" | "gems"
+var _stock: Dictionary = {}
 
 var _current_tab    := "SUPPLIES"
 var _selected_item: Dictionary = {}
@@ -335,28 +334,34 @@ func _build_confirm_overlay() -> void:
 func _rebuild_wallet() -> void:
 	for c in _wallet_row.get_children():
 		c.queue_free()
-	for cur in ["💎", "🧪", "⭐", "🎫"]:
-		var pill := Panel.new()
-		pill.custom_minimum_size = Vector2(86, 30)
-		pill.add_theme_stylebox_override("panel", _flat(Color(0.06, 0.10, 0.22, 0.9), Color(C_BORDER), 6))
-		var row := HBoxContainer.new()
-		row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		row.offset_left = 8; row.offset_right = -8
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		var ico := Label.new()
-		ico.text = cur
-		ico.add_theme_font_size_override("font_size", 13)
-		row.add_child(ico)
-		var amt := Label.new()
-		amt.text = " %d" % _wallet[cur]
-		amt.add_theme_font_size_override("font_size", 12)
-		amt.add_theme_color_override("font_color", C_TEXT)
-		row.add_child(amt)
-		pill.add_child(row)
-		_wallet_row.add_child(pill)
-		var spacer := Control.new()
-		spacer.custom_minimum_size = Vector2(6, 0)
-		_wallet_row.add_child(spacer)
+	_add_wallet_pill("💰", str(CurrencyManager.gold),         Color(1.00, 0.82, 0.25, 1.0))
+	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
+	_add_wallet_pill("💠", str(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
+	_add_wallet_pill("⚡", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY],
+		Color(0.95, 0.95, 0.35, 1.0))
+
+func _add_wallet_pill(icon: String, value: String, col: Color) -> void:
+	var pill := Panel.new()
+	pill.custom_minimum_size = Vector2(96, 30)
+	pill.add_theme_stylebox_override("panel", _flat(Color(0.06, 0.10, 0.22, 0.9), Color(C_BORDER), 6))
+	var row := HBoxContainer.new()
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = 8; row.offset_right = -8
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	var ico := Label.new()
+	ico.text = icon
+	ico.add_theme_font_size_override("font_size", 13)
+	row.add_child(ico)
+	var amt := Label.new()
+	amt.text = " " + value
+	amt.add_theme_font_size_override("font_size", 11)
+	amt.add_theme_color_override("font_color", col)
+	row.add_child(amt)
+	pill.add_child(row)
+	_wallet_row.add_child(pill)
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(6, 0)
+	_wallet_row.add_child(spacer)
 
 # ════════════════════════════════════════════════════════════════
 #  TAB SWITCH
@@ -384,10 +389,11 @@ func _make_item_card(item: Dictionary) -> Control:
 	var sold_out: bool = item["stock"] > 0 and remaining <= 0
 	var rarity: int    = int(item.get("rarity", 3))
 	var r_col: Color   = _rarity_color(rarity)
+	var cur: String    = str(item.get("currency", "gold"))
+	var cost_val: int  = int(item["cost"])
+	var affordable: bool = cost_val == 0 or _check_afford(cur, cost_val)
 
 	var card := Panel.new()
-	# portrait: fit 3 in GRID_W - margins*2 - separations
-	# GRID_W=572, margin=12*2=24, sep=10*2=20 → avail=528 → per card=176
 	card.custom_minimum_size = Vector2(162, 200)
 	var bg_col := Color(0.06, 0.09, 0.20, 0.9) if not sold_out else Color(0.04, 0.05, 0.10, 0.9)
 	card.add_theme_stylebox_override("panel", _flat(bg_col, r_col if not sold_out else Color(0.3,0.3,0.4,0.25), 8, 1))
@@ -453,12 +459,12 @@ func _make_item_card(item: Dictionary) -> Control:
 	if sold_out:
 		cost_lbl.text = "SOLD OUT"
 		cost_lbl.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35, 0.8))
-	elif item["cost"] == 0:
-		cost_lbl.text = "FREE"
+	elif cost_val == 0:
+		cost_lbl.text = "ฟรี"
 		cost_lbl.add_theme_color_override("font_color", Color(0.4, 1.0, 0.55))
 	else:
-		cost_lbl.text = "%s %d" % [item["currency"], item["cost"]]
-		cost_lbl.add_theme_color_override("font_color", C_GOLD)
+		cost_lbl.text = "%s %d" % [_cur_icon(cur), cost_val]
+		cost_lbl.add_theme_color_override("font_color", C_GOLD if affordable else Color(1.0, 0.4, 0.4))
 	cost_lbl.add_theme_font_size_override("font_size", 11)
 	cost_lbl.size     = Vector2(162, 22)
 	cost_lbl.position = Vector2(0, 172)
@@ -501,9 +507,11 @@ func _build_detail(item: Dictionary) -> void:
 	for c in _detail_box.get_children():
 		c.queue_free()
 
-	var remaining: int  = _stock.get(item["id"], item["stock"])
-	var sold_out: bool  = item["stock"] > 0 and remaining <= 0
-	var can_afford: bool = item["cost"] == 0 or _wallet.get(item["currency"], 0) >= item["cost"]
+	var remaining: int   = _stock.get(item["id"], item["stock"])
+	var sold_out: bool   = item["stock"] > 0 and remaining <= 0
+	var cur_key: String  = str(item.get("currency", "gold"))
+	var cost_amt: int    = int(item["cost"])
+	var can_afford: bool = cost_amt == 0 or _check_afford(cur_key, cost_amt)
 	var rarity: int     = int(item.get("rarity", 3))
 	var r_col: Color    = _rarity_color(rarity)
 
@@ -588,11 +596,11 @@ func _build_detail(item: Dictionary) -> void:
 
 	# Cost
 	var cost_lbl := Label.new()
-	if item["cost"] == 0:
-		cost_lbl.text = "FREE"
+	if cost_amt == 0:
+		cost_lbl.text = "ฟรี"
 		cost_lbl.add_theme_color_override("font_color", Color(0.4, 1.0, 0.6))
 	else:
-		cost_lbl.text = "%s  %d" % [item["currency"], item["cost"]]
+		cost_lbl.text = "%s  %d" % [_cur_icon(cur_key), cost_amt]
 		cost_lbl.add_theme_color_override("font_color", C_GOLD if can_afford else Color(1.0, 0.4, 0.4))
 	cost_lbl.add_theme_font_size_override("font_size", 22)
 	cost_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -612,8 +620,8 @@ func _build_detail(item: Dictionary) -> void:
 
 	# Buy button
 	_buy_btn = Button.new()
-	_buy_btn.text = "SOLD OUT" if sold_out else ("รับฟรี" if item["cost"] == 0 else "ซื้อ")
-	_buy_btn.disabled = sold_out or (item["cost"] > 0 and not can_afford)
+	_buy_btn.text = "SOLD OUT" if sold_out else ("รับฟรี" if cost_amt == 0 else "ซื้อ")
+	_buy_btn.disabled = sold_out or (cost_amt > 0 and not can_afford)
 	_buy_btn.custom_minimum_size = Vector2(240, 48)
 	_buy_btn.add_theme_font_size_override("font_size", 15)
 	var btn_col: Color = C_ACTIVE if (not sold_out and can_afford) else C_GREY
@@ -638,10 +646,12 @@ func _open_confirm() -> void:
 	var item := _selected_item
 	var box: Panel = _confirm_ov.get_child(1) as Panel
 	box.get_node("ItemLabel").text = item["name"]
-	if item["cost"] == 0:
-		box.get_node("CostLabel").text = "FREE"
+	var c_key: String = str(item.get("currency", "gold"))
+	var c_amt: int    = int(item["cost"])
+	if c_amt == 0:
+		box.get_node("CostLabel").text = "ฟรี"
 	else:
-		box.get_node("CostLabel").text = "%s  %d" % [item["currency"], item["cost"]]
+		box.get_node("CostLabel").text = "%s  %d" % [_cur_icon(c_key), c_amt]
 	_confirm_ov.visible = true
 
 func _execute_purchase() -> void:
@@ -649,9 +659,14 @@ func _execute_purchase() -> void:
 	var item := _selected_item
 	if item.is_empty():
 		return
-	if item["cost"] > 0:
-		_wallet[item["currency"]] -= item["cost"]
-	if item["stock"] > 0:
+	if int(item["cost"]) > 0:
+		var cur_key: String = str(item.get("currency", "gold"))
+		var amt: int = int(item["cost"])
+		if cur_key == "gems":
+			CurrencyManager.spend_gems(amt)
+		else:
+			CurrencyManager.spend_gold(amt)
+	if int(item["stock"]) > 0:
 		_stock[item["id"]] = int(_stock.get(item["id"], item["stock"])) - 1
 	DomainManager.add_points("shop")
 	_rebuild_wallet()
@@ -662,6 +677,16 @@ func _execute_purchase() -> void:
 # ════════════════════════════════════════════════════════════════
 #  HELPERS
 # ════════════════════════════════════════════════════════════════
+func _check_afford(cur: String, amount: int) -> bool:
+	if cur == "gems":
+		return CurrencyManager.total_crystal() >= amount
+	return CurrencyManager.gold >= amount
+
+func _cur_icon(cur: String) -> String:
+	if cur == "gems":
+		return "💠"   # คริสตัล
+	return "💰"       # เหรียญทอง
+
 func _rarity_color(rarity: int) -> Color:
 	match rarity:
 		5: return C_R5

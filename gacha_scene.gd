@@ -12,7 +12,6 @@ const POOL_5: Array[String] = ["Lyra", "Seraph"]
 const POOL_4: Array[String] = ["Kael", "Mira", "Voss"]
 const POOL_3: Array[String] = ["Common Shard", "Iron Catalyst", "Void Dust"]
 
-var _gems   := 3200
 var _pity   := 0
 var _pity_4 := 0
 
@@ -55,20 +54,25 @@ func _on_skip() -> void:
 		_result_ov.visible = false
 
 func _refresh_ui() -> void:
-	_gem_lbl.text = str(_gems)
-	_pity_bar.value = _pity
-	_pity_lbl.text = "%d / %d" % [_pity, PITY_HARD]
-	_pull1.disabled  = _gems < PULL_COST_1
-	_pull10.disabled = _gems < PULL_COST_10
+	var gems: int = CurrencyManager.total_crystal()
+	if _gem_lbl:
+		_gem_lbl.text = str(gems)
+	if _pity_bar:
+		_pity_bar.value = _pity
+	if _pity_lbl:
+		_pity_lbl.text = "%d / %d" % [_pity, PITY_HARD]
+	if _pull1:
+		_pull1.disabled  = gems < PULL_COST_1
+	if _pull10:
+		_pull10.disabled = gems < PULL_COST_10
 
 # ── Pull ──────────────────────────────────────────────────────────
 func _do_pull(count: int) -> void:
 	if _revealing:
 		return
-	var cost := PULL_COST_10 if count == 10 else PULL_COST_1 * count
-	if _gems < cost:
+	var cost: int = PULL_COST_10 if count == 10 else PULL_COST_1 * count
+	if not CurrencyManager.spend_gems(cost):
 		return
-	_gems -= cost
 	var results:  Array[String] = []
 	var rarities: Array[int]    = []
 	for i in count:
