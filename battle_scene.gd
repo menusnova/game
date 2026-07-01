@@ -180,18 +180,18 @@ func _build_ui() -> void:
 # ── Top bar ───────────────────────────────────────────────
 func _build_topbar() -> void:
 	var bar := Panel.new()
-	bar.size = Vector2(1080, 72)
+	bar.size = Vector2(1152, 44)
 	bar.add_theme_stylebox_override("panel", _flat(Color(0.03,0.04,0.10,0.96), C_BORDER, 0, 1))
 	add_child(bar)
 
-	_stage_lbl = _mk_label("Stage 1", 15, C_SUB, bar, Vector2(20, 22))
-	_turn_lbl  = _mk_label("เทิร์นของคุณ", 16, C_GOLD, bar, Vector2(390, 22), Vector2(300, 28), true)
+	_stage_lbl = _mk_label("Stage 1", 13, C_SUB, bar, Vector2(14, 13))
+	_turn_lbl  = _mk_label("เทิร์นของคุณ", 14, C_GOLD, bar, Vector2(426, 13), Vector2(300, 18), true)
 
 	var back := Button.new()
 	back.text = "✕  ออก"
-	back.size = Vector2(100, 44)
-	back.position = Vector2(966, 14)
-	back.add_theme_font_size_override("font_size", 14)
+	back.size = Vector2(90, 36)
+	back.position = Vector2(1050, 4)
+	back.add_theme_font_size_override("font_size", 13)
 	for s in ["normal","hover","pressed","focus"]:
 		back.add_theme_stylebox_override(s, _flat(Color(0,0,0,0), Color(0,0,0,0)))
 	back.add_theme_color_override("font_color", C_SUB)
@@ -201,155 +201,154 @@ func _build_topbar() -> void:
 # ── Enemy panel ────────────────────────────────────────────
 func _build_enemy_panel() -> void:
 	var ep := Panel.new()
-	ep.size = Vector2(1080, 440)
-	ep.position = Vector2(0, 78)
+	ep.size = Vector2(520, 340)
+	ep.position = Vector2(0, 44)
 	ep.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0)))
 	add_child(ep)
 
 	# Enemy sprite circle
 	var circle := Panel.new()
-	circle.size = Vector2(200, 200)
-	circle.position = Vector2(440, 40)
-	circle.add_theme_stylebox_override("panel", _flat(Color(0.14,0.06,0.06,1.0), Color(0.8,0.3,0.3,0.45), 100, 2))
+	circle.size = Vector2(130, 130)
+	circle.position = Vector2(195, 16)
+	circle.add_theme_stylebox_override("panel", _flat(Color(0.14,0.06,0.06,1.0), Color(0.8,0.3,0.3,0.45), 65, 2))
 	ep.add_child(circle)
 	var sp_lbl := Label.new()
 	sp_lbl.text = "👾"
 	sp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	sp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sp_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	sp_lbl.add_theme_font_size_override("font_size", 80)
+	sp_lbl.add_theme_font_size_override("font_size", 52)
 	sp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circle.add_child(sp_lbl)
 
-	_enemy_name_lbl = _mk_label("", 20, C_TEXT, ep, Vector2(20, 262))
+	_enemy_name_lbl = _mk_label("", 16, C_TEXT, ep, Vector2(14, 158))
 
 	# Enemy HP bar bg
 	var ehb_bg := ColorRect.new()
 	ehb_bg.color = Color(1,1,1,0.08)
-	ehb_bg.size = Vector2(600, 18)
-	ehb_bg.position = Vector2(20, 296)
+	ehb_bg.size = Vector2(490, 13)
+	ehb_bg.position = Vector2(14, 182)
 	ep.add_child(ehb_bg)
 
 	_enemy_hp_bar = ColorRect.new()
 	_enemy_hp_bar.color = C_ENEMY
-	_enemy_hp_bar.size = Vector2(600, 18)
-	_enemy_hp_bar.position = Vector2(20, 296)
+	_enemy_hp_bar.size = Vector2(490, 13)
+	_enemy_hp_bar.position = Vector2(14, 182)
 	ep.add_child(_enemy_hp_bar)
 
-	_enemy_hp_lbl = _mk_label("", 14, C_ENEMY, ep, Vector2(630, 292))
-	_enemy_status_lbl = _mk_label("", 13, Color(0.9,0.6,0.3), ep, Vector2(20, 324))
+	_enemy_hp_lbl = _mk_label("", 12, C_ENEMY, ep, Vector2(14, 198))
+	_enemy_status_lbl = _mk_label("", 12, Color(0.9,0.6,0.3), ep, Vector2(14, 218))
 
-	# Enemy action hint (what enemy will do)
-	_mk_label("⚠ ศัตรูจะโจมตีในตอนสิ้นเทิร์นของคุณ", 11, Color(1,1,1,0.25), ep, Vector2(20, 360))
+	# Enemy action hint
+	_mk_label("⚠ ศัตรูโจมตีเมื่อสิ้นเทิร์น", 10, Color(1,1,1,0.25), ep, Vector2(14, 244))
 
 # ── Player status panel ────────────────────────────────────
 func _build_player_panel() -> void:
 	var pp := Panel.new()
-	pp.size = Vector2(1080, 160)
-	pp.position = Vector2(0, 524)
+	pp.size = Vector2(604, 340)
+	pp.position = Vector2(548, 44)
 	pp.add_theme_stylebox_override("panel", _flat(C_PANEL, C_BORDER, 0, 1))
 	add_child(pp)
 
-	_mk_label(CHARACTER["name"], 16, C_TEXT, pp, Vector2(20, 12))
+	_mk_label(CHARACTER["name"], 14, C_TEXT, pp, Vector2(14, 10))
 
 	# HP bar bg
 	var phb_bg := ColorRect.new()
 	phb_bg.color = Color(1,1,1,0.08)
-	phb_bg.size = Vector2(460, 16)
-	phb_bg.position = Vector2(20, 44)
+	phb_bg.size = Vector2(380, 13)
+	phb_bg.position = Vector2(14, 34)
 	pp.add_child(phb_bg)
 
 	_player_hp_bar = ColorRect.new()
 	_player_hp_bar.color = C_HP
-	_player_hp_bar.size = Vector2(460, 16)
-	_player_hp_bar.position = Vector2(20, 44)
+	_player_hp_bar.size = Vector2(380, 13)
+	_player_hp_bar.position = Vector2(14, 34)
 	pp.add_child(_player_hp_bar)
 
-	_player_hp_lbl = _mk_label("", 14, C_HP, pp, Vector2(490, 40))
-	_shield_lbl    = _mk_label("", 13, Color(0.7,0.9,1.0), pp, Vector2(20, 72))
+	_player_hp_lbl = _mk_label("", 12, C_HP, pp, Vector2(402, 30))
+	_shield_lbl    = _mk_label("", 12, Color(0.7,0.9,1.0), pp, Vector2(14, 56))
 
 	# AP display (dots)
-	_ap_lbl = _mk_label("", 26, C_AP, pp, Vector2(600, 16))
-	_mk_label("AP", 11, C_SUB, pp, Vector2(600, 52))
+	_ap_lbl = _mk_label("", 22, C_AP, pp, Vector2(14, 76))
+	_mk_label("AP", 10, C_SUB, pp, Vector2(14, 106))
 
 	# Ultimate gauge bar bg
 	var gb_bg := ColorRect.new()
 	gb_bg.color = Color(1,1,1,0.07)
-	gb_bg.size = Vector2(320, 20)
-	gb_bg.position = Vector2(700, 20)
+	gb_bg.size = Vector2(250, 14)
+	gb_bg.position = Vector2(100, 80)
 	pp.add_child(gb_bg)
 
 	_gauge_bar = ColorRect.new()
 	_gauge_bar.color = C_GAUGE
-	_gauge_bar.size = Vector2(0, 20)
-	_gauge_bar.position = Vector2(700, 20)
+	_gauge_bar.size = Vector2(0, 14)
+	_gauge_bar.position = Vector2(100, 80)
 	pp.add_child(_gauge_bar)
 
-	_gauge_lbl = _mk_label("", 12, C_GOLD, pp, Vector2(700, 48))
+	_gauge_lbl = _mk_label("", 11, C_GOLD, pp, Vector2(100, 98))
 
 	# Deck / Discard
-	_deck_lbl    = _mk_label("", 13, C_SUB,              pp, Vector2(20, 110))
-	_discard_lbl = _mk_label("", 13, Color(0.6,0.5,0.4), pp, Vector2(180, 110))
+	_deck_lbl    = _mk_label("", 12, C_SUB,              pp, Vector2(14, 130))
+	_discard_lbl = _mk_label("", 12, Color(0.6,0.5,0.4), pp, Vector2(160, 130))
 
 # ── Reaction hint bar ──────────────────────────────────────
 func _build_react_hint() -> void:
 	var rb := Panel.new()
-	rb.size = Vector2(1080, 48)
-	rb.position = Vector2(0, 690)
+	rb.size = Vector2(1152, 30)
+	rb.position = Vector2(0, 384)
 	rb.add_theme_stylebox_override("panel", _flat(Color(0.12,0.10,0.04,0.95), Color(C_GOLD.r,C_GOLD.g,C_GOLD.b,0.3), 0, 1))
 	rb.visible = false
 	add_child(rb)
-	_react_hint = _mk_label("", 14, C_GOLD, rb, Vector2(0,12), Vector2(1080,24), true)
-	# store rb ref via _react_hint.get_parent()
+	_react_hint = _mk_label("", 12, C_GOLD, rb, Vector2(0,7), Vector2(1152,16), true)
 
 # ── Hand area ──────────────────────────────────────────────
 func _build_hand_panel() -> void:
 	var hp := Panel.new()
-	hp.size = Vector2(1080, 380)
-	hp.position = Vector2(0, 744)
+	hp.size = Vector2(1152, 148)
+	hp.position = Vector2(0, 414)
 	hp.add_theme_stylebox_override("panel", _flat(Color(0.04,0.05,0.10,0.92), C_BORDER, 0, 1))
 	add_child(hp)
 
-	_mk_label("HAND", 11, C_SUB, hp, Vector2(20, 10))
+	_mk_label("HAND", 10, C_SUB, hp, Vector2(14, 6))
 
 	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(12, 32)
-	scroll.size = Vector2(1056, 336)
+	scroll.position = Vector2(8, 24)
+	scroll.size = Vector2(1136, 118)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode   = ScrollContainer.SCROLL_MODE_DISABLED
 	hp.add_child(scroll)
 
 	_hand_container = HBoxContainer.new()
-	_hand_container.add_theme_constant_override("separation", 10)
+	_hand_container.add_theme_constant_override("separation", 8)
 	_hand_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_hand_container)
 
 # ── Action buttons row ─────────────────────────────────────
 func _build_action_row() -> void:
-	var row_y := 1134.0
+	var row_y := 562.0
 	var defs := [
-		["Attack",   "⚔\nAttack\n1 AP",   Color(0.95,0.35,0.35)],
-		["Defend",   "🛡\nDefend\n1 AP",   Color(0.35,0.65,1.00)],
-		["Skill",    "⚡\nSkill\n2 AP",    Color(0.80,0.50,1.00)],
-		["Ultimate", "💥\nUltimate\nGauge",Color(1.00,0.75,0.25)],
-		["EndTurn",  "▶\nEnd\nTurn",       Color(0.55,0.70,0.55)],
+		["Attack",   "⚔ Attack\n1 AP",    Color(0.95,0.35,0.35)],
+		["Defend",   "🛡 Defend\n1 AP",    Color(0.35,0.65,1.00)],
+		["Skill",    "⚡ Skill\n2 AP",     Color(0.80,0.50,1.00)],
+		["Ultimate", "💥 Ultimate\nGauge", Color(1.00,0.75,0.25)],
+		["EndTurn",  "▶ End Turn",         Color(0.55,0.70,0.55)],
 	]
-	var bw := 192.0
-	var gap := 12.0
+	var bw := 180.0
+	var gap := 14.0
 	var total := defs.size() * bw + (defs.size()-1) * gap
-	var sx := (1080.0 - total) / 2.0
+	var sx := (1152.0 - total) / 2.0
 
 	for i in defs.size():
 		var id  := defs[i][0]; var txt := defs[i][1]; var col: Color = defs[i][2]
 		var btn := Button.new()
 		btn.text = txt
-		btn.size = Vector2(bw, 140)
+		btn.size = Vector2(bw, 62)
 		btn.position = Vector2(sx + i*(bw+gap), row_y)
-		btn.add_theme_font_size_override("font_size", 16)
-		btn.add_theme_stylebox_override("normal",   _flat(Color(col.r*0.12,col.g*0.12,col.b*0.18,1.0), Color(col.r,col.g,col.b,0.45), 14, 1))
-		btn.add_theme_stylebox_override("hover",    _flat(Color(col.r*0.22,col.g*0.22,col.b*0.32,1.0), Color(col.r,col.g,col.b,0.85), 14, 2))
-		btn.add_theme_stylebox_override("pressed",  _flat(Color(col.r*0.08,col.g*0.08,col.b*0.12,1.0), Color(col.r,col.g,col.b,1.00), 14, 2))
-		btn.add_theme_stylebox_override("disabled", _flat(Color(0.09,0.10,0.14,1.0), Color(0.3,0.3,0.4,0.2), 14, 1))
+		btn.add_theme_font_size_override("font_size", 13)
+		btn.add_theme_stylebox_override("normal",   _flat(Color(col.r*0.12,col.g*0.12,col.b*0.18,1.0), Color(col.r,col.g,col.b,0.45), 10, 1))
+		btn.add_theme_stylebox_override("hover",    _flat(Color(col.r*0.22,col.g*0.22,col.b*0.32,1.0), Color(col.r,col.g,col.b,0.85), 10, 2))
+		btn.add_theme_stylebox_override("pressed",  _flat(Color(col.r*0.08,col.g*0.08,col.b*0.12,1.0), Color(col.r,col.g,col.b,1.00), 10, 2))
+		btn.add_theme_stylebox_override("disabled", _flat(Color(0.09,0.10,0.14,1.0), Color(0.3,0.3,0.4,0.2), 10, 1))
 		btn.add_theme_color_override("font_color",          C_TEXT)
 		btn.add_theme_color_override("font_color_disabled", Color(0.35,0.38,0.48))
 		add_child(btn)
@@ -363,8 +362,8 @@ func _build_action_row() -> void:
 # ── Message bar ────────────────────────────────────────────
 func _build_message_bar() -> void:
 	var mb := Panel.new()
-	mb.size = Vector2(1080, 60)
-	mb.position = Vector2(0, 1286)
+	mb.size = Vector2(1152, 24)
+	mb.position = Vector2(0, 624)
 	mb.add_theme_stylebox_override("panel", _flat(Color(0.03,0.04,0.08,0.97)))
 	add_child(mb)
 
@@ -372,7 +371,7 @@ func _build_message_bar() -> void:
 	_msg_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_msg_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_msg_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_msg_lbl.add_theme_font_size_override("font_size", 15)
+	_msg_lbl.add_theme_font_size_override("font_size", 13)
 	_msg_lbl.add_theme_color_override("font_color", C_TEXT)
 	_msg_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mb.add_child(_msg_lbl)
@@ -453,7 +452,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	var bg_r     := 0.28 if selected else 0.10
 	var bw       := 2 if selected else 1
 	var panel    := Panel.new()
-	panel.custom_minimum_size = Vector2(150, 290)
+	panel.custom_minimum_size = Vector2(112, 110)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel",
 		_flat(Color(col.r*bg_r, col.g*bg_r, col.b*(bg_r+0.06), 1.0),
@@ -477,10 +476,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	var sym := data.get("symbol", data.get("name","?"))
 	var sym_lbl := Label.new()
 	sym_lbl.text = sym
-	sym_lbl.size = Vector2(150, 110)
-	sym_lbl.position = Vector2(0, 32)
+	sym_lbl.size = Vector2(112, 52)
+	sym_lbl.position = Vector2(0, 18)
 	sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sym_lbl.add_theme_font_size_override("font_size", 44 if ctype == "element" else 28)
+	sym_lbl.add_theme_font_size_override("font_size", 32 if ctype == "element" else 18)
 	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.9))
 	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(sym_lbl)
@@ -488,18 +487,18 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	# Divider
 	var div := ColorRect.new()
 	div.color = Color(col.r, col.g, col.b, 0.2)
-	div.size = Vector2(130, 1)
-	div.position = Vector2(10, 148)
+	div.size = Vector2(96, 1)
+	div.position = Vector2(8, 72)
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(div)
 
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
-	name_lbl.size = Vector2(134, 40)
-	name_lbl.position = Vector2(8, 154)
+	name_lbl.size = Vector2(104, 28)
+	name_lbl.position = Vector2(4, 76)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 15)
+	name_lbl.add_theme_font_size_override("font_size", 11)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -509,10 +508,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	if ctype != "element" and data.has("desc"):
 		var desc_lbl := Label.new()
 		desc_lbl.text = data["desc"]
-		desc_lbl.size = Vector2(134, 60)
-		desc_lbl.position = Vector2(8, 200)
+		desc_lbl.size = Vector2(104, 22)
+		desc_lbl.position = Vector2(4, 88)
 		desc_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		desc_lbl.add_theme_font_size_override("font_size", 11)
+		desc_lbl.add_theme_font_size_override("font_size", 9)
 		desc_lbl.add_theme_color_override("font_color", C_SUB)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -830,19 +829,19 @@ func _refresh_ui() -> void:
 		_ap_lbl.text = dots
 
 	# Ultimate gauge
-	if _gauge_bar:  _gauge_bar.size.x = 320.0 * (_ult_gauge / float(MAX_GAUGE))
+	if _gauge_bar:  _gauge_bar.size.x = 250.0 * (_ult_gauge / float(MAX_GAUGE))
 	if _gauge_lbl:  _gauge_lbl.text = "Ultimate %d / %d" % [_ult_gauge, MAX_GAUGE]
 
 	# Player HP
 	var max_hp: float = float(CHARACTER["max_hp"])
-	if _player_hp_bar: _player_hp_bar.size.x = 460.0 * (maxi(0, _player_hp) / max_hp)
+	if _player_hp_bar: _player_hp_bar.size.x = 380.0 * (maxi(0, _player_hp) / max_hp)
 	if _player_hp_lbl: _player_hp_lbl.text = "HP: %d / %d" % [maxi(0,_player_hp), int(max_hp)]
 	if _shield_lbl:    _shield_lbl.text = "🛡 Shield: %d" % _player_shield if _player_shield > 0 else ""
 
 	# Enemy
 	var emax: float = float(_enemy_data.get("hp", 100))
 	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
-	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 600.0 * (maxi(0, _enemy_hp) / emax)
+	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 490.0 * (maxi(0, _enemy_hp) / emax)
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP: %d / %d" % [maxi(0,_enemy_hp), int(emax)]
 	if _enemy_status_lbl:
 		var s := []
@@ -860,7 +859,7 @@ func _refresh_ui() -> void:
 	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done or _ap < 1
 	if _btn_skill:
 		var cd := " [CD:%d]" % _skill_cd if _skill_cd > 0 else ""
-		_btn_skill.text = "⚡\nSkill\n2 AP%s" % cd
+		_btn_skill.text = "⚡ Skill\n2 AP%s" % cd
 		_btn_skill.disabled = not pt or _main_action_done or _ap < 2 or _skill_cd > 0
 	if _btn_ult:
 		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used

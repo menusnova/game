@@ -1,9 +1,9 @@
 extends Control
 
 const SC_BATTLE   := "res://battle_scene.tscn"
-const CARD_HEIGHT := 480.0   # ความสูงของ Card (portrait)
-const SCREEN_H    := 1920.0  # ความสูง viewport portrait
-const CARD_TOP    := 1200.0  # ตำแหน่ง y เมื่อ slide ขึ้นมาแล้ว
+const CARD_HEIGHT := 330.0   # ความสูงของ Card (landscape)
+const SCREEN_H    := 648.0   # ความสูง viewport landscape
+const CARD_TOP    := 280.0   # ตำแหน่ง y เมื่อ slide ขึ้นมาแล้ว
 
 @onready var _card:  Panel      = $Card
 @onready var _fade:  ColorRect  = $FadeOverlay

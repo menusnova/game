@@ -60,9 +60,9 @@ theme_override_styles/panel = SubResource("SB_Bg")
 [node name="Card" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 1920.0
-offset_right = 1080.0
-offset_bottom = 2400.0
+offset_top = 648.0
+offset_right = 1152.0
+offset_bottom = 978.0
 theme_override_styles/panel = SubResource("SB_Card")
 
 [node name="MissionLabel" type="Label" parent="Card"]
