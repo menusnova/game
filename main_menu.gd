@@ -70,6 +70,22 @@ func _setup_navbar() -> void:
 func _setup_quest_panel() -> void:
 	_quest_panel = preload("res://quest_panel.tscn").instantiate()
 	add_child(_quest_panel)
+	_setup_chat_coming_soon()
+
+func _setup_chat_coming_soon() -> void:
+	var mail: Control = get_node_or_null("BtnMail")
+	if mail:
+		mail.gui_input.connect(func(ev: InputEvent):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_show_coming_soon("ระบบแชทยังไม่เปิดให้บริการ")
+		)
+	var chat_bar: Control = get_node_or_null("ChatBar")
+	if chat_bar:
+		chat_bar.mouse_filter = Control.MOUSE_FILTER_STOP
+		chat_bar.gui_input.connect(func(ev: InputEvent):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_show_coming_soon("ระบบแชทยังไม่เปิดให้บริการ")
+		)
 
 func _setup_domain() -> void:
 	DomainManager.domain_changed.connect(_on_domain_changed)
@@ -328,6 +344,58 @@ func _on_char_circle_input(ev: InputEvent, idx: int) -> void:
 		_refresh_char_circles(true)
 		_update_char_sprites()
 		_char_switching = false
+
+func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เปิดให้บริการ") -> void:
+	# ถ้ามี toast อยู่แล้ว ไม่ซ้อน
+	if get_node_or_null("_CSToast") != null:
+		return
+	var toast := Panel.new()
+	toast.name = "_CSToast"
+	toast.z_index = 100
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.06, 0.10, 0.22, 0.94)
+	sb.border_color = Color(0.37, 0.62, 1.0, 0.5)
+	sb.set_border_width(SIDE_LEFT,   2)
+	sb.set_border_width(SIDE_TOP,    1)
+	sb.set_border_width(SIDE_RIGHT,  1)
+	sb.set_border_width(SIDE_BOTTOM, 1)
+	sb.corner_radius_top_left     = 8
+	sb.corner_radius_top_right    = 8
+	sb.corner_radius_bottom_right = 8
+	sb.corner_radius_bottom_left  = 8
+	toast.add_theme_stylebox_override("panel", sb)
+
+	var lbl := Label.new()
+	lbl.text = "🔒  " + msg
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 1.0))
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.offset_left = 14; lbl.offset_right = -14
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	toast.add_child(lbl)
+
+	var tw: int = 320
+	var th: int = 44
+	toast.size     = Vector2(tw, th)
+	toast.position = Vector2((1152 - tw) * 0.5, 540)
+	toast.modulate = Color(1, 1, 1, 0.0)
+	add_child(toast)
+
+	var t := create_tween().set_parallel(true)
+	t.tween_property(toast, "modulate:a",   1.0,               0.18)
+	t.tween_property(toast, "position:y",   524.0,             0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	await t.finished
+
+	await get_tree().create_timer(1.6).timeout
+
+	var t2 := create_tween()
+	t2.tween_property(toast, "modulate:a", 0.0, 0.25)
+	await t2.finished
+	toast.queue_free()
 
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
