@@ -636,7 +636,7 @@ func _open_confirm() -> void:
 	if _selected_item.is_empty():
 		return
 	var item := _selected_item
-	var box: Panel = _confirm_ov.get_child(1)
+	var box: Panel = _confirm_ov.get_child(1) as Panel
 	box.get_node("ItemLabel").text = item["name"]
 	if item["cost"] == 0:
 		box.get_node("CostLabel").text = "FREE"
@@ -652,7 +652,7 @@ func _execute_purchase() -> void:
 	if item["cost"] > 0:
 		_wallet[item["currency"]] -= item["cost"]
 	if item["stock"] > 0:
-		_stock[item["id"]] = _stock.get(item["id"], item["stock"]) - 1
+		_stock[item["id"]] = int(_stock.get(item["id"], item["stock"])) - 1
 	DomainManager.add_points("shop")
 	_rebuild_wallet()
 	_switch_tab(_current_tab)
@@ -688,8 +688,10 @@ func _flat(bg: Color, border: Color, radius: int = 0,
 	var sb := StyleBoxFlat.new()
 	sb.bg_color    = bg
 	sb.border_color = border
-	for side in [0,1,2,3]:
-		sb.set_border_width(side, bw)
+	sb.set_border_width(SIDE_LEFT,   bw)
+	sb.set_border_width(SIDE_TOP,    bw)
+	sb.set_border_width(SIDE_RIGHT,  bw)
+	sb.set_border_width(SIDE_BOTTOM, bw)
 	if bw_top    > 0: sb.set_border_width(SIDE_TOP,    bw_top)
 	if bw_bottom > 0: sb.set_border_width(SIDE_BOTTOM, bw_bottom)
 	if bw_left   > 0: sb.set_border_width(SIDE_LEFT,   bw_left)
