@@ -22,7 +22,7 @@ DomainManager="*res://domain_manager.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray()
 
 [file_customization]
 
