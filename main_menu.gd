@@ -83,6 +83,12 @@ func _setup_menu_items() -> void:
 		item.mouse_entered.connect(_on_menu_hover.bind(item, orig_y, true))
 		item.mouse_exited.connect(_on_menu_hover.bind(item, orig_y, false))
 		item.gui_input.connect(_on_menu_click.bind(item))
+	# Top-right icon buttons
+	for btn_name in ["BtnPeople", "BtnMail", "BtnMega", "BtnSettings",
+					  "ProfileCard", "NewCharCard"]:
+		var n: Control = get_node_or_null(btn_name)
+		if n:
+			_attach_hover_bounce(n)
 
 func _on_menu_hover(item: Control, orig_y: float, hovered: bool) -> void:
 	var t := item.create_tween()
@@ -106,6 +112,7 @@ func _setup_cards_fx() -> void:
 		var card: Control = get_node_or_null(card_name)
 		if card == null or _is_locked(card):
 			continue
+		_attach_hover_bounce(card)
 		card.gui_input.connect(_on_card_fx.bind(card))
 
 func _on_card_fx(ev: InputEvent, card: Control) -> void:
@@ -114,6 +121,16 @@ func _on_card_fx(ev: InputEvent, card: Control) -> void:
 		_fx_ripple(card, ev.position)
 
 # ── Effects ───────────────────────────────────────────────────────
+func _attach_hover_bounce(node: Control) -> void:
+	node.mouse_entered.connect(func():
+		var t := node.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		t.tween_property(node, "scale", Vector2(1.06, 1.06), 0.12)
+	)
+	node.mouse_exited.connect(func():
+		var t := node.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		t.tween_property(node, "scale", Vector2(1.0, 1.0), 0.14)
+	)
+
 func _fx_flash(node: Control) -> void:
 	var flash: ColorRect = node.get_node_or_null("BloomFlash")
 	if flash:
