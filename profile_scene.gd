@@ -41,7 +41,6 @@ var _avatar_idx:  int    = 0
 @onready var _sig_lbl:       Label         = $PlayerCard/SignatureBg/Signature
 @onready var _edit_btn:      Button        = $PlayerCard/EditBtn
 @onready var _avatar_icon:   Panel         = $PlayerCard/AvatarIcon
-@onready var _avatar_art:    TextureRect   = $PlayerCard/AvatarIcon/AvatarArt
 
 var _avatar_label: Label   # emoji label inside avatar (created in _ready)
 var _edit_popup:   Control # edit name/sig popup
@@ -339,8 +338,9 @@ func _apply_domain_bar(pct: float) -> void:
 	_domain_fill.size.x = bar_w * (pct / 100.0)
 
 # ── Stats card ───────────────────────────────────────────────────
-var _stats_card: Panel
-var _stats_open: bool = false
+var _stats_card:  Panel
+var _stats_open:  bool  = false
+var _stats_tween: Tween
 
 func _build_stats() -> void:
 	# ⋮ button on PlayerCard (top-right corner)
@@ -440,13 +440,15 @@ func _build_stats() -> void:
 		y += 56.0
 
 func _toggle_stats() -> void:
+	if _stats_tween and _stats_tween.is_running():
+		_stats_tween.kill()
 	_stats_open = not _stats_open
 	_stats_card.visible = true
 	var target_x: float = 388.0 if _stats_open else 784.0
-	var t := create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	t.tween_property(_stats_card, "position:x", target_x, 0.22)
+	_stats_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	_stats_tween.tween_property(_stats_card, "position:x", target_x, 0.22)
 	if not _stats_open:
-		await t.finished
+		await _stats_tween.finished
 		_stats_card.visible = false
 
 # ── Showcase ─────────────────────────────────────────────────────
