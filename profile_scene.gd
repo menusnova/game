@@ -6,7 +6,6 @@ const SHOWCASE: Array = [
 	{"name": "Lyra",   "level": 42, "rarity": 5, "element": "🔥", "art": null},
 	{"name": "Kael",   "level": 38, "rarity": 4, "element": "⚡", "art": null},
 	{"name": "Mira",   "level": 35, "rarity": 4, "element": "🧊", "art": null},
-	{"name": "",       "level": 0,  "rarity": 0, "element": "",   "art": null},
 ]
 
 const ACTIVITY: Array = [
