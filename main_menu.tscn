@@ -1562,15 +1562,17 @@ offset_bottom = 1.0
 mouse_filter = 2
 color = Color(0.3, 0.3, 0.3, 0.2)
 
-[node name="ChatIcon" type="Label" parent="ChatBar" unique_id=1512941828]
+[node name="ChatIcon" type="TextureRect" parent="ChatBar" unique_id=1512941828]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 5.0
+offset_left = 6.0
+offset_top = 4.0
 offset_right = 26.0
-offset_bottom = 23.0
-theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
-theme_override_font_sizes/font_size = 12
-text = "🔒"
+offset_bottom = 24.0
+mouse_filter = 2
+modulate = Color(0.45, 0.45, 0.45, 1)
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ChatText" type="Label" parent="ChatBar" unique_id=507499625]
 layout_mode = 0
