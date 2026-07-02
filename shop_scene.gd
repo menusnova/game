@@ -19,89 +19,79 @@ const TAB_ICONS := {
 const ITEMS := {
 	"SUPPLIES": [
 		{"id": "s1", "name": "เพชรฟรี ×60",       "icon": "◈", "rarity": 4,
-		 "desc": "เพชรฟรีสำหรับสุ่มกาชา ได้รับจากการเติม", "cost": 0,      "currency": "gold", "stock": -1},
+		 "desc": "เพชรฟรีสำหรับสุ่มกาชา", "cost": 0,      "currency": "gold", "stock": -1},
 		{"id": "s2", "name": "เงิน ×10,000",       "icon": "◎", "rarity": 3,
-		 "desc": "เงินสำหรับอัปเกรดและสังเคราะห์", "cost": 200,  "currency": "gems", "stock": -1},
+		 "desc": "เงินสำหรับอัปเกรด", "cost": 200,  "currency": "gems", "stock": -1},
 		{"id": "s3", "name": "EXP Card (เล็ก)",    "icon": "▲", "rarity": 2,
-		 "desc": "เพิ่ม EXP 1,000 ให้ตัวละคร",    "cost": 5000, "currency": "gold", "stock": -1},
+		 "desc": "เพิ่ม EXP 1,000", "cost": 5000, "currency": "gold", "stock": -1},
 		{"id": "s4", "name": "EXP Card (กลาง)",    "icon": "▲", "rarity": 3,
-		 "desc": "เพิ่ม EXP 5,000 ให้ตัวละคร",    "cost": 20000,"currency": "gold", "stock": -1},
+		 "desc": "เพิ่ม EXP 5,000", "cost": 20000,"currency": "gold", "stock": -1},
 		{"id": "s5", "name": "วัสดุอัปสกิล I",    "icon": "✦", "rarity": 3,
-		 "desc": "วัสดุอัปเกรดสกิลระดับ 2–4",     "cost": 3000, "currency": "gold", "stock": -1},
+		 "desc": "อัปสกิลระดับ 2–4", "cost": 3000, "currency": "gold", "stock": -1},
 		{"id": "s6", "name": "วัสดุอัปสกิล II",   "icon": "✦", "rarity": 4,
-		 "desc": "วัสดุอัปเกรดสกิลระดับ 5–7",     "cost": 8000, "currency": "gold", "stock": -1},
+		 "desc": "อัปสกิลระดับ 5–7", "cost": 8000, "currency": "gold", "stock": -1},
 		{"id": "s7", "name": "Compound Catalyst",  "icon": "⬡", "rarity": 5,
-		 "desc": "วัสดุสังเคราะห์ขั้นสูง สำหรับ Elite Promotion", "cost": 30000,"currency": "gold", "stock": -1},
+		 "desc": "วัสดุ Elite Promotion", "cost": 30000,"currency": "gold", "stock": -1},
 		{"id": "s8", "name": "ใบอนุญาตสุ่ม",      "icon": "⊛", "rarity": 5,
-		 "desc": "แลกได้ 1 ครั้งสุ่มกาชา",         "cost": 160,  "currency": "gems", "stock": 5},
+		 "desc": "แลกได้ 1 ครั้งสุ่มกาชา", "cost": 160,  "currency": "gems", "stock": 5},
 	],
 	"OPERATOR": [
 		{"id": "o1", "name": "Lyra",  "icon": "★", "rarity": 5,
-		 "desc": "5★ Sniper — Marksman.\nDPS ระยะไกลสูง", "cost": 3000, "currency": "gems", "stock": 1},
+		 "desc": "5★ Sniper — DPS ระยะไกลสูง", "cost": 3000, "currency": "gems", "stock": 1},
 		{"id": "o2", "name": "Kael",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Defender — Guardian.\nแนวหน้าแข็งแกร่ง ยั่วศัตรู AOE", "cost": 1200, "currency": "gems", "stock": 1},
+		 "desc": "4★ Defender — แนวหน้าแข็งแกร่ง", "cost": 1200, "currency": "gems", "stock": 1},
 		{"id": "o3", "name": "Mira",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Medic — Therapist.\nรักษา AOE ให้ทีม", "cost": 1200, "currency": "gems", "stock": 1},
+		 "desc": "4★ Medic — รักษา AOE", "cost": 1200, "currency": "gems", "stock": 1},
 		{"id": "o4", "name": "Voss",  "icon": "★", "rarity": 4,
-		 "desc": "4★ Caster — Core.\nดีลเวทย์ ใช้พลังงานน้อย", "cost": 1200, "currency": "gems", "stock": 1},
+		 "desc": "4★ Caster — ดีลเวทย์", "cost": 1200, "currency": "gems", "stock": 1},
 	],
 	"EVENT": [
 		{"id": "e1", "name": "Event Token ×5",   "icon": "◆", "rarity": 3,
-		 "desc": "โทเค็นกิจกรรมพิเศษปัจจุบัน", "cost": 0,    "currency": "gold", "stock": -1},
+		 "desc": "โทเค็นกิจกรรมพิเศษ", "cost": 0,    "currency": "gold", "stock": -1},
 		{"id": "e2", "name": "Seraph (จำกัด)",   "icon": "★", "rarity": 5,
-		 "desc": "5★ ตัวละครจำกัด มีแค่ช่วงกิจกรรมนี้", "cost": 600, "currency": "gems", "stock": 1},
+		 "desc": "5★ ตัวละครจำกัด", "cost": 600, "currency": "gems", "stock": 1},
 		{"id": "e3", "name": "Outfit: Eclipse",  "icon": "◈", "rarity": 4,
-		 "desc": "ชุดทางเลือกของ Lyra (Cosmetic)", "cost": 300, "currency": "gems", "stock": 1},
+		 "desc": "ชุดทางเลือกของ Lyra", "cost": 300, "currency": "gems", "stock": 1},
 		{"id": "e4", "name": "Compound Catalyst","icon": "⬡", "rarity": 4,
-		 "desc": "วัสดุสังเคราะห์ขั้นสูง",        "cost": 15000,"currency": "gold", "stock": 3},
+		 "desc": "วัสดุสังเคราะห์ขั้นสูง", "cost": 15000,"currency": "gold", "stock": 3},
 		{"id": "e5", "name": "เงิน ×30,000",     "icon": "◎", "rarity": 3,
-		 "desc": "Lungmen Dollars",               "cost": 180,  "currency": "gems", "stock": 2},
+		 "desc": "Lungmen Dollars", "cost": 180,  "currency": "gems", "stock": 2},
 	],
 }
 
-# currency key: "gold" | "gems"
 var _stock: Dictionary = {}
-
 var _current_tab    := "SUPPLIES"
 var _selected_item: Dictionary = {}
 
-# ── Layout constants ──────────────────────────────────────────────
-const SIDEBAR_W  := 180
-const TOPBAR_H   := 56
-const DETAIL_W   := 400
-const SCREEN_W   := 1152
-const SCREEN_H   := 648
+# ── Layout ────────────────────────────────────────────────────────
+const SIDEBAR_W := 180
+const TOPBAR_H  := 56
+const SCREEN_W  := 1152
+const SCREEN_H  := 648
+const GRID_X    := SIDEBAR_W
+const GRID_W    := SCREEN_W - SIDEBAR_W   # 972
 
-# Grid area: x = SIDEBAR_W  →  SCREEN_W - DETAIL_W
-# = 180 → 752  (572px)
-const GRID_X := SIDEBAR_W
-const GRID_W := SCREEN_W - SIDEBAR_W - DETAIL_W   # 572
-
-# ── Rarity colors ─────────────────────────────────────────────────
-const C_R5 := Color(1.00, 0.80, 0.20, 1.0)   # gold
-const C_R4 := Color(0.72, 0.50, 1.00, 1.0)   # purple
-const C_R3 := Color(0.35, 0.65, 1.00, 1.0)   # blue
-const C_R2 := Color(0.45, 0.80, 0.55, 1.0)   # green
-
-# ── Base colors ───────────────────────────────────────────────────
-const C_BG      := Color(0.04, 0.05, 0.10, 1.0)
-const C_SIDEBAR := Color(0.025, 0.035, 0.08, 1.0)
-const C_PANEL   := Color(0.055, 0.075, 0.16, 1.0)
-const C_BORDER  := Color(0.18, 0.52, 0.9,  0.3)
-const C_ACTIVE  := Color(0.25, 0.65, 1.0,  1.0)
-const C_TEXT    := Color(0.88, 0.92, 1.00, 1.0)
-const C_SUB     := Color(0.55, 0.70, 0.90, 0.8)
-const C_GOLD    := Color(1.00, 0.82, 0.25, 1.0)
-const C_GREY    := Color(0.40, 0.48, 0.60, 0.7)
+# ── Colors ────────────────────────────────────────────────────────
+const C_R5     := Color(1.00, 0.80, 0.20, 1.0)
+const C_R4     := Color(0.72, 0.50, 1.00, 1.0)
+const C_R3     := Color(0.35, 0.65, 1.00, 1.0)
+const C_R2     := Color(0.45, 0.80, 0.55, 1.0)
+const C_BG     := Color(0.04, 0.05, 0.10, 1.0)
+const C_SIDEBAR:= Color(0.025, 0.035, 0.08, 1.0)
+const C_PANEL  := Color(0.055, 0.075, 0.16, 1.0)
+const C_BORDER := Color(0.18, 0.52, 0.9,  0.3)
+const C_ACTIVE := Color(0.25, 0.65, 1.0,  1.0)
+const C_TEXT   := Color(0.88, 0.92, 1.00, 1.0)
+const C_SUB    := Color(0.55, 0.70, 0.90, 0.8)
+const C_GOLD   := Color(1.00, 0.82, 0.25, 1.0)
+const C_GREY   := Color(0.40, 0.48, 0.60, 0.7)
 
 # ── Node refs ─────────────────────────────────────────────────────
-var _tab_btns:   Array[Button]  = []
-var _item_grid:  GridContainer
-var _detail_box: Control
-var _buy_btn:    Button
+var _tab_btns:  Array[Button] = []
+var _item_grid: GridContainer
 var _wallet_row: HBoxContainer
 var _confirm_ov: Control
-var _tab_title:  Label
+var _tab_title: Label
 
 func _ready() -> void:
 	_init_stock()
@@ -117,7 +107,6 @@ func _init_stock() -> void:
 #  UI BUILD
 # ════════════════════════════════════════════════════════════════
 func _build_ui() -> void:
-	# root bg
 	var bg := ColorRect.new()
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	bg.color = C_BG
@@ -127,38 +116,33 @@ func _build_ui() -> void:
 	_build_sidebar()
 	_build_topbar()
 	_build_grid_area()
-	_build_detail_panel()
 	_build_confirm_overlay()
-
 	_switch_tab("SUPPLIES")
 
-# ── Sidebar ──────────────────────────────────────────────────────
+# ── Sidebar ───────────────────────────────────────────────────────
 func _build_sidebar() -> void:
 	var sb := Panel.new()
 	sb.position = Vector2(0, 0)
 	sb.size     = Vector2(SIDEBAR_W, SCREEN_H)
-	sb.add_theme_stylebox_override("panel", _flat(C_SIDEBAR, C_BORDER, 0, 0, 0, 0, 1, 0))
+	sb.add_theme_stylebox_override("panel", _flat(C_SIDEBAR, C_BORDER, 0, 0, 0, 0, 0, 1))
 	add_child(sb)
 
-	# Logo / title
 	var logo := Label.new()
 	logo.text = "SHOP"
 	logo.add_theme_font_size_override("font_size", 22)
 	logo.add_theme_color_override("font_color", C_TEXT)
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	logo.size = Vector2(SIDEBAR_W, 52)
+	logo.size     = Vector2(SIDEBAR_W, 52)
 	logo.position = Vector2(0, 12)
 	logo.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	sb.add_child(logo)
 
-	# Thin divider under logo
 	var sep := ColorRect.new()
 	sep.color    = Color(C_BORDER)
 	sep.size     = Vector2(SIDEBAR_W - 24, 1)
 	sep.position = Vector2(12, 60)
 	sb.add_child(sep)
 
-	# Tab buttons
 	var y := 76.0
 	for tab in TABS:
 		var btn := Button.new()
@@ -173,7 +157,6 @@ func _build_sidebar() -> void:
 		_tab_btns.append(btn)
 		y += 52
 
-	# Back button at bottom
 	var back := Button.new()
 	back.text = "← กลับ"
 	back.add_theme_font_size_override("font_size", 12)
@@ -204,7 +187,6 @@ func _build_topbar() -> void:
 	_tab_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	bar.add_child(_tab_title)
 
-	# Wallet
 	_wallet_row = HBoxContainer.new()
 	_wallet_row.position = Vector2(300, 10)
 	_wallet_row.size     = Vector2(SCREEN_W - SIDEBAR_W - 300 - 16, 36)
@@ -221,37 +203,183 @@ func _build_grid_area() -> void:
 	add_child(scroll)
 
 	var mc := MarginContainer.new()
-	mc.add_theme_constant_override("margin_left",   12)
-	mc.add_theme_constant_override("margin_right",  12)
-	mc.add_theme_constant_override("margin_top",    16)
-	mc.add_theme_constant_override("margin_bottom", 16)
+	mc.add_theme_constant_override("margin_left",   16)
+	mc.add_theme_constant_override("margin_right",  16)
+	mc.add_theme_constant_override("margin_top",    20)
+	mc.add_theme_constant_override("margin_bottom", 20)
 	mc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	_item_grid = GridContainer.new()
-	_item_grid.columns = 3
-	_item_grid.add_theme_constant_override("h_separation", 10)
-	_item_grid.add_theme_constant_override("v_separation", 10)
+	_item_grid.columns = 5
+	_item_grid.add_theme_constant_override("h_separation", 12)
+	_item_grid.add_theme_constant_override("v_separation", 12)
 	_item_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mc.add_child(_item_grid)
 	scroll.add_child(mc)
 
-	# Right border of grid area
-	var div := ColorRect.new()
-	div.position = Vector2(GRID_X + GRID_W, TOPBAR_H)
-	div.size     = Vector2(1, SCREEN_H - TOPBAR_H)
-	div.color    = Color(C_BORDER)
-	add_child(div)
+# ── Wallet ────────────────────────────────────────────────────────
+func _rebuild_wallet() -> void:
+	for c in _wallet_row.get_children():
+		c.queue_free()
+	_add_wallet_pill("💰", str(CurrencyManager.gold),         Color(1.00, 0.82, 0.25, 1.0))
+	_add_wallet_pill("💠", str(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
+	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
+	_add_wallet_pill("⚡", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY],
+		Color(0.95, 0.95, 0.35, 1.0))
 
-# ── Detail panel ──────────────────────────────────────────────────
-func _build_detail_panel() -> void:
-	_detail_box = Panel.new()
-	_detail_box.position = Vector2(GRID_X + GRID_W + 1, TOPBAR_H)
-	_detail_box.size     = Vector2(DETAIL_W - 1, SCREEN_H - TOPBAR_H)
-	_detail_box.add_theme_stylebox_override("panel", _flat(C_PANEL, Color(0,0,0,0)))
-	add_child(_detail_box)
-	_build_detail_empty()
+func _add_wallet_pill(icon: String, value: String, col: Color) -> void:
+	var pill := Panel.new()
+	pill.custom_minimum_size = Vector2(96, 30)
+	pill.add_theme_stylebox_override("panel", _flat(Color(0.06, 0.10, 0.22, 0.9), Color(C_BORDER), 6))
+	var row := HBoxContainer.new()
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = 8; row.offset_right = -8
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	var ico := Label.new()
+	ico.text = icon
+	ico.add_theme_font_size_override("font_size", 13)
+	row.add_child(ico)
+	var amt := Label.new()
+	amt.text = " " + value
+	amt.add_theme_font_size_override("font_size", 11)
+	amt.add_theme_color_override("font_color", col)
+	row.add_child(amt)
+	pill.add_child(row)
+	_wallet_row.add_child(pill)
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(6, 0)
+	_wallet_row.add_child(spacer)
 
-# ── Confirm overlay ───────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════════
+#  TAB SWITCH
+# ════════════════════════════════════════════════════════════════
+func _switch_tab(tab: String) -> void:
+	_current_tab   = tab
+	_selected_item = {}
+	if _tab_title:
+		_tab_title.text = TAB_LABELS.get(tab, tab)
+	for i in _tab_btns.size():
+		_style_sidebar_btn(_tab_btns[i], TABS[i] == tab)
+	for child in _item_grid.get_children():
+		child.queue_free()
+	for item in ITEMS[tab]:
+		_item_grid.add_child(_make_item_card(item))
+
+# ── Item card ─────────────────────────────────────────────────────
+func _make_item_card(item: Dictionary) -> Control:
+	var remaining: int   = _stock.get(item["id"], item["stock"])
+	var sold_out: bool   = item["stock"] > 0 and remaining <= 0
+	var rarity: int      = int(item.get("rarity", 3))
+	var r_col: Color     = _rarity_color(rarity)
+	var cur: String      = str(item.get("currency", "gold"))
+	var cost_val: int    = int(item["cost"])
+	var affordable: bool = cost_val == 0 or _check_afford(cur, cost_val)
+
+	var card := Panel.new()
+	card.custom_minimum_size = Vector2(172, 210)
+	var bg_col := Color(0.06, 0.09, 0.20, 0.9) if not sold_out else Color(0.04, 0.05, 0.10, 0.9)
+	card.add_theme_stylebox_override("panel",
+		_flat(bg_col, r_col if not sold_out else Color(0.3,0.3,0.4,0.25), 8, 1))
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.gui_input.connect(_on_item_click.bind(item, card))
+
+	# Rarity bar top
+	var rbar := ColorRect.new()
+	rbar.color  = Color(r_col.r, r_col.g, r_col.b, 0.55 if not sold_out else 0.15)
+	rbar.size   = Vector2(172, 4)
+	rbar.position = Vector2(0, 0)
+	rbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(rbar)
+
+	# Icon area
+	var icon_bg := ColorRect.new()
+	icon_bg.color  = Color(r_col.r, r_col.g, r_col.b, 0.06 if not sold_out else 0.02)
+	icon_bg.size   = Vector2(172, 118)
+	icon_bg.position = Vector2(0, 4)
+	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(icon_bg)
+
+	var icon_lbl := Label.new()
+	icon_lbl.text = item["icon"]
+	icon_lbl.add_theme_font_size_override("font_size", 48)
+	icon_lbl.add_theme_color_override("font_color",
+		Color(r_col.r, r_col.g, r_col.b, 0.30 if sold_out else 1.0))
+	icon_lbl.size     = Vector2(172, 118)
+	icon_lbl.position = Vector2(0, 4)
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(icon_lbl)
+
+	# Stars
+	var stars := ""
+	for _i in rarity:
+		stars += "★"
+	var star_lbl := Label.new()
+	star_lbl.text = stars
+	star_lbl.add_theme_font_size_override("font_size", 9)
+	star_lbl.add_theme_color_override("font_color",
+		Color(r_col.r, r_col.g, r_col.b, 0.8 if not sold_out else 0.3))
+	star_lbl.size     = Vector2(172, 16)
+	star_lbl.position = Vector2(0, 120)
+	star_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	star_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(star_lbl)
+
+	# Name
+	var name_lbl := Label.new()
+	name_lbl.text = item["name"]
+	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_color_override("font_color", C_GREY if sold_out else C_TEXT)
+	name_lbl.size     = Vector2(156, 38)
+	name_lbl.position = Vector2(8, 138)
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(name_lbl)
+
+	# Cost / sold out
+	var cost_lbl := Label.new()
+	if sold_out:
+		cost_lbl.text = "SOLD OUT"
+		cost_lbl.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35, 0.8))
+	elif cost_val == 0:
+		cost_lbl.text = "ฟรี"
+		cost_lbl.add_theme_color_override("font_color", Color(0.4, 1.0, 0.55))
+	else:
+		cost_lbl.text = "%s %d" % [_cur_icon(cur), cost_val]
+		cost_lbl.add_theme_color_override("font_color",
+			C_GOLD if affordable else Color(1.0, 0.4, 0.4))
+	cost_lbl.add_theme_font_size_override("font_size", 11)
+	cost_lbl.size     = Vector2(172, 22)
+	cost_lbl.position = Vector2(0, 182)
+	cost_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cost_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(cost_lbl)
+
+	# Sold-out dim
+	if sold_out:
+		var dim2 := ColorRect.new()
+		dim2.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		dim2.color = Color(0, 0, 0, 0.38)
+		dim2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(dim2)
+
+	return card
+
+func _on_item_click(ev: InputEvent, item: Dictionary, card: Control) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		var remaining: int = _stock.get(item["id"], item["stock"])
+		var sold_out: bool = item["stock"] > 0 and remaining <= 0
+		if sold_out:
+			return
+		_selected_item = item
+		_fx_scale(card)
+		_open_confirm()
+
+# ════════════════════════════════════════════════════════════════
+#  CONFIRM OVERLAY
+# ════════════════════════════════════════════════════════════════
 func _build_confirm_overlay() -> void:
 	_confirm_ov = Control.new()
 	_confirm_ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -268,7 +396,8 @@ func _build_confirm_overlay() -> void:
 	var box := Panel.new()
 	box.size     = Vector2(380, 220)
 	box.position = Vector2((SCREEN_W - 380) * 0.5, (SCREEN_H - 220) * 0.5)
-	box.add_theme_stylebox_override("panel", _flat(Color(0.07, 0.10, 0.20, 0.98), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.6), 10, 1))
+	box.add_theme_stylebox_override("panel",
+		_flat(Color(0.07, 0.10, 0.20, 0.98), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.6), 10, 1))
 	_confirm_ov.add_child(box)
 
 	var title := Label.new()
@@ -331,315 +460,6 @@ func _build_confirm_overlay() -> void:
 	confirm.pressed.connect(_execute_purchase)
 	row.add_child(confirm)
 
-func _rebuild_wallet() -> void:
-	for c in _wallet_row.get_children():
-		c.queue_free()
-	_add_wallet_pill("💰", str(CurrencyManager.gold),         Color(1.00, 0.82, 0.25, 1.0))
-	_add_wallet_pill("💠", str(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
-	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
-	_add_wallet_pill("⚡", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY],
-		Color(0.95, 0.95, 0.35, 1.0))
-
-func _add_wallet_pill(icon: String, value: String, col: Color) -> void:
-	var pill := Panel.new()
-	pill.custom_minimum_size = Vector2(96, 30)
-	pill.add_theme_stylebox_override("panel", _flat(Color(0.06, 0.10, 0.22, 0.9), Color(C_BORDER), 6))
-	var row := HBoxContainer.new()
-	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	row.offset_left = 8; row.offset_right = -8
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ico := Label.new()
-	ico.text = icon
-	ico.add_theme_font_size_override("font_size", 13)
-	row.add_child(ico)
-	var amt := Label.new()
-	amt.text = " " + value
-	amt.add_theme_font_size_override("font_size", 11)
-	amt.add_theme_color_override("font_color", col)
-	row.add_child(amt)
-	pill.add_child(row)
-	_wallet_row.add_child(pill)
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(6, 0)
-	_wallet_row.add_child(spacer)
-
-# ════════════════════════════════════════════════════════════════
-#  TAB SWITCH
-# ════════════════════════════════════════════════════════════════
-func _switch_tab(tab: String) -> void:
-	_current_tab  = tab
-	_selected_item = {}
-	_build_detail_empty()
-
-	if _tab_title:
-		_tab_title.text = TAB_LABELS.get(tab, tab)
-
-	for i in _tab_btns.size():
-		_style_sidebar_btn(_tab_btns[i], TABS[i] == tab)
-
-	for child in _item_grid.get_children():
-		child.queue_free()
-
-	for item in ITEMS[tab]:
-		_item_grid.add_child(_make_item_card(item))
-
-# ── Item card (portrait style) ────────────────────────────────────
-func _make_item_card(item: Dictionary) -> Control:
-	var remaining: int = _stock.get(item["id"], item["stock"])
-	var sold_out: bool = item["stock"] > 0 and remaining <= 0
-	var rarity: int    = int(item.get("rarity", 3))
-	var r_col: Color   = _rarity_color(rarity)
-	var cur: String    = str(item.get("currency", "gold"))
-	var cost_val: int  = int(item["cost"])
-	var affordable: bool = cost_val == 0 or _check_afford(cur, cost_val)
-
-	var card := Panel.new()
-	card.custom_minimum_size = Vector2(162, 200)
-	var bg_col := Color(0.06, 0.09, 0.20, 0.9) if not sold_out else Color(0.04, 0.05, 0.10, 0.9)
-	card.add_theme_stylebox_override("panel", _flat(bg_col, r_col if not sold_out else Color(0.3,0.3,0.4,0.25), 8, 1))
-	card.mouse_filter = Control.MOUSE_FILTER_STOP
-	card.gui_input.connect(_on_item_click.bind(item, card))
-
-	# rarity bar at top
-	var rbar := ColorRect.new()
-	rbar.color    = Color(r_col.r, r_col.g, r_col.b, 0.55 if not sold_out else 0.15)
-	rbar.size     = Vector2(162, 4)
-	rbar.position = Vector2(0, 0)
-	rbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(rbar)
-
-	# icon area (top half)
-	var icon_bg := ColorRect.new()
-	icon_bg.color  = Color(r_col.r, r_col.g, r_col.b, 0.06 if not sold_out else 0.02)
-	icon_bg.size   = Vector2(162, 110)
-	icon_bg.position = Vector2(0, 4)
-	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(icon_bg)
-
-	var icon_lbl := Label.new()
-	icon_lbl.text = item["icon"]
-	icon_lbl.add_theme_font_size_override("font_size", 44)
-	icon_lbl.add_theme_color_override("font_color",
-		Color(r_col.r, r_col.g, r_col.b, 0.35 if sold_out else 1.0))
-	icon_lbl.size = Vector2(162, 110)
-	icon_lbl.position = Vector2(0, 4)
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(icon_lbl)
-
-	# rarity stars
-	var stars := ""
-	for _i in rarity:
-		stars += "★"
-	var star_lbl := Label.new()
-	star_lbl.text = stars
-	star_lbl.add_theme_font_size_override("font_size", 9)
-	star_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.8 if not sold_out else 0.3))
-	star_lbl.size     = Vector2(162, 16)
-	star_lbl.position = Vector2(0, 112)
-	star_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	star_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(star_lbl)
-
-	# item name
-	var name_lbl := Label.new()
-	name_lbl.text = item["name"]
-	name_lbl.add_theme_font_size_override("font_size", 11)
-	name_lbl.add_theme_color_override("font_color", C_GREY if sold_out else C_TEXT)
-	name_lbl.size     = Vector2(150, 36)
-	name_lbl.position = Vector2(6, 130)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(name_lbl)
-
-	# cost / free / sold out
-	var cost_lbl := Label.new()
-	if sold_out:
-		cost_lbl.text = "SOLD OUT"
-		cost_lbl.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35, 0.8))
-	elif cost_val == 0:
-		cost_lbl.text = "ฟรี"
-		cost_lbl.add_theme_color_override("font_color", Color(0.4, 1.0, 0.55))
-	else:
-		cost_lbl.text = "%s %d" % [_cur_icon(cur), cost_val]
-		cost_lbl.add_theme_color_override("font_color", C_GOLD if affordable else Color(1.0, 0.4, 0.4))
-	cost_lbl.add_theme_font_size_override("font_size", 11)
-	cost_lbl.size     = Vector2(162, 22)
-	cost_lbl.position = Vector2(0, 172)
-	cost_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	cost_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(cost_lbl)
-
-	# sold-out dim overlay
-	if sold_out:
-		var dim2 := ColorRect.new()
-		dim2.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		dim2.color = Color(0, 0, 0, 0.38)
-		dim2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(dim2)
-
-	return card
-
-func _on_item_click(ev: InputEvent, item: Dictionary, card: Control) -> void:
-	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-		_selected_item = item
-		_build_detail(item)
-		_fx_scale(card)
-
-# ════════════════════════════════════════════════════════════════
-#  DETAIL PANEL
-# ════════════════════════════════════════════════════════════════
-func _build_detail_empty() -> void:
-	for c in _detail_box.get_children():
-		c.queue_free()
-	var hint := Label.new()
-	hint.text = "เลือกไอเทม"
-	hint.add_theme_font_size_override("font_size", 14)
-	hint.add_theme_color_override("font_color", Color(C_SUB.r, C_SUB.g, C_SUB.b, 0.35))
-	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	hint.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_detail_box.add_child(hint)
-
-func _build_detail(item: Dictionary) -> void:
-	for c in _detail_box.get_children():
-		c.queue_free()
-
-	var remaining: int   = _stock.get(item["id"], item["stock"])
-	var sold_out: bool   = item["stock"] > 0 and remaining <= 0
-	var cur_key: String  = str(item.get("currency", "gold"))
-	var cost_amt: int    = int(item["cost"])
-	var can_afford: bool = cost_amt == 0 or _check_afford(cur_key, cost_amt)
-	var rarity: int     = int(item.get("rarity", 3))
-	var r_col: Color    = _rarity_color(rarity)
-
-	# Rarity accent bar at top
-	var rbar := ColorRect.new()
-	rbar.color    = Color(r_col.r, r_col.g, r_col.b, 0.6)
-	rbar.size     = Vector2(DETAIL_W - 1, 3)
-	rbar.position = Vector2(0, 0)
-	_detail_box.add_child(rbar)
-
-	# Icon display area
-	var icon_bg := ColorRect.new()
-	icon_bg.color    = Color(r_col.r, r_col.g, r_col.b, 0.06)
-	icon_bg.size     = Vector2(DETAIL_W - 1, 160)
-	icon_bg.position = Vector2(0, 3)
-	_detail_box.add_child(icon_bg)
-
-	var icon_lbl := Label.new()
-	icon_lbl.text = item["icon"]
-	icon_lbl.add_theme_font_size_override("font_size", 72)
-	icon_lbl.add_theme_color_override("font_color", r_col)
-	icon_lbl.size     = Vector2(DETAIL_W - 1, 160)
-	icon_lbl.position = Vector2(0, 3)
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_detail_box.add_child(icon_lbl)
-
-	# Stars
-	var stars := ""
-	for _i in rarity:
-		stars += "★"
-	var star_lbl := Label.new()
-	star_lbl.text = stars
-	star_lbl.add_theme_font_size_override("font_size", 13)
-	star_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.9))
-	star_lbl.size     = Vector2(DETAIL_W - 1, 22)
-	star_lbl.position = Vector2(0, 166)
-	star_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_detail_box.add_child(star_lbl)
-
-	# Item name
-	var name_lbl := Label.new()
-	name_lbl.text = item["name"]
-	name_lbl.add_theme_font_size_override("font_size", 20)
-	name_lbl.add_theme_color_override("font_color", C_TEXT)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	name_lbl.offset_top = 192; name_lbl.offset_bottom = 222
-	_detail_box.add_child(name_lbl)
-
-	# Divider
-	var div := ColorRect.new()
-	div.color = Color(r_col.r, r_col.g, r_col.b, 0.2)
-	div.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	div.offset_top = 228; div.offset_bottom = 229
-	div.offset_left = 28; div.offset_right = -28
-	_detail_box.add_child(div)
-
-	# Description
-	var desc := Label.new()
-	desc.text = item["desc"]
-	desc.add_theme_font_size_override("font_size", 12)
-	desc.add_theme_color_override("font_color", C_SUB)
-	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	desc.offset_top = 238; desc.offset_bottom = 340
-	desc.offset_left = 28; desc.offset_right = -28
-	_detail_box.add_child(desc)
-
-	# Stock info
-	if item["stock"] > 0:
-		var slbl := Label.new()
-		slbl.text = "SOLD OUT" if sold_out else "คงเหลือ: %d / %d" % [remaining, item["stock"]]
-		slbl.add_theme_font_size_override("font_size", 12)
-		slbl.add_theme_color_override("font_color",
-			Color(1.0, 0.4, 0.4) if sold_out else Color(0.55, 0.85, 1.0))
-		slbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		slbl.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-		slbl.offset_top = 344; slbl.offset_bottom = 366
-		_detail_box.add_child(slbl)
-
-	# Cost
-	var cost_lbl := Label.new()
-	if cost_amt == 0:
-		cost_lbl.text = "ฟรี"
-		cost_lbl.add_theme_color_override("font_color", Color(0.4, 1.0, 0.6))
-	else:
-		cost_lbl.text = "%s  %d" % [_cur_icon(cur_key), cost_amt]
-		cost_lbl.add_theme_color_override("font_color", C_GOLD if can_afford else Color(1.0, 0.4, 0.4))
-	cost_lbl.add_theme_font_size_override("font_size", 22)
-	cost_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	cost_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	cost_lbl.offset_top = -110; cost_lbl.offset_bottom = -68
-	_detail_box.add_child(cost_lbl)
-
-	if item["cost"] > 0 and not can_afford:
-		var warn := Label.new()
-		warn.text = "เงินไม่พอ"
-		warn.add_theme_font_size_override("font_size", 11)
-		warn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.45, 0.85))
-		warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		warn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-		warn.offset_top = -66; warn.offset_bottom = -48
-		_detail_box.add_child(warn)
-
-	# Buy button
-	_buy_btn = Button.new()
-	_buy_btn.text = "SOLD OUT" if sold_out else ("รับฟรี" if cost_amt == 0 else "ซื้อ")
-	_buy_btn.disabled = sold_out or (cost_amt > 0 and not can_afford)
-	_buy_btn.custom_minimum_size = Vector2(240, 48)
-	_buy_btn.add_theme_font_size_override("font_size", 15)
-	var btn_col: Color = C_ACTIVE if (not sold_out and can_afford) else C_GREY
-	_buy_btn.add_theme_color_override("font_color", C_BG if (not sold_out and can_afford) else C_GREY)
-	_buy_btn.add_theme_stylebox_override("normal",   _flat(btn_col if not sold_out else Color(0.12,0.14,0.24,1), Color(0,0,0,0), 8))
-	_buy_btn.add_theme_stylebox_override("hover",    _flat(Color(0.35,0.75,1.0,1), Color(0,0,0,0), 8))
-	_buy_btn.add_theme_stylebox_override("pressed",  _flat(Color(0.18,0.55,0.9,1), Color(0,0,0,0), 8))
-	_buy_btn.add_theme_stylebox_override("disabled", _flat(Color(0.12,0.14,0.24,1), Color(C_GREY.r,C_GREY.g,C_GREY.b,0.3), 8, 1))
-	_buy_btn.add_theme_stylebox_override("focus",    _flat(Color(0,0,0,0), Color(0,0,0,0)))
-	_buy_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_buy_btn.offset_top = -56; _buy_btn.offset_bottom = -8
-	_buy_btn.offset_left = 48; _buy_btn.offset_right = -48
-	_buy_btn.pressed.connect(_open_confirm)
-	_detail_box.add_child(_buy_btn)
-
-# ════════════════════════════════════════════════════════════════
-#  PURCHASE FLOW
-# ════════════════════════════════════════════════════════════════
 func _open_confirm() -> void:
 	if _selected_item.is_empty():
 		return
@@ -671,7 +491,6 @@ func _execute_purchase() -> void:
 	DomainManager.add_points("shop")
 	_rebuild_wallet()
 	_switch_tab(_current_tab)
-	_build_detail_empty()
 	_selected_item = {}
 
 # ════════════════════════════════════════════════════════════════
@@ -683,9 +502,7 @@ func _check_afford(cur: String, amount: int) -> bool:
 	return CurrencyManager.gold >= amount
 
 func _cur_icon(cur: String) -> String:
-	if cur == "gems":
-		return "💠"   # คริสตัล
-	return "💰"       # เหรียญทอง
+	return "💠" if cur == "gems" else "💰"
 
 func _rarity_color(rarity: int) -> Color:
 	match rarity:
@@ -697,21 +514,23 @@ func _rarity_color(rarity: int) -> Color:
 func _style_sidebar_btn(btn: Button, active: bool) -> void:
 	if active:
 		btn.add_theme_color_override("font_color", C_TEXT)
-		btn.add_theme_stylebox_override("normal",  _flat(Color(0.10, 0.16, 0.32, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
-		btn.add_theme_stylebox_override("hover",   _flat(Color(0.10, 0.16, 0.32, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
-		btn.add_theme_stylebox_override("pressed", _flat(Color(0.08, 0.12, 0.26, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
+		btn.add_theme_stylebox_override("normal",
+			_flat(Color(0.10, 0.16, 0.32, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
+		btn.add_theme_stylebox_override("hover",
+			_flat(Color(0.10, 0.16, 0.32, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
+		btn.add_theme_stylebox_override("pressed",
+			_flat(Color(0.08, 0.12, 0.26, 1.0), Color(C_ACTIVE.r, C_ACTIVE.g, C_ACTIVE.b, 0.7), 0, 0, 0, 0, 0, 3))
 	else:
 		btn.add_theme_color_override("font_color", C_SUB)
 		btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
 		btn.add_theme_stylebox_override("hover",   _flat(Color(1,1,1,0.04), Color(0,0,0,0)))
 		btn.add_theme_stylebox_override("pressed", _flat(Color(1,1,1,0.02), Color(0,0,0,0)))
 
-# _flat: border sides = all bw, then individual overrides for top/bottom/left/right
 func _flat(bg: Color, border: Color, radius: int = 0,
 		bw: int = 1, bw_top: int = 0, bw_bottom: int = 0,
 		bw_left: int = 0, bw_right: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
-	sb.bg_color    = bg
+	sb.bg_color     = bg
 	sb.border_color = border
 	sb.set_border_width(SIDE_LEFT,   bw)
 	sb.set_border_width(SIDE_TOP,    bw)
