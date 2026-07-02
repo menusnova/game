@@ -220,8 +220,6 @@ func _reveal_5star(char_name: String) -> void:
 	glow.position = Vector2(card.position.x - 30, card.position.y - 30)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glow.z_index = card.z_index - 1
-	var sb_glow := StyleBoxFlat.new()
-	sb_glow.bg_color = Color(0,0,0,0)
 	_result_ov.add_child(glow)
 	glow.move_to_front()
 	card.move_to_front()
