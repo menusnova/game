@@ -346,7 +346,7 @@ func _build_stats() -> void:
 	# ⋮ button on PlayerCard (top-right corner)
 	var dot_btn := Button.new()
 	dot_btn.text = "⋮"
-	dot_btn.position = Vector2(330, 8)
+	dot_btn.position = Vector2(316, 8)
 	dot_btn.size     = Vector2(28, 28)
 	dot_btn.add_theme_font_size_override("font_size", 18)
 	dot_btn.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
