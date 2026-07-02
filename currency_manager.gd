@@ -7,9 +7,9 @@ const MAX_ENERGY   := 120
 const ENERGY_REGEN := 360.0   # วินาทีต่อ 1 พลังงาน (6 นาที)
 
 # เงิน (ทอง), คริสตัลเติม (จ่ายเงิน), คริสตัลฟรี (ฟาร์มได้), พลังงาน
-var gold:        int = 50000   # 💰 เหรียญทอง
+var gold:        int = 5000000 # 💰 เหรียญทอง
 var paid_crystal: int = 0      # 🔮 คริสตัลเติม (สีม่วงทึม)
-var free_crystal: int = 3200   # 💠 คริสตัลฟรี  (สีฟ้าสด)
+var free_crystal: int = 100000 # 💠 คริสตัลฟรี  (สีฟ้าสด)
 var energy:       int = 80     # ⚡ พลังงาน
 
 var _regen_acc: float = 0.0   # เศษวินาทีสะสม
@@ -112,7 +112,7 @@ func _save() -> void:
 func _load() -> void:
 	var cfg := ConfigFile.new()
 	if cfg.load(SAVE_PATH) == OK:
-		gold      = int(cfg.get_value("currency", "gold",      50000))
+		gold      = int(cfg.get_value("currency", "gold",      5000000))
 		paid_crystal = int(cfg.get_value("currency", "paid_crystal", 0))
-		free_crystal = int(cfg.get_value("currency", "free_crystal", 3200))
+		free_crystal = int(cfg.get_value("currency", "free_crystal", 100000))
 		energy    = int(cfg.get_value("currency", "energy",    80))
