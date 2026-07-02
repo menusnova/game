@@ -33,14 +33,14 @@ const CARDS := [
 ]
 
 func _ready() -> void:
-	var _adv = get_node_or_null("AdventureCard")
+	var _adv: Control = get_node_or_null("AdventureCard") as Control
 	if _adv: _adv.gui_input.connect(_on_adv_input)
-	var _arena = get_node_or_null("ArenaCard")
+	var _arena: Control = get_node_or_null("ArenaCard") as Control
 	if _arena and not _is_locked(_arena):
 		_arena.gui_input.connect(_on_arena_input)
-	var _prof = get_node_or_null("ProfileCard")
+	var _prof: Control = get_node_or_null("ProfileCard") as Control
 	if _prof: _prof.gui_input.connect(_on_profile_input)
-	var _newchar = get_node_or_null("NewCharCard")
+	var _newchar: Control = get_node_or_null("NewCharCard") as Control
 	if _newchar: _newchar.gui_input.connect(_on_gacha_input)
 	_setup_locked_nodes()
 	_setup_menu_items()
@@ -51,7 +51,7 @@ func _ready() -> void:
 	_setup_navbar()
 
 func _setup_navbar() -> void:
-	var db_node: Control = get_node_or_null("NavBar/Nav4_Database")
+	var db_node: Control = get_node_or_null("NavBar/Nav4_Database") as Control
 	if db_node and not _is_locked(db_node):
 		db_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
@@ -59,7 +59,7 @@ func _setup_navbar() -> void:
 		)
 		_attach_hover_bounce(db_node)
 
-	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum")
+	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum") as Control
 	if char_node and not _is_locked(char_node):
 		char_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
@@ -92,7 +92,7 @@ func _setup_domain() -> void:
 	_on_domain_changed(DomainManager.get_percent())
 
 func _on_domain_changed(percent: float) -> void:
-	var label: Label = get_node_or_null("DomainInner/DomainPercent")
+	var label: Label = get_node_or_null("DomainInner/DomainPercent") as Label
 	if label:
 		label.text = "%d%%" % int(percent)
 		var t := percent / 100.0
@@ -110,14 +110,14 @@ func _setup_locked_nodes() -> void:
 		"NavBar/Nav5_Guild",
 	]
 	for n in all_names:
-		var node: Control = get_node_or_null(n)
+		var node: Control = get_node_or_null(n) as Control
 		if node and _is_locked(node):
 			node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 # ── Menu items (left sidebar) ────────────────────────────────────
 func _setup_menu_items() -> void:
 	for item_name in MENU_ITEMS:
-		var item: Control = get_node_or_null(item_name)
+		var item: Control = get_node_or_null(item_name) as Control
 		if item == null or _is_locked(item):
 			continue
 		var orig_y: float = item.position.y
@@ -126,7 +126,7 @@ func _setup_menu_items() -> void:
 		item.gui_input.connect(_on_menu_click.bind(item))
 	# Top-right icon buttons (NewCharCard excluded — handled in _setup_cards_fx)
 	for btn_name in ["BtnPeople", "BtnMail", "BtnMega", "BtnSettings", "ProfileCard"]:
-		var n: Control = get_node_or_null(btn_name)
+		var n: Control = get_node_or_null(btn_name) as Control
 		if n:
 			_attach_hover_bounce(n)
 
@@ -149,7 +149,7 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 # ── Cards (ripple + scale on tap) ────────────────────────────────
 func _setup_cards_fx() -> void:
 	for card_name in CARDS:
-		var card: Control = get_node_or_null(card_name)
+		var card: Control = get_node_or_null(card_name) as Control
 		if card == null or _is_locked(card):
 			continue
 		_attach_hover_bounce(card)
@@ -244,8 +244,8 @@ func _on_arena_input(ev: InputEvent) -> void:
 
 func _on_toggle_char() -> void:
 	_show_female = not _show_female
-	var fc = get_node_or_null("FemaleCharacter")
-	var mc = get_node_or_null("MaleCharacter")
+	var fc: Node = get_node_or_null("FemaleCharacter")
+	var mc: Node = get_node_or_null("MaleCharacter")
 	if fc: fc.visible = _show_female
 	if mc: mc.visible = not _show_female
 
