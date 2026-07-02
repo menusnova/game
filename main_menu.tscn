@@ -1640,9 +1640,9 @@ layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0
 offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "Alchemist"
+text = "ตัวละคร"
 horizontal_alignment = 1
 
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
@@ -1678,7 +1678,7 @@ offset_right = 80.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "Arcanum"
+text = "ห้องทดลอง"
 horizontal_alignment = 1
 
 [node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]

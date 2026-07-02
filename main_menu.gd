@@ -59,11 +59,19 @@ func _setup_navbar() -> void:
 		)
 		_attach_hover_bounce(db_node)
 
+	var roster_node: Control = get_node_or_null("NavBar/Nav0_Alchemist") as Control
+	if roster_node:
+		roster_node.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto("res://character_roster.tscn")
+		)
+		_attach_hover_bounce(roster_node)
+
 	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum") as Control
 	if char_node and not _is_locked(char_node):
 		char_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_goto(SC_CHARACTER)
+				_show_coming_soon("ห้องทดลองผสมธาตุยังไม่เปิดให้บริการ")
 		)
 		_attach_hover_bounce(char_node)
 
