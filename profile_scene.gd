@@ -47,11 +47,23 @@ var _avatar_label: Label   # emoji label inside avatar (created in _ready)
 var _edit_popup:   Control # edit name/sig popup
 var _avatar_popup: Control # avatar picker popup
 
+const STATS: Array = [
+	{"icon": "🗓", "label": "เริ่มเล่น",          "value": "1 ม.ค. 2568"},
+	{"icon": "⏱", "label": "วันที่เล่น",          "value": "12 วัน"},
+	{"icon": "🌐", "label": "ระดับโลก",            "value": "3"},
+	{"icon": "👤", "label": "ตัวละครที่มี",        "value": "4"},
+	{"icon": "⭐", "label": "ตัวละครระดับสูงสุด",  "value": "1"},
+	{"icon": "⚔",  "label": "การต่อสู้",           "value": "38"},
+	{"icon": "✅", "label": "ความสำเร็จ",          "value": "7 / 120"},
+	{"icon": "🎲", "label": "สุ่มกาชาทั้งหมด",    "value": "47"},
+]
+
 func _ready() -> void:
 	if _back:
 		_back.pressed.connect(_go_back)
 	_build_showcase()
 	_build_activity()
+	_build_stats()
 	_update_domain()
 	DomainManager.domain_changed.connect(_on_domain_changed)
 
@@ -325,6 +337,81 @@ func _apply_domain_bar(pct: float) -> void:
 	if not is_inside_tree() or not is_instance_valid(_domain_bar_bg): return
 	var bar_w: float = _domain_bar_bg.size.x
 	_domain_fill.size.x = bar_w * (pct / 100.0)
+
+# ── Stats card ───────────────────────────────────────────────────
+func _build_stats() -> void:
+	# Title label
+	var title_lbl := Label.new()
+	title_lbl.text = "สถิติผู้เล่น"
+	title_lbl.add_theme_font_size_override("font_size", 10)
+	title_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.55))
+	title_lbl.position = Vector2(388, 60)
+	title_lbl.size     = Vector2(370, 18)
+	add_child(title_lbl)
+
+	var card := Panel.new()
+	card.position = Vector2(388, 80)
+	card.size     = Vector2(370, 548)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.024, 0.047, 0.102, 0.88)
+	sb.border_width_top = 1; sb.border_width_right = 1
+	sb.border_width_bottom = 1; sb.border_width_left = 1
+	sb.border_color = Color(0.388, 0.624, 1, 0.10)
+	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
+	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
+	add_child(card)
+
+	var y := 20.0
+	for i in STATS.size():
+		var data: Dictionary = STATS[i]
+		# row bg (alternating)
+		var row_bg := ColorRect.new()
+		row_bg.color    = Color(1, 1, 1, 0.02) if i % 2 == 0 else Color(0, 0, 0, 0)
+		row_bg.position = Vector2(0, y - 4)
+		row_bg.size     = Vector2(370, 52)
+		row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(row_bg)
+
+		# icon
+		var icon_lbl := Label.new()
+		icon_lbl.text = str(data["icon"])
+		icon_lbl.add_theme_font_size_override("font_size", 18)
+		icon_lbl.position = Vector2(16, y + 6)
+		icon_lbl.size     = Vector2(28, 28)
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(icon_lbl)
+
+		# label
+		var lbl := Label.new()
+		lbl.text = str(data["label"])
+		lbl.add_theme_font_size_override("font_size", 12)
+		lbl.add_theme_color_override("font_color", Color(0.65, 0.78, 1.0, 0.65))
+		lbl.position = Vector2(52, y + 4)
+		lbl.size     = Vector2(200, 20)
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(lbl)
+
+		# value
+		var val_lbl := Label.new()
+		val_lbl.text = str(data["value"])
+		val_lbl.add_theme_font_size_override("font_size", 15)
+		val_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
+		val_lbl.position = Vector2(52, y + 24)
+		val_lbl.size     = Vector2(280, 22)
+		val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(val_lbl)
+
+		# divider (not last)
+		if i < STATS.size() - 1:
+			var div := ColorRect.new()
+			div.color    = Color(1, 1, 1, 0.05)
+			div.position = Vector2(12, y + 48)
+			div.size     = Vector2(346, 1)
+			div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(div)
+
+		y += 56.0
 
 # ── Showcase ─────────────────────────────────────────────────────
 func _build_showcase() -> void:
