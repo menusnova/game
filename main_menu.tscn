@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
 [ext_resource type="Texture2D" uid="uid://d286thjevyd2i" path="res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png" id="2_fu7sn"]
 [ext_resource type="Texture2D" uid="uid://c4hscoe02b0gn" path="res://image/lock_chain_x.png" id="3_lockchain"]
+[ext_resource type="Texture2D" uid="uid://crystal_gem_icon" path="res://image/crystal_gem.png" id="4_crystalgem"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -278,6 +279,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
+texture = ExtResource("4_crystalgem")
 expand_mode = 1
 stretch_mode = 5
 
