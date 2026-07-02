@@ -100,6 +100,8 @@ func _on_avatar_click(ev: InputEvent) -> void:
 		add_child(_avatar_popup)
 
 func _make_avatar_popup() -> Control:
+	# panel 400×190, centered in 1152×648
+	const PW := 400; const PH := 190
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0.55)
@@ -114,29 +116,30 @@ func _make_avatar_popup() -> Control:
 	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
 	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
 	panel.add_theme_stylebox_override("panel", sb)
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	panel.offset_left = -180; panel.offset_right = 180
-	panel.offset_top  = -110; panel.offset_bottom = 110
+	panel.position = Vector2((1152 - PW) / 2.0, (648 - PH) / 2.0)
+	panel.size     = Vector2(PW, PH)
 
 	var title := Label.new()
 	title.text = "เลือกอวตาร"
-	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_font_size_override("font_size", 14)
 	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
-	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title.offset_top = 16; title.offset_bottom = 40
+	title.position = Vector2(0, 14)
+	title.size     = Vector2(PW, 24)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(title)
 
-	var grid := HBoxContainer.new()
-	grid.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	grid.offset_left = -160; grid.offset_right = 160
-	grid.offset_top  = -28;  grid.offset_bottom = 50
-	grid.add_theme_constant_override("separation", 12)
-	panel.add_child(grid)
-
-	for i in AVATAR_COLORS.size():
+	# 6 buttons × 44px + 5 gaps × 10px = 314px → centered in PW=400
+	const BTN_W := 44; const GAP := 10
+	var n := AVATAR_COLORS.size()
+	var row_w := n * BTN_W + (n - 1) * GAP
+	var row_x := (PW - row_w) / 2.0
+	for i in n:
 		var btn := _make_avatar_btn(i)
-		grid.add_child(btn)
+		btn.position = Vector2(row_x + i * (BTN_W + GAP), 50)
+		btn.size     = Vector2(BTN_W, BTN_W)
+		btn.custom_minimum_size = Vector2(BTN_W, BTN_W)
+		panel.add_child(btn)
 
 	var close_btn := Button.new()
 	var csb := StyleBoxFlat.new()
@@ -149,9 +152,8 @@ func _make_avatar_popup() -> Control:
 	close_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.6))
 	close_btn.add_theme_font_size_override("font_size", 12)
 	close_btn.text = "ยกเลิก"
-	close_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	close_btn.offset_top = -44; close_btn.offset_bottom = -12
-	close_btn.offset_left = 60; close_btn.offset_right = -60
+	close_btn.position = Vector2(120, 136)
+	close_btn.size     = Vector2(160, 36)
 	panel.add_child(close_btn)
 
 	dim.add_child(panel)
@@ -163,7 +165,6 @@ func _make_avatar_popup() -> Control:
 
 func _make_avatar_btn(idx: int) -> Control:
 	var p := Panel.new()
-	p.custom_minimum_size = Vector2(48, 48)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = AVATAR_COLORS[idx]
 	sb.corner_radius_top_left = 24; sb.corner_radius_top_right = 24
@@ -199,6 +200,8 @@ func _open_edit_popup() -> void:
 	add_child(_edit_popup)
 
 func _make_edit_popup() -> Control:
+	# panel 440×280, centered in 1152×648
+	const PW := 440; const PH := 280
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0.55)
@@ -213,17 +216,17 @@ func _make_edit_popup() -> Control:
 	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
 	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
 	panel.add_theme_stylebox_override("panel", sb)
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	panel.offset_left = -220; panel.offset_right  = 220
-	panel.offset_top  = -140; panel.offset_bottom = 140
+	panel.position = Vector2((1152 - PW) / 2.0, (648 - PH) / 2.0)
+	panel.size     = Vector2(PW, PH)
 
 	var title := Label.new()
 	title.text = "แก้ไขโปรไฟล์"
 	title.add_theme_font_size_override("font_size", 15)
 	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
-	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title.offset_top = 18; title.offset_bottom = 44
+	title.position = Vector2(0, 18)
+	title.size     = Vector2(PW, 26)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(title)
 
 	# name field
@@ -231,16 +234,15 @@ func _make_edit_popup() -> Control:
 	name_hint.text = "ชื่อผู้เล่น"
 	name_hint.add_theme_font_size_override("font_size", 11)
 	name_hint.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.7))
-	name_hint.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	name_hint.offset_left = 24; name_hint.offset_right = -24
-	name_hint.offset_top = 52;  name_hint.offset_bottom = 68
+	name_hint.position = Vector2(24, 54)
+	name_hint.size     = Vector2(PW - 48, 16)
+	name_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_hint)
 
 	var name_edit := _make_line_edit(_player_name)
-	name_edit.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	name_edit.offset_left = 24;  name_edit.offset_right  = -24
-	name_edit.offset_top  = 70;  name_edit.offset_bottom = 98
-	name_edit.max_length  = 20
+	name_edit.position = Vector2(24, 72)
+	name_edit.size     = Vector2(PW - 48, 32)
+	name_edit.max_length = 20
 	panel.add_child(name_edit)
 
 	# signature field
@@ -248,29 +250,27 @@ func _make_edit_popup() -> Control:
 	sig_hint.text = "คำขวัญ"
 	sig_hint.add_theme_font_size_override("font_size", 11)
 	sig_hint.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.7))
-	sig_hint.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	sig_hint.offset_left = 24; sig_hint.offset_right = -24
-	sig_hint.offset_top = 108; sig_hint.offset_bottom = 124
+	sig_hint.position = Vector2(24, 118)
+	sig_hint.size     = Vector2(PW - 48, 16)
+	sig_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(sig_hint)
 
 	var sig_edit := _make_line_edit(_signature)
-	sig_edit.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	sig_edit.offset_left = 24;  sig_edit.offset_right  = -24
-	sig_edit.offset_top  = 126; sig_edit.offset_bottom = 154
-	sig_edit.max_length  = 50
+	sig_edit.position = Vector2(24, 136)
+	sig_edit.size     = Vector2(PW - 48, 32)
+	sig_edit.max_length = 50
 	panel.add_child(sig_edit)
 
-	# buttons row
+	# buttons — explicit absolute positions (avoid anchor resolve timing issue)
+	const BTN_W := 180; const BTN_H := 38; const BTN_Y := 222
 	var cancel_btn := _make_popup_btn("ยกเลิก", false)
-	cancel_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	cancel_btn.offset_left = 24; cancel_btn.offset_right  = 184
-	cancel_btn.offset_top  = -52; cancel_btn.offset_bottom = -16
+	cancel_btn.position = Vector2(20, BTN_Y)
+	cancel_btn.size     = Vector2(BTN_W, BTN_H)
 	panel.add_child(cancel_btn)
 
 	var ok_btn := _make_popup_btn("บันทึก", true)
-	ok_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	ok_btn.offset_left = -196; ok_btn.offset_right  = -24
-	ok_btn.offset_top  = -52;  ok_btn.offset_bottom = -16
+	ok_btn.position = Vector2(PW - 20 - BTN_W, BTN_Y)
+	ok_btn.size     = Vector2(BTN_W, BTN_H)
 	panel.add_child(ok_btn)
 
 	dim.add_child(panel)
