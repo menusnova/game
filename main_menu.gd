@@ -7,6 +7,7 @@ const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 const SC_CODEX      := "res://codex_scene.tscn"
 const SC_CHARACTER  := "res://character_scene.tscn"
+const SC_ROSTER     := "res://character_roster.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
 var _navigating := false
@@ -63,7 +64,7 @@ func _setup_navbar() -> void:
 	if roster_node:
 		roster_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_goto("res://character_roster.tscn")
+				_goto(SC_ROSTER)
 		)
 		_attach_hover_bounce(roster_node)
 
@@ -81,13 +82,13 @@ func _setup_quest_panel() -> void:
 	_setup_chat_coming_soon()
 
 func _setup_chat_coming_soon() -> void:
-	var mail: Control = get_node_or_null("BtnMail")
+	var mail: Control = get_node_or_null("BtnMail") as Control
 	if mail:
 		mail.gui_input.connect(func(ev: InputEvent):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 				_show_coming_soon("ระบบแชทยังไม่เปิดให้บริการ")
 		)
-	var chat_bar: Control = get_node_or_null("ChatBar")
+	var chat_bar: Control = get_node_or_null("ChatBar") as Control
 	if chat_bar:
 		chat_bar.mouse_filter = Control.MOUSE_FILTER_STOP
 		chat_bar.gui_input.connect(func(ev: InputEvent):
@@ -180,7 +181,7 @@ func _attach_hover_bounce(node: Control) -> void:
 	)
 
 func _fx_flash(node: Control) -> void:
-	var flash: ColorRect = node.get_node_or_null("BloomFlash")
+	var flash: ColorRect = node.get_node_or_null("BloomFlash") as ColorRect
 	if flash:
 		flash.color = Color(1, 1, 1, 0.45)
 		var t := flash.create_tween()
@@ -252,8 +253,8 @@ func _on_arena_input(ev: InputEvent) -> void:
 
 func _on_toggle_char() -> void:
 	_show_female = not _show_female
-	var fc: Node = get_node_or_null("FemaleCharacter")
-	var mc: Node = get_node_or_null("MaleCharacter")
+	var fc: Node = get_node_or_null("FemaleCharacter") as Node
+	var mc: Node = get_node_or_null("MaleCharacter") as Node
 	if fc: fc.visible = _show_female
 	if mc: mc.visible = not _show_female
 
@@ -332,7 +333,7 @@ func _refresh_char_circles(animate: bool = true) -> void:
 func _update_char_sprites() -> void:
 	for i in CHAR_DATA.size():
 		var sprite_name: String = str(CHAR_DATA[i].get("sprite", ""))
-		var node: Node = get_node_or_null(sprite_name)
+		var node: Node = get_node_or_null(sprite_name) as Node
 		if node:
 			node.visible = (i == _char_index)
 
