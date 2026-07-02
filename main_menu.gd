@@ -2,6 +2,7 @@ extends Control
 
 const SC_BATTLE     := "res://battle_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
+const SC_STORY_MAP  := "res://story_map.tscn"
 const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
@@ -244,7 +245,7 @@ func _on_adv_input(ev: InputEvent) -> void:
 		_start_adventure()
 
 func _start_adventure() -> void:
-	_goto(SC_TRANSITION)
+	_goto(SC_STORY_MAP)
 
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
