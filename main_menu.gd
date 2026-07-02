@@ -1,6 +1,7 @@
 extends Control
 
 const SC_BATTLE     := "res://battle_scene.tscn"
+const SC_STORY_MAP  := "res://story_map.tscn"
 const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
@@ -26,12 +27,14 @@ const MENU_ITEMS := [
 ]
 
 const CARDS := [
-	"ArenaCard",
+	"AdventureCard", "ArenaCard",
 	"SimulationCard", "ExpeditionCard",
 	"EventBanner", "NewCharCard"
 ]
 
 func _ready() -> void:
+	var _adv: Control = get_node_or_null("AdventureCard") as Control
+	if _adv: _adv.gui_input.connect(_on_adv_input)
 	var _arena: Control = get_node_or_null("ArenaCard") as Control
 	if _arena and not _is_locked(_arena):
 		_arena.gui_input.connect(_on_arena_input)
@@ -235,6 +238,10 @@ func _on_profile_input(ev: InputEvent) -> void:
 func _on_gacha_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_goto(SC_GACHA)
+
+func _on_adv_input(ev: InputEvent) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_goto(SC_STORY_MAP)
 
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
