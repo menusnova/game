@@ -140,7 +140,7 @@ func _rebuild_list() -> void:
 		var nav: Callable = Callable()
 		var go_key: String = str(q.get("go", ""))
 		var scene_path: String = str(_GO_SCENES.get(go_key, ""))
-		if scene_path != "":
+		if scene_path != "" and ResourceLoader.exists(scene_path):
 			nav = func():
 				close()
 				get_tree().change_scene_to_file(scene_path)

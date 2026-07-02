@@ -6,7 +6,6 @@ const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 const SC_CODEX      := "res://codex_scene.tscn"
-const SC_CHARACTER  := "res://character_scene.tscn"
 const SC_ROSTER     := "res://character_roster.tscn"
 var _show_female := true
 var _quest_panel: CanvasLayer
