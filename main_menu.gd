@@ -292,7 +292,7 @@ func _refresh_char_circles(animate: bool = true) -> void:
 	const SPACING := 40.0
 	const H := 36.0
 	for i in _char_circles.size():
-		var btn: Panel = _char_circles[i]
+		var btn: Panel = _char_circles[i] as Panel
 		var active := (i == _char_index)
 		var sz := Vector2(30, 30) if active else Vector2(22, 22)
 		var col: Color = CHAR_DATA[i]["color"]
@@ -323,7 +323,8 @@ func _refresh_char_circles(animate: bool = true) -> void:
 
 func _update_char_sprites() -> void:
 	for i in CHAR_DATA.size():
-		var node = get_node_or_null(CHAR_DATA[i]["sprite"])
+		var sprite_name: String = str(CHAR_DATA[i].get("sprite", ""))
+		var node: Node = get_node_or_null(sprite_name)
 		if node:
 			node.visible = (i == _char_index)
 

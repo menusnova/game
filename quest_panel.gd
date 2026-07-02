@@ -139,7 +139,7 @@ func _rebuild_list() -> void:
 	for q in quests:
 		var nav: Callable = Callable()
 		var go_key: String = str(q.get("go", ""))
-		var scene_path: String = _GO_SCENES.get(go_key, "")
+		var scene_path: String = str(_GO_SCENES.get(go_key, ""))
 		if scene_path != "":
 			nav = func():
 				close()
