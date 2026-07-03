@@ -35,7 +35,7 @@ func get_percent() -> float:
 
 func _check_daily_reset() -> void:
 	var today := Time.get_date_dict_from_system()
-	var day_of_year: int = int(today["day"]) + int(today["month"]) * 31
+	var day_of_year: int = int(today["year"]) * 366 + int(today["month"]) * 31 + int(today["day"])
 	if day_of_year != _last_reset_day:
 		_points = 0.0
 		_last_reset_day = day_of_year

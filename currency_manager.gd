@@ -64,10 +64,10 @@ func spend_gems(amount: int) -> bool:
 func spend_crystal(amount: int) -> bool:
 	if total_crystal() < amount:
 		return false
-	var from_free: int = mini(free_crystal, amount)
-	free_crystal -= from_free
-	var from_paid: int = amount - from_free
+	var from_paid: int = mini(paid_crystal, amount)
 	paid_crystal -= from_paid
+	var from_free: int = amount - from_paid
+	free_crystal -= from_free
 	_save()
 	currency_changed.emit()
 	return true
