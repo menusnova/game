@@ -111,6 +111,8 @@ func _on_domain_changed(percent: float) -> void:
 func _is_locked(node: Control) -> bool:
 	return node.get_node_or_null("LockOverlay") != null
 
+const COMING_SOON_NODES := ["ArenaCard"]
+
 func _setup_locked_nodes() -> void:
 	var all_names := MENU_ITEMS + CARDS + [
 		"NavBar/Nav3_Inventory",
@@ -120,12 +122,16 @@ func _setup_locked_nodes() -> void:
 		var node: Control = get_node_or_null(n) as Control
 		if node and _is_locked(node):
 			node.mouse_filter = Control.MOUSE_FILTER_STOP
-			node.gui_input.connect(_on_locked_click.bind(node))
+			var is_coming_soon: bool = n in COMING_SOON_NODES
+			node.gui_input.connect(_on_locked_click.bind(node, is_coming_soon))
 
-func _on_locked_click(ev: InputEvent, node: Control) -> void:
+func _on_locked_click(ev: InputEvent, node: Control, coming_soon: bool) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_fx_scale(node)
-		_show_coming_soon("ปลดล็อคเนื้อหานี้เพื่อเข้าถึง")
+		if coming_soon:
+			_show_coming_soon("อารีน่า — กำลังจะมาเร็วๆนี้")
+		else:
+			_show_coming_soon("ปลดล็อคเนื้อหานี้เพื่อเข้าถึง")
 
 # ── Menu items (left sidebar) ────────────────────────────────────
 func _setup_menu_items() -> void:
