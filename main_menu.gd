@@ -80,20 +80,28 @@ func _setup_ambient_fx() -> void:
 	)
 
 func _spawn_orb(layer: Control, zone: Array) -> void:
-	var orb := ColorRect.new()
-	var sz  := randf_range(3.0, 8.0)
+	var sz  := randf_range(4.0, 9.0)
+	var r   := int(sz * 0.5)
+	var hue := randf_range(0.55, 0.75)
+	var col := Color.from_hsv(hue, 0.5, 1.0, 0.0)
+
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = col
+	sb.corner_radius_top_left     = r
+	sb.corner_radius_top_right    = r
+	sb.corner_radius_bottom_right = r
+	sb.corner_radius_bottom_left  = r
+	sb.shadow_color = Color(col.r, col.g, col.b, 0.0)
+	sb.shadow_size  = int(sz * 1.6)
+
+	var orb := Panel.new()
 	orb.size = Vector2(sz, sz)
 	orb.position = Vector2(
 		randf_range(zone[0], zone[1]),
 		randf_range(zone[2], zone[3])
 	)
-
-	# สีสุ่มระหว่างฟ้า-ม่วงอ่อน
-	var hue := randf_range(0.55, 0.75)
-	orb.color = Color.from_hsv(hue, 0.55, 1.0, 0.0)
+	orb.add_theme_stylebox_override("panel", sb)
 	orb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	# ทำมุมโค้ง (ใช้ radius ผ่าน shader expression หรือ nested Panel)
 	layer.add_child(orb)
 
 	var rise  := randf_range(40.0, 90.0)
@@ -108,11 +116,11 @@ func _spawn_orb(layer: Control, zone: Array) -> void:
 	tw_move.tween_property(orb, "position:y", dest_y, dur).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	tw_move.tween_property(orb, "position:x", dest_x, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# fade in → hold → fade out ตามลำดับ
+	# fade in → hold → fade out ผ่าน modulate (ไม่ต้องแตะ StyleBox)
 	var tw_alpha := orb.create_tween()
-	tw_alpha.tween_property(orb, "color:a", peak,  dur * 0.30)
-	tw_alpha.tween_property(orb, "color:a", peak,  dur * 0.35)
-	tw_alpha.tween_property(orb, "color:a", 0.0,   dur * 0.35)
+	tw_alpha.tween_property(orb, "modulate:a", peak, dur * 0.30)
+	tw_alpha.tween_property(orb, "modulate:a", peak, dur * 0.35)
+	tw_alpha.tween_property(orb, "modulate:a", 0.0,  dur * 0.35)
 	tw_alpha.tween_callback(orb.queue_free)
 
 func _setup_navbar() -> void:
