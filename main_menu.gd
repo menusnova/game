@@ -112,7 +112,6 @@ func _is_locked(node: Control) -> bool:
 	return node.get_node_or_null("LockOverlay") != null
 
 func _setup_locked_nodes() -> void:
-	# Disable all nodes that have a LockOverlay child
 	var all_names := MENU_ITEMS + CARDS + [
 		"NavBar/Nav3_Inventory",
 		"NavBar/Nav5_Guild",
@@ -120,7 +119,13 @@ func _setup_locked_nodes() -> void:
 	for n in all_names:
 		var node: Control = get_node_or_null(n) as Control
 		if node and _is_locked(node):
-			node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			node.mouse_filter = Control.MOUSE_FILTER_STOP
+			node.gui_input.connect(_on_locked_click.bind(node))
+
+func _on_locked_click(ev: InputEvent, node: Control) -> void:
+	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+		_fx_scale(node)
+		_show_coming_soon("🔒  ปลดล็อคเนื้อหานี้เพื่อเข้าถึง")
 
 # ── Menu items (left sidebar) ────────────────────────────────────
 func _setup_menu_items() -> void:
