@@ -6,8 +6,9 @@ const SAVE_PATH    := "user://currency_save.cfg"
 const MAX_ENERGY   := 240
 const ENERGY_REGEN := 360.0   # วินาทีต่อ 1 พลังงาน (6 นาที)
 
-# เงิน (ทอง), คริสตัลฟรี (ฟาร์มได้), พลังงาน
+# เงิน (ทอง), คริสตัลเติม (จ่ายเงิน), คริสตัลฟรี (ฟาร์มได้), พลังงาน
 var gold:        int = 5000000 # 💰 เหรียญทอง
+var paid_crystal: int = 0      # 🔮 คริสตัลเติม (สีม่วงทึม)
 var free_crystal: int = 100000 # 💠 คริสตัลฟรี  (สีฟ้าสด)
 var energy:       int = 240    # ⚡ พลังงาน
 
@@ -31,7 +32,7 @@ func _process(delta: float) -> void:
 
 # ── Getters ───────────────────────────────────────────────────────
 func total_crystal() -> int:
-	return free_crystal
+	return paid_crystal + free_crystal
 
 func total_gems() -> int:
 	return total_crystal()
@@ -63,7 +64,10 @@ func spend_gems(amount: int) -> bool:
 func spend_crystal(amount: int) -> bool:
 	if total_crystal() < amount:
 		return false
-	free_crystal -= amount
+	var from_paid: int = mini(paid_crystal, amount)
+	paid_crystal -= from_paid
+	var from_free: int = amount - from_paid
+	free_crystal -= from_free
 	_save()
 	currency_changed.emit()
 	return true
@@ -86,6 +90,11 @@ func add_free_crystal(amount: int) -> void:
 	_save()
 	currency_changed.emit()
 
+func add_paid_crystal(amount: int) -> void:
+	paid_crystal += amount
+	_save()
+	currency_changed.emit()
+
 func add_energy(amount: int) -> void:
 	energy = mini(energy + amount, MAX_ENERGY)
 	_save()
@@ -94,14 +103,16 @@ func add_energy(amount: int) -> void:
 # ── Save / Load ───────────────────────────────────────────────────
 func _save() -> void:
 	var cfg := ConfigFile.new()
-	cfg.set_value("currency", "gold",         gold)
+	cfg.set_value("currency", "gold",      gold)
+	cfg.set_value("currency", "paid_crystal", paid_crystal)
 	cfg.set_value("currency", "free_crystal", free_crystal)
-	cfg.set_value("currency", "energy",       energy)
+	cfg.set_value("currency", "energy",    energy)
 	cfg.save(SAVE_PATH)
 
 func _load() -> void:
 	var cfg := ConfigFile.new()
 	if cfg.load(SAVE_PATH) == OK:
-		gold         = int(cfg.get_value("currency", "gold",         5000000))
+		gold      = int(cfg.get_value("currency", "gold",      5000000))
+		paid_crystal = int(cfg.get_value("currency", "paid_crystal", 0))
 		free_crystal = int(cfg.get_value("currency", "free_crystal", 100000))
-		energy       = int(cfg.get_value("currency", "energy",       240))
+		energy    = int(cfg.get_value("currency", "energy",    240))
