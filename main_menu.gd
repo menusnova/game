@@ -466,7 +466,6 @@ func _goto(path: String) -> void:
 func _setup_ambient_fx() -> void:
 	_spawn_particles()
 	_start_bg_pulse()
-	_start_card_bob()
 	_spawn_city_glows()
 	_start_bg_spot_fx()
 
