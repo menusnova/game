@@ -120,12 +120,11 @@ corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
 [sub_resource type="StyleBoxFlat" id="SB_NavPill"]
-bg_color = Color(0.06, 0.07, 0.16, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.30, 0.55, 1.0, 0.28)
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
 corner_radius_top_left = 22
 corner_radius_top_right = 22
 corner_radius_bottom_right = 22
@@ -159,10 +158,10 @@ corner_radius_bottom_left = 62
 
 [sub_resource type="StyleBoxFlat" id="SB_LockOverlay"]
 bg_color = Color(0, 0, 0, 0.65)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="SB_MenuItem"]
 bg_color = Color(1, 1, 1, 0.04)
@@ -286,7 +285,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
-texture = ExtResource("4_crystalgem")
+texture = ExtResource("12_icon_energy")
 expand_mode = 1
 stretch_mode = 5
 
@@ -366,7 +365,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
-texture = ExtResource("12_icon_energy")
+texture = ExtResource("4_crystalgem")
 expand_mode = 1
 stretch_mode = 5
 
@@ -993,7 +992,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LockOverlay" type="ColorRect" parent="EventBanner"]
+[node name="LockOverlay" type="Panel" parent="EventBanner"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1001,7 +1000,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.65)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="EventBanner/LockOverlay"]
 layout_mode = 1
@@ -1267,7 +1266,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LockOverlay" type="ColorRect" parent="SimulationCard" unique_id=2124898553]
+[node name="LockOverlay" type="Panel" parent="SimulationCard" unique_id=2124898553]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1275,7 +1274,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="SimulationCard/LockOverlay" unique_id=493159142]
 layout_mode = 1
@@ -1373,7 +1372,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LockOverlay" type="ColorRect" parent="ArenaCard" unique_id=1309592588]
+[node name="LockOverlay" type="Panel" parent="ArenaCard" unique_id=1309592588]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1381,7 +1380,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="ArenaCard/LockOverlay" unique_id=1283503224]
 layout_mode = 1
@@ -1450,7 +1449,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LockOverlay" type="ColorRect" parent="ExpeditionCard" unique_id=820891561]
+[node name="LockOverlay" type="Panel" parent="ExpeditionCard" unique_id=820891561]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1458,7 +1457,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="ExpeditionCard/LockOverlay" unique_id=1570346313]
 layout_mode = 1
@@ -1637,7 +1636,7 @@ theme_override_font_sizes/font_size = 8
 text = "Inventory"
 horizontal_alignment = 1
 
-[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav3_Inventory" unique_id=892808481]
+[node name="LockOverlay" type="Panel" parent="NavBar/Nav3_Inventory" unique_id=892808481]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1645,7 +1644,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="NavBar/Nav3_Inventory/LockOverlay" unique_id=163214461]
 layout_mode = 1
@@ -1717,7 +1716,7 @@ theme_override_font_sizes/font_size = 8
 text = "Guild"
 horizontal_alignment = 1
 
-[node name="LockOverlay" type="ColorRect" parent="NavBar/Nav5_Guild" unique_id=84009174]
+[node name="LockOverlay" type="Panel" parent="NavBar/Nav5_Guild" unique_id=84009174]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1725,7 +1724,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.6)
+theme_override_styles/panel = SubResource("SB_LockOverlay")
 
 [node name="LockIcon" type="TextureRect" parent="NavBar/Nav5_Guild/LockOverlay" unique_id=1872648954]
 layout_mode = 1
