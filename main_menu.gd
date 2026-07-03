@@ -468,6 +468,7 @@ func _setup_ambient_fx() -> void:
 	_start_bg_pulse()
 	_start_card_bob()
 	_spawn_city_glows()
+	_start_bg_spot_fx()
 
 func _spawn_particles() -> void:
 	const SYMBOLS  := ["✦", "✧", "⋆", "·", "⬡", "◈"]
@@ -531,3 +532,120 @@ func _start_card_bob() -> void:
 		var t := card.create_tween().set_loops()
 		t.tween_property(card, "position:y", orig_y - amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 		t.tween_property(card, "position:y", orig_y + amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+# ── Background Spot FX — natural movement on key image areas ─────────
+func _start_bg_spot_fx() -> void:
+	_fx_moon_pulse()
+	_fx_star_twinkle()
+	_fx_river_shimmer()
+	_fx_cloud_drift()
+	_fx_tower_rings()
+
+func _fx_moon_pulse() -> void:
+	# Soft blue-white halo around moon (top-right)
+	var moon := ColorRect.new()
+	moon.position    = Vector2(830.0, 30.0)
+	moon.size        = Vector2(150.0, 140.0)
+	moon.color       = Color(0.72, 0.88, 1.0, 0.0)
+	moon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	moon.z_index     = 0
+	add_child(moon)
+	var t := moon.create_tween().set_loops()
+	t.tween_property(moon, "color:a", 0.14, 4.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(moon, "color:a", 0.03, 4.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+func _fx_star_twinkle() -> void:
+	# 18 small bright dots scattered in sky area (y < 220)
+	const STAR_POSITIONS := [
+		[60.0,18.0],[130.0,35.0],[205.0,12.0],[285.0,50.0],[370.0,22.0],
+		[445.0,8.0],[520.0,40.0],[600.0,18.0],[665.0,55.0],[740.0,28.0],
+		[100.0,75.0],[175.0,95.0],[260.0,80.0],[340.0,110.0],[480.0,68.0],
+		[555.0,92.0],[640.0,70.0],[720.0,105.0],
+	]
+	for sp in STAR_POSITIONS:
+		var s := ColorRect.new()
+		s.position    = Vector2(sp[0], sp[1])
+		s.size        = Vector2(randf_range(1.5, 3.0), randf_range(1.5, 3.0))
+		s.color       = Color(0.90, 0.95, 1.0, 0.0)
+		s.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		s.z_index     = 0
+		add_child(s)
+		var delay := randf_range(0.0, 5.0)
+		var dur   := randf_range(1.2, 3.5)
+		var peak  := randf_range(0.35, 0.80)
+		var t := s.create_tween().set_loops()
+		t.tween_interval(delay)
+		t.tween_property(s, "color:a", peak, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(s, "color:a", 0.0, dur * 1.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+func _fx_river_shimmer() -> void:
+	# Horizontal shimmering bands on river/water area (y≈395-465)
+	const BANDS := [
+		[230.0, 398.0, 320.0, 5.0, Color(0.55, 0.75, 1.0, 0.0), 2.2],
+		[380.0, 415.0, 280.0, 4.0, Color(0.40, 0.65, 1.0, 0.0), 3.1],
+		[150.0, 432.0, 360.0, 3.0, Color(0.65, 0.80, 1.0, 0.0), 2.7],
+		[300.0, 450.0, 240.0, 4.0, Color(0.50, 0.70, 1.0, 0.0), 1.9],
+		[480.0, 408.0, 200.0, 3.0, Color(0.45, 0.72, 1.0, 0.0), 3.4],
+	]
+	for b in BANDS:
+		var bar := ColorRect.new()
+		bar.position    = Vector2(b[0], b[1])
+		bar.size        = Vector2(b[2], b[3])
+		bar.color       = b[4]
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		bar.z_index     = 0
+		add_child(bar)
+		var delay := randf_range(0.0, 2.5)
+		var dur: float = b[5]
+		var peak  := randf_range(0.10, 0.20)
+		var drift := randf_range(12.0, 28.0) * (1.0 if randf() > 0.5 else -1.0)
+		var orig_x: float = b[0]
+		var t := bar.create_tween().set_loops()
+		t.tween_interval(delay)
+		t.tween_property(bar, "color:a",   peak,          dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(bar, "position:x", orig_x + drift, dur * 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(bar, "color:a",   0.0,           dur * 0.5).set_ease(Tween.EASE_IN)
+		t.tween_callback(func(): bar.position.x = orig_x)
+
+func _fx_cloud_drift() -> void:
+	# Two wide semi-transparent wisps drifting slowly left-to-right in sky
+	for i in 2:
+		var cloud := ColorRect.new()
+		var start_x := randf_range(-200.0, 100.0)
+		cloud.position    = Vector2(start_x, 55.0 + i * 60.0)
+		cloud.size        = Vector2(380.0, 28.0)
+		cloud.color       = Color(0.75, 0.85, 1.0, 0.0)
+		cloud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cloud.z_index     = 0
+		add_child(cloud)
+		var dur := randf_range(18.0, 28.0)
+		var t := cloud.create_tween().set_loops()
+		t.tween_property(cloud, "color:a",   0.06,  dur * 0.15).set_ease(Tween.EASE_IN)
+		t.tween_property(cloud, "position:x", start_x + 900.0, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(cloud, "color:a",   0.0,   dur * 0.15).set_ease(Tween.EASE_OUT)
+		t.tween_callback(func(): cloud.position.x = start_x - 50.0)
+
+func _fx_tower_rings() -> void:
+	# Glowing rings on floating tower structures (mid area y≈150-350)
+	const RINGS := [
+		[295.0, 198.0, 28.0, 10.0, Color(0.35, 0.70, 1.0, 0.0), 3.3],
+		[295.0, 248.0, 28.0, 10.0, Color(0.35, 0.70, 1.0, 0.0), 4.1],
+		[480.0, 172.0, 22.0,  8.0, Color(0.55, 0.40, 1.0, 0.0), 2.9],
+		[480.0, 220.0, 22.0,  8.0, Color(0.55, 0.40, 1.0, 0.0), 3.7],
+		[650.0, 210.0, 30.0, 10.0, Color(0.30, 0.65, 1.0, 0.0), 3.5],
+	]
+	for r in RINGS:
+		var ring := ColorRect.new()
+		ring.position    = Vector2(r[0], r[1])
+		ring.size        = Vector2(r[2], r[3])
+		ring.color       = r[4]
+		ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ring.z_index     = 0
+		add_child(ring)
+		var delay := randf_range(0.0, 3.5)
+		var dur: float = r[5]
+		var peak := randf_range(0.18, 0.32)
+		var t := ring.create_tween().set_loops()
+		t.tween_interval(delay)
+		t.tween_property(ring, "color:a", peak, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(ring, "color:a", 0.0,  dur * 1.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
