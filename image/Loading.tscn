@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c7hj205hynaai"]
 
-[ext_resource type="Script" path="res://loading.gd" id="1_1dm06"]
+[ext_resource type="Script" path="res://image/loading.gd" id="1_1dm06"]
 [ext_resource type="Texture2D" path="res://bar_textures/bar_frame.png"        id="2_frame"]
 [ext_resource type="Texture2D" path="res://bar_textures/bar_fill.png"         id="3_fill"]
 [ext_resource type="Texture2D" path="res://bar_textures/bar_shine.png"        id="4_shine"]
