@@ -1198,9 +1198,9 @@ stretch_mode = 5
 [node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
 offset_left = 840.0
-offset_top = 323.0
+offset_top = 236.0
 offset_right = 1145.0
-offset_bottom = 402.0
+offset_bottom = 315.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1284,9 +1284,9 @@ stretch_mode = 5
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
 offset_left = 840.0
-offset_top = 410.0
+offset_top = 323.0
 offset_right = 990.0
-offset_bottom = 494.0
+offset_bottom = 407.0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="ArenaCard" unique_id=7828574]
@@ -1390,9 +1390,9 @@ stretch_mode = 5
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
 offset_left = 996.0
-offset_top = 410.0
+offset_top = 323.0
 offset_right = 1145.0
-offset_bottom = 494.0
+offset_bottom = 407.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1557,7 +1557,7 @@ offset_right = 80.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "ตัวละคร"
+text = "Character"
 horizontal_alignment = 1
 
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
@@ -1593,7 +1593,7 @@ offset_right = 80.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "ห้องทดลอง"
+text = "Arcanum"
 horizontal_alignment = 1
 
 [node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
