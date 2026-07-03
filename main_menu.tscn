@@ -9,6 +9,9 @@
 [ext_resource type="Texture2D" path="res://image/icon_event.png" id="7_icon_event"]
 [ext_resource type="Texture2D" path="res://image/icon_pass.png" id="8_icon_pass"]
 [ext_resource type="Texture2D" path="res://image/icon_shop.png" id="9_icon_shop"]
+[ext_resource type="Texture2D" path="res://image/icon_gold.png" id="10_icon_gold"]
+[ext_resource type="Texture2D" path="res://image/icon_paid.png" id="11_icon_paid"]
+[ext_resource type="Texture2D" path="res://image/icon_energy.png" id="12_icon_energy"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -245,6 +248,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
+texture = ExtResource("10_icon_gold")
 expand_mode = 1
 stretch_mode = 5
 
@@ -324,6 +328,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
+texture = ExtResource("11_icon_paid")
 expand_mode = 1
 stretch_mode = 5
 
@@ -363,6 +368,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
+texture = ExtResource("12_icon_energy")
 expand_mode = 1
 stretch_mode = 5
 
