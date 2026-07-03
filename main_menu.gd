@@ -608,22 +608,29 @@ func _fx_river_shimmer() -> void:
 		t.tween_callback(func(): bar.position.x = orig_x)
 
 func _fx_cloud_drift() -> void:
-	# Two wide semi-transparent wisps drifting slowly left-to-right in sky
-	for i in 2:
-		var cloud := ColorRect.new()
-		var start_x := randf_range(-200.0, 100.0)
-		cloud.position    = Vector2(start_x, 55.0 + i * 60.0)
-		cloud.size        = Vector2(380.0, 28.0)
-		cloud.color       = Color(0.75, 0.85, 1.0, 0.0)
-		cloud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		cloud.z_index     = 0
-		add_child(cloud)
-		var dur := randf_range(18.0, 28.0)
-		var t := cloud.create_tween().set_loops()
-		t.tween_property(cloud, "color:a",   0.06,  dur * 0.15).set_ease(Tween.EASE_IN)
-		t.tween_property(cloud, "position:x", start_x + 900.0, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-		t.tween_property(cloud, "color:a",   0.0,   dur * 0.15).set_ease(Tween.EASE_OUT)
-		t.tween_callback(func(): cloud.position.x = start_x - 50.0)
+	# Subtle wind sway — 3 thin wisps that drift only a few pixels back and forth
+	const WISPS := [
+		[80.0,  52.0, 220.0, 14.0],
+		[420.0, 80.0, 180.0, 10.0],
+		[700.0, 38.0, 260.0, 12.0],
+	]
+	for w in WISPS:
+		var wisp := ColorRect.new()
+		wisp.position    = Vector2(w[0], w[1])
+		wisp.size        = Vector2(w[2], w[3])
+		wisp.color       = Color(0.80, 0.88, 1.0, 0.04)
+		wisp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		wisp.z_index     = 0
+		add_child(wisp)
+		var orig_x: float = w[0]
+		var sway  := randf_range(6.0, 14.0)
+		var dur   := randf_range(6.0, 11.0)
+		var delay := randf_range(0.0, 4.0)
+		var t := wisp.create_tween().set_loops()
+		t.tween_interval(delay)
+		t.tween_property(wisp, "position:x", orig_x + sway, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(wisp, "position:x", orig_x - sway * 0.5, dur * 0.9).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(wisp, "position:x", orig_x, dur * 0.6).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
 func _fx_tower_rings() -> void:
 	# Glowing rings on floating tower structures (mid area y≈150-350)
