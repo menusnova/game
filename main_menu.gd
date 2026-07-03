@@ -49,6 +49,7 @@ func _ready() -> void:
 	_setup_quest_panel()
 	_setup_char_switcher()
 	_setup_navbar()
+	_setup_ambient_fx()
 
 func _setup_navbar() -> void:
 	var db_node: Control = get_node_or_null("NavBar/Nav4_Database") as Control
@@ -422,3 +423,72 @@ func _goto(path: String) -> void:
 	t.tween_property(ov, "color:a", 1.0, 0.28)
 	await t.finished
 	get_tree().change_scene_to_file(path)
+
+# ── Ambient Effects ───────────────────────────────────────────────
+func _setup_ambient_fx() -> void:
+	_spawn_particles()
+	_start_bg_pulse()
+	_start_card_bob()
+
+func _spawn_particles() -> void:
+	const SYMBOLS  := ["✦", "✧", "⋆", "·", "⬡", "◈"]
+	const COUNT    := 22
+	const COLORS   := [
+		Color(0.45, 0.75, 1.0, 0.55),
+		Color(0.65, 0.45, 1.0, 0.45),
+		Color(1.0,  0.85, 0.35, 0.40),
+		Color(0.35, 0.90, 0.80, 0.40),
+	]
+	for i in COUNT:
+		var lbl := Label.new()
+		lbl.text = SYMBOLS[i % SYMBOLS.size()]
+		lbl.add_theme_font_size_override("font_size", int(randf_range(9.0, 20.0)))
+		lbl.add_theme_color_override("font_color", COLORS[i % COLORS.size()])
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl.z_index = -1
+		var sx := randf_range(20.0, 1132.0)
+		var sy := randf_range(20.0, 628.0)
+		lbl.position = Vector2(sx, sy)
+		add_child(lbl)
+		_animate_particle(lbl)
+
+func _animate_particle(lbl: Label) -> void:
+	var dur   := randf_range(4.0, 9.0)
+	var drift := Vector2(randf_range(-40.0, 40.0), randf_range(-80.0, -20.0))
+	var dest  := lbl.position + drift
+	var delay := randf_range(0.0, 4.0)
+
+	var t := lbl.create_tween().set_loops()
+	t.tween_interval(delay)
+	t.tween_property(lbl, "modulate:a", 0.9, dur * 0.3).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property(lbl, "position",   dest, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(lbl, "modulate:a", 0.0, dur * 0.3).set_ease(Tween.EASE_IN)
+	t.tween_callback(func():
+		lbl.position = Vector2(randf_range(20.0, 1132.0), randf_range(300.0, 628.0))
+		lbl.modulate.a = 0.0
+	)
+
+func _start_bg_pulse() -> void:
+	var glow := ColorRect.new()
+	glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	glow.color = Color(0.10, 0.18, 0.45, 0.0)
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glow.z_index = -1
+	add_child(glow)
+
+	var t := glow.create_tween().set_loops()
+	t.tween_property(glow, "color:a", 0.10, 3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(glow, "color:a", 0.0,  3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+func _start_card_bob() -> void:
+	const BOB_CARDS := ["AdventureCard", "NewCharCard", "EventBanner"]
+	for card_name in BOB_CARDS:
+		var card: Control = get_node_or_null(card_name) as Control
+		if card == null:
+			continue
+		var orig_y := card.position.y
+		var dur    := randf_range(2.8, 4.2)
+		var amp    := randf_range(3.0, 6.0)
+		var t := card.create_tween().set_loops()
+		t.tween_property(card, "position:y", orig_y - amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(card, "position:y", orig_y + amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
