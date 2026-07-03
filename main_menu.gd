@@ -33,6 +33,7 @@ const CARDS := [
 ]
 
 func _ready() -> void:
+	_setup_ambient_fx()
 	var _adv: Control = get_node_or_null("AdventureCard") as Control
 	if _adv: _adv.gui_input.connect(_on_adv_input)
 	var _arena: Control = get_node_or_null("ArenaCard") as Control
@@ -49,6 +50,70 @@ func _ready() -> void:
 	_setup_quest_panel()
 	_setup_char_switcher()
 	_setup_navbar()
+
+func _setup_ambient_fx() -> void:
+	var layer := Control.new()
+	layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.z_index = 1
+	layer.name = "_AmbientLayer"
+	add_child(layer)
+	move_child(layer, 1)  # ทันทีหลัง Background
+
+	# โซนที่โล่ง: (x_from, x_to, y_from, y_to)
+	const ZONES: Array = [
+		[270, 830, 55, 130],   # ท้องฟ้ากลาง (บน)
+		[140, 260, 80, 380],   # ช่องซ้ายกลาง
+		[270, 830, 530, 590],  # พื้นกลาง (ล่าง)
+	]
+
+	const ORBS := 28
+	for i in ORBS:
+		_spawn_orb(layer, ZONES[i % ZONES.size()])
+
+	# กระพริบซ้ำทุก 2.4–4.8 วิ
+	var t := create_tween().set_loops()
+	t.tween_interval(randf_range(2.4, 4.8))
+	t.tween_callback(func():
+		if is_instance_valid(layer):
+			_spawn_orb(layer, ZONES[randi() % ZONES.size()])
+	)
+
+func _spawn_orb(layer: Control, zone: Array) -> void:
+	var orb := ColorRect.new()
+	var sz  := randf_range(3.0, 8.0)
+	orb.size = Vector2(sz, sz)
+	orb.position = Vector2(
+		randf_range(zone[0], zone[1]),
+		randf_range(zone[2], zone[3])
+	)
+
+	# สีสุ่มระหว่างฟ้า-ม่วงอ่อน
+	var hue := randf_range(0.55, 0.75)
+	orb.color = Color.from_hsv(hue, 0.55, 1.0, 0.0)
+	orb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# ทำมุมโค้ง (ใช้ radius ผ่าน shader expression หรือ nested Panel)
+	layer.add_child(orb)
+
+	var rise  := randf_range(40.0, 90.0)
+	var drift := randf_range(-18.0, 18.0)
+	var dur   := randf_range(4.5, 9.0)
+	var peak  := randf_range(0.55, 0.85)
+	var dest_y := orb.position.y - rise
+	var dest_x := orb.position.x + drift
+
+	# เคลื่อนตลอด dur วิ
+	var tw_move := orb.create_tween().set_parallel(true)
+	tw_move.tween_property(orb, "position:y", dest_y, dur).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	tw_move.tween_property(orb, "position:x", dest_x, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	# fade in → hold → fade out ตามลำดับ
+	var tw_alpha := orb.create_tween()
+	tw_alpha.tween_property(orb, "color:a", peak,  dur * 0.30)
+	tw_alpha.tween_property(orb, "color:a", peak,  dur * 0.35)
+	tw_alpha.tween_property(orb, "color:a", 0.0,   dur * 0.35)
+	tw_alpha.tween_callback(orb.queue_free)
 
 func _setup_navbar() -> void:
 	var db_node: Control = get_node_or_null("NavBar/Nav4_Database") as Control
