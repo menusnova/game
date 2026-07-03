@@ -394,9 +394,10 @@ func _build_player_hud() -> void:
 
 # ── Ultimate gauge ring — top right ───────────────────────
 func _build_ult_ring() -> void:
+	# Sits bottom-left, next to player HUD above the hand strip
 	var ring_panel := Panel.new()
 	ring_panel.size     = Vector2(72, 72)
-	ring_panel.position = Vector2(1068, 46)
+	ring_panel.position = Vector2(278, HAND_Y - 110.0 + 14.0)
 	ring_panel.add_theme_stylebox_override("panel",
 		_flat(Color(0.06,0.06,0.14,0.90), Color(C_GAUGE.r,C_GAUGE.g,C_GAUGE.b,0.50), 36, 2))
 	add_child(ring_panel)
