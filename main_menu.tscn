@@ -4,6 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://d286thjevyd2i" path="res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png" id="2_fu7sn"]
 [ext_resource type="Texture2D" uid="uid://c4hscoe02b0gn" path="res://image/lock_chain_x.png" id="3_lockchain"]
 [ext_resource type="Texture2D" uid="uid://crystal_gem_icon" path="res://image/crystal_gem.png" id="4_crystalgem"]
+[ext_resource type="Texture2D" path="res://image/icon_notice.png" id="5_icon_notice"]
+[ext_resource type="Texture2D" path="res://image/icon_missions.png" id="6_icon_missions"]
+[ext_resource type="Texture2D" path="res://image/icon_event.png" id="7_icon_event"]
+[ext_resource type="Texture2D" path="res://image/icon_pass.png" id="8_icon_pass"]
+[ext_resource type="Texture2D" path="res://image/icon_shop.png" id="9_icon_shop"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
 bg_color = Color(0, 0, 0, 0.55)
@@ -563,6 +568,7 @@ offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
 mouse_filter = 2
+texture = ExtResource("5_icon_notice")
 expand_mode = 1
 stretch_mode = 5
 
@@ -638,6 +644,7 @@ offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
 mouse_filter = 2
+texture = ExtResource("6_icon_missions")
 expand_mode = 1
 stretch_mode = 5
 
@@ -695,6 +702,7 @@ offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
 mouse_filter = 2
+texture = ExtResource("7_icon_event")
 expand_mode = 1
 stretch_mode = 5
 
@@ -760,6 +768,7 @@ offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
 mouse_filter = 2
+texture = ExtResource("8_icon_pass")
 expand_mode = 1
 stretch_mode = 5
 
@@ -825,6 +834,7 @@ offset_top = 2.0
 offset_right = 22.0
 offset_bottom = 24.0
 mouse_filter = 2
+texture = ExtResource("9_icon_shop")
 expand_mode = 1
 stretch_mode = 5
 
