@@ -519,19 +519,6 @@ func _start_bg_pulse() -> void:
 	t.tween_property(glow, "color:a", 0.10, 3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	t.tween_property(glow, "color:a", 0.0,  3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-func _start_card_bob() -> void:
-	const BOB_CARDS := ["AdventureCard", "NewCharCard", "EventBanner"]
-	for card_name in BOB_CARDS:
-		var card: Control = get_node_or_null(card_name) as Control
-		if card == null:
-			continue
-		var orig_y := card.position.y
-		var dur    := randf_range(2.8, 4.2)
-		var amp    := randf_range(3.0, 6.0)
-		var t := card.create_tween().set_loops()
-		t.tween_property(card, "position:y", orig_y - amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-		t.tween_property(card, "position:y", orig_y + amp, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-
 # ── Background Spot FX — natural movement on key image areas ─────────
 func _start_bg_spot_fx() -> void:
 	_fx_moon_pulse()
