@@ -1557,7 +1557,7 @@ offset_right = 80.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "Character"
+text = "Alchemist"
 horizontal_alignment = 1
 
 [node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
