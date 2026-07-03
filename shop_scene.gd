@@ -223,7 +223,6 @@ func _rebuild_wallet() -> void:
 		c.queue_free()
 	_add_wallet_pill("💰", str(CurrencyManager.gold),         Color(1.00, 0.82, 0.25, 1.0))
 	_add_wallet_pill("💠", str(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
-	_add_wallet_pill("🔮", str(CurrencyManager.paid_crystal), Color(0.72, 0.50, 0.85, 1.0))
 
 func _add_wallet_pill(icon: String, value: String, col: Color) -> void:
 	var pill := Panel.new()
