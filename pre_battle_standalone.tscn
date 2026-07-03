@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://prebattle_standalone_001"]
+[gd_scene load_steps=7 format=3 uid="uid://prebattle_standalone_001"]
 
 [ext_resource type="Script" path="res://pre_battle_standalone.gd" id="1_pbs"]
 

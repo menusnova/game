@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://gacha_scene"]
+[gd_scene load_steps=11 format=3 uid="uid://gacha_scene"]
 
 [ext_resource type="Script" path="res://gacha_scene.gd" id="1_script"]
 

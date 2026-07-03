@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://quest_panel_001"]
+[gd_scene load_steps=10 format=3 uid="uid://quest_panel_001"]
 
 [ext_resource type="Script" path="res://quest_panel.gd" id="1_qp"]
 
