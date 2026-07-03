@@ -282,8 +282,8 @@ func _make_edit_popup() -> Control:
 		if new_name.length() > 0:
 			_player_name = new_name
 		_signature = sig_edit.text.strip_edges()
-		_name_lbl.text = _player_name
-		_sig_lbl.text  = _signature
+		if is_instance_valid(_name_lbl): _name_lbl.text = _player_name
+		if is_instance_valid(_sig_lbl):  _sig_lbl.text  = _signature
 		dim.queue_free())
 
 	return dim
@@ -334,7 +334,7 @@ func _on_domain_changed(pct: float) -> void:
 	_apply_domain_bar.call_deferred(pct)
 
 func _apply_domain_bar(pct: float) -> void:
-	if not is_inside_tree() or not is_instance_valid(_domain_bar_bg): return
+	if not is_inside_tree() or not is_instance_valid(_domain_bar_bg) or not is_instance_valid(_domain_fill): return
 	var bar_w: float = _domain_bar_bg.size.x
 	_domain_fill.size.x = bar_w * (pct / 100.0)
 
