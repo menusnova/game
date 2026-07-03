@@ -47,9 +47,10 @@ const _GO_SCENES := {
 
 func _ready() -> void:
 	if _sheet:
-		_sheet.scale    = Vector2(0.88, 0.88)
-		_sheet.modulate = Color(1, 1, 1, 0.0)
+		_sheet.scale       = Vector2(0.88, 0.88)
+		_sheet.modulate    = Color(1, 1, 1, 0.0)
 		_sheet.pivot_offset = Vector2(440, 260)
+		_sheet.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if _dim:
 		_dim.modulate.a   = 0.0
 		_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -66,7 +67,8 @@ func open() -> void:
 	if _is_open or not _sheet or not _dim:
 		return
 	_is_open = true
-	_dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dim.mouse_filter   = Control.MOUSE_FILTER_STOP
+	_sheet.mouse_filter = Control.MOUSE_FILTER_STOP
 	var t := create_tween().set_parallel(true)
 	t.tween_property(_sheet, "scale",        Vector2(1.0, 1.0), 0.28).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	t.tween_property(_sheet, "modulate:a",   1.0,               0.22)
@@ -76,7 +78,8 @@ func close() -> void:
 	if not _is_open or not _sheet or not _dim:
 		return
 	_is_open = false
-	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_dim.mouse_filter   = Control.MOUSE_FILTER_IGNORE
+	_sheet.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var t := create_tween().set_parallel(true)
 	t.tween_property(_sheet, "scale",       Vector2(0.88, 0.88), 0.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	t.tween_property(_sheet, "modulate:a",  0.0,                 0.18)
