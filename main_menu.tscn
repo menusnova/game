@@ -120,18 +120,16 @@ corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
 [sub_resource type="StyleBoxFlat" id="SB_NavPill"]
-bg_color = Color(1, 1, 1, 0.08)
+bg_color = Color(0.06, 0.07, 0.16, 0.92)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+border_color = Color(0.30, 0.55, 1.0, 0.28)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
 [sub_resource type="StyleBoxFlat" id="SB_DomOuter"]
 bg_color = Color(0.04, 0.1, 0.28, 0.7)
@@ -1519,9 +1517,10 @@ text = "ระบบแชทยังไม่เปิดให้บริก
 
 [node name="NavBar" type="Panel" parent="." unique_id=729974613]
 layout_mode = 0
-offset_top = 596.0
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_left = 12.0
+offset_top = 592.0
+offset_right = 1140.0
+offset_bottom = 644.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NavPill")
 
