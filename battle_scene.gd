@@ -125,16 +125,21 @@ const C_AP     := Color(0.35, 0.72,  1.00, 1.0)
 const C_GAUGE  := Color(1.00, 0.75,  0.25, 1.0)
 
 # ── Layout constants (1152×648) ────────────────────────────
+# Enemy — center-top (feels far away / background)
+const ENEMY_CX := 560.0
+const ENEMY_CY := 200.0
+# Player sprite — bottom-left foreground (back view, large)
+const PLAYER_X := 40.0
+const PLAYER_Y := 290.0
+const PLAYER_W := 240.0
+const PLAYER_H := 300.0
 # Action ring center (bottom-right)
 const RING_CX  := 990.0
 const RING_CY  := 530.0
-const RING_R   := 88.0   # radius of button circle
+const RING_R   := 88.0
 # Card hand strip
 const HAND_Y   := 556.0
 const HAND_H   := 88.0
-# Enemy arena zone (center stage)
-const ARENA_CX := 440.0
-const ARENA_CY := 260.0
 
 # ════════════════════════════════════════════════════════════
 #  ENTRY
@@ -175,21 +180,47 @@ func _mk_label(txt: String, fs: int, col: Color, parent: Control,
 	return l
 
 func _build_ui() -> void:
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	# ── Background: sky top → ground bottom gradient ──────────
+	var sky := ColorRect.new()
+	sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	sky.color = Color(0.05, 0.06, 0.14, 1.0)
+	sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(sky)
 
-	# Subtle vignette — darker edges
+	# Horizon glow — warm strip at mid-height
+	var horizon := ColorRect.new()
+	horizon.size     = Vector2(1152, 120)
+	horizon.position = Vector2(0, 260)
+	horizon.color    = Color(0.18, 0.10, 0.28, 0.55)
+	horizon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(horizon)
+
+	# Ground plane — darker, slightly purple-tinted
+	var ground := ColorRect.new()
+	ground.size     = Vector2(1152, 300)
+	ground.position = Vector2(0, 348)
+	ground.color    = Color(0.03, 0.02, 0.08, 1.0)
+	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(ground)
+
+	# Ground line (horizon divider)
+	var gline := ColorRect.new()
+	gline.size     = Vector2(1152, 2)
+	gline.position = Vector2(0, 347)
+	gline.color    = Color(0.40, 0.28, 0.70, 0.35)
+	gline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(gline)
+
+	# Vignette overlay
 	var vig := ColorRect.new()
 	vig.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	vig.color = Color(0.0, 0.0, 0.06, 0.38)
+	vig.color = Color(0.0, 0.0, 0.05, 0.42)
 	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(vig)
 
 	_build_topbar()
 	_build_enemy_panel()
+	_build_player_sprite()
 	_build_player_hud()
 	_build_react_hint()
 	_build_hand_panel()
@@ -217,14 +248,22 @@ func _build_topbar() -> void:
 	back.pressed.connect(_go_back)
 	bar.add_child(back)
 
-# ── Enemy panel — center stage ────────────────────────────
+# ── Enemy — center-top, smaller (distance perspective) ───
 func _build_enemy_panel() -> void:
-	# Large enemy sprite circle — center arena
+	# Shadow on ground below enemy
+	var shadow := ColorRect.new()
+	shadow.size     = Vector2(140, 18)
+	shadow.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY + 118.0)
+	shadow.color    = Color(0.0, 0.0, 0.0, 0.35)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shadow)
+
+	# Enemy sprite placeholder — smaller than player (far away)
 	var circle := Panel.new()
-	circle.size = Vector2(160, 160)
-	circle.position = Vector2(ARENA_CX - 80.0, ARENA_CY - 120.0)
+	circle.size = Vector2(140, 140)
+	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
 	circle.add_theme_stylebox_override("panel",
-		_flat(Color(0.16,0.05,0.05,0.85), Color(0.85,0.28,0.28,0.55), 80, 2))
+		_flat(Color(0.18,0.04,0.04,0.88), Color(0.90,0.25,0.25,0.60), 70, 2))
 	add_child(circle)
 
 	var sp_lbl := Label.new()
@@ -232,69 +271,125 @@ func _build_enemy_panel() -> void:
 	sp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	sp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sp_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	sp_lbl.add_theme_font_size_override("font_size", 64)
+	sp_lbl.add_theme_font_size_override("font_size", 56)
 	sp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circle.add_child(sp_lbl)
 
-	# Enemy name + HP bar — anchored just below sprite, centered
+	# Idle bob animation
+	var t := circle.create_tween().set_loops()
+	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	# Enemy HUD bar — floats above enemy
 	var ep := Panel.new()
-	ep.size     = Vector2(320, 58)
-	ep.position = Vector2(ARENA_CX - 160.0, ARENA_CY + 50.0)
-	ep.add_theme_stylebox_override("panel", _flat(Color(0.04,0.04,0.10,0.82), C_BORDER, 8, 1))
+	ep.size     = Vector2(280, 52)
+	ep.position = Vector2(ENEMY_CX - 140.0, ENEMY_CY - 138.0)
+	ep.add_theme_stylebox_override("panel", _flat(Color(0.04,0.03,0.10,0.86), C_BORDER, 6, 1))
 	add_child(ep)
 
-	_enemy_name_lbl = _mk_label("", 14, C_TEXT, ep, Vector2(10, 4))
+	_enemy_name_lbl = _mk_label("", 13, C_TEXT, ep, Vector2(10, 4))
 
 	var ehb_bg := ColorRect.new()
 	ehb_bg.color    = Color(1,1,1,0.10)
-	ehb_bg.size     = Vector2(300, 10)
-	ehb_bg.position = Vector2(10, 26)
+	ehb_bg.size     = Vector2(260, 9)
+	ehb_bg.position = Vector2(10, 24)
 	ep.add_child(ehb_bg)
 
 	_enemy_hp_bar = ColorRect.new()
 	_enemy_hp_bar.color    = C_ENEMY
-	_enemy_hp_bar.size     = Vector2(300, 10)
-	_enemy_hp_bar.position = Vector2(10, 26)
+	_enemy_hp_bar.size     = Vector2(260, 9)
+	_enemy_hp_bar.position = Vector2(10, 24)
 	ep.add_child(_enemy_hp_bar)
 
-	_enemy_hp_lbl     = _mk_label("", 11, C_ENEMY, ep, Vector2(10, 38))
-	_enemy_status_lbl = _mk_label("", 10, Color(0.9,0.6,0.3), ep, Vector2(160, 38))
+	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
+	_enemy_status_lbl = _mk_label("", 10, Color(0.9,0.6,0.3), ep, Vector2(140, 36))
 
-# ── Player HUD — left side ─────────────────────────────────
+# ── Player sprite — back view, large, bottom-left ─────────
+func _build_player_sprite() -> void:
+	# Ground shadow
+	var shadow := ColorRect.new()
+	shadow.size     = Vector2(180, 22)
+	shadow.position = Vector2(PLAYER_X + 30.0, PLAYER_Y + PLAYER_H - 10.0)
+	shadow.color    = Color(0.0, 0.0, 0.0, 0.45)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shadow)
+
+	# Player placeholder — tall silhouette (back view)
+	var body := Panel.new()
+	body.size     = Vector2(PLAYER_W, PLAYER_H)
+	body.position = Vector2(PLAYER_X, PLAYER_Y)
+	body.add_theme_stylebox_override("panel",
+		_flat(Color(0.08,0.10,0.24,0.90), Color(0.35,0.60,1.00,0.40), 18, 1))
+	add_child(body)
+
+	# Cape / cloak shape overlay
+	var cape := ColorRect.new()
+	cape.size     = Vector2(PLAYER_W - 20.0, PLAYER_H * 0.65)
+	cape.position = Vector2(10.0, PLAYER_H * 0.30)
+	cape.color    = Color(0.12, 0.06, 0.22, 0.70)
+	cape.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(cape)
+
+	# Head circle
+	var head := Panel.new()
+	head.size     = Vector2(56, 56)
+	head.position = Vector2((PLAYER_W - 56.0) / 2.0, 18.0)
+	head.add_theme_stylebox_override("panel",
+		_flat(Color(0.14,0.16,0.32,1.0), Color(0.45,0.65,1.00,0.50), 28, 1))
+	body.add_child(head)
+
+	# Subtle idle breathe tween
+	var t := body.create_tween().set_loops()
+	t.tween_property(body, "position:y", PLAYER_Y - 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(body, "position:y", PLAYER_Y + 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	# "PLAYER" label inside — will be replaced by real sprite
+	var ph := Label.new()
+	ph.text = "← ตัวละคร\n(placeholder)"
+	ph.size = Vector2(PLAYER_W, 40)
+	ph.position = Vector2(0, PLAYER_H * 0.72)
+	ph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ph.add_theme_font_size_override("font_size", 10)
+	ph.add_theme_color_override("font_color", Color(0.45,0.55,0.80,0.55))
+	ph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(ph)
+
+# ── Player HUD — floats above hand strip, left side ───────
 func _build_player_hud() -> void:
+	# HUD card sits just above the hand area
 	var pp := Panel.new()
-	pp.size     = Vector2(230, 136)
-	pp.position = Vector2(12, 46)
+	pp.size     = Vector2(260, 100)
+	pp.position = Vector2(8, HAND_Y - 110.0)
 	pp.add_theme_stylebox_override("panel", _flat(C_PANEL, C_BORDER, 10, 1))
 	add_child(pp)
 
-	_mk_label(CHARACTER["name"], 13, C_TEXT, pp, Vector2(12, 8))
+	_mk_label(CHARACTER["name"], 12, C_TEXT, pp, Vector2(12, 6))
 
 	# HP bar
 	var phb_bg := ColorRect.new()
 	phb_bg.color    = Color(1,1,1,0.08)
-	phb_bg.size     = Vector2(206, 11)
-	phb_bg.position = Vector2(12, 30)
+	phb_bg.size     = Vector2(236, 10)
+	phb_bg.position = Vector2(12, 26)
 	pp.add_child(phb_bg)
 
 	_player_hp_bar          = ColorRect.new()
 	_player_hp_bar.color    = C_HP
-	_player_hp_bar.size     = Vector2(206, 11)
-	_player_hp_bar.position = Vector2(12, 30)
+	_player_hp_bar.size     = Vector2(236, 10)
+	_player_hp_bar.position = Vector2(12, 26)
 	pp.add_child(_player_hp_bar)
 
-	_player_hp_lbl = _mk_label("", 11, C_HP, pp, Vector2(12, 44))
-	_shield_lbl    = _mk_label("", 11, Color(0.7,0.9,1.0), pp, Vector2(12, 60))
+	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 39))
+	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(140, 39))
 
 	# AP dots
-	_ap_lbl = _mk_label("", 18, C_AP, pp, Vector2(12, 76))
-	_mk_label("AP", 9, C_SUB, pp, Vector2(12, 100))
+	_ap_lbl = _mk_label("", 16, C_AP, pp, Vector2(12, 56))
+	_mk_label("AP", 9, C_SUB, pp, Vector2(12, 78))
 
 	# Deck / Discard
-	_deck_lbl    = _mk_label("", 10, C_SUB,              pp, Vector2(12, 114))
-	_discard_lbl = _mk_label("", 10, Color(0.6,0.5,0.4), pp, Vector2(120, 114))
+	_deck_lbl    = _mk_label("", 10, C_SUB,              pp, Vector2(80,  78))
+	_discard_lbl = _mk_label("", 10, Color(0.6,0.5,0.4), pp, Vector2(168, 78))
 
-	# Ultimate gauge — circular ring (top-right corner)
+	# Ultimate gauge ring — top right corner
 	_build_ult_ring()
 
 # ── Ultimate gauge ring — top right ───────────────────────
@@ -896,14 +991,14 @@ func _refresh_ui() -> void:
 
 	# Player HP
 	var max_hp: float = float(CHARACTER["max_hp"])
-	if _player_hp_bar: _player_hp_bar.size.x = 206.0 * (maxi(0, _player_hp) / max_hp)
+	if _player_hp_bar: _player_hp_bar.size.x = 236.0 * (maxi(0, _player_hp) / max_hp)
 	if _player_hp_lbl: _player_hp_lbl.text = "HP %d/%d" % [maxi(0,_player_hp), int(max_hp)]
 	if _shield_lbl:    _shield_lbl.text = "🛡 %d" % _player_shield if _player_shield > 0 else ""
 
 	# Enemy
 	var emax: float = float(_enemy_data.get("hp", 100))
 	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
-	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 300.0 * (maxi(0, _enemy_hp) / emax)
+	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
 	if _enemy_status_lbl:
 		var s := []
