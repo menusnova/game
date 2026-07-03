@@ -344,6 +344,10 @@ var _stats_open:  bool  = false
 var _stats_tween: Tween
 
 func _build_stats() -> void:
+	var pc: Panel = _player_card if is_instance_valid(_player_card) else get_node_or_null("PlayerCard") as Panel
+	if not pc:
+		return
+
 	# ⋮ button on PlayerCard (top-right corner)
 	var dot_btn := Button.new()
 	dot_btn.text = "⋮"
@@ -358,7 +362,7 @@ func _build_stats() -> void:
 	dot_btn.add_theme_stylebox_override("pressed", dsb)
 	dot_btn.add_theme_stylebox_override("focus",   dsb)
 	dot_btn.pressed.connect(_toggle_stats)
-	_player_card.add_child(dot_btn)
+	pc.add_child(dot_btn)
 
 	# Stats card (hidden by default, slides in from right)
 	_stats_card = Panel.new()
