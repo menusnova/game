@@ -409,6 +409,44 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 	await t2.finished
 	toast.queue_free()
 
+func _spawn_city_glows() -> void:
+	# จุดแสงสะท้อนเมือง — วางตามตำแหน่งแสงในภาพ
+	const GLOWS := [
+		# [x, y, w, h, color, duration]
+		[320.0, 310.0, 90.0,  28.0, Color(0.30, 0.55, 1.00, 0.0), 2.8],
+		[510.0, 340.0, 70.0,  20.0, Color(0.55, 0.30, 1.00, 0.0), 3.5],
+		[680.0, 295.0, 60.0,  18.0, Color(0.25, 0.65, 1.00, 0.0), 4.1],
+		[820.0, 325.0, 80.0,  22.0, Color(0.40, 0.25, 1.00, 0.0), 3.2],
+		[200.0, 360.0, 50.0,  16.0, Color(0.20, 0.50, 1.00, 0.0), 5.0],
+		[920.0, 350.0, 55.0,  17.0, Color(0.50, 0.20, 0.90, 0.0), 2.5],
+	]
+	for g in GLOWS:
+		var spot := ColorRect.new()
+		spot.position    = Vector2(g[0], g[1])
+		spot.size        = Vector2(g[2], g[3])
+		spot.color       = g[4]
+		spot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		spot.z_index     = 0
+
+		# blur feel — ทำ StyleBox radius ไม่ได้บน ColorRect, ใช้ซ้อน 3 ชั้นแทน
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = g[4]
+		sb.corner_radius_top_left     = 40
+		sb.corner_radius_top_right    = 40
+		sb.corner_radius_bottom_right = 40
+		sb.corner_radius_bottom_left  = 40
+
+		add_child(spot)
+
+		var delay := randf_range(0.0, 3.0)
+		var dur: float = g[5]
+		var peak := randf_range(0.12, 0.22)
+
+		var t := spot.create_tween().set_loops()
+		t.tween_interval(delay)
+		t.tween_property(spot, "color:a", peak, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		t.tween_property(spot, "color:a", 0.0,  dur * 1.3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
 	_navigating = true
@@ -429,6 +467,7 @@ func _setup_ambient_fx() -> void:
 	_spawn_particles()
 	_start_bg_pulse()
 	_start_card_bob()
+	_spawn_city_glows()
 
 func _spawn_particles() -> void:
 	const SYMBOLS  := ["✦", "✧", "⋆", "·", "⬡", "◈"]
