@@ -30,6 +30,7 @@ var _player_name: String = "Trailblazer"
 var _signature:   String = "\"ความลับของสูตรนั้น... ยังไม่จบ\""
 var _avatar_idx:  int    = 0
 
+@onready var _player_card:   Panel         = $PlayerCard
 @onready var _back:          Button        = $TopBar/BackBtn
 @onready var _showcase_row:  GridContainer = $ShowcaseRow
 @onready var _activity_list: VBoxContainer = $ActivityCard/ActivityList
@@ -357,7 +358,7 @@ func _build_stats() -> void:
 	dot_btn.add_theme_stylebox_override("pressed", dsb)
 	dot_btn.add_theme_stylebox_override("focus",   dsb)
 	dot_btn.pressed.connect(_toggle_stats)
-	get_node("PlayerCard").add_child(dot_btn)
+	_player_card.add_child(dot_btn)
 
 	# Stats card (hidden by default, slides in from right)
 	_stats_card = Panel.new()
