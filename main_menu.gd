@@ -125,7 +125,7 @@ func _setup_locked_nodes() -> void:
 func _on_locked_click(ev: InputEvent, node: Control) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_fx_scale(node)
-		_show_coming_soon("🔒  ปลดล็อคเนื้อหานี้เพื่อเข้าถึง")
+		_show_coming_soon("ปลดล็อคเนื้อหานี้เพื่อเข้าถึง")
 
 # ── Menu items (left sidebar) ────────────────────────────────────
 func _setup_menu_items() -> void:
@@ -379,7 +379,7 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 	toast.add_theme_stylebox_override("panel", sb)
 
 	var lbl := Label.new()
-	lbl.text = "🔒  " + msg
+	lbl.text = msg
 	lbl.add_theme_font_size_override("font_size", 13)
 	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 1.0))
 	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
