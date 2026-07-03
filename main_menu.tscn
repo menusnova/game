@@ -285,7 +285,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
-texture = ExtResource("12_icon_energy")
+texture = ExtResource("4_crystalgem")
 expand_mode = 1
 stretch_mode = 5
 
@@ -365,7 +365,7 @@ offset_top = 5.0
 offset_right = 29.0
 offset_bottom = 29.0
 mouse_filter = 2
-texture = ExtResource("4_crystalgem")
+texture = ExtResource("12_icon_energy")
 expand_mode = 1
 stretch_mode = 5
 
