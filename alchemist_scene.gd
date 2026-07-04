@@ -1,8 +1,10 @@
 extends Control
 
-const SC_MAIN := "res://main_menu.tscn"
+const SC_MAIN    := "res://main_menu.tscn"
+const GOLD_COST  := 200
 
 func _ready() -> void:
+	CurrencyManager.spend_gold(GOLD_COST)
 	_build_ui()
 
 func _build_ui() -> void:

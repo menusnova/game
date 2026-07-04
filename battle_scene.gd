@@ -144,7 +144,10 @@ const HAND_H   := 88.0
 # ════════════════════════════════════════════════════════════
 #  ENTRY
 # ════════════════════════════════════════════════════════════
+const ENERGY_COST := 10
+
 func _ready() -> void:
+	CurrencyManager.spend_energy(ENERGY_COST)
 	_player_hp = CHARACTER["max_hp"]
 	_build_ui()
 	_create_enemy()
