@@ -2,7 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/icon_gold.png-67dd194c90625631fb37ddb69091e3f0.ctex"
+uid="uid://6p6bi5nrecn2"
+path="res://.godot/imported/icon_gold.png-51f85d80e897645c77422eecda0a3450.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://image/icon_gold.png"
-dest_files=["res://.godot/imported/icon_gold.png-67dd194c90625631fb37ddb69091e3f0.ctex"]
+dest_files=["res://.godot/imported/icon_gold.png-51f85d80e897645c77422eecda0a3450.ctex"]
 
 [params]
 

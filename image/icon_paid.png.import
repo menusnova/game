@@ -2,7 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/icon_paid.png-2a4066f386544e16009c34858a15bbf5.ctex"
+uid="uid://d2bpnhqiymrf2"
+path="res://.godot/imported/icon_paid.png-02bd7dcccb98738cc5da74989638c6dc.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://image/icon_paid.png"
-dest_files=["res://.godot/imported/icon_paid.png-2a4066f386544e16009c34858a15bbf5.ctex"]
+dest_files=["res://.godot/imported/icon_paid.png-02bd7dcccb98738cc5da74989638c6dc.ctex"]
 
 [params]
 

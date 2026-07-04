@@ -43,6 +43,7 @@ func _ready() -> void:
 	if _prof: _prof.gui_input.connect(_on_profile_input)
 	var _newchar: Control = get_node_or_null("NewCharCard") as Control
 	if _newchar: _newchar.gui_input.connect(_on_gacha_input)
+	_load_icon_textures()
 	_setup_locked_nodes()
 	_setup_menu_items()
 	_setup_cards_fx()
@@ -50,6 +51,29 @@ func _ready() -> void:
 	_setup_quest_panel()
 	_setup_char_switcher()
 	_setup_navbar()
+
+func _load_icon_textures() -> void:
+	var map: Dictionary = {
+		"CurrBox1/CurrIcon1": "res://image/icon_gold.png",
+		"CurrBox3/CurrIcon3": "res://image/icon_paid.png",
+		"CurrBox4/CurrIcon4": "res://image/icon_energy.png",
+		"MenuItem_Notice/Icon": "res://image/icon_notice.png",
+		"MenuItem_Missions/Icon": "res://image/icon_missions.png",
+		"MenuItem_Event/Icon": "res://image/icon_event.png",
+		"MenuItem_Pass/Icon": "res://image/icon_pass.png",
+		"MenuItem_Shop/Icon": "res://image/icon_shop.png",
+	}
+	for node_path in map:
+		var node := get_node_or_null(node_path) as TextureRect
+		if not node:
+			continue
+		var png_path: String = map[node_path]
+		var buf := FileAccess.get_file_as_bytes(png_path)
+		if buf.is_empty():
+			continue
+		var img := Image.new()
+		if img.load_png_from_buffer(buf) == OK:
+			node.texture = ImageTexture.create_from_image(img)
 
 func _setup_ambient_fx() -> void:
 	var layer := Control.new()

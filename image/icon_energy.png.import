@@ -2,7 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/icon_energy.png-396fce77228a9ef82b6bbc4f051b11cf.ctex"
+uid="uid://dde7u87wq6ddm"
+path="res://.godot/imported/icon_energy.png-22b185f655dad36189739ca7a2ac00c7.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://image/icon_energy.png"
-dest_files=["res://.godot/imported/icon_energy.png-396fce77228a9ef82b6bbc4f051b11cf.ctex"]
+dest_files=["res://.godot/imported/icon_energy.png-22b185f655dad36189739ca7a2ac00c7.ctex"]
 
 [params]
 

@@ -2,7 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/icon_event.png-d1e604d916c9b5fd90de7c20631c5b69.ctex"
+uid="uid://cobfjfaayqiso"
+path="res://.godot/imported/icon_event.png-27c0d5d84b3e2ed849256ccd648c0b01.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://image/icon_event.png"
-dest_files=["res://.godot/imported/icon_event.png-d1e604d916c9b5fd90de7c20631c5b69.ctex"]
+dest_files=["res://.godot/imported/icon_event.png-27c0d5d84b3e2ed849256ccd648c0b01.ctex"]
 
 [params]
 
