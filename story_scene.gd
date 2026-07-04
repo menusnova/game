@@ -36,10 +36,7 @@ var _full_text := ""
 @onready var _next_btn:   Button        = $DialoguePanel/NextBtn
 @onready var _fade:       ColorRect     = $FadeOverlay
 
-const ENERGY_COST := 10
-
 func _ready() -> void:
-	CurrencyManager.spend_energy(ENERGY_COST)
 	if _bg:
 		_bg.texture = bg_texture
 	if _char_l:
