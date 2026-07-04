@@ -7,19 +7,9 @@ const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 const SC_CODEX      := "res://codex_scene.tscn"
 const SC_ROSTER     := "res://character_roster.tscn"
-var _show_female := true
 var _quest_panel: CanvasLayer
 var _navigating := false
 
-var _char_index := 0
-var _char_circles: Array = []
-var _char_switcher: Control
-var _char_switching := false
-
-const CHAR_DATA := [
-	{"color": Color(1.0, 0.55, 0.82), "sprite": "FemaleCharacter"},
-	{"color": Color(0.35, 0.72, 1.0),  "sprite": "MaleCharacter"},
-]
 
 const MENU_ITEMS := [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
@@ -49,7 +39,6 @@ func _ready() -> void:
 	_setup_cards_fx()
 	_setup_domain()
 	_setup_quest_panel()
-	_setup_char_switcher()
 	_setup_navbar()
 
 func _load_icon_textures() -> void:
@@ -370,110 +359,6 @@ func _on_adv_input(ev: InputEvent) -> void:
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_goto(SC_BATTLE)
-
-func _on_toggle_char() -> void:
-	_show_female = not _show_female
-	var fc: Node = get_node_or_null("FemaleCharacter") as Node
-	var mc: Node = get_node_or_null("MaleCharacter") as Node
-	if fc: fc.visible = _show_female
-	if mc: mc.visible = not _show_female
-
-# ── Character Switcher (carousel) ────────────────────────────────
-func _setup_char_switcher() -> void:
-	var old_btn := get_node_or_null("ToggleBtn")
-	if old_btn:
-		old_btn.visible = false
-
-	_char_switcher = Control.new()
-	_char_switcher.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_switcher.position = Vector2(412, 604)
-	_char_switcher.size = Vector2(88, 36)
-	add_child(_char_switcher)
-
-	_build_char_circles()
-	_refresh_char_circles(false)
-	_update_char_sprites()
-
-func _build_char_circles() -> void:
-	for c in _char_switcher.get_children():
-		c.queue_free()
-	_char_circles.clear()
-
-	for i in CHAR_DATA.size():
-		var btn := Panel.new()
-		btn.mouse_filter = Control.MOUSE_FILTER_STOP
-		_char_switcher.add_child(btn)
-		_char_circles.append(btn)
-
-		# placeholder label (replace with chibi TextureRect later)
-		var lbl := Label.new()
-		lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 9)
-		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		lbl.text = ""
-		btn.add_child(lbl)
-
-		btn.gui_input.connect(_on_char_circle_input.bind(i))
-
-func _refresh_char_circles(animate: bool = true) -> void:
-	const SPACING := 40.0
-	const H := 36.0
-	for i in _char_circles.size():
-		var btn: Panel = _char_circles[i] as Panel
-		var active := (i == _char_index)
-		var sz := Vector2(30, 30) if active else Vector2(22, 22)
-		var col: Color = CHAR_DATA[i]["color"]
-
-		var sb := StyleBoxFlat.new()
-		sb.corner_radius_top_left     = 50
-		sb.corner_radius_top_right    = 50
-		sb.corner_radius_bottom_right = 50
-		sb.corner_radius_bottom_left  = 50
-		sb.bg_color = col if active else Color(col.r, col.g, col.b, 0.30)
-		if active:
-			sb.border_width_left   = 3
-			sb.border_width_right  = 3
-			sb.border_width_top    = 3
-			sb.border_width_bottom = 3
-			sb.border_color = Color(1, 1, 1, 0.9)
-		btn.add_theme_stylebox_override("panel", sb)
-
-		var target_pos := Vector2(i * SPACING + (SPACING - sz.x) / 2.0, (H - sz.y) / 2.0)
-
-		if animate:
-			var t := btn.create_tween().set_parallel(true)
-			t.tween_property(btn, "size",     sz,         0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			t.tween_property(btn, "position", target_pos, 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-		else:
-			btn.size     = sz
-			btn.position = target_pos
-
-func _update_char_sprites() -> void:
-	for i in CHAR_DATA.size():
-		var sprite_name: String = str(CHAR_DATA[i].get("sprite", ""))
-		var node: Node = get_node_or_null(sprite_name) as Node
-		if node:
-			node.visible = (i == _char_index)
-
-func _on_char_circle_input(ev: InputEvent, idx: int) -> void:
-	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-		if _char_switching:
-			return
-		_char_switching = true
-		_char_index = (idx + 1) % CHAR_DATA.size() if idx == _char_index else idx
-
-		# slide right animation on switcher container
-		var orig_x := _char_switcher.position.x
-		var t := _char_switcher.create_tween()
-		t.tween_property(_char_switcher, "position:x", orig_x + 22, 0.10).set_ease(Tween.EASE_OUT)
-		t.tween_property(_char_switcher, "position:x", orig_x, 0.18).set_ease(Tween.EASE_IN_OUT)
-		await t.finished
-
-		_refresh_char_circles(true)
-		_update_char_sprites()
-		_char_switching = false
 
 func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เปิดให้บริการ") -> void:
 	# ถ้ามี toast อยู่แล้ว ไม่ซ้อน
