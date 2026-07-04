@@ -517,11 +517,7 @@ func _setup_banner_carousel() -> void:
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(icon_lbl)
 
-		# Click → gacha
-		card.gui_input.connect(func(ev: InputEvent):
-			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_goto(SC_GACHA)
-		)
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Dot indicators
 	var dot_row := Control.new()
