@@ -351,7 +351,7 @@ func _build_stats() -> void:
 	# ⋮ button on PlayerCard (top-right corner)
 	var dot_btn := Button.new()
 	dot_btn.text = "⋮"
-	dot_btn.position = Vector2(316, 236)
+	dot_btn.position = Vector2(318, 8)
 	dot_btn.size     = Vector2(28, 28)
 	dot_btn.add_theme_font_size_override("font_size", 18)
 	dot_btn.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
@@ -466,7 +466,7 @@ func _build_showcase() -> void:
 
 func _make_showcase_card(data: Dictionary) -> Control:
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(168, 255)
+	card.custom_minimum_size = Vector2(160, 240)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var is_empty: bool = str(data.get("name", "")) == ""
