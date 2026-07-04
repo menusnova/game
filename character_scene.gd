@@ -97,7 +97,7 @@ var _tab_btns: Array[Button] = []
 var _tab_pages: Array[Control] = []
 
 var _sel_skill: int = 0
-var _skill_btns: Array[Panel] = []
+var _skill_btns: Array[Button] = []
 var _skill_name_lbl: Label
 var _skill_type_lbl: Label
 var _skill_desc_lbl: Label
@@ -362,7 +362,7 @@ func _build_right_panel() -> void:
 # ── Tab: Skills ───────────────────────────────────────────────────
 func _build_skills_page(page: Control) -> void:
 	var skills: Array = CHARACTER["skills"]
-	var ph := page.size.y  # available height ~482
+	var ph := 648 - (HDR_H + 2 + TAB_H + 2)  # 528
 
 	# Skill icon row (top ~110px)
 	var btn_sz := Vector2(100, 100)
@@ -374,14 +374,16 @@ func _build_skills_page(page: Control) -> void:
 		var col: Color = sk["color"]
 		var bx := row_x + i * (btn_sz.x + 12)
 
-		var btn := Panel.new()
+		var btn := Button.new()
 		btn.size = btn_sz
 		btn.position = Vector2(bx, 14)
-		btn.mouse_filter = Control.MOUSE_FILTER_STOP
-		btn.add_theme_stylebox_override("panel", _flat(
-			Color(col.r * 0.10, col.g * 0.10, col.b * 0.16, 1.0),
-			Color(col.r, col.g, col.b, 0.35), 14, 1
-		))
+		btn.focus_mode = Control.FOCUS_NONE
+		btn.clip_contents = true
+		for s in ["normal","hover","pressed","focus","disabled"]:
+			btn.add_theme_stylebox_override(s, _flat(
+				Color(col.r * 0.10, col.g * 0.10, col.b * 0.16, 1.0),
+				Color(col.r, col.g, col.b, 0.35), 14, 1
+			))
 		page.add_child(btn)
 		_skill_btns.append(btn)
 
@@ -423,7 +425,7 @@ func _build_skills_page(page: Control) -> void:
 		lv_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lv_bg.add_child(lv_lbl)
 
-		btn.gui_input.connect(_on_skill_btn.bind(i))
+		btn.pressed.connect(_on_skill_btn.bind(null, i))
 
 	# Divider
 	var div := ColorRect.new()
@@ -712,9 +714,7 @@ func _switch_tab(idx: int) -> void:
 		_tab_pages[i].visible = active
 
 # ── Skill button handler ──────────────────────────────────────────
-func _on_skill_btn(ev, idx: int) -> void:
-	if ev != null and not (ev is InputEventMouseButton and ev.pressed):
-		return
+func _on_skill_btn(_ev, idx: int) -> void:
 	_sel_skill = idx
 	var skill: Dictionary = CHARACTER["skills"][idx]
 	var col: Color = skill["color"]
@@ -729,12 +729,14 @@ func _on_skill_btn(ev, idx: int) -> void:
 	for i in _skill_btns.size():
 		var sc: Color = CHARACTER["skills"][i]["color"]
 		var active := (i == idx)
-		_skill_btns[i].add_theme_stylebox_override("panel", _flat(
+		var sb := _flat(
 			Color(sc.r * 0.22, sc.g * 0.22, sc.b * 0.30, 1.0) if active
 			else Color(sc.r * 0.10, sc.g * 0.10, sc.b * 0.16, 1.0),
 			Color(sc.r, sc.g, sc.b, 0.9 if active else 0.35), 14,
 			2 if active else 1
-		))
+		)
+		for s in ["normal","hover","pressed","focus","disabled"]:
+			_skill_btns[i].add_theme_stylebox_override(s, sb)
 
 # ── Fade-in overlay ───────────────────────────────────────────────
 func _build_fade_in() -> void:
