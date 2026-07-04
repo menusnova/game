@@ -8,13 +8,8 @@ const SC_DETAIL := "res://character_scene.tscn"
 const ROSTER: Array = [
 	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": true},
 	{"name": "Lyra",      "element": "🔥", "rarity": 5, "element_color": Color(1.0,  0.45, 0.2),   "owned": true},
-	{"name": "Kael",      "element": "⚡", "rarity": 4, "element_color": Color(0.95, 0.85, 0.2),   "owned": true},
-	{"name": "Mira",      "element": "🧊", "rarity": 4, "element_color": Color(0.4,  0.85, 1.0),   "owned": true},
-	{"name": "Seraph",    "element": "✦",  "rarity": 5, "element_color": Color(1.0,  0.78, 0.2),   "owned": false},
-	{"name": "Voss",      "element": "🌑", "rarity": 4, "element_color": Color(0.6,  0.35, 1.0),   "owned": false},
 	{"name": "???",       "element": "?",  "rarity": 5, "element_color": Color(0.5,  0.5,  0.5),   "owned": false},
 	{"name": "???",       "element": "?",  "rarity": 4, "element_color": Color(0.5,  0.5,  0.5),   "owned": false},
-	{"name": "???",       "element": "?",  "rarity": 3, "element_color": Color(0.5,  0.5,  0.5),   "owned": false},
 ]
 
 func _ready() -> void:
@@ -213,7 +208,7 @@ func _make_card(data: Dictionary) -> Control:
 		hint_lbl.text = "Lv. --"
 		hint_lbl.add_theme_color_override("font_color", Color(0.5, 0.75, 1, 0.6))
 	else:
-		hint_lbl.text = "สุ่มกาชา"
+		hint_lbl.text = ""
 		hint_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.55, 0.5))
 	hint_lbl.size     = Vector2(152, 16)
 	hint_lbl.position = Vector2(10, 166)
