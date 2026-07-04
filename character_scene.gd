@@ -491,7 +491,7 @@ func _build_skills_page(page: Control) -> void:
 func _build_resonance_page(page: Control) -> void:
 	var el: Color = CHARACTER["element_color"]
 	var eidolons: Array = CHARACTER["eidolons"]
-	var ph := page.size.y
+	var ph := 648 - (HDR_H + 2 + TAB_H + 2)  # 528
 	var item_h := (ph - 32.0) / eidolons.size()
 
 	# Section title
@@ -690,7 +690,8 @@ func _build_info_page(page: Control) -> void:
 	var lore_lbl := Label.new()
 	lore_lbl.text = CHARACTER["lore"]
 	lore_lbl.position = Vector2(16, y + 32)
-	lore_lbl.size = Vector2(PANEL_W - 32, page.size.y - y - 40)
+	var ph2 := 648 - (HDR_H + 2 + TAB_H + 2)
+	lore_lbl.size = Vector2(PANEL_W - 32, ph2 - y - 40)
 	lore_lbl.add_theme_font_size_override("font_size", 11)
 	lore_lbl.add_theme_color_override("font_color", Color(0.72, 0.82, 1.0, 0.72))
 	lore_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -705,10 +706,14 @@ func _switch_tab(idx: int) -> void:
 		var active := (i == idx)
 		_tab_btns[i].add_theme_color_override("font_color",
 			Color(el.r, el.g, el.b, 1.0) if active else C_SUB)
+		# remove previous indicator line before adding a new one
+		for child in _tab_btns[i].get_children():
+			if child is ColorRect:
+				child.queue_free()
 		var line := ColorRect.new()
 		line.size = Vector2(PANEL_W / 3.0, 2)
-		line.position = Vector2(i * (PANEL_W / 3.0), TAB_H - 2)
-		line.color = Color(el.r, el.g, el.b, 0.85 if active else 0.0)
+		line.position = Vector2(0, TAB_H - 2)
+		line.color = Color(el.r, el.g, el.b, 0.85) if active else Color(0, 0, 0, 0)
 		line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_tab_btns[i].add_child(line)
 		_tab_pages[i].visible = active
