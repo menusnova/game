@@ -266,7 +266,7 @@ func _build_right_panel() -> void:
 
 	# Back button
 	var back := Button.new()
-	back.text = "‹ Back"
+	back.text = "◀"
 	back.size = Vector2(70, 36)
 	back.position = Vector2(PANEL_X + 10, 18)
 	back.add_theme_font_size_override("font_size", 13)

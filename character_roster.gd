@@ -31,7 +31,7 @@ func _build_ui() -> void:
 	add_child(top)
 
 	var back := Button.new()
-	back.text = "← กลับ"
+	back.text = "◀"
 	back.custom_minimum_size = Vector2(80, 32)
 	var bsb := StyleBoxFlat.new()
 	bsb.bg_color = Color(1, 1, 1, 0.05)

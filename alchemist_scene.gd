@@ -51,7 +51,7 @@ func _build_ui() -> void:
 	add_child(sub)
 
 	var back := Button.new()
-	back.text = "← กลับ"
+	back.text = "◀"
 	back.size = Vector2(140, 40)
 	back.position = Vector2((1152 - 140) / 2.0, 460)
 	var sb := StyleBoxFlat.new()

@@ -135,7 +135,7 @@ func _build_topbar() -> void:
 	_hline(0, TOP_H - 1, SW)
 
 	var back := Button.new()
-	back.text = "‹"
+	back.text = "◀"
 	back.size = Vector2(50, TOP_H)
 	back.add_theme_font_size_override("font_size", 24)
 	back.add_theme_color_override("font_color", C_TXT)

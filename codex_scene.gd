@@ -159,7 +159,7 @@ func _build_header() -> void:
 	add_child(hdr)
 
 	var back := Button.new()
-	back.text = "← BACK"
+	back.text = "◀"
 	back.add_theme_font_size_override("font_size", 13)
 	back.add_theme_color_override("font_color", C_SUB)
 	back.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
