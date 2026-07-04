@@ -209,9 +209,9 @@ stretch_mode = 5
 
 [node name="ToggleBtn" type="Button" parent="." unique_id=835957511]
 layout_mode = 0
-offset_left = 470.0
+offset_left = 466.0
 offset_top = 570.0
-offset_right = 690.0
+offset_right = 686.0
 offset_bottom = 610.0
 theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -441,9 +441,9 @@ color = Color(1, 1, 1, 0.22)
 
 [node name="ProfileCard" type="Panel" parent="." unique_id=1502547384]
 layout_mode = 0
-offset_left = 5.0
+offset_left = 10.0
 offset_top = 5.0
-offset_right = 263.0
+offset_right = 268.0
 offset_bottom = 77.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card")
@@ -540,7 +540,7 @@ text = "UID 10000001"
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 142.0
-offset_right = 102.0
+offset_right = 128.0
 offset_bottom = 178.0
 mouse_filter = 0
 
@@ -616,7 +616,7 @@ stretch_mode = 5
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 182.0
-offset_right = 118.0
+offset_right = 128.0
 offset_bottom = 218.0
 mouse_filter = 0
 
@@ -674,7 +674,7 @@ color = Color(1, 1, 1, 0.0)
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 222.0
-offset_right = 94.0
+offset_right = 128.0
 offset_bottom = 258.0
 mouse_filter = 0
 
@@ -740,7 +740,7 @@ stretch_mode = 5
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 262.0
-offset_right = 84.0
+offset_right = 128.0
 offset_bottom = 298.0
 mouse_filter = 0
 
@@ -806,7 +806,7 @@ stretch_mode = 5
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 302.0
-offset_right = 84.0
+offset_right = 128.0
 offset_bottom = 338.0
 mouse_filter = 0
 
@@ -1391,7 +1391,7 @@ stretch_mode = 5
 
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
-offset_left = 996.0
+offset_left = 995.0
 offset_top = 323.0
 offset_right = 1145.0
 offset_bottom = 407.0
