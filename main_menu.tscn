@@ -1599,10 +1599,53 @@ theme_override_font_sizes/font_size = 8
 text = "Arcanum"
 horizontal_alignment = 1
 
-[node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
+[node name="Nav_Gacha" type="Control" parent="NavBar" unique_id=391827465]
 anchors_preset = 0
 offset_left = 240.0
 offset_right = 320.0
+offset_bottom = 52.0
+mouse_filter = 0
+
+[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav_Gacha" unique_id=391827466]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 52.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 0.12)
+
+[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav_Gacha" unique_id=391827467]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 1)
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav_Gacha" unique_id=391827468]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 3.0
+offset_right = 56.0
+offset_bottom = 35.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav_Gacha" unique_id=391827469]
+layout_mode = 0
+offset_top = 36.0
+offset_right = 80.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "Gacha"
+horizontal_alignment = 1
+
+[node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
+anchors_preset = 0
+offset_left = 320.0
+offset_right = 400.0
 offset_bottom = 52.0
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav3_Inventory" unique_id=968096375]
@@ -1685,8 +1728,8 @@ horizontal_alignment = 1
 
 [node name="Nav5_Guild" type="Control" parent="NavBar" unique_id=1675595296]
 anchors_preset = 0
-offset_left = 320.0
-offset_right = 400.0
+offset_left = 400.0
+offset_right = 480.0
 offset_bottom = 52.0
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav5_Guild" unique_id=1652080278]

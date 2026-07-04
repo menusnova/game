@@ -61,7 +61,8 @@ func _load_icon_textures() -> void:
 		"MenuItem_Missions/Icon": "res://image/icon_missions.png",
 		"MenuItem_Event/Icon": "res://image/icon_event.png",
 		"MenuItem_Pass/Icon": "res://image/icon_pass.png",
-		"MenuItem_Shop/Icon": "res://image/icon_shop.png",
+		"MenuItem_Shop/Icon":    "res://image/icon_shop.png",
+		"NavBar/Nav_Gacha/Icon": "res://image/icon_nav_gacha.png",
 	}
 	for node_path in map:
 		var node := get_node_or_null(node_path) as TextureRect
@@ -163,6 +164,14 @@ func _setup_navbar() -> void:
 				_goto(SC_ROSTER)
 		)
 		_attach_hover_bounce(roster_node)
+
+	var gacha_node: Control = get_node_or_null("NavBar/Nav_Gacha") as Control
+	if gacha_node:
+		gacha_node.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_goto(SC_GACHA)
+		)
+		_attach_hover_bounce(gacha_node)
 
 	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum") as Control
 	if char_node and not _is_locked(char_node):
