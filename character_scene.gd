@@ -1,6 +1,6 @@
 extends Control
 
-const SC_MAIN := "res://main_menu.tscn"
+const SC_ROSTER := "res://character_roster.tscn"
 
 # ── Character data ────────────────────────────────────────────────
 const CHARACTER := {
@@ -772,4 +772,4 @@ func _go_back() -> void:
 	var t := create_tween()
 	t.tween_property(ov, "color:a", 1.0, 0.25)
 	await t.finished
-	get_tree().change_scene_to_file(SC_MAIN)
+	get_tree().change_scene_to_file(SC_ROSTER)
