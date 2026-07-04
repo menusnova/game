@@ -448,13 +448,13 @@ func _toggle_stats() -> void:
 	if _stats_tween and _stats_tween.is_running():
 		_stats_tween.kill()
 	_stats_open = not _stats_open
-	_stats_card.visible = true
 	var target_x: float = 388.0 if _stats_open else 1160.0
+	if _stats_open:
+		_stats_card.visible = true
 	_stats_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	_stats_tween.tween_property(_stats_card, "position:x", target_x, 0.22)
 	if not _stats_open:
-		await _stats_tween.finished
-		_stats_card.visible = false
+		_stats_tween.finished.connect(func(): _stats_card.visible = false, CONNECT_ONE_SHOT)
 
 # ── Showcase ─────────────────────────────────────────────────────
 func _build_showcase() -> void:
