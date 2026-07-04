@@ -62,6 +62,11 @@ func _load_icon_textures() -> void:
 		"MenuItem_Event/Icon": "res://image/icon_event.png",
 		"MenuItem_Pass/Icon": "res://image/icon_pass.png",
 		"MenuItem_Shop/Icon": "res://image/icon_shop.png",
+		"NavBar/Nav0_Alchemist/Icon": "res://image/icon_nav_alchemist.png",
+		"NavBar/Nav2_Arcanum/Icon":   "res://image/icon_nav_arcanum.png",
+		"NavBar/Nav4_Database/Icon":  "res://image/icon_nav_achievement.png",
+		"NavBar/Nav3_Inventory/Icon": "res://image/icon_nav_inventory.png",
+		"NavBar/Nav5_Guild/Icon":     "res://image/icon_nav_guild.png",
 	}
 	for node_path in map:
 		var node := get_node_or_null(node_path) as TextureRect
