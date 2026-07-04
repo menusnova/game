@@ -184,21 +184,14 @@ func _on_domain_changed(percent: float) -> void:
 func _is_locked(node: Control) -> bool:
 	return node.get_node_or_null("LockOverlay") != null
 
-const COMING_SOON_NODES: Array = []
+const COMING_SOON_NODES: Array = ["ArenaCard"]
 
 func _setup_locked_nodes() -> void:
-	# Fully disable ArenaCard — no toast, no navigation
-	var arena: Control = get_node_or_null("ArenaCard") as Control
-	if arena:
-		arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
 	var all_names := MENU_ITEMS + CARDS + [
 		"NavBar/Nav3_Inventory",
 		"NavBar/Nav5_Guild",
 	]
 	for n in all_names:
-		if n == "ArenaCard":
-			continue
 		var node: Control = get_node_or_null(n) as Control
 		if node and _is_locked(node):
 			node.mouse_filter = Control.MOUSE_FILTER_STOP
