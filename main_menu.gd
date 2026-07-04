@@ -519,13 +519,15 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 	t.tween_property(toast, "modulate:a",   1.0,               0.18)
 	t.tween_property(toast, "position:y",   524.0,             0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	await t.finished
+	if not is_instance_valid(toast): return
 
 	await get_tree().create_timer(1.6).timeout
+	if not is_instance_valid(toast): return
 
 	var t2 := create_tween()
 	t2.tween_property(toast, "modulate:a", 0.0, 0.25)
 	await t2.finished
-	toast.queue_free()
+	if is_instance_valid(toast): toast.queue_free()
 
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
