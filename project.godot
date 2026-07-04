@@ -34,6 +34,7 @@ pointing/emulate_touch_from_mouse=true
 
 DomainManager="*res://domain_manager.gd"
 CurrencyManager="*res://currency_manager.gd"
+CharacterManager="*res://character_manager.gd"
 
 [editor_plugins]
 

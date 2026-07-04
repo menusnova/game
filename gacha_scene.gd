@@ -80,6 +80,10 @@ func _do_pull(count: int) -> void:
 		results.append(str(r[0]))
 		rarities.append(int(r[1]))
 	DomainManager.add_points("gacha")
+	# unlock characters (rarity 4+) immediately so roster reflects after reveal
+	for i in results.size():
+		if rarities[i] >= 4:
+			CharacterManager.unlock(results[i])
 	_refresh_ui()
 	_run_reveal(results, rarities)
 

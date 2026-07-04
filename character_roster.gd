@@ -3,16 +3,14 @@ extends Control
 const SC_MAIN   := "res://main_menu.tscn"
 const SC_DETAIL := "res://character_scene.tscn"
 
-# ── Roster data ────────────────────────────────────────────────────
-# owned: true = มีแล้ว / false = ยังไม่มี (มืด)
-const ROSTER: Array = [
-	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": true},
-	{"name": "Lyra",      "element": "🔥", "rarity": 5, "element_color": Color(1.0,  0.45, 0.2),   "owned": true},
-	{"name": "???",       "element": "?",  "rarity": 5, "element_color": Color(0.5,  0.5,  0.5),   "owned": false},
-	{"name": "???",       "element": "?",  "rarity": 4, "element_color": Color(0.5,  0.5,  0.5),   "owned": false},
-]
-
 func _ready() -> void:
+	CharacterManager.character_unlocked.connect(_on_character_unlocked)
+	_build_ui()
+
+func _on_character_unlocked(_char_name: String) -> void:
+	# rebuild grid when a new character is unlocked
+	for child in get_children():
+		child.queue_free()
 	_build_ui()
 
 func _build_ui() -> void:
@@ -57,8 +55,9 @@ func _build_ui() -> void:
 	top.add_child(title)
 
 	var count_lbl := Label.new()
-	var owned_count := ROSTER.filter(func(c): return c["owned"]).size()
-	count_lbl.text = "%d / %d" % [owned_count, ROSTER.size()]
+	var roster := CharacterManager.get_roster()
+	var owned_count := roster.filter(func(c): return c["owned"]).size()
+	count_lbl.text = "%d / %d" % [owned_count, roster.size()]
 	count_lbl.add_theme_font_size_override("font_size", 13)
 	count_lbl.add_theme_color_override("font_color", Color(0.5, 0.75, 1, 0.7))
 	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -86,7 +85,7 @@ func _build_ui() -> void:
 	mc.add_child(grid)
 	scroll.add_child(mc)
 
-	for data in ROSTER:
+	for data in CharacterManager.get_roster():
 		grid.add_child(_make_card(data))
 
 	# Fade in
