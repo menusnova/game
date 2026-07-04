@@ -351,7 +351,7 @@ func _build_stats() -> void:
 	# ⋮ button on PlayerCard (top-right corner)
 	var dot_btn := Button.new()
 	dot_btn.text = "⋮"
-	dot_btn.position = Vector2(316, 8)
+	dot_btn.position = Vector2(316, 236)
 	dot_btn.size     = Vector2(28, 28)
 	dot_btn.add_theme_font_size_override("font_size", 18)
 	dot_btn.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
@@ -366,7 +366,7 @@ func _build_stats() -> void:
 
 	# Stats card (hidden by default, slides in from right)
 	_stats_card = Panel.new()
-	_stats_card.position = Vector2(780, 60)  # off-screen right (within 1152px viewport)
+	_stats_card.position = Vector2(1160, 60)  # fully off-screen to the right
 	_stats_card.size     = Vector2(370, 548)
 	_stats_card.visible  = false
 	_stats_card.z_index  = 10
@@ -449,7 +449,7 @@ func _toggle_stats() -> void:
 		_stats_tween.kill()
 	_stats_open = not _stats_open
 	_stats_card.visible = true
-	var target_x: float = 388.0 if _stats_open else 780.0
+	var target_x: float = 388.0 if _stats_open else 1160.0
 	_stats_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	_stats_tween.tween_property(_stats_card, "position:x", target_x, 0.22)
 	if not _stats_open:

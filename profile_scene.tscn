@@ -450,7 +450,7 @@ theme_override_constants/separation = 6
 # ── RIGHT COLUMN: character showcase ──────────────────────────
 [node name="ShowcaseLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 778.0
+offset_left = 390.0
 offset_top = 60.0
 offset_right = 1136.0
 offset_bottom = 76.0
@@ -460,13 +460,13 @@ text = "CHARACTER SHOWCASE"
 
 [node name="ShowcaseRow" type="GridContainer" parent="."]
 layout_mode = 0
-offset_left = 778.0
+offset_left = 390.0
 offset_top = 80.0
 offset_right = 1136.0
 offset_bottom = 628.0
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 12
-columns = 2
+columns = 3
 
 [node name="FadeOverlay" type="ColorRect" parent="."]
 layout_mode = 3
