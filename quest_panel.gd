@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-enum Tab { DAILY, EXPEDITION, ENDGAME, CHALLENGE }
+enum Tab { DAILY, WEEKLY, ENDGAME, CHALLENGE }
 
 var _current_tab: Tab = Tab.DAILY
 var _is_open := false
@@ -12,10 +12,12 @@ const QUESTS := {
 		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "current": 0, "total": 1, "go": "gacha",     "reward": "💎×30"},
 		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1, "go": "alchemist", "reward": "💎×30"},
 	],
-	Tab.EXPEDITION: [
-		{"id": "exp_a", "label": "Zone A — ทุ่งหิน",        "slots": 3, "time": "8ชม",  "go": "adventure", "reward": "คริสตัล ×20"},
-		{"id": "exp_b", "label": "Zone B — ป่าลึก",         "slots": 3, "time": "8ชม",  "go": "adventure", "reward": "วัสดุ Ascend ×4"},
-		{"id": "exp_c", "label": "Zone C — ซากปรักหักพัง",  "slots": 2, "time": "12ชม", "go": "adventure", "reward": "ทอง ×5000"},
+	Tab.WEEKLY: [
+		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "current": 0, "total": 1,  "go": "battle",    "reward": "💎×120"},
+		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "current": 0, "total": 5,  "go": "battle",    "reward": "💎×100"},
+		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "current": 0, "total": 3,  "go": "gacha",     "reward": "💎×90"},
+		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "current": 0, "total": 5,  "go": "alchemist", "reward": "💎×80"},
+		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "current": 0, "total": 3,  "go": "battle",    "reward": "วัสดุ Ascend ×6"},
 	],
 	Tab.ENDGAME: [
 		{"id": "eg_boss",   "label": "สังหาร Weekly Boss",  "current": 0, "total": 1, "go": "battle", "reward": "วัสดุ Lv.4 ×4"},
@@ -56,7 +58,9 @@ func _ready() -> void:
 		_dim.modulate.a   = 0.0
 		_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if _tab_daily:  _tab_daily.pressed.connect(func(): _switch_tab(Tab.DAILY))
-	if _tab_exp:    _tab_exp.pressed.connect(func():   _switch_tab(Tab.EXPEDITION))
+	if _tab_exp:
+		_tab_exp.text = "รายสัปดาห์"
+		_tab_exp.pressed.connect(func(): _switch_tab(Tab.WEEKLY))
 	if _tab_end:    _tab_end.pressed.connect(func():   _switch_tab(Tab.ENDGAME))
 	if _tab_chal:   _tab_chal.pressed.connect(func():  _switch_tab(Tab.CHALLENGE))
 	if _close_btn:  _close_btn.pressed.connect(close)
@@ -101,7 +105,7 @@ func _update_tab_style() -> void:
 	var tabs: Array[Button] = [_tab_daily, _tab_exp, _tab_end, _tab_chal]
 	var actives: Array[bool] = [
 		_current_tab == Tab.DAILY,
-		_current_tab == Tab.EXPEDITION,
+		_current_tab == Tab.WEEKLY,
 		_current_tab == Tab.ENDGAME,
 		_current_tab == Tab.CHALLENGE,
 	]
@@ -150,10 +154,7 @@ func _rebuild_list() -> void:
 			nav = func():
 				close()
 				SceneTransition.fade_to(scene_path)
-		if _current_tab == Tab.EXPEDITION:
-			_list.add_child(_ExpeditionRow.new(q, nav))
-		else:
-			_list.add_child(_QuestRow.new(q, nav))
+		_list.add_child(_QuestRow.new(q, nav))
 
 # ── Quest row (Daily / Endgame / Challenge) ──────────────────────────────────
 class _QuestRow extends Control:
