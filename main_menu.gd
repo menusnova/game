@@ -269,10 +269,10 @@ func _is_locked(node: Control) -> bool:
 const COMING_SOON_NODES: Array = ["ArenaCard"]
 
 func _setup_locked_nodes() -> void:
-	var all_names: Array[String] = MENU_ITEMS + CARDS + [
-		"NavBar/Nav3_Inventory",
-		"NavBar/Nav5_Guild",
-	]
+	var all_names: Array[String] = []
+	all_names.append_array(MENU_ITEMS)
+	all_names.append_array(CARDS)
+	all_names.append_array(["NavBar/Nav3_Inventory", "NavBar/Nav5_Guild"])
 	for n in all_names:
 		var node: Control = get_node_or_null(n) as Control
 		if node and _is_locked(node):
