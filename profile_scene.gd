@@ -59,6 +59,14 @@ const STATS: Array = [
 ]
 
 func _ready() -> void:
+	# Keep TopBar above all dynamically added nodes
+	var top_bar := get_node_or_null("TopBar") as Control
+	if top_bar: top_bar.z_index = 8
+
+	# Clip activity list so it never overflows its card
+	var act_card := get_node_or_null("ActivityCard") as Control
+	if act_card: act_card.clip_contents = true
+
 	if _back:
 		_back.pressed.connect(_go_back)
 	_build_showcase()
@@ -107,6 +115,7 @@ func _make_avatar_popup() -> Control:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0.55)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 20
 
 	var panel := Panel.new()
 	var sb := StyleBoxFlat.new()
@@ -207,6 +216,7 @@ func _make_edit_popup() -> Control:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0.55)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 20
 
 	var panel := Panel.new()
 	var sb := StyleBoxFlat.new()
@@ -286,6 +296,11 @@ func _make_edit_popup() -> Control:
 		if is_instance_valid(_sig_lbl):  _sig_lbl.text  = _signature
 		dim.queue_free())
 
+	# Click dim (outside panel) to cancel
+	dim.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			dim.queue_free())
+
 	return dim
 
 func _make_line_edit(default_text: String) -> LineEdit:
@@ -339,16 +354,14 @@ func _apply_domain_bar(pct: float) -> void:
 	_domain_fill.size.x = bar_w * (pct / 100.0)
 
 # ── Stats card ───────────────────────────────────────────────────
-var _stats_card:  Panel
-var _stats_open:  bool  = false
-var _stats_tween: Tween
+var _stats_card: Control = null  # modal overlay (created on demand)
 
 func _build_stats() -> void:
 	var pc: Panel = _player_card if is_instance_valid(_player_card) else get_node_or_null("PlayerCard") as Panel
 	if not pc:
 		return
 
-	# ⋮ button on PlayerCard (top-right corner)
+	# ⋮ button on PlayerCard (top-right, clear of other content)
 	var dot_btn := Button.new()
 	dot_btn.text = "⋮"
 	dot_btn.position = Vector2(318, 8)
@@ -361,100 +374,114 @@ func _build_stats() -> void:
 	dot_btn.add_theme_stylebox_override("hover",   dsb)
 	dot_btn.add_theme_stylebox_override("pressed", dsb)
 	dot_btn.add_theme_stylebox_override("focus",   dsb)
-	dot_btn.pressed.connect(_toggle_stats)
+	dot_btn.pressed.connect(_open_stats_modal)
 	pc.add_child(dot_btn)
 
-	# Stats card (hidden by default, slides in from right)
-	_stats_card = Panel.new()
-	_stats_card.position = Vector2(1160, 60)  # fully off-screen to the right
-	_stats_card.size     = Vector2(370, 548)
-	_stats_card.visible  = false
-	_stats_card.z_index  = 10
+func _open_stats_modal() -> void:
+	if _stats_card and is_instance_valid(_stats_card):
+		return
+	# Full-screen dim — blocks everything underneath
+	var dim := ColorRect.new()
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.60)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 20
+	add_child(dim)
+	_stats_card = dim
+
+	# Centered panel  460 × 520
+	const PW := 460.0; const PH := 520.0
+	var panel := Panel.new()
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.024, 0.047, 0.102, 0.96)
+	sb.bg_color = Color(0.024, 0.047, 0.102, 0.98)
 	sb.border_width_top = 1; sb.border_width_right = 1
 	sb.border_width_bottom = 1; sb.border_width_left = 1
 	sb.border_color = Color(0.388, 0.624, 1, 0.25)
 	sb.corner_radius_top_left = 16; sb.corner_radius_top_right = 16
 	sb.corner_radius_bottom_right = 16; sb.corner_radius_bottom_left = 16
-	add_child(_stats_card)
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.size     = Vector2(PW, PH)
+	panel.position = Vector2((1152 - PW) * 0.5, (648 - PH) * 0.5)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.add_child(panel)
 
-	# Header
+	# Header row
 	var header := Label.new()
 	header.text = "สถิติผู้เล่น"
-	header.add_theme_font_size_override("font_size", 13)
-	header.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.8))
-	header.position = Vector2(16, 14)
-	header.size     = Vector2(320, 22)
+	header.add_theme_font_size_override("font_size", 15)
+	header.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.9))
+	header.position = Vector2(20, 16)
+	header.size     = Vector2(PW - 60, 26)
 	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stats_card.add_child(header)
+	panel.add_child(header)
+
+	# Close button (top-right of panel)
+	var close_btn := Button.new()
+	close_btn.text = "✕"
+	close_btn.position = Vector2(PW - 44, 12)
+	close_btn.size     = Vector2(32, 32)
+	close_btn.add_theme_font_size_override("font_size", 14)
+	close_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.5))
+	var csb := StyleBoxFlat.new()
+	csb.bg_color = Color(0, 0, 0, 0)
+	close_btn.add_theme_stylebox_override("normal",  csb)
+	close_btn.add_theme_stylebox_override("hover",   csb)
+	close_btn.add_theme_stylebox_override("pressed", csb)
+	close_btn.add_theme_stylebox_override("focus",   csb)
+	close_btn.pressed.connect(func(): dim.queue_free())
+	panel.add_child(close_btn)
 
 	var hdiv := ColorRect.new()
 	hdiv.color    = Color(0.388, 0.624, 1, 0.15)
-	hdiv.position = Vector2(12, 38)
-	hdiv.size     = Vector2(346, 1)
+	hdiv.position = Vector2(16, 46)
+	hdiv.size     = Vector2(PW - 32, 1)
 	hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stats_card.add_child(hdiv)
+	panel.add_child(hdiv)
 
-	var y := 48.0
+	var y := 56.0
 	for i in STATS.size():
 		var data: Dictionary = STATS[i]
 
 		var row_bg := ColorRect.new()
 		row_bg.color    = Color(1, 1, 1, 0.02) if i % 2 == 0 else Color(0, 0, 0, 0)
-		row_bg.position = Vector2(0, y - 4)
-		row_bg.size     = Vector2(370, 52)
+		row_bg.position = Vector2(0, y - 2)
+		row_bg.size     = Vector2(PW, 46)
 		row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_stats_card.add_child(row_bg)
+		panel.add_child(row_bg)
 
 		var icon_lbl := Label.new()
 		icon_lbl.text = str(data["icon"])
-		icon_lbl.add_theme_font_size_override("font_size", 18)
-		icon_lbl.position = Vector2(16, y + 6)
-		icon_lbl.size     = Vector2(28, 28)
+		icon_lbl.add_theme_font_size_override("font_size", 16)
+		icon_lbl.position = Vector2(16, y + 4)
+		icon_lbl.size     = Vector2(26, 26)
 		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_stats_card.add_child(icon_lbl)
+		panel.add_child(icon_lbl)
 
 		var lbl := Label.new()
 		lbl.text = str(data["label"])
-		lbl.add_theme_font_size_override("font_size", 11)
-		lbl.add_theme_color_override("font_color", Color(0.65, 0.78, 1.0, 0.6))
-		lbl.position = Vector2(52, y + 4)
-		lbl.size     = Vector2(200, 18)
+		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.add_theme_color_override("font_color", Color(0.65, 0.78, 1.0, 0.55))
+		lbl.position = Vector2(50, y + 2)
+		lbl.size     = Vector2(220, 16)
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_stats_card.add_child(lbl)
+		panel.add_child(lbl)
 
 		var val_lbl := Label.new()
 		val_lbl.text = str(data["value"])
-		val_lbl.add_theme_font_size_override("font_size", 15)
+		val_lbl.add_theme_font_size_override("font_size", 14)
 		val_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
-		val_lbl.position = Vector2(52, y + 22)
-		val_lbl.size     = Vector2(280, 22)
+		val_lbl.position = Vector2(50, y + 18)
+		val_lbl.size     = Vector2(360, 20)
 		val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_stats_card.add_child(val_lbl)
+		panel.add_child(val_lbl)
 
-		if i < STATS.size() - 1:
-			var div := ColorRect.new()
-			div.color    = Color(1, 1, 1, 0.05)
-			div.position = Vector2(12, y + 46)
-			div.size     = Vector2(346, 1)
-			div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			_stats_card.add_child(div)
+		y += 48.0
 
-		y += 56.0
-
-func _toggle_stats() -> void:
-	if _stats_tween and _stats_tween.is_running():
-		_stats_tween.kill()
-	_stats_open = not _stats_open
-	var target_x: float = 388.0 if _stats_open else 1160.0
-	if _stats_open:
-		_stats_card.visible = true
-	_stats_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	_stats_tween.tween_property(_stats_card, "position:x", target_x, 0.22)
-	if not _stats_open:
-		_stats_tween.finished.connect(func(): _stats_card.visible = false, CONNECT_ONE_SHOT)
+	# Click dim to close
+	dim.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			dim.queue_free())
 
 # ── Showcase ─────────────────────────────────────────────────────
 func _build_showcase() -> void:
