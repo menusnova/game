@@ -499,15 +499,13 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	var y := 62.0
 
 	# ── Tier badge ────────────────────────────────────────────────────
-	var tier: int = compound.get("tier", compound.get("rarity", 1))
+	var tier: int = compound.get("tier", 1)
 	var t_col: Color
 	var t_label: String
 	match tier:
-		1: t_col = Color(0.55, 0.75, 0.55); t_label = "Common"
-		2: t_col = Color(0.45, 0.70, 1.00); t_label = "Uncommon"
-		3: t_col = Color(0.72, 0.50, 1.00); t_label = "Rare"
-		4: t_col = Color(1.00, 0.75, 0.20); t_label = "Epic"
-		_: t_col = Color(1.00, 0.42, 0.42); t_label = "Legendary"
+		1: t_col = Color(0.55, 0.78, 0.55); t_label = "Basic"
+		2: t_col = Color(0.45, 0.70, 1.00); t_label = "Advanced"
+		_: t_col = Color(1.00, 0.72, 0.20); t_label = "Master"
 
 	var tier_bg := ColorRect.new()
 	tier_bg.color = Color(t_col.r * 0.15, t_col.g * 0.15, t_col.b * 0.15, 0.80)
@@ -650,7 +648,10 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		_result_panel.add_child(r_hdr)
 
 		var r_vals := Label.new()
-		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [tier*50, tier*30, tier*10]
+		var exp_r := [50, 150, 300][tier - 1]
+		var gold_r := [30, 100, 250][tier - 1]
+		var cry_r  := [10,  30,  80][tier - 1]
+		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [exp_r, gold_r, cry_r]
 		r_vals.position = Vector2(24, y + 26)
 		r_vals.size = Vector2(W - 48, 22)
 		r_vals.add_theme_font_size_override("font_size", 13)
