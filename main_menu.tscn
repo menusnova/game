@@ -256,7 +256,7 @@ offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
-theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
 theme_override_font_sizes/font_size = 14
 text = "+"
 
@@ -296,7 +296,7 @@ offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
-theme_override_colors/font_color = Color(1, 0.82, 0.28, 1)
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
 theme_override_font_sizes/font_size = 14
 text = "+"
 
@@ -335,7 +335,7 @@ offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
-theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
 theme_override_font_sizes/font_size = 14
 text = "+"
 
@@ -374,7 +374,7 @@ offset_left = 100.0
 offset_top = 8.0
 offset_right = 114.0
 offset_bottom = 28.0
-theme_override_colors/font_color = Color(0.25, 1, 0.55, 1)
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
 theme_override_font_sizes/font_size = 14
 text = "+"
 
