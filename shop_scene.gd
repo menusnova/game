@@ -159,7 +159,8 @@ func _build_topbar() -> void:
 	_wallet_row.alignment = BoxContainer.ALIGNMENT_END
 	add_child(_wallet_row)
 	_rebuild_wallet()
-	CurrencyManager.currency_changed.connect(_rebuild_wallet)
+	if not CurrencyManager.currency_changed.is_connected(_rebuild_wallet):
+		CurrencyManager.currency_changed.connect(_rebuild_wallet)
 
 # ── Horizontal tab bar ────────────────────────────────────────────
 func _build_tabbar() -> void:

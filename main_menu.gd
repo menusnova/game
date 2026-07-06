@@ -50,7 +50,8 @@ func _ready() -> void:
 	_setup_navbar()
 	_setup_banner_carousel()
 	_refresh_hud()
-	CurrencyManager.currency_changed.connect(_refresh_hud)
+	if not CurrencyManager.currency_changed.is_connected(_refresh_hud):
+		CurrencyManager.currency_changed.connect(_refresh_hud)
 
 func _load_icon_textures() -> void:
 	var map: Dictionary = {
