@@ -51,7 +51,7 @@ func _ready() -> void:
 		bg_texture = ImageTexture.create_from_image(img)
 	if _bg:
 		_bg.texture = bg_texture
-		_bg.stretch_mode = TextureRect.STRETCH_COVER
+		_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	if _char_l:
 		_char_l.texture = char_lyra
 	if _char_r:

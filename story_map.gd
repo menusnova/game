@@ -16,7 +16,7 @@ func _build_ui() -> void:
 		var bg := TextureRect.new()
 		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		bg.texture = bg_tex
-		bg.stretch_mode = TextureRect.STRETCH_COVER
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(bg)
 		bg_loaded = true
