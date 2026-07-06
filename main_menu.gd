@@ -480,7 +480,7 @@ func _setup_banner_carousel() -> void:
 		var acc: Color = d["accent"]
 
 		var card := Panel.new()
-		card.position = Vector2(i * BW, 0)
+		card.position = Vector2(-i * BW, 0)
 		card.size     = Vector2(BW, BH)
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var sb := StyleBoxFlat.new()
@@ -581,7 +581,7 @@ func _setup_banner_carousel() -> void:
 	loop_tween.tween_callback(func():
 		if not is_instance_valid(track): return
 		_banner_idx = (_banner_idx + 1) % BANNERS.size()
-		var target_x := -_banner_idx * BW
+		var target_x := _banner_idx * BW
 		var slide := track.create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 		slide.tween_property(track, "position:x", target_x, 0.45)
 		for j in dot_nodes.size():
