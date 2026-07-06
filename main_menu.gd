@@ -22,7 +22,14 @@ const CARDS := [
 	"EventBanner"
 ]
 
+func _on_toggle_char() -> void:
+	pass  # button kept in .tscn but hidden; stub prevents signal error
+
 func _ready() -> void:
+	# Hide legacy character-switcher button
+	var toggle: Control = get_node_or_null("ToggleBtn") as Control
+	if toggle: toggle.visible = false
+
 	_setup_ambient_fx()
 	var _adv: Control = get_node_or_null("AdventureCard") as Control
 	if _adv: _adv.gui_input.connect(_on_adv_input)
