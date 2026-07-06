@@ -10,28 +10,45 @@ const TAB_LABELS := {
 	"EVENT":     "ร้านกิจกรรม",
 }
 const SUB_CATS := {
-	"SUPPLIES":  ["ทั้งหมด", "คริสตัล", "EXP", "วัสดุอัปสกิล"],
+	"SUPPLIES":  ["ทั้งหมด", "พลังงาน", "คริสตัล", "EXP", "วัสดุอัปสกิล"],
 	"CHARACTER": ["ทั้งหมด", "5★", "4★"],
 	"EVENT":     ["ทั้งหมด", "ตัวละคร", "วัสดุ"],
 }
 const ITEMS := {
 	"SUPPLIES": [
-		{"id":"s1","name":"เพชรฟรี ×60",      "icon":"◈","rarity":4,"sub":"คริสตัล",
-		 "desc":"เพชรฟรีสำหรับสุ่มกาชา",   "cost":0,    "currency":"gold","stock":-1},
-		{"id":"s2","name":"เงิน ×10,000",      "icon":"◎","rarity":3,"sub":"EXP",
-		 "desc":"เงินสำหรับอัปเกรด",        "cost":200,  "currency":"gems","stock":-1},
-		{"id":"s3","name":"EXP Card (เล็ก)",   "icon":"▲","rarity":2,"sub":"EXP",
-		 "desc":"เพิ่ม EXP 1,000",           "cost":5000, "currency":"gold","stock":-1},
-		{"id":"s4","name":"EXP Card (กลาง)",   "icon":"▲","rarity":3,"sub":"EXP",
-		 "desc":"เพิ่ม EXP 5,000",           "cost":20000,"currency":"gold","stock":-1},
-		{"id":"s5","name":"วัสดุอัปสกิล I",   "icon":"✦","rarity":3,"sub":"วัสดุอัปสกิล",
-		 "desc":"อัปสกิลระดับ 2–4",         "cost":3000, "currency":"gold","stock":-1},
-		{"id":"s6","name":"วัสดุอัปสกิล II",  "icon":"✦","rarity":4,"sub":"วัสดุอัปสกิล",
-		 "desc":"อัปสกิลระดับ 5–7",         "cost":8000, "currency":"gold","stock":-1},
-		{"id":"s7","name":"Compound Catalyst", "icon":"⬡","rarity":5,"sub":"วัสดุอัปสกิล",
-		 "desc":"วัสดุ Elite Promotion",     "cost":30000,"currency":"gold","stock":-1},
-		{"id":"s8","name":"ใบอนุญาตสุ่ม",     "icon":"⊛","rarity":5,"sub":"คริสตัล",
-		 "desc":"สุ่มกาชาได้ 1 ครั้ง",     "cost":150,  "currency":"gems","stock":5},
+		# ── พลังงาน ──────────────────────────────────────────
+		{"id":"e_s","name":"ก้อนพลังงาน S",    "icon":"⚡","rarity":2,"sub":"พลังงาน",
+		 "desc":"เติมพลังงาน +60",             "cost":3000, "currency":"gold","stock":-1,
+		 "effect":"energy:60"},
+		{"id":"e_m","name":"ก้อนพลังงาน M",    "icon":"⚡","rarity":3,"sub":"พลังงาน",
+		 "desc":"เติมพลังงาน +120",            "cost":8000, "currency":"gold","stock":-1,
+		 "effect":"energy:120"},
+		{"id":"e_l","name":"ก้อนพลังงาน L",    "icon":"⚡","rarity":4,"sub":"พลังงาน",
+		 "desc":"เติมพลังงานเต็ม +240",        "cost":60,   "currency":"gems","stock":3,
+		 "effect":"energy:240"},
+		# ── คริสตัล / เม็ดสุ่ม ───────────────────────────────
+		{"id":"g_1","name":"เม็ดสุ่ม ×1",      "icon":"◈","rarity":3,"sub":"คริสตัล",
+		 "desc":"คริสตัลฟรี +150 (สุ่มได้ 1 ครั้ง)", "cost":5000, "currency":"gold","stock":-1,
+		 "effect":"crystal:150"},
+		{"id":"g_10","name":"เม็ดสุ่ม ×10",    "icon":"◈","rarity":4,"sub":"คริสตัล",
+		 "desc":"คริสตัลฟรี +1,500 (สุ่มได้ 10 ครั้ง)","cost":45000,"currency":"gold","stock":-1,
+		 "effect":"crystal:1500"},
+		{"id":"s8","name":"ใบอนุญาตสุ่ม",      "icon":"⊛","rarity":5,"sub":"คริสตัล",
+		 "desc":"สุ่มกาชาได้ 1 ครั้ง",        "cost":150,  "currency":"gems","stock":5,
+		 "effect":"crystal:150"},
+		# ── EXP / วัสดุ ──────────────────────────────────────
+		{"id":"s2","name":"เงิน ×10,000",       "icon":"◎","rarity":3,"sub":"EXP",
+		 "desc":"เงินสำหรับอัปเกรด",           "cost":200,  "currency":"gems","stock":-1},
+		{"id":"s3","name":"EXP Card (เล็ก)",    "icon":"▲","rarity":2,"sub":"EXP",
+		 "desc":"เพิ่ม EXP 1,000",             "cost":5000, "currency":"gold","stock":-1},
+		{"id":"s4","name":"EXP Card (กลาง)",    "icon":"▲","rarity":3,"sub":"EXP",
+		 "desc":"เพิ่ม EXP 5,000",             "cost":20000,"currency":"gold","stock":-1},
+		{"id":"s5","name":"วัสดุอัปสกิล I",    "icon":"✦","rarity":3,"sub":"วัสดุอัปสกิล",
+		 "desc":"อัปสกิลระดับ 2–4",            "cost":3000, "currency":"gold","stock":-1},
+		{"id":"s6","name":"วัสดุอัปสกิล II",   "icon":"✦","rarity":4,"sub":"วัสดุอัปสกิล",
+		 "desc":"อัปสกิลระดับ 5–7",            "cost":8000, "currency":"gold","stock":-1},
+		{"id":"s7","name":"Compound Catalyst",  "icon":"⬡","rarity":5,"sub":"วัสดุอัปสกิล",
+		 "desc":"วัสดุ Elite Promotion",        "cost":30000,"currency":"gold","stock":-1},
 	],
 	"CHARACTER": [
 		{"id":"c1","name":"Lyra", "icon":"★","rarity":5,"sub":"5★",
@@ -648,11 +665,23 @@ func _execute_purchase() -> void:
 	var cost := int(item["cost"])
 	if cost > 0:
 		var cur := str(item.get("currency","gold"))
-		if cur == "gems": CurrencyManager.spend_gems(cost)
-		else:             CurrencyManager.spend_gold(cost)
+		var ok: bool = CurrencyManager.spend_gems(cost) if cur == "gems" else CurrencyManager.spend_gold(cost)
+		if not ok:
+			_selected_item = {}
+			return
 	var stock := int(item.get("stock",-1))
 	if stock > 0:
 		_stock[str(item["id"])] = int(_stock.get(str(item["id"]), stock)) - 1
+	# ── Apply item effect ──────────────────────────────────────────
+	var effect: String = str(item.get("effect", ""))
+	if effect != "":
+		var parts := effect.split(":")
+		if parts.size() == 2:
+			var amount: int = int(parts[1])
+			match parts[0]:
+				"energy":  CurrencyManager.add_energy(amount)
+				"crystal": CurrencyManager.add_free_crystal(amount)
+				"gold":    CurrencyManager.add_gold(amount)
 	DomainManager.add_points("shop")
 	_rebuild_wallet()
 	_rebuild_grid()
