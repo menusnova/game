@@ -10,6 +10,8 @@ const ALL_CHARACTERS: Array[Dictionary] = [
 
 # runtime ownership set (name → true)
 var _owned: Dictionary = {}
+# locked characters cannot be used as fodder
+var _locked: Dictionary = {}
 
 signal character_unlocked(char_name: String)
 
@@ -34,6 +36,15 @@ func get_roster() -> Array[Dictionary]:
 		entry["owned"] = _owned.has(c["name"])
 		result.append(entry)
 	return result
+
+func is_locked(char_name: String) -> bool:
+	return _locked.has(char_name)
+
+func toggle_lock(char_name: String) -> void:
+	if _locked.has(char_name):
+		_locked.erase(char_name)
+	else:
+		_locked[char_name] = true
 
 func _has_character(char_name: String) -> bool:
 	for c in ALL_CHARACTERS:

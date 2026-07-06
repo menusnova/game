@@ -771,12 +771,4 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	return sb
 
 func _go_back() -> void:
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0, 0, 0, 0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.25)
-	await t.finished
-	get_tree().change_scene_to_file(SC_ROSTER)
+	SceneTransition.fade_to(SC_ROSTER)

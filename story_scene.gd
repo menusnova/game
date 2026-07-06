@@ -105,9 +105,4 @@ func _unhandled_input(ev: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _finish() -> void:
-	# fade แล้วโหลด pre_battle เป็น overlay บน main_menu
-	if _fade:
-		var t := create_tween()
-		t.tween_property(_fade, "color:a", 1.0, 0.35)
-		await t.finished
-	get_tree().change_scene_to_file("res://pre_battle_standalone.tscn")
+	SceneTransition.fade_to("res://pre_battle_standalone.tscn")

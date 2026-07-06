@@ -40,9 +40,4 @@ func _run() -> void:
 
 		await get_tree().create_timer(HOLD_TIME).timeout
 
-		if _fade:
-			var to := create_tween()
-			to.tween_property(_fade, "color:a", 1.0, FADE_TIME)
-			await to.finished
-
-	get_tree().change_scene_to_file(SC_STORY)
+	SceneTransition.fade_to(SC_STORY)

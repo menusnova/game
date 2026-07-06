@@ -215,6 +215,25 @@ func _make_card(data: Dictionary) -> Control:
 	hint_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(hint_lbl)
 
+	# Lock toggle button (owned only)
+	if owned:
+		var lock_btn := Button.new()
+		lock_btn.text = "🔒" if CharacterManager.is_locked(name_str) else "🔓"
+		lock_btn.size     = Vector2(28, 28)
+		lock_btn.position = Vector2(140, 178)
+		lock_btn.add_theme_font_size_override("font_size", 13)
+		var lsb := StyleBoxFlat.new()
+		lsb.bg_color = Color(0, 0, 0, 0.45)
+		lsb.corner_radius_top_left = 6; lsb.corner_radius_top_right = 6
+		lsb.corner_radius_bottom_right = 6; lsb.corner_radius_bottom_left = 6
+		lock_btn.add_theme_stylebox_override("normal",  lsb)
+		lock_btn.add_theme_stylebox_override("hover",   lsb)
+		lock_btn.add_theme_stylebox_override("pressed", lsb)
+		lock_btn.pressed.connect(func():
+			CharacterManager.toggle_lock(name_str)
+			lock_btn.text = "🔒" if CharacterManager.is_locked(name_str) else "🔓")
+		card.add_child(lock_btn)
+
 	# Click → detail (owned only)
 	if owned and name_str != "???":
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -227,23 +246,7 @@ func _make_card(data: Dictionary) -> Control:
 	return card
 
 func _go_detail() -> void:
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0, 0, 0, 0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.22)
-	await t.finished
-	get_tree().change_scene_to_file(SC_DETAIL)
+	SceneTransition.fade_to(SC_DETAIL)
 
 func _go_back() -> void:
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0, 0, 0, 0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.25)
-	await t.finished
-	get_tree().change_scene_to_file(SC_MAIN)
+	SceneTransition.fade_to(SC_MAIN)

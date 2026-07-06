@@ -32,8 +32,4 @@ func _ready() -> void:
 
 func _on_start() -> void:
 	DomainManager.add_points("battle")
-	if _fade:
-		var t := create_tween()
-		t.tween_property(_fade, "color:a", 1.0, 0.28)
-		await t.finished
-	get_tree().change_scene_to_file(SC_BATTLE)
+	SceneTransition.fade_to(SC_BATTLE)

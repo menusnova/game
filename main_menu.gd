@@ -303,6 +303,12 @@ func _on_menu_click(ev: InputEvent, item: Control) -> void:
 			_quest_panel.open()
 		elif item.name == "MenuItem_Shop":
 			_goto(SC_SHOP)
+		elif item.name == "MenuItem_Event":
+			_show_coming_soon("กิจกรรม — กำลังจะมาเร็วๆนี้")
+		elif item.name == "MenuItem_Notice":
+			_show_coming_soon("ประกาศ — กำลังจะมาเร็วๆนี้")
+		elif item.name == "MenuItem_Pass":
+			_show_coming_soon("Battle Pass — กำลังจะมาเร็วๆนี้")
 
 # ── Cards (ripple + scale on tap) ────────────────────────────────
 func _setup_cards_fx() -> void:
@@ -617,13 +623,5 @@ func _goto(path: String) -> void:
 	_navigating = true
 	if DomainManager.domain_changed.is_connected(_on_domain_changed):
 		DomainManager.domain_changed.disconnect(_on_domain_changed)
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0, 0, 0, 0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.28)
-	await t.finished
-	get_tree().change_scene_to_file(path)
+	SceneTransition.fade_to(path)
 

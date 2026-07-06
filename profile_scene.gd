@@ -569,12 +569,4 @@ func _go_back() -> void:
 		DomainManager.domain_changed.disconnect(_on_domain_changed)
 	if PlayerData.profile_changed.is_connected(_refresh_from_player_data):
 		PlayerData.profile_changed.disconnect(_refresh_from_player_data)
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0,0,0,0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.25)
-	await t.finished
-	get_tree().change_scene_to_file(SC_MAIN)
+	SceneTransition.fade_to(SC_MAIN)

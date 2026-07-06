@@ -149,15 +149,7 @@ func _rebuild_list() -> void:
 		if scene_path != "" and ResourceLoader.exists(scene_path):
 			nav = func():
 				close()
-				var ov := ColorRect.new()
-				ov.color = Color(0, 0, 0, 0)
-				ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-				ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				get_tree().current_scene.add_child(ov)
-				var t := ov.create_tween()
-				t.tween_property(ov, "color:a", 1.0, 0.25)
-				await t.finished
-				get_tree().change_scene_to_file(scene_path)
+				SceneTransition.fade_to(scene_path)
 		if _current_tab == Tab.EXPEDITION:
 			_list.add_child(_ExpeditionRow.new(q, nav))
 		else:

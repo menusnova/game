@@ -66,6 +66,7 @@ var _banner_title:   Label       = null
 var _banner_sub:     Label       = null
 var _banner_art:     Label       = null
 var _banner_glow:    ColorRect   = null
+var _banner_card_node: Panel     = null
 var _warp_btns:      Array[Button] = []
 
 # .tscn overlay nodes (reveal animation)
@@ -191,6 +192,7 @@ func _build_banner_card() -> void:
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.z_index  = 2
 	add_child(card)
+	_banner_card_node = card
 
 	# Accent corner bar (top)
 	var top_bar := ColorRect.new()
@@ -326,9 +328,9 @@ func _on_warp_tab(idx: int) -> void:
 	if idx == _active_warp:
 		return
 	_active_warp = idx
-	# Rebuild banner card
-	var old := get_node_or_null("_BannerCard")
-	if old: old.queue_free()
+	if is_instance_valid(_banner_card_node):
+		_banner_card_node.free()
+		_banner_card_node = null
 	_build_banner_card()
 	# Re-style warp tab buttons
 	for i in _warp_btns.size():
@@ -707,12 +709,4 @@ func _shake(node: Control) -> void:
 
 func _go_back() -> void:
 	if _revealing: return
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color = Color(0, 0, 0, 0)
-	ov.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ov)
-	var t := create_tween()
-	t.tween_property(ov, "color:a", 1.0, 0.25)
-	await t.finished
-	get_tree().change_scene_to_file(SC_MAIN)
+	SceneTransition.fade_to(SC_MAIN)

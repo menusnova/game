@@ -37,6 +37,7 @@ CurrencyManager="*res://currency_manager.gd"
 CharacterManager="*res://character_manager.gd"
 PlayerData="*res://player_data.gd"
 ReactionDB="*res://reaction_database.gd"
+SceneTransition="*res://scene_transition.gd"
 
 [editor_plugins]
 
