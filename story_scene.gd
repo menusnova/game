@@ -3,7 +3,6 @@ extends Control
 const TYPEWRITER_SPEED := 0.032
 const TYPEWRITER_FAST  := 0.006   # speed-up mode
 
-# ── ใส่ภาพตรงนี้เมื่อมีไฟล์: เปลี่ยน null เป็น preload("res://image/xxx.png") ──
 var bg_texture:   Texture2D = null   # ภาพพื้นหลัง scene สนทนา
 var char_lyra:    Texture2D = null   # portrait Lyra (ซ้าย)
 var char_kael:    Texture2D = null   # portrait Kael (ขวา)
@@ -45,8 +44,14 @@ var _btn_fast:  Button = null
 @onready var _fade:       ColorRect     = $FadeOverlay
 
 func _ready() -> void:
+	# โหลด citypov เป็น background
+	var img := Image.new()
+	img.load_from_file("res://image/citypov.avif")
+	if not img.is_empty():
+		bg_texture = ImageTexture.create_from_image(img)
 	if _bg:
 		_bg.texture = bg_texture
+		_bg.stretch_mode = TextureRect.STRETCH_COVER
 	if _char_l:
 		_char_l.texture = char_lyra
 	if _char_r:

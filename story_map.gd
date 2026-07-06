@@ -7,12 +7,31 @@ func _ready() -> void:
 	_build_ui()
 
 func _build_ui() -> void:
-	# Background — ว่างไว้ให้ใส่เอง (ColorRect มืดเป็น fallback)
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.02, 0.03, 0.08, 1.0)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	# Background
+	var bg_img := Image.new()
+	var bg_loaded := false
+	bg_img.load_from_file("res://image/citypov.avif")
+	if not bg_img.is_empty():
+		var bg_tex := ImageTexture.create_from_image(bg_img)
+		var bg := TextureRect.new()
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.texture = bg_tex
+		bg.stretch_mode = TextureRect.STRETCH_COVER
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bg)
+		bg_loaded = true
+	if not bg_loaded:
+		var bg := ColorRect.new()
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.color = Color(0.02, 0.03, 0.08, 1.0)
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bg)
+	# Dark overlay ให้อ่าน UI ได้ชัด
+	var overlay := ColorRect.new()
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.color = Color(0.0, 0.0, 0.0, 0.52)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(overlay)
 
 	# Top bar
 	var bar := Panel.new()
