@@ -1005,7 +1005,7 @@ func _refresh_ui() -> void:
 	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
 	if _enemy_status_lbl:
-		var s := []
+		var s: Array[String] = []
 		if _enemy_poison > 0: s.append("☠ พิษ %d/เทิร์น" % _enemy_poison)
 		if _enemy_weak   > 0: s.append("💔 อ่อนแอ %d" % _enemy_weak)
 		_enemy_status_lbl.text = "  ".join(s)
