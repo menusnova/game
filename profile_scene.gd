@@ -95,10 +95,11 @@ func _refresh_from_player_data() -> void:
 	if _sig_lbl:    _sig_lbl.text   = PlayerData.signature
 	if _level_lbl:  _level_lbl.text = "Lv. %d" % PlayerData.level
 	if _uid_lbl:    _uid_lbl.text   = "UID: %s" % PlayerData.uid
+	var idx := clampi(PlayerData.avatar_idx, 0, AVATAR_ICONS.size() - 1)
 	if _avatar_label:
-		_avatar_label.text    = AVATAR_ICONS[PlayerData.avatar_idx]
+		_avatar_label.text    = AVATAR_ICONS[idx]
 	if _avatar_icon:
-		_avatar_icon.modulate = AVATAR_COLORS[PlayerData.avatar_idx]
+		_avatar_icon.modulate = AVATAR_COLORS[idx]
 
 # ── ⋮ dot button + dropdown ──────────────────────────────────────
 func _build_dot_menu() -> void:
