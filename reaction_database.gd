@@ -165,13 +165,96 @@ const COMPOUNDS: Dictionary = {
 	},
 }
 
+const REACTIONS3: Dictionary = {
+	"C+H+O":   "acetic_acid",
+	"Fe+O+S":  "iron_sulfate",
+	"C+Ca+O":  "calcium_carbonate_pure",
+	"Cu+O+S":  "copper_sulfate",
+	"H+N+O":   "nitric_acid",
+	"H+O+S":   "sulfuric_acid",
+	"K+N+O":   "potassium_nitrate",
+	"C+Na+O":  "sodium_carbonate",
+	"Cu+Fe+S": "chalcopyrite",
+}
+
+const COMPOUNDS3: Dictionary = {
+	"acetic_acid": {
+		"name": "Acetic Acid", "formula": "CH₃COOH",
+		"type": "Organic Acid", "state": "Liquid",
+		"description": "กรดอินทรีย์ที่พบในน้ำส้มสายชู มีกลิ่นฉุน ใช้แพร่หลายในอาหารและอุตสาหกรรม",
+		"real_use": "น้ำส้มสายชู ตัวทำละลาย ผลิตพลาสติก", "rarity": 4,
+	},
+	"iron_sulfate": {
+		"name": "Iron(II) Sulfate", "formula": "FeSO₄",
+		"type": "Inorganic Salt", "state": "Solid",
+		"description": "เกลือเหล็กสีเขียว ละลายน้ำได้ดี ใช้รักษาโรคโลหิตจาง",
+		"real_use": "ปุ๋ย ยารักษาโลหิตจาง หมึกเขียน", "rarity": 4,
+	},
+	"calcium_carbonate_pure": {
+		"name": "Calcium Carbonate (Pure)", "formula": "CaCO₃★",
+		"type": "Mineral Compound", "state": "Solid",
+		"description": "แคลเซียมคาร์บอเนตบริสุทธิ์ สังเคราะห์จาก 3 ธาตุ มีคุณภาพสูงกว่าปกติมาก",
+		"real_use": "ยาลดกรด แก้วคุณภาพสูง ปูนซีเมนต์พิเศษ", "rarity": 4,
+	},
+	"copper_sulfate": {
+		"name": "Copper(II) Sulfate", "formula": "CuSO₄",
+		"type": "Inorganic Salt", "state": "Solid",
+		"description": "คริสตัลสีน้ำเงินสดใส ใช้กันแพร่หลายในเกษตรและอุตสาหกรรมไฟฟ้า",
+		"real_use": "ยาฆ่าเชื้อรา ชุบโลหะไฟฟ้า วิเคราะห์โปรตีน", "rarity": 4,
+	},
+	"nitric_acid": {
+		"name": "Nitric Acid", "formula": "HNO₃",
+		"type": "Strong Acid", "state": "Liquid",
+		"description": "กรดแก่กัดกร่อนรุนแรง ทำปฏิกิริยากับโลหะหลายชนิด สีเหลืองจากการสลายตัว",
+		"real_use": "ผลิตปุ๋ยไนโตรเจน วัตถุระเบิด ชุบโลหะ", "rarity": 4,
+	},
+	"sulfuric_acid": {
+		"name": "Sulfuric Acid", "formula": "H₂SO₄",
+		"type": "Strong Acid", "state": "Liquid",
+		"description": "กรดแก่ที่สำคัญที่สุดในอุตสาหกรรม ดูดความชื้นสูง ทำปฏิกิริยารุนแรงกับสารอินทรีย์",
+		"real_use": "ผลิตปุ๋ย แบตเตอรี่กรด การกลั่นน้ำมัน", "rarity": 5,
+	},
+	"potassium_nitrate": {
+		"name": "Potassium Nitrate", "formula": "KNO₃",
+		"type": "Inorganic Salt", "state": "Solid",
+		"description": "ดินประสิว ส่วนผสมหลักของดินปืน สารออกซิไดเซอร์ทรงพลัง เผาไหม้ได้เองในอากาศ",
+		"real_use": "ดินปืน ดอกไม้ไฟ ปุ๋ย ถนอมอาหาร", "rarity": 5,
+	},
+	"sodium_carbonate": {
+		"name": "Sodium Carbonate", "formula": "Na₂CO₃",
+		"type": "Inorganic Salt", "state": "Solid",
+		"description": "โซดาแอช แอลคาไลน์แก่ ใช้ในอุตสาหกรรมแก้วและสิ่งทอมาหลายศตวรรษ",
+		"real_use": "ผลิตแก้ว สบู่ กระดาษ ฟอกผ้า", "rarity": 5,
+	},
+	"chalcopyrite": {
+		"name": "Chalcopyrite", "formula": "CuFeS₂",
+		"type": "Mineral Ore", "state": "Solid",
+		"description": "แร่ทองแดงที่สำคัญที่สุดในโลก ประกายทองแดง-เหลือง พบใน hydrothermal veins",
+		"real_use": "แหล่งทองแดงหลักของโลก วัสดุนำไฟฟ้า", "rarity": 5,
+	},
+}
+
 func get_reaction(sym1: String, sym2: String) -> String:
 	return REACTIONS.get(_reaction_key(sym1, sym2), "")
 
+func get_reaction3(sym1: String, sym2: String, sym3: String) -> String:
+	return REACTIONS3.get(_reaction_key3(sym1, sym2, sym3), "")
+
 func get_compound(key: String) -> Dictionary:
-	return COMPOUNDS.get(key, {})
+	var c := COMPOUNDS.get(key, {})
+	if c.is_empty():
+		c = COMPOUNDS3.get(key, {})
+	return c
+
+func get_total_compounds() -> int:
+	return COMPOUNDS.size() + COMPOUNDS3.size()
 
 func _reaction_key(a: String, b: String) -> String:
 	var arr := [a, b]
+	arr.sort()
+	return "+".join(arr)
+
+func _reaction_key3(a: String, b: String, c: String) -> String:
+	var arr := [a, b, c]
 	arr.sort()
 	return "+".join(arr)
