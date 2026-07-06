@@ -28,10 +28,10 @@ const ITEMS := {
 		 "effect":"energy:240"},
 		# ── คริสตัล / เม็ดสุ่ม ───────────────────────────────
 		{"id":"g_1","name":"เม็ดสุ่ม ×1",      "icon":"◈","rarity":3,"sub":"คริสตัล",
-		 "desc":"คริสตัลฟรี +150 (สุ่มได้ 1 ครั้ง)", "cost":5000, "currency":"gold","stock":-1,
+		 "desc":"คริสตัลฟรี +150 (สุ่มได้ 1 ครั้ง)", "cost":150,  "currency":"gems","stock":-1,
 		 "effect":"crystal:150"},
 		{"id":"g_10","name":"เม็ดสุ่ม ×10",    "icon":"◈","rarity":4,"sub":"คริสตัล",
-		 "desc":"คริสตัลฟรี +1,500 (สุ่มได้ 10 ครั้ง)","cost":45000,"currency":"gold","stock":-1,
+		 "desc":"คริสตัลฟรี +1,500 (สุ่มได้ 10 ครั้ง)","cost":1500,"currency":"gems","stock":-1,
 		 "effect":"crystal:1500"},
 		{"id":"s8","name":"ใบอนุญาตสุ่ม",      "icon":"⊛","rarity":5,"sub":"คริสตัล",
 		 "desc":"สุ่มกาชาได้ 1 ครั้ง",        "cost":150,  "currency":"gems","stock":5,
