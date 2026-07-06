@@ -123,7 +123,10 @@ func _ready() -> void:
 const W := 1152.0
 const H := 648.0
 const LEFT_W  := 210.0   # left warp-type panel
-const BOT_H   := 88.0    # bottom action bar
+const BOT_H   := 64.0    # bottom info bar (slim)
+const TAB_H   := 128.0   # each warp tab height
+const TAB_GAP := 12.0    # gap between tabs
+const TAB_MX  := 10.0    # horizontal margin inside left panel
 
 func _build_hsr_ui() -> void:
 	# Starfield background
@@ -135,16 +138,8 @@ func _build_hsr_ui() -> void:
 	add_child(bg)
 	_add_stars(bg)
 
-	# Subtle gradient vignette
-	var vign := ColorRect.new()
-	vign.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	vign.color = Color(0, 0, 0, 0.0)
-	vign.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vign.z_index = -9
-	add_child(vign)
-
 	# ── Left selector panel ──
-	var left_sb := _sb(Color(0.03, 0.05, 0.13, 0.82), Color(1,1,1, 0.06), 0, 1)
+	var left_sb := _sb(Color(0.02, 0.04, 0.11, 0.88), Color(1,1,1, 0.07), 0, 1)
 	var left_panel := Panel.new()
 	left_panel.size     = Vector2(LEFT_W, H - BOT_H)
 	left_panel.position = Vector2.ZERO
@@ -153,30 +148,31 @@ func _build_hsr_ui() -> void:
 	left_panel.z_index = 3
 	add_child(left_panel)
 
-	# "WARP" header inside left panel
+	# "WARP" header
 	var warp_hdr := Label.new()
 	warp_hdr.text = "WARP"
-	warp_hdr.add_theme_font_size_override("font_size", 22)
-	warp_hdr.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.9))
-	warp_hdr.size     = Vector2(LEFT_W, 36)
-	warp_hdr.position = Vector2(0, 18)
+	warp_hdr.add_theme_font_size_override("font_size", 20)
+	warp_hdr.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.85))
+	warp_hdr.size     = Vector2(LEFT_W, 34)
+	warp_hdr.position = Vector2(0, 14)
 	warp_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	warp_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	left_panel.add_child(warp_hdr)
 
 	var sep_hdr := ColorRect.new()
-	sep_hdr.size     = Vector2(LEFT_W - 24, 1)
-	sep_hdr.position = Vector2(12, 58)
-	sep_hdr.color    = Color(0.37, 0.62, 1.0, 0.18)
+	sep_hdr.size     = Vector2(LEFT_W - 20, 1)
+	sep_hdr.position = Vector2(10, 52)
+	sep_hdr.color    = Color(0.37, 0.62, 1.0, 0.15)
 	sep_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	left_panel.add_child(sep_hdr)
 
-	# Warp type buttons
+	# Warp tabs — spaced with TAB_GAP between each, TAB_MX side margin
+	var tab_start_y := 62.0
 	for i in WARP_TYPES.size():
 		var d: Dictionary = WARP_TYPES[i]
 		var btn := _make_warp_tab(d, i == _active_warp)
-		btn.position = Vector2(0, 68 + i * 130)
-		btn.size     = Vector2(LEFT_W, 120)
+		btn.position = Vector2(TAB_MX, tab_start_y + i * (TAB_H + TAB_GAP))
+		btn.size     = Vector2(LEFT_W - TAB_MX * 2, TAB_H)
 		btn.pressed.connect(_on_warp_tab.bind(i))
 		left_panel.add_child(btn)
 		_warp_btns.append(btn)
@@ -184,7 +180,10 @@ func _build_hsr_ui() -> void:
 	# ── Main banner area (floating card) ──
 	_build_banner_card()
 
-	# ── Bottom bar ──
+	# ── Floating pull buttons (above bottom bar) ──
+	_build_pull_buttons()
+
+	# ── Bottom bar (slim — gem + pity + back only) ──
 	_build_bottom_bar()
 
 	# Ensure result overlay on top
@@ -270,6 +269,28 @@ func _build_banner_card() -> void:
 	_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_sub)
 
+func _build_pull_buttons() -> void:
+	var btn_w := 210.0
+	var btn_h := 56.0
+	var margin := 16.0
+	# Floating above bottom bar, anchored to right side of banner area
+	var by := H - BOT_H - btn_h - 16
+	var bx := W - (btn_w * 2 + 12 + margin)
+
+	_new_pull1 = _pull_btn("Warp  ×1\n150 💠", Color(0.10, 0.20, 0.52, 0.92), Color(0.18, 0.30, 0.65, 0.95))
+	_new_pull1.size     = Vector2(btn_w, btn_h)
+	_new_pull1.position = Vector2(bx, by)
+	_new_pull1.z_index  = 5
+	_new_pull1.pressed.connect(func(): _do_pull(1))
+	add_child(_new_pull1)
+
+	_new_pull10 = _pull_btn("Warp  ×10\n1,500 💠", Color(0.28, 0.52, 0.95, 0.92), Color(0.38, 0.62, 1.0, 0.95))
+	_new_pull10.size     = Vector2(btn_w, btn_h)
+	_new_pull10.position = Vector2(bx + btn_w + 12, by)
+	_new_pull10.z_index  = 5
+	_new_pull10.pressed.connect(func(): _do_pull(10))
+	add_child(_new_pull10)
+
 func _build_bottom_bar() -> void:
 	var bar_sb := _sb(Color(0.03, 0.05, 0.12, 0.92), Color(1,1,1, 0.07), 0, 1)
 	var bar := Panel.new()
@@ -334,25 +355,9 @@ func _build_bottom_bar() -> void:
 	_new_pity_bar.value         = 0
 	_new_pity_bar.show_percentage = false
 	_new_pity_bar.size     = Vector2(160, 5)
-	_new_pity_bar.position = Vector2(info_x, 62)
+	_new_pity_bar.position = Vector2(info_x, 56)
 	bar.add_child(_new_pity_bar)
 
-	# Pull buttons (right side)
-	var btn_w := 220.0
-	var btn_h := 52.0
-	var bx    := W - (btn_w * 2 + 12 + 16)
-
-	_new_pull1 = _pull_btn("Warp  ×1\n150 คริสตัล", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
-	_new_pull1.size     = Vector2(btn_w, btn_h)
-	_new_pull1.position = Vector2(bx, (BOT_H - btn_h) * 0.5)
-	_new_pull1.pressed.connect(func(): _do_pull(1))
-	bar.add_child(_new_pull1)
-
-	_new_pull10 = _pull_btn("Warp  ×10\n1,500 คริสตัล", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
-	_new_pull10.size     = Vector2(btn_w, btn_h)
-	_new_pull10.position = Vector2(bx + btn_w + 12, (BOT_H - btn_h) * 0.5)
-	_new_pull10.pressed.connect(func(): _do_pull(10))
-	bar.add_child(_new_pull10)
 
 # ── Warp tab selection ─────────────────────────────────────────────
 func _on_warp_tab(idx: int) -> void:
