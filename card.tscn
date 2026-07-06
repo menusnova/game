@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ccwcxip2vqvnb"]
 
 [ext_resource type="Script" uid="uid://bdcjbbc36aj2f" path="res://card.gd" id="1_rjlel"]
-[ext_resource type="Texture2D" uid="uid://cyk7wkmb8s2t1" path="res://OIP.webp" id="2_q5obu"]
+[ext_resource type="Texture2D" uid="uid://cyk7wkmb8s2t1" path="res://image/1.webp" id="2_q5obu"]
 
 [node name="Card" type="Panel" unique_id=109172828]
 custom_minimum_size = Vector2(100, 150)

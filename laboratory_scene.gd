@@ -1,7 +1,7 @@
 extends Control
 
 const SC_MAIN := "res://main_menu.tscn"
-const TOTAL_COMPOUNDS := 29  # 20 tier-1/2 + 9 tier-3
+const TOTAL_COMPOUNDS := 29  # 13 tier-1 + 12 tier-2 + 4 tier-3
 
 var _slot_a: String = ""
 var _slot_b: String = ""
