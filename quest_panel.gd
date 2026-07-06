@@ -185,19 +185,22 @@ class _QuestRow extends Control:
 		var reward_str: String = str(q.get("reward", ""))
 		var reward_n: int = int(q.get("reward_n", 0))
 		if reward_str == "crystal" and reward_n > 0:
-			var tex := load("res://image/crystal_gem.png") as Texture2D
+			var tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
+			var icon_end_x := 20.0
 			if tex:
 				var ico := TextureRect.new()
 				ico.texture = tex
 				ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				ico.size = Vector2(18, 18)
-				ico.position = Vector2(20, 44)
+				ico.custom_minimum_size = Vector2(16, 16)
+				ico.size = Vector2(16, 16)
+				ico.position = Vector2(20, 47)
 				add_child(ico)
+				icon_end_x = 40.0
 			var reward_lbl := Label.new()
 			reward_lbl.text = "×%d" % reward_n
 			reward_lbl.add_theme_font_size_override("font_size", 11)
 			reward_lbl.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 0.95))
-			reward_lbl.position = Vector2(42, 44)
+			reward_lbl.position = Vector2(icon_end_x, 44)
 			add_child(reward_lbl)
 		else:
 			var reward_lbl := Label.new()

@@ -24,3 +24,7 @@ func fade_to(path: String, duration: float = 0.28) -> void:
 	t.tween_property(_overlay, "color:a", 1.0, duration).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 	await t.finished
 	get_tree().change_scene_to_file(path)
+	await get_tree().process_frame
+	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var t2 := create_tween()
+	t2.tween_property(_overlay, "color:a", 0.0, 0.32).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
