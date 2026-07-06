@@ -1,8 +1,8 @@
 extends Control
 
 const SC_MAIN := "res://main_menu.tscn"
-const PULL_COST_1  := 160
-const PULL_COST_10 := 1600
+const PULL_COST_1  := 150
+const PULL_COST_10 := 1500
 const PITY_HARD    := 90
 const PITY_SOFT    := 75
 const RATE_5 := 0.016
@@ -342,13 +342,13 @@ func _build_bottom_bar() -> void:
 	var btn_h := 52.0
 	var bx    := W - (btn_w * 2 + 12 + 16)
 
-	_new_pull1 = _pull_btn("Warp  ×1\n160 คริสตัล", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
+	_new_pull1 = _pull_btn("Warp  ×1\n150 คริสตัล", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
 	_new_pull1.size     = Vector2(btn_w, btn_h)
 	_new_pull1.position = Vector2(bx, (BOT_H - btn_h) * 0.5)
 	_new_pull1.pressed.connect(func(): _do_pull(1))
 	bar.add_child(_new_pull1)
 
-	_new_pull10 = _pull_btn("Warp  ×10\n1,600 คริสตัล", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
+	_new_pull10 = _pull_btn("Warp  ×10\n1,500 คริสตัล", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
 	_new_pull10.size     = Vector2(btn_w, btn_h)
 	_new_pull10.position = Vector2(bx + btn_w + 12, (BOT_H - btn_h) * 0.5)
 	_new_pull10.pressed.connect(func(): _do_pull(10))

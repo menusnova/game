@@ -31,7 +31,7 @@ const ITEMS := {
 		{"id":"s7","name":"Compound Catalyst", "icon":"⬡","rarity":5,"sub":"วัสดุอัปสกิล",
 		 "desc":"วัสดุ Elite Promotion",     "cost":30000,"currency":"gold","stock":-1},
 		{"id":"s8","name":"ใบอนุญาตสุ่ม",     "icon":"⊛","rarity":5,"sub":"คริสตัล",
-		 "desc":"สุ่มกาชาได้ 1 ครั้ง",     "cost":160,  "currency":"gems","stock":5},
+		 "desc":"สุ่มกาชาได้ 1 ครั้ง",     "cost":150,  "currency":"gems","stock":5},
 	],
 	"CHARACTER": [
 		{"id":"c1","name":"Lyra", "icon":"★","rarity":5,"sub":"5★",
