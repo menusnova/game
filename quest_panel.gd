@@ -33,7 +33,7 @@ const _GO_SCENES := {
 	"battle":    "res://battle_scene.tscn",
 	"gacha":     "res://gacha_scene.tscn",
 	"adventure": "res://transition_scene.tscn",
-	"alchemist": "res://alchemist_scene.tscn",
+	"alchemist": "res://laboratory_scene.tscn",
 }
 
 @onready var _sheet:        Panel         = $Sheet

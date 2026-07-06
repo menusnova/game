@@ -1563,13 +1563,13 @@ theme_override_font_sizes/font_size = 8
 text = "Alchemist"
 horizontal_alignment = 1
 
-[node name="Nav2_Arcanum" type="Control" parent="NavBar" unique_id=651659044]
+[node name="Nav2_Lab" type="Control" parent="NavBar" unique_id=651659044]
 anchors_preset = 0
 offset_left = 80.0
 offset_right = 160.0
 offset_bottom = 52.0
 
-[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Arcanum" unique_id=850425920]
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Lab" unique_id=850425920]
 visible = false
 layout_mode = 0
 offset_left = 44.0
@@ -1579,7 +1579,7 @@ offset_bottom = 13.0
 mouse_filter = 2
 color = Color(1, 0.3, 0.3, 1)
 
-[node name="Icon" type="TextureRect" parent="NavBar/Nav2_Arcanum" unique_id=1254535148]
+[node name="Icon" type="TextureRect" parent="NavBar/Nav2_Lab" unique_id=1254535148]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 3.0
@@ -1589,7 +1589,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Text" type="Label" parent="NavBar/Nav2_Arcanum" unique_id=1419121623]
+[node name="Text" type="Label" parent="NavBar/Nav2_Lab" unique_id=1419121623]
 layout_mode = 0
 offset_top = 36.0
 offset_right = 80.0

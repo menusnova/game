@@ -170,7 +170,7 @@ func _setup_navbar() -> void:
 		)
 		_attach_hover_bounce(gacha_node)
 
-	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum") as Control
+	var char_node: Control = get_node_or_null("NavBar/Nav2_Lab") as Control
 	if char_node:
 		char_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
