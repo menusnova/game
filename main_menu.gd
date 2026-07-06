@@ -87,10 +87,10 @@ func _fmt_n(n: int) -> String:
 
 func _refresh_hud() -> void:
 	var pairs := [
-		["CurrBox1/CurrVal1", _fmt_n(CurrencyManager.gold),         Color(1.00, 0.88, 0.40, 1.0)],
-		["CurrBox2/CurrVal2", _fmt_n(CurrencyManager.free_crystal),  Color(0.76, 0.52, 0.96, 1.0)],
+		["CurrBox1/CurrVal1", _fmt_n(CurrencyManager.gold),         Color(0.65, 0.65, 0.70, 1.0)],
+		["CurrBox2/CurrVal2", _fmt_n(CurrencyManager.free_crystal),  Color(0.65, 0.65, 0.70, 1.0)],
 		["CurrBox3/CurrVal3", _fmt_n(CurrencyManager.paid_crystal),  Color(0.65, 0.65, 0.70, 1.0)],
-		["CurrBox4/CurrVal4", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY], Color(0.45, 0.90, 1.00, 1.0)],
+		["CurrBox4/CurrVal4", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY], Color(0.65, 0.65, 0.70, 1.0)],
 	]
 	for pair in pairs:
 		var lbl := get_node_or_null(pair[0]) as Label
