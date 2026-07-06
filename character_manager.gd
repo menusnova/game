@@ -32,7 +32,7 @@ func unlock(char_name: String) -> void:
 func get_roster() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for c in ALL_CHARACTERS:
-		var entry := c.duplicate()
+		var entry: Dictionary = c.duplicate()
 		entry["owned"] = _owned.has(c["name"])
 		result.append(entry)
 	return result

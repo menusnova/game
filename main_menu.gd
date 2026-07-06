@@ -13,12 +13,12 @@ var _navigating := false
 var _banner_idx := 0
 
 
-const MENU_ITEMS := [
+const MENU_ITEMS: Array[String] = [
 	"MenuItem_Notice", "MenuItem_Missions", "MenuItem_Event",
 	"MenuItem_Pass", "MenuItem_Shop"
 ]
 
-const CARDS := [
+const CARDS: Array[String] = [
 	"AdventureCard", "ArenaCard",
 	"SimulationCard", "ExpeditionCard",
 	"EventBanner"
@@ -269,7 +269,7 @@ func _is_locked(node: Control) -> bool:
 const COMING_SOON_NODES: Array = ["ArenaCard"]
 
 func _setup_locked_nodes() -> void:
-	var all_names := MENU_ITEMS + CARDS + [
+	var all_names: Array[String] = MENU_ITEMS + CARDS + [
 		"NavBar/Nav3_Inventory",
 		"NavBar/Nav5_Guild",
 	]

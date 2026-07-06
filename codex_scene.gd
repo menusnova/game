@@ -345,12 +345,12 @@ func _build_achievement_tab() -> void:
 	vbox.add_theme_constant_override("separation", 0)
 	_content.add_child(vbox)
 
-	var done_count := ACHIEVEMENTS.filter(func(a): return int(a["current"]) >= int(a["total"])).size()
+	var done_count: int = ACHIEVEMENTS.filter(func(a): return int(a["current"]) >= int(a["total"])).size()
 	vbox.add_child(_section_label("ความสำเร็จ  (%d/%d)" % [done_count, ACHIEVEMENTS.size()]))
 
 	var categories := CAT_LABELS.keys()
 	for cat in categories:
-		var cat_items := ACHIEVEMENTS.filter(func(a): return a["cat"] == cat)
+		var cat_items: Array = ACHIEVEMENTS.filter(func(a): return a["cat"] == cat)
 		if cat_items.is_empty():
 			continue
 

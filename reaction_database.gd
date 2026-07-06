@@ -250,11 +250,11 @@ func get_total_compounds() -> int:
 	return COMPOUNDS.size() + COMPOUNDS3.size()
 
 func _reaction_key(a: String, b: String) -> String:
-	var arr := [a, b]
+	var arr: Array[String] = [a, b]
 	arr.sort()
 	return "+".join(arr)
 
 func _reaction_key3(a: String, b: String, c: String) -> String:
-	var arr := [a, b, c]
+	var arr: Array[String] = [a, b, c]
 	arr.sort()
 	return "+".join(arr)

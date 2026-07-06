@@ -174,7 +174,7 @@ func _build_tabbar() -> void:
 
 	var x := 52.0
 	for i in TABS.size():
-		var tab := TABS[i]
+		var tab: String = TABS[i]
 		var btn := Button.new()
 		btn.text = TAB_LABELS[tab]
 		btn.size = Vector2(148, TAB_H)
@@ -283,7 +283,7 @@ func _switch_tab(tab: String) -> void:
 
 	# update tab button styles
 	for i in _tab_btns.size():
-		var active := TABS[i] == tab
+		var active: bool = TABS[i] == tab
 		_tab_btns[i].add_theme_color_override("font_color",
 			C_TXT if active else C_DIM)
 		_tab_inds[i].color = Color(C_ACT.r, C_ACT.g, C_ACT.b, 1.0 if active else 0.0)

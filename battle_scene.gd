@@ -717,9 +717,9 @@ func _handle_element_select(id: String) -> void:
 		_try_reaction(_selected_elem, id)
 
 func _try_reaction(a: String, b: String) -> void:
-	var pair := [a, b]
+	var pair: Array[String] = [a, b]
 	pair.sort()
-	var key: String = str(pair[0]) + "+" + str(pair[1])
+	var key: String = pair[0] + "+" + pair[1]
 
 	_selected_elem = ""
 	_hide_react_hint()

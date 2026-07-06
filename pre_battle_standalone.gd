@@ -118,7 +118,7 @@ func _refresh_team_display() -> void:
 		c.queue_free()
 	_char_slots.clear()
 
-	var chars := _selected_chars.filter(func(n): return n != "")
+	var chars: Array = _selected_chars.filter(func(n): return n != "")
 	var count := chars.size()
 	if count == 0:
 		return
@@ -129,7 +129,7 @@ func _refresh_team_display() -> void:
 	var center_y := SH / 2.0 - 20.0
 
 	for i in range(count):
-		var ch := chars[i]
+		var ch: String = chars[i]
 		var cx := start_x + i * (slot_w + 16.0)
 
 		var card := Panel.new()
@@ -156,7 +156,7 @@ func _refresh_team_display() -> void:
 		card.add_child(name_lbl)
 
 		# element badge
-		var elem := _selected_elems[0] if _selected_elems.size() > 0 and _selected_elems[0] != "" else ""
+		var elem: String = _selected_elems[0] if _selected_elems.size() > 0 and _selected_elems[0] != "" else ""
 		if elem != "" and i == 0:
 			var eb := Panel.new()
 			eb.position = Vector2(slot_w - 28, 6)
@@ -191,7 +191,7 @@ func _refresh_enemy_panel() -> void:
 	for c in _enemy_panel.get_children():
 		c.queue_free()
 
-	var enemies := STAGE_ENEMIES[_current_stage]
+	var enemies: Array = STAGE_ENEMIES[_current_stage]
 	var panel_h := 30.0 + enemies.size() * 72.0 + 12.0
 
 	var bg := Panel.new()
@@ -220,7 +220,7 @@ func _refresh_enemy_panel() -> void:
 		10, Color(1.0, 0.7, 0.3, 0.8), bg, Vector2(50, 5))
 
 	for i in range(enemies.size()):
-		var en := enemies[i]
+		var en: Dictionary = enemies[i]
 		var ey := 28.0 + i * 74.0
 
 		var chip := Panel.new()
@@ -294,7 +294,7 @@ func _toggle_enemy_expand() -> void:
 
 	var ey := 56.0
 	for i in range(all_enemies.size()):
-		var en := all_enemies[i]
+		var en: Dictionary = all_enemies[i]
 		var stage_of := 0 if i < STAGE_ENEMIES[0].size() else 1
 
 		var chip := Panel.new()
