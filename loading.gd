@@ -101,19 +101,19 @@ func _process(delta: float) -> void:
 	var fw    : float = BAR_W * progress
 	var tip_x : float = BAR_X + fw
 	var bar_cy: float = BAR_Y + BAR_H * 0.5
-	var show  : float = clampf(progress * 5.0, 0.0, 1.0)
+	var show_alpha: float = clampf(progress * 5.0, 0.0, 1.0)
 
 	# Plasma ring orb ที่ปลายบาร์
 	plasma_ring.position   = Vector2(tip_x - RING_SIZE * 0.5, bar_cy - RING_SIZE * 0.5)
 	var gs := glow_core.size
 	glow_core.position     = Vector2(tip_x - gs.x * 0.5, bar_cy - gs.y * 0.5)
-	plasma_ring.modulate.a = show
-	glow_core.modulate.a   = show
+	plasma_ring.modulate.a = show_alpha
+	glow_core.modulate.a   = show_alpha
 
 	var ring_mat := plasma_ring.material as ShaderMaterial
 	if ring_mat:
 		ring_mat.set_shader_parameter("time", shader_time)
-		ring_mat.set_shader_parameter("show", show)
+		ring_mat.set_shader_parameter("show", show_alpha)
 
 	_move_particles(tip_x)
 

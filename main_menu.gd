@@ -10,6 +10,7 @@ const SC_LAB        := "res://laboratory_scene.tscn"
 const SC_ROSTER     := "res://character_roster.tscn"
 var _quest_panel: CanvasLayer
 var _navigating := false
+var _banner_idx := 0
 
 
 const MENU_ITEMS := [
@@ -545,17 +546,16 @@ func _setup_banner_carousel() -> void:
 		dot_nodes.append(dot)
 
 	# Auto-scroll loop every 3s → slide right → wrap
-	var _cur_idx := 0
 	var loop_tween := create_tween().set_loops()
 	loop_tween.tween_interval(3.0)
 	loop_tween.tween_callback(func():
 		if not is_instance_valid(track): return
-		_cur_idx = (_cur_idx + 1) % BANNERS.size()
-		var target_x := -_cur_idx * BW
+		_banner_idx = (_banner_idx + 1) % BANNERS.size()
+		var target_x := -_banner_idx * BW
 		var slide := track.create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 		slide.tween_property(track, "position:x", target_x, 0.45)
 		for j in dot_nodes.size():
-			dot_nodes[j].color = Color(1,1,1, 0.9 if j == _cur_idx else 0.22)
+			dot_nodes[j].color = Color(1,1,1, 0.9 if j == _banner_idx else 0.22)
 	)
 
 func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เปิดให้บริการ") -> void:

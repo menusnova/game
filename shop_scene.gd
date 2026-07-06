@@ -3,7 +3,7 @@ extends Control
 const SC_MAIN := "res://main_menu.tscn"
 
 # ── Data ──────────────────────────────────────────────────────────
-const TABS := ["SUPPLIES", "CHARACTER", "EVENT"]
+const TABS: Array[String] = ["SUPPLIES", "CHARACTER", "EVENT"]
 const TAB_LABELS := {
 	"SUPPLIES":  "คลังวัสดุ",
 	"CHARACTER": "ผู้ปฏิบัติการ",
