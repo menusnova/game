@@ -36,6 +36,7 @@ DomainManager="*res://domain_manager.gd"
 CurrencyManager="*res://currency_manager.gd"
 CharacterManager="*res://character_manager.gd"
 PlayerData="*res://player_data.gd"
+ReactionDB="*res://reaction_database.gd"
 
 [editor_plugins]
 

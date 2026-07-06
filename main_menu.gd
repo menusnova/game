@@ -6,6 +6,7 @@ const SC_PROFILE    := "res://profile_scene.tscn"
 const SC_GACHA      := "res://gacha_scene.tscn"
 const SC_SHOP       := "res://shop_scene.tscn"
 const SC_CODEX      := "res://codex_scene.tscn"
+const SC_LAB        := "res://laboratory_scene.tscn"
 const SC_ROSTER     := "res://character_roster.tscn"
 var _quest_panel: CanvasLayer
 var _navigating := false
@@ -170,10 +171,10 @@ func _setup_navbar() -> void:
 		_attach_hover_bounce(gacha_node)
 
 	var char_node: Control = get_node_or_null("NavBar/Nav2_Arcanum") as Control
-	if char_node and not _is_locked(char_node):
+	if char_node:
 		char_node.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_show_coming_soon("ห้องทดลองผสมธาตุยังไม่เปิดให้บริการ")
+				_goto(SC_LAB)
 		)
 		_attach_hover_bounce(char_node)
 
