@@ -518,10 +518,48 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	name_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(name_lbl)
-	y += 36.0
+	y += 32.0
+
+	# Rarity / level badge
+	var rarity: int = compound.get("rarity", 1)
+	var r_col: Color
+	var r_label: String
+	match rarity:
+		1: r_col = Color(0.55, 0.75, 0.55); r_label = "ระดับ 1 — Common"
+		2: r_col = Color(0.45, 0.70, 1.00); r_label = "ระดับ 2 — Uncommon"
+		3: r_col = Color(0.72, 0.50, 1.00); r_label = "ระดับ 3 — Rare"
+		4: r_col = Color(1.00, 0.75, 0.20); r_label = "ระดับ 4 — Epic"
+		_: r_col = Color(1.00, 0.42, 0.42); r_label = "ระดับ 5 — Legendary"
+
+	var badge_bg := ColorRect.new()
+	badge_bg.color = Color(r_col.r * 0.18, r_col.g * 0.18, r_col.b * 0.18, 0.55)
+	badge_bg.position = Vector2((W - 220) * 0.5, y)
+	badge_bg.size = Vector2(220, 26)
+	badge_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(badge_bg)
+
+	var stars_lbl := Label.new()
+	stars_lbl.text = "★".repeat(rarity) + "☆".repeat(5 - rarity)
+	stars_lbl.position = Vector2((W - 220) * 0.5, y + 2)
+	stars_lbl.size = Vector2(100, 22)
+	stars_lbl.add_theme_font_size_override("font_size", 13)
+	stars_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.95))
+	stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(stars_lbl)
+
+	var rlvl_lbl := Label.new()
+	rlvl_lbl.text = r_label
+	rlvl_lbl.position = Vector2((W - 220) * 0.5 + 104, y + 4)
+	rlvl_lbl.size = Vector2(116, 18)
+	rlvl_lbl.add_theme_font_size_override("font_size", 11)
+	rlvl_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.85))
+	rlvl_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(rlvl_lbl)
+	y += 34.0
 
 	var hdiv := ColorRect.new()
-	hdiv.color = Color(0.3, 0.5, 1, 0.14)
+	hdiv.color = Color(r_col.r * 0.5, r_col.g * 0.5, r_col.b * 0.5, 0.20)
 	hdiv.position = Vector2(24, y)
 	hdiv.size = Vector2(W - 48, 1)
 	hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -563,7 +601,6 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	y += 44.0
 
 	if is_new:
-		var rarity: int = compound.get("rarity", 1)
 		var reward_bg := ColorRect.new()
 		reward_bg.color = Color(0.12, 0.32, 0.18, 0.22)
 		reward_bg.position = Vector2(20, y)
