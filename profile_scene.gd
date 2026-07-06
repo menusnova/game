@@ -79,6 +79,10 @@ func _ready() -> void:
 	_refresh_from_player_data()
 	PlayerData.profile_changed.connect(_refresh_from_player_data)
 
+	# Hide the scene-level EditBtn — ⋮ menu handles all editing
+	var edit_btn := get_node_or_null("PlayerCard/EditBtn") as Control
+	if edit_btn: edit_btn.visible = false
+
 	_build_dot_menu()
 	_build_showcase()
 	_build_activity()
@@ -102,62 +106,88 @@ func _refresh_from_player_data() -> void:
 		_avatar_icon.modulate = AVATAR_COLORS[idx]
 
 # ── ⋮ dot button + dropdown ──────────────────────────────────────
+# PlayerCard absolute rect: x=16 y=60 w=352 h=286
+# dot_btn inside PlayerCard at (318,8), size 30×30
+# → absolute center: (16+318+15, 60+8+15) = (349, 83)
+# dropdown right-aligns to btn right edge (16+318+30 = 364), y = 60+8+30+4 = 102
+
 func _build_dot_menu() -> void:
 	var pc: Panel = get_node_or_null("PlayerCard") as Panel
 	if not pc: return
 
 	_dot_btn = Button.new()
 	_dot_btn.text = "⋮"
-	_dot_btn.position = Vector2(318, 8)
-	_dot_btn.size     = Vector2(28, 28)
-	_dot_btn.add_theme_font_size_override("font_size", 18)
-	_dot_btn.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
-	var dsb := StyleBoxFlat.new()
-	dsb.bg_color = Color(0, 0, 0, 0)
-	for style in ["normal","hover","pressed","focus"]:
-		_dot_btn.add_theme_stylebox_override(style, dsb)
+	_dot_btn.position = Vector2(316, 6)
+	_dot_btn.size     = Vector2(30, 30)
+	_dot_btn.add_theme_font_size_override("font_size", 20)
+	_dot_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 0.75))
+
+	var dsb_n := StyleBoxFlat.new()
+	dsb_n.bg_color = Color(0, 0, 0, 0)
+	var dsb_h := StyleBoxFlat.new()
+	dsb_h.bg_color = Color(1, 1, 1, 0.08)
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		dsb_h.set(r, 8)
+	_dot_btn.add_theme_stylebox_override("normal",  dsb_n)
+	_dot_btn.add_theme_stylebox_override("hover",   dsb_h)
+	_dot_btn.add_theme_stylebox_override("pressed", dsb_n)
+	_dot_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 	_dot_btn.pressed.connect(_toggle_dropdown)
 	pc.add_child(_dot_btn)
 
 func _toggle_dropdown() -> void:
 	if _dropdown and is_instance_valid(_dropdown):
-		_dropdown.queue_free()
-		_dropdown = null
+		_close_dropdown()
 		return
 	_open_dropdown()
 
-func _open_dropdown() -> void:
-	# Position below the ⋮ button (PlayerCard is at y=60, dot_btn at y=8 inside it)
-	# Absolute position on screen: y = 60 + 8 + 28 + 4 = 100
-	const ITEMS := [
-		{"icon": "✎",  "label": "แก้ไขโปรไฟล์"},
-		{"icon": "👤", "label": "เปลี่ยนอวตาร"},
-		{"icon": "📊", "label": "ดูสถิติ"},
-	]
-	const ITEM_H  := 40.0
-	const PANEL_W := 180.0
-	const PANEL_X := 172.0   # right-align near dot_btn (PlayerCard x=16, btn x=318 → abs=334; panel right edge=334+28=362 → panel x=362-180=182, clamped to screen)
-	const PANEL_Y := 100.0   # below dot_btn
+func _close_dropdown() -> void:
+	if _dropdown and is_instance_valid(_dropdown):
+		_dropdown.queue_free()
+	_dropdown = null
 
-	# Dim (transparent, just catches outside clicks)
+func _open_dropdown() -> void:
+	# ── Items: only READY ones — hide future items by omitting them ──
+	# Ordering: edit actions first, then info, then (future) settings/logout
+	const ITEMS_VISIBLE := [
+		{"icon": "✏",  "label": "แก้ไขโปรไฟล์",  "action": "แก้ไขโปรไฟล์"},
+		{"icon": "🖼",  "label": "เปลี่ยนอวตาร",   "action": "เปลี่ยนอวตาร"},
+		{"sep": true},
+		{"icon": "📊", "label": "ดูสถิติ",          "action": "ดูสถิติ"},
+		# ── not ready yet — uncomment when scenes exist ──
+		# {"sep": true},
+		# {"icon": "⚙", "label": "ตั้งค่า",         "action": "ตั้งค่า"},
+		# {"icon": "🔗", "label": "แชร์โปรไฟล์",    "action": "แชร์โปรไฟล์"},
+		# {"icon": "🚪", "label": "ออกจากระบบ",     "action": "ออกจากระบบ"},
+	]
+
+	const ITEM_H  := 42.0
+	const SEP_H   := 9.0
+	const PANEL_W := 192.0
+	# right-align: PlayerCard(16) + btn(316) + btn_w(30) = 362; panel_x = 362 - PANEL_W
+	const PANEL_X := 170.0
+	const PANEL_Y := 102.0  # PlayerCard(60) + btn_y(6) + btn_h(30) + gap(6)
+
+	var panel_h := 8.0
+	for entry in ITEMS_VISIBLE:
+		panel_h += SEP_H if entry.get("sep", false) else ITEM_H
+
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.z_index = 15
+	dim.z_index = 18
 	add_child(dim)
 	_dropdown = dim
 
-	# Panel
-	var panel_h := ITEMS.size() * ITEM_H + 8
 	var sb := StyleBoxFlat.new()
-	sb.bg_color    = Color(0.04, 0.07, 0.18, 0.97)
-	sb.border_color = Color(0.37, 0.62, 1.0, 0.3)
+	sb.bg_color     = Color(0.05, 0.08, 0.20, 0.97)
+	sb.border_color = Color(0.42, 0.65, 1.0, 0.28)
 	for s in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: sb.set_border_width(s, 1)
-	sb.corner_radius_top_left=10; sb.corner_radius_top_right=10
-	sb.corner_radius_bottom_right=10; sb.corner_radius_bottom_left=10
-	sb.shadow_color = Color(0, 0, 0, 0.5)
-	sb.shadow_size  = 8
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 10)
+	sb.shadow_color = Color(0, 0, 0, 0.55)
+	sb.shadow_size  = 10
 
 	var panel := Panel.new()
 	panel.size     = Vector2(PANEL_W, panel_h)
@@ -166,46 +196,69 @@ func _open_dropdown() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	dim.add_child(panel)
 
-	# Slide in from above
-	panel.position.y = PANEL_Y - 16
+	# Slide down from just above
+	panel.position.y = PANEL_Y - 12
 	panel.modulate.a = 0.0
 	var ta := panel.create_tween().set_parallel(true)
-	ta.tween_property(panel, "position:y", PANEL_Y, 0.14).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	ta.tween_property(panel, "modulate:a", 1.0,     0.12)
+	ta.tween_property(panel, "position:y", PANEL_Y, 0.16).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	ta.tween_property(panel, "modulate:a", 1.0, 0.13)
 
-	for i in ITEMS.size():
-		var data: Dictionary = ITEMS[i]
+	var cur_y := 4.0
+	for entry in ITEMS_VISIBLE:
+		if entry.get("sep", false):
+			var div := ColorRect.new()
+			div.color = Color(1, 1, 1, 0.07)
+			div.position = Vector2(8, cur_y + 3)
+			div.size = Vector2(PANEL_W - 16, 1)
+			div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			panel.add_child(div)
+			cur_y += SEP_H
+			continue
+
 		var btn := Button.new()
-		btn.text = "%s  %s" % [str(data["icon"]), str(data["label"])]
 		btn.size     = Vector2(PANEL_W, ITEM_H)
-		btn.position = Vector2(0, i * ITEM_H + 4)
+		btn.position = Vector2(0, cur_y)
 		btn.add_theme_font_size_override("font_size", 13)
-		btn.add_theme_color_override("font_color", Color(0.85, 0.93, 1.0, 0.9))
+		btn.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 0.92))
 
-		var bsb_n := StyleBoxFlat.new()
-		bsb_n.bg_color = Color(0, 0, 0, 0)
+		var bsb_n := StyleBoxFlat.new(); bsb_n.bg_color = Color(0, 0, 0, 0)
 		var bsb_h := StyleBoxFlat.new()
-		bsb_h.bg_color = Color(0.37, 0.62, 1.0, 0.12)
-		bsb_h.corner_radius_top_left=8; bsb_h.corner_radius_top_right=8
-		bsb_h.corner_radius_bottom_right=8; bsb_h.corner_radius_bottom_left=8
+		bsb_h.bg_color = Color(0.38, 0.62, 1.0, 0.13)
+		for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+			bsb_h.set(r, 7)
 		btn.add_theme_stylebox_override("normal",  bsb_n)
 		btn.add_theme_stylebox_override("hover",   bsb_h)
 		btn.add_theme_stylebox_override("pressed", bsb_n)
 		btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 
-		var label_str: String = str(data["label"])
-		btn.pressed.connect(func():
-			dim.queue_free()
-			_dropdown = null
-			_on_dropdown_item(label_str)
-		)
-		panel.add_child(btn)
+		# Icon + label layout
+		var icon_lbl := Label.new()
+		icon_lbl.text = str(entry.get("icon", ""))
+		icon_lbl.position = Vector2(14, (ITEM_H - 20) * 0.5)
+		icon_lbl.size = Vector2(22, 20)
+		icon_lbl.add_theme_font_size_override("font_size", 14)
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(icon_lbl)
 
-	# Click dim to close
+		var text_lbl := Label.new()
+		text_lbl.text = str(entry.get("label", ""))
+		text_lbl.position = Vector2(40, (ITEM_H - 18) * 0.5)
+		text_lbl.size = Vector2(PANEL_W - 50, 18)
+		text_lbl.add_theme_font_size_override("font_size", 13)
+		text_lbl.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 0.92))
+		text_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(text_lbl)
+
+		var action_str: String = str(entry.get("action", ""))
+		btn.pressed.connect(func():
+			_close_dropdown()
+			_on_dropdown_item(action_str))
+		panel.add_child(btn)
+		cur_y += ITEM_H
+
 	dim.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed:
-			dim.queue_free()
-			_dropdown = null)
+			_close_dropdown())
 
 func _on_dropdown_item(label: String) -> void:
 	match label:

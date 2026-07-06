@@ -1,6 +1,7 @@
 extends Control
 
 const TYPEWRITER_SPEED := 0.032
+const TYPEWRITER_FAST  := 0.006   # speed-up mode
 
 # ── ใส่ภาพตรงนี้เมื่อมีไฟล์: เปลี่ยน null เป็น preload("res://image/xxx.png") ──
 var bg_texture:   Texture2D = null   # ภาพพื้นหลัง scene สนทนา
@@ -23,9 +24,16 @@ const LINES: Array = [
 	{"speaker": "Lyra",  "text": "...เตรียมพร้อม"},
 ]
 
-var _current := 0
-var _typing  := false
-var _full_text := ""
+var _current    := 0
+var _typing     := false
+var _full_text  := ""
+var _auto_play  := false   # auto-advance after each line finishes
+var _fast_mode  := false   # typewriter speed-up
+var _auto_timer: SceneTreeTimer = null
+
+var _btn_skip:  Button = null
+var _btn_auto:  Button = null
+var _btn_fast:  Button = null
 
 @onready var _bg:         TextureRect   = $Background
 @onready var _char_l:     TextureRect   = $CharacterLeft
@@ -45,12 +53,93 @@ func _ready() -> void:
 		_char_r.texture = char_kael
 	if _next_btn:
 		_next_btn.pressed.connect(_on_next)
+	_build_dialogue_controls()
 	# fade in
 	if _fade:
 		var ti := create_tween()
 		ti.tween_property(_fade, "color:a", 0.0, 0.4)
 		await ti.finished
 	_show_line(0)
+
+func _build_dialogue_controls() -> void:
+	const BTN_W := 72.0; const BTN_H := 28.0
+	const BY    := 10.0  # y from top of screen
+	const GAP   := 6.0
+	const RIGHT  := 1152.0
+
+	var _make_ctrl_btn := func(label: String, bx: float, accent: Color) -> Button:
+		var b := Button.new()
+		b.text = label
+		b.position = Vector2(bx, BY)
+		b.size = Vector2(BTN_W, BTN_H)
+		b.add_theme_font_size_override("font_size", 11)
+		b.add_theme_color_override("font_color", Color(accent.r, accent.g, accent.b, 0.85))
+		var sb_n := StyleBoxFlat.new()
+		sb_n.bg_color = Color(0.03, 0.05, 0.12, 0.78)
+		sb_n.border_color = Color(accent.r, accent.g, accent.b, 0.3)
+		for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb_n.set_border_width(s, 1)
+		for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+			sb_n.set(r, 6)
+		var sb_h := sb_n.duplicate() as StyleBoxFlat
+		sb_h.bg_color = Color(accent.r * 0.22, accent.g * 0.22, accent.b * 0.22, 0.92)
+		sb_h.border_color = Color(accent.r, accent.g, accent.b, 0.65)
+		b.add_theme_stylebox_override("normal",  sb_n)
+		b.add_theme_stylebox_override("hover",   sb_h)
+		b.add_theme_stylebox_override("pressed", sb_n)
+		b.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+		b.z_index = 10
+		add_child(b)
+		return b
+
+	var skip_x := RIGHT - BTN_W - 10
+	var fast_x := skip_x - BTN_W - GAP
+	var auto_x := fast_x - BTN_W - GAP
+
+	_btn_skip = _make_ctrl_btn.call("⏭ Skip", skip_x, Color(1.0, 0.4, 0.4))
+	_btn_fast = _make_ctrl_btn.call("⏩ เร่ง",  fast_x, Color(1.0, 0.78, 0.2))
+	_btn_auto = _make_ctrl_btn.call("▶ Auto",  auto_x, Color(0.4, 1.0, 0.6))
+
+	_btn_skip.pressed.connect(_on_skip_all)
+	_btn_fast.pressed.connect(_on_toggle_fast)
+	_btn_auto.pressed.connect(_on_toggle_auto)
+	_refresh_ctrl_buttons()
+
+func _refresh_ctrl_buttons() -> void:
+	if _btn_auto:
+		_btn_auto.text = "⏸ Auto" if _auto_play else "▶ Auto"
+		_btn_auto.add_theme_color_override("font_color",
+			Color(0.25, 1.0, 0.55, 1.0) if _auto_play else Color(0.4, 1.0, 0.6, 0.85))
+	if _btn_fast:
+		_btn_fast.text = "⏩⏩ Fast" if _fast_mode else "⏩ เร่ง"
+		_btn_fast.add_theme_color_override("font_color",
+			Color(1.0, 0.95, 0.2, 1.0) if _fast_mode else Color(1.0, 0.78, 0.2, 0.85))
+
+func _on_skip_all() -> void:
+	_typing = false
+	_auto_play = false
+	_fast_mode = false
+	_current = LINES.size()
+	_finish()
+
+func _on_toggle_fast() -> void:
+	_fast_mode = not _fast_mode
+	_refresh_ctrl_buttons()
+
+func _on_toggle_auto() -> void:
+	_auto_play = not _auto_play
+	_refresh_ctrl_buttons()
+	# If text is already shown and auto is turned on, trigger advance
+	if _auto_play and not _typing:
+		_schedule_auto_advance()
+
+func _schedule_auto_advance() -> void:
+	if _auto_timer and is_instance_valid(_auto_timer):
+		return
+	_auto_timer = get_tree().create_timer(1.8)
+	_auto_timer.timeout.connect(func():
+		_auto_timer = null
+		if _auto_play and not _typing:
+			_on_next())
 
 func _show_line(idx: int) -> void:
 	if idx >= LINES.size():
@@ -73,10 +162,13 @@ func _typewrite(text: String) -> void:
 		if not _typing:
 			break
 		_text.text = text.substr(0, i)
-		await get_tree().create_timer(TYPEWRITER_SPEED).timeout
+		var spd := TYPEWRITER_FAST if _fast_mode else TYPEWRITER_SPEED
+		await get_tree().create_timer(spd).timeout
 	_text.text = text
 	_typing = false
 	_next_btn.visible = true
+	if _auto_play:
+		_schedule_auto_advance()
 
 func _update_portraits(active_speaker: String) -> void:
 	if not _char_l or not _char_r:
