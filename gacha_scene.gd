@@ -307,7 +307,7 @@ func _build_bottom_bar() -> void:
 		gem_ico.add_theme_font_size_override("font_size", 18)
 		gem_row.add_child(gem_ico)
 	_new_gem_lbl = Label.new()
-	_new_gem_lbl.text = "0"
+	_new_gem_lbl.text = str(CurrencyManager.total_crystal())
 	_new_gem_lbl.add_theme_font_size_override("font_size", 18)
 	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	gem_row.add_child(_new_gem_lbl)

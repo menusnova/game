@@ -159,6 +159,7 @@ func _build_topbar() -> void:
 	_wallet_row.alignment = BoxContainer.ALIGNMENT_END
 	add_child(_wallet_row)
 	_rebuild_wallet()
+	CurrencyManager.currency_changed.connect(_rebuild_wallet)
 
 # ── Horizontal tab bar ────────────────────────────────────────────
 func _build_tabbar() -> void:
@@ -237,11 +238,11 @@ func _build_content() -> void:
 # ── Wallet ────────────────────────────────────────────────────────
 func _rebuild_wallet() -> void:
 	for c in _wallet_row.get_children(): c.queue_free()
-	_wallet_pill("💰", _fmt(CurrencyManager.gold),         C_GOLD)
-	_wallet_pill("💠", _fmt(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
-	_wallet_pill("🔮", _fmt(CurrencyManager.paid_crystal), Color(0.76, 0.52, 0.92, 1.0))
+	_wallet_pill("💰", null, _fmt(CurrencyManager.gold),         C_GOLD)
+	_wallet_pill("", load("res://image/crystal_gem.png"), _fmt(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
+	_wallet_pill("🔮", null, _fmt(CurrencyManager.paid_crystal), Color(0.76, 0.52, 0.92, 1.0))
 
-func _wallet_pill(icon: String, val: String, col: Color) -> void:
+func _wallet_pill(icon: String, icon_tex: Texture2D, val: String, col: Color) -> void:
 	var pill := Panel.new()
 	pill.custom_minimum_size = Vector2(102, 28)
 	pill.add_theme_stylebox_override("panel",
@@ -250,10 +251,17 @@ func _wallet_pill(icon: String, val: String, col: Color) -> void:
 	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	row.offset_left = 8; row.offset_right = -8
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ico := Label.new()
-	ico.text = icon
-	ico.add_theme_font_size_override("font_size", 12)
-	row.add_child(ico)
+	if icon_tex:
+		var ico := TextureRect.new()
+		ico.texture = icon_tex
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.custom_minimum_size = Vector2(16, 16)
+		row.add_child(ico)
+	elif icon != "":
+		var ico := Label.new()
+		ico.text = icon
+		ico.add_theme_font_size_override("font_size", 12)
+		row.add_child(ico)
 	var amt := Label.new()
 	amt.text = " " + val
 	amt.add_theme_font_size_override("font_size", 11)

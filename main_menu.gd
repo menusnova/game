@@ -49,10 +49,13 @@ func _ready() -> void:
 	_setup_quest_panel()
 	_setup_navbar()
 	_setup_banner_carousel()
+	_refresh_hud()
+	CurrencyManager.currency_changed.connect(_refresh_hud)
 
 func _load_icon_textures() -> void:
 	var map: Dictionary = {
 		"CurrBox1/CurrIcon1": "res://image/icon_gold.png",
+		"CurrBox2/CurrIcon2": "res://image/crystal_gem.png",
 		"CurrBox3/CurrIcon3": "res://image/icon_paid.png",
 		"CurrBox4/CurrIcon4": "res://image/icon_energy.png",
 		"MenuItem_Notice/Icon": "res://image/icon_notice.png",
@@ -73,6 +76,25 @@ func _load_icon_textures() -> void:
 		var img := Image.new()
 		if img.load_png_from_buffer(buf) == OK:
 			node.texture = ImageTexture.create_from_image(img)
+
+func _fmt_n(n: int) -> String:
+	if n >= 1000000:
+		return "%.1fM" % (n / 1000000.0)
+	if n >= 1000:
+		return "%.1fK" % (n / 1000.0)
+	return str(n)
+
+func _refresh_hud() -> void:
+	var pairs := [
+		["CurrBox1/CurrVal1", _fmt_n(CurrencyManager.gold)],
+		["CurrBox2/CurrVal2", _fmt_n(CurrencyManager.free_crystal)],
+		["CurrBox3/CurrVal3", _fmt_n(CurrencyManager.paid_crystal)],
+		["CurrBox4/CurrVal4", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY]],
+	]
+	for pair in pairs:
+		var lbl := get_node_or_null(pair[0]) as Label
+		if lbl:
+			lbl.text = pair[1]
 
 func _setup_ambient_fx() -> void:
 	var layer := Control.new()
