@@ -87,15 +87,16 @@ func _fmt_n(n: int) -> String:
 
 func _refresh_hud() -> void:
 	var pairs := [
-		["CurrBox1/CurrVal1", _fmt_n(CurrencyManager.gold)],
-		["CurrBox2/CurrVal2", _fmt_n(CurrencyManager.free_crystal)],
-		["CurrBox3/CurrVal3", _fmt_n(CurrencyManager.paid_crystal)],
-		["CurrBox4/CurrVal4", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY]],
+		["CurrBox1/CurrVal1", _fmt_n(CurrencyManager.gold),         Color(1.00, 0.88, 0.40, 1.0)],
+		["CurrBox2/CurrVal2", _fmt_n(CurrencyManager.free_crystal),  Color(0.76, 0.52, 0.96, 1.0)],
+		["CurrBox3/CurrVal3", _fmt_n(CurrencyManager.paid_crystal),  Color(0.76, 0.52, 0.96, 1.0)],
+		["CurrBox4/CurrVal4", "%d/%d" % [CurrencyManager.energy, CurrencyManager.MAX_ENERGY], Color(0.45, 0.90, 1.00, 1.0)],
 	]
 	for pair in pairs:
 		var lbl := get_node_or_null(pair[0]) as Label
 		if lbl:
-			lbl.text = pair[1]
+			lbl.text = str(pair[1])
+			lbl.add_theme_color_override("font_color", pair[2] as Color)
 
 func _setup_ambient_fx() -> void:
 	var layer := Control.new()
