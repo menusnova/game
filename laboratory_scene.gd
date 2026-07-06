@@ -498,131 +498,162 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	const W := 512.0
 	var y := 62.0
 
+	# ── Tier badge ────────────────────────────────────────────────────
+	var tier: int = compound.get("tier", compound.get("rarity", 1))
+	var t_col: Color
+	var t_label: String
+	match tier:
+		1: t_col = Color(0.55, 0.75, 0.55); t_label = "Common"
+		2: t_col = Color(0.45, 0.70, 1.00); t_label = "Uncommon"
+		3: t_col = Color(0.72, 0.50, 1.00); t_label = "Rare"
+		4: t_col = Color(1.00, 0.75, 0.20); t_label = "Epic"
+		_: t_col = Color(1.00, 0.42, 0.42); t_label = "Legendary"
+
+	var tier_bg := ColorRect.new()
+	tier_bg.color = Color(t_col.r * 0.15, t_col.g * 0.15, t_col.b * 0.15, 0.80)
+	tier_bg.position = Vector2((W - 180) * 0.5, y)
+	tier_bg.size = Vector2(180, 30)
+	tier_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(tier_bg)
+
+	var tier_lbl := Label.new()
+	tier_lbl.text = "TIER %d  —  %s" % [tier, t_label]
+	tier_lbl.position = Vector2((W - 180) * 0.5, y + 2)
+	tier_lbl.size = Vector2(180, 26)
+	tier_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tier_lbl.add_theme_font_size_override("font_size", 13)
+	tier_lbl.add_theme_color_override("font_color", Color(t_col.r, t_col.g, t_col.b, 1.0))
+	tier_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(tier_lbl)
+	y += 38.0
+
+	# ── Formula + Name ────────────────────────────────────────────────
 	var formula_lbl := Label.new()
 	formula_lbl.text = str(compound.get("formula", ""))
 	formula_lbl.position = Vector2(0, y)
-	formula_lbl.size = Vector2(W, 60)
+	formula_lbl.size = Vector2(W, 52)
 	formula_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	formula_lbl.add_theme_font_size_override("font_size", 46)
+	formula_lbl.add_theme_font_size_override("font_size", 40)
 	formula_lbl.add_theme_color_override("font_color",
-		Color(0.28, 1.0, 0.58) if is_new else Color(0.50, 0.82, 1.0))
+		Color(0.28, 1.0, 0.58) if is_new else Color(t_col.r, t_col.g, t_col.b, 0.95))
 	formula_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(formula_lbl)
-	y += 68.0
+	y += 56.0
 
 	var name_lbl := Label.new()
 	name_lbl.text = str(compound.get("name", ""))
 	name_lbl.position = Vector2(0, y)
-	name_lbl.size = Vector2(W, 28)
+	name_lbl.size = Vector2(W, 24)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 20)
+	name_lbl.add_theme_font_size_override("font_size", 17)
 	name_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(name_lbl)
-	y += 32.0
-
-	# Rarity / level badge
-	var rarity: int = compound.get("rarity", 1)
-	var r_col: Color
-	var r_label: String
-	match rarity:
-		1: r_col = Color(0.55, 0.75, 0.55); r_label = "ระดับ 1 — Common"
-		2: r_col = Color(0.45, 0.70, 1.00); r_label = "ระดับ 2 — Uncommon"
-		3: r_col = Color(0.72, 0.50, 1.00); r_label = "ระดับ 3 — Rare"
-		4: r_col = Color(1.00, 0.75, 0.20); r_label = "ระดับ 4 — Epic"
-		_: r_col = Color(1.00, 0.42, 0.42); r_label = "ระดับ 5 — Legendary"
-
-	var badge_bg := ColorRect.new()
-	badge_bg.color = Color(r_col.r * 0.18, r_col.g * 0.18, r_col.b * 0.18, 0.55)
-	badge_bg.position = Vector2((W - 220) * 0.5, y)
-	badge_bg.size = Vector2(220, 26)
-	badge_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(badge_bg)
-
-	var stars_lbl := Label.new()
-	stars_lbl.text = "★".repeat(rarity) + "☆".repeat(5 - rarity)
-	stars_lbl.position = Vector2((W - 220) * 0.5, y + 2)
-	stars_lbl.size = Vector2(100, 22)
-	stars_lbl.add_theme_font_size_override("font_size", 13)
-	stars_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.95))
-	stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(stars_lbl)
-
-	var rlvl_lbl := Label.new()
-	rlvl_lbl.text = r_label
-	rlvl_lbl.position = Vector2((W - 220) * 0.5 + 104, y + 4)
-	rlvl_lbl.size = Vector2(116, 18)
-	rlvl_lbl.add_theme_font_size_override("font_size", 11)
-	rlvl_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.85))
-	rlvl_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(rlvl_lbl)
-	y += 34.0
+	y += 30.0
 
 	var hdiv := ColorRect.new()
-	hdiv.color = Color(r_col.r * 0.5, r_col.g * 0.5, r_col.b * 0.5, 0.20)
+	hdiv.color = Color(t_col.r * 0.5, t_col.g * 0.5, t_col.b * 0.5, 0.22)
 	hdiv.position = Vector2(24, y)
 	hdiv.size = Vector2(W - 48, 1)
 	hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(hdiv)
 	y += 10.0
 
-	for pair in [["ประเภท", "type"], ["สถานะ", "state"]]:
-		var row := Label.new()
-		row.text = "%s:   %s" % [pair[0], str(compound.get(pair[1], ""))]
-		row.position = Vector2(28, y)
-		row.size = Vector2(W - 56, 18)
-		row.add_theme_font_size_override("font_size", 12)
-		row.add_theme_color_override("font_color", Color(0.65, 0.82, 1, 0.65))
-		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_result_panel.add_child(row)
-		y += 22.0
+	# ── ข้อมูลธาตุที่ใช้ ──────────────────────────────────────────────
+	var elem_a := _get_elem(_slot_a)
+	var elem_b := _get_elem(_slot_b)
+	var elem_row := Label.new()
+	elem_row.text = "ธาตุที่ใช้:  %s (%s)  +  %s (%s)" % [
+		str(elem_a.get("name", _slot_a)), _slot_a,
+		str(elem_b.get("name", _slot_b)), _slot_b
+	]
+	elem_row.position = Vector2(20, y)
+	elem_row.size = Vector2(W - 40, 18)
+	elem_row.add_theme_font_size_override("font_size", 10)
+	elem_row.add_theme_color_override("font_color", Color(0.65, 0.82, 1, 0.55))
+	elem_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(elem_row)
+	y += 22.0
 
-	y += 6.0
+	# brief desc of each element
+	for elem in [elem_a, elem_b]:
+		if elem.is_empty(): continue
+		var e_lbl := Label.new()
+		e_lbl.text = "• %s: %s" % [str(elem.get("name", "")), str(elem.get("desc", ""))]
+		e_lbl.position = Vector2(20, y)
+		e_lbl.size = Vector2(W - 40, 28)
+		e_lbl.add_theme_font_size_override("font_size", 10)
+		e_lbl.add_theme_color_override("font_color", Color(0.70, 0.85, 1, 0.60))
+		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		e_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_result_panel.add_child(e_lbl)
+		y += 32.0
+
+	var hdiv2 := ColorRect.new()
+	hdiv2.color = Color(t_col.r * 0.4, t_col.g * 0.4, t_col.b * 0.4, 0.18)
+	hdiv2.position = Vector2(24, y)
+	hdiv2.size = Vector2(W - 48, 1)
+	hdiv2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(hdiv2)
+	y += 8.0
+
+	# ── ข้อมูลสารประกอบ ───────────────────────────────────────────────
 	var desc := Label.new()
 	desc.text = str(compound.get("description", ""))
-	desc.position = Vector2(28, y)
-	desc.size = Vector2(W - 56, 56)
-	desc.add_theme_font_size_override("font_size", 12)
+	desc.position = Vector2(20, y)
+	desc.size = Vector2(W - 40, 48)
+	desc.add_theme_font_size_override("font_size", 11)
 	desc.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.82))
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(desc)
-	y += 64.0
+	y += 52.0
 
+	for pair in [["ประเภท", "type"], ["สถานะ", "state"]]:
+		var row := Label.new()
+		row.text = "%s:  %s" % [pair[0], str(compound.get(pair[1], ""))]
+		row.position = Vector2(20, y)
+		row.size = Vector2(W - 40, 16)
+		row.add_theme_font_size_override("font_size", 10)
+		row.add_theme_color_override("font_color", Color(0.55, 0.75, 1, 0.55))
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_result_panel.add_child(row)
+		y += 18.0
+
+	y += 4.0
 	var use := Label.new()
 	use.text = "การใช้งาน: " + str(compound.get("real_use", ""))
-	use.position = Vector2(28, y)
-	use.size = Vector2(W - 56, 36)
-	use.add_theme_font_size_override("font_size", 11)
+	use.position = Vector2(20, y)
+	use.size = Vector2(W - 40, 32)
+	use.add_theme_font_size_override("font_size", 10)
 	use.add_theme_color_override("font_color", Color(0.55, 0.85, 0.65, 0.8))
 	use.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	use.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(use)
-	y += 44.0
+	y += 36.0
 
 	if is_new:
 		var reward_bg := ColorRect.new()
 		reward_bg.color = Color(0.12, 0.32, 0.18, 0.22)
-		reward_bg.position = Vector2(20, y)
-		reward_bg.size = Vector2(W - 40, 64)
+		reward_bg.position = Vector2(16, y)
+		reward_bg.size = Vector2(W - 32, 56)
 		reward_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(reward_bg)
 
 		var r_hdr := Label.new()
 		r_hdr.text = "รางวัลการค้นพบครั้งแรก"
-		r_hdr.position = Vector2(28, y + 6)
-		r_hdr.size = Vector2(W - 56, 18)
-		r_hdr.add_theme_font_size_override("font_size", 11)
+		r_hdr.position = Vector2(24, y + 6)
+		r_hdr.size = Vector2(W - 48, 16)
+		r_hdr.add_theme_font_size_override("font_size", 10)
 		r_hdr.add_theme_color_override("font_color", Color(0.45, 0.92, 0.60, 0.72))
 		r_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(r_hdr)
 
 		var r_vals := Label.new()
-		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [rarity*50, rarity*30, rarity*10]
-		r_vals.position = Vector2(28, y + 30)
-		r_vals.size = Vector2(W - 56, 24)
-		r_vals.add_theme_font_size_override("font_size", 14)
+		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [tier*50, tier*30, tier*10]
+		r_vals.position = Vector2(24, y + 26)
+		r_vals.size = Vector2(W - 48, 22)
+		r_vals.add_theme_font_size_override("font_size", 13)
 		r_vals.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35, 0.95))
 		r_vals.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(r_vals)
