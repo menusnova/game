@@ -2,17 +2,23 @@ extends Control
 
 const SC_MAIN := "res://main_menu.tscn"
 
+const W := 1152.0
+const H := 648.0
+const TOP_H  := 48.0
+const LEFT_W := 320.0
+
+# ── Static data ───────────────────────────────────────────────────
 const SHOWCASE: Array = [
-	{"name": "Lyra",   "level": 42, "rarity": 5, "element": "🔥", "art": null},
-	{"name": "Kael",   "level": 38, "rarity": 4, "element": "⚡", "art": null},
-	{"name": "Mira",   "level": 35, "rarity": 4, "element": "🧊", "art": null},
+	{"name": "Lyra",  "level": 42, "rarity": 5, "element": "🔥"},
+	{"name": "Kael",  "level": 38, "rarity": 4, "element": "⚡"},
+	{"name": "Mira",  "level": 35, "rarity": 4, "element": "🧊"},
 ]
 
 const ACTIVITY: Array = [
-	{"icon": "⚔",  "text": "ชนะการต่อสู้ใน Chapter 1-1",     "time": "2 ชม. ที่แล้ว"},
-	{"icon": "🎲",  "text": "สุ่มกาชา 10 ครั้ง — ได้ Seraph 5★", "time": "5 ชม. ที่แล้ว"},
-	{"icon": "🧭",  "text": "ส่งทีมสำรวจ Zone B",               "time": "เมื่อวาน"},
-	{"icon": "✅",  "text": "ทำภารกิจรายวันครบ",                "time": "เมื่อวาน"},
+	{"icon": "⚔",  "text": "ชนะการต่อสู้ใน Chapter 1-1",      "time": "2 ชม. ที่แล้ว"},
+	{"icon": "🎲",  "text": "สุ่มกาชา 10 ครั้ง — ได้ Seraph 5★","time": "5 ชม. ที่แล้ว"},
+	{"icon": "🧭",  "text": "ส่งทีมสำรวจ Zone B",                "time": "เมื่อวาน"},
+	{"icon": "✅",  "text": "ทำภารกิจรายวันครบ",                 "time": "เมื่อวาน"},
 ]
 
 const AVATAR_COLORS: Array = [
@@ -26,294 +32,691 @@ const AVATAR_COLORS: Array = [
 const AVATAR_ICONS: Array[String] = ["⚗", "⚔", "🌙", "★", "♦", "✦"]
 
 const STATS: Array = [
-	{"icon": "🗓", "label": "เริ่มเล่น",          "value": "1 ม.ค. 2568"},
-	{"icon": "⏱", "label": "วันที่เล่น",          "value": "12 วัน"},
-	{"icon": "🌐", "label": "ระดับโลก",            "value": "3"},
-	{"icon": "👤", "label": "ตัวละครที่มี",        "value": "4"},
-	{"icon": "⭐", "label": "ตัวละครระดับสูงสุด",  "value": "1"},
-	{"icon": "⚔",  "label": "การต่อสู้",           "value": "38"},
-	{"icon": "✅", "label": "ความสำเร็จ",          "value": "7 / 120"},
-	{"icon": "🎲", "label": "สุ่มกาชาทั้งหมด",    "value": "47"},
+	{"icon": "⏱", "label": "วันที่เล่น",    "value": "12 วัน"},
+	{"icon": "⚔", "label": "การต่อสู้",      "value": "38"},
+	{"icon": "✅", "label": "ความสำเร็จ",    "value": "7 / 120"},
+	{"icon": "🎲", "label": "กาชาทั้งหมด",   "value": "47"},
+	{"icon": "👤", "label": "ตัวละครที่มี",  "value": "4"},
+	{"icon": "🌐", "label": "ระดับโลก",       "value": "3"},
 ]
 
-# ── onready refs ─────────────────────────────────────────────────
-@onready var _back:          Button        = $TopBar/BackBtn
-@onready var _showcase_row:  GridContainer = $ShowcaseRow
-@onready var _activity_list: VBoxContainer = $ActivityCard/ActivityList
-@onready var _fade:          ColorRect     = $FadeOverlay
-@onready var _domain_fill:   ColorRect     = $PlayerCard/DomainRow/DomainBarBg/DomainBarFill
-@onready var _domain_pct:    Label         = $PlayerCard/DomainRow/DomainPct
-@onready var _domain_bar_bg: Panel         = $PlayerCard/DomainRow/DomainBarBg
-@onready var _name_lbl:      Label         = $PlayerCard/PlayerName
-@onready var _sig_lbl:       Label         = $PlayerCard/SignatureBg/Signature
-@onready var _level_lbl:     Label         = $PlayerCard/LevelPill/LevelLabel
-@onready var _uid_lbl:       Label         = $TopBar/UIDLabel
-@onready var _avatar_icon:   Panel         = $PlayerCard/AvatarIcon
-
-var _avatar_label: Label   = null
-var _dropdown:     Control = null  # ⋮ dropdown panel
-var _dot_btn:      Button  = null  # ⋮ button ref for positioning
+# ── Runtime refs ──────────────────────────────────────────────────
+var _name_lbl:      Label       = null
+var _level_lbl:     Label       = null
+var _sig_lbl:       Label       = null
+var _uid_lbl:       Label       = null
+var _avatar_lbl:    Label       = null
+var _avatar_panel:  Panel       = null
+var _domain_fill:   ColorRect   = null
+var _domain_bar_bg: Control     = null
+var _domain_pct:    Label       = null
+var _dropdown:      Control     = null
+var _dot_btn:       Button      = null
+var _fade:          ColorRect   = null
 
 # ── Ready ─────────────────────────────────────────────────────────
 func _ready() -> void:
-	var top_bar := get_node_or_null("TopBar") as Control
-	if top_bar: top_bar.z_index = 8
-
-	var act_card := get_node_or_null("ActivityCard") as Control
-	if act_card: act_card.clip_contents = true
-
-	if _back:
-		_back.pressed.connect(_go_back)
-
-	# Avatar emoji overlay
-	_avatar_label = Label.new()
-	_avatar_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_avatar_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_avatar_label.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_avatar_label.add_theme_font_size_override("font_size", 26)
-	_avatar_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if _avatar_icon:
-		_avatar_icon.add_child(_avatar_label)
-		_avatar_icon.gui_input.connect(_on_avatar_click)
-
+	_build_ui()
 	_refresh_from_player_data()
 	PlayerData.profile_changed.connect(_refresh_from_player_data)
-
-	# Hide the scene-level EditBtn — ⋮ menu handles all editing
-	var edit_btn := get_node_or_null("PlayerCard/EditBtn") as Control
-	if edit_btn: edit_btn.visible = false
-
-	_build_dot_menu()
-	_build_showcase()
-	_build_activity()
-	_update_domain()
 	DomainManager.domain_changed.connect(_on_domain_changed)
+	_on_domain_changed(DomainManager.get_percent())
 
 	if _fade:
 		var t := create_tween()
 		t.tween_property(_fade, "color:a", 0.0, 0.35)
 
-# ── Read PlayerData and populate UI ──────────────────────────────
+# ── Build full UI ─────────────────────────────────────────────────
+func _build_ui() -> void:
+	# Starfield background
+	var bg := ColorRect.new()
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.022, 0.028, 0.072, 1.0)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bg.z_index = -10
+	add_child(bg)
+	_add_stars(bg)
+
+	# Top bar
+	_build_top_bar()
+
+	# Left panel (player card + activity)
+	_build_left_panel()
+
+	# Right area (showcase + activity)
+	_build_right_area()
+
+	# Fade overlay (on top)
+	_fade = ColorRect.new()
+	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_fade.color = Color(0, 0, 0, 1)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.z_index = 100
+	add_child(_fade)
+
+# ── Top bar ───────────────────────────────────────────────────────
+func _build_top_bar() -> void:
+	var bar_sb := _sb(Color(0.02, 0.03, 0.09, 0.92), Color(1,1,1, 0.06), 0, 1)
+	var bar := Panel.new()
+	bar.size     = Vector2(W, TOP_H)
+	bar.position = Vector2.ZERO
+	bar.add_theme_stylebox_override("panel", bar_sb)
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.z_index = 10
+	add_child(bar)
+
+	var back := _ghost_btn("◀  ย้อนกลับ", 13)
+	back.size     = Vector2(100, 34)
+	back.position = Vector2(12, (TOP_H - 34) * 0.5)
+	back.pressed.connect(_go_back)
+	bar.add_child(back)
+
+	var title := Label.new()
+	title.text = "PROFILE"
+	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.8))
+	title.size     = Vector2(W, TOP_H)
+	title.position = Vector2.ZERO
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(title)
+
+	_uid_lbl = Label.new()
+	_uid_lbl.add_theme_font_size_override("font_size", 11)
+	_uid_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.5))
+	_uid_lbl.size     = Vector2(200, TOP_H)
+	_uid_lbl.position = Vector2(W - 210, 0)
+	_uid_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_uid_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_uid_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(_uid_lbl)
+
+# ── Left panel ────────────────────────────────────────────────────
+func _build_left_panel() -> void:
+	var panel_sb := _sb(Color(0.018, 0.03, 0.09, 0.92), Color(1,1,1, 0.07), 0, 1)
+	var panel := Panel.new()
+	panel.size     = Vector2(LEFT_W, H - TOP_H)
+	panel.position = Vector2(0, TOP_H)
+	panel.add_theme_stylebox_override("panel", panel_sb)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.z_index = 3
+	add_child(panel)
+
+	# Accent top strip
+	var acc_strip := ColorRect.new()
+	acc_strip.size  = Vector2(LEFT_W, 2)
+	acc_strip.color = Color(0.388, 0.624, 1.0, 0.5)
+	acc_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(acc_strip)
+
+	# ── Avatar circle ──
+	var av_size := 96.0
+	var av_x    := (LEFT_W - av_size) * 0.5
+	var av_y    := 24.0
+
+	_avatar_panel = Panel.new()
+	var av_sb := StyleBoxFlat.new()
+	av_sb.bg_color = AVATAR_COLORS[0]
+	av_sb.border_color = Color(0.388, 0.624, 1.0, 0.7)
+	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: av_sb.set_border_width(s, 2)
+	av_sb.corner_radius_top_left     = int(av_size / 2)
+	av_sb.corner_radius_top_right    = int(av_size / 2)
+	av_sb.corner_radius_bottom_right = int(av_size / 2)
+	av_sb.corner_radius_bottom_left  = int(av_size / 2)
+	_avatar_panel.add_theme_stylebox_override("panel", av_sb)
+	_avatar_panel.size     = Vector2(av_size, av_size)
+	_avatar_panel.position = Vector2(av_x, av_y)
+	_avatar_panel.gui_input.connect(_on_avatar_click)
+	panel.add_child(_avatar_panel)
+
+	_avatar_lbl = Label.new()
+	_avatar_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_avatar_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_avatar_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_avatar_lbl.add_theme_font_size_override("font_size", 36)
+	_avatar_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_avatar_panel.add_child(_avatar_lbl)
+
+	# ── Player name ──
+	_name_lbl = Label.new()
+	_name_lbl.add_theme_font_size_override("font_size", 20)
+	_name_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+	_name_lbl.size     = Vector2(LEFT_W, 28)
+	_name_lbl.position = Vector2(0, av_y + av_size + 12)
+	_name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(_name_lbl)
+
+	# ── Level pill ──
+	var lv_sb := _sb(Color(0.388, 0.624, 1, 0.18), Color(0.388, 0.624, 1, 0.35), 10, 1)
+	var lv_pill := Panel.new()
+	lv_pill.size     = Vector2(90, 24)
+	lv_pill.position = Vector2((LEFT_W - 90) * 0.5, av_y + av_size + 46)
+	lv_pill.add_theme_stylebox_override("panel", lv_sb)
+	lv_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lv_pill)
+
+	_level_lbl = Label.new()
+	_level_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_level_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_level_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_level_lbl.add_theme_font_size_override("font_size", 12)
+	_level_lbl.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 1))
+	_level_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lv_pill.add_child(_level_lbl)
+
+	# ── Signature ──
+	var sig_y := av_y + av_size + 80.0
+	var sig_bg := Panel.new()
+	sig_bg.size     = Vector2(LEFT_W - 32, 36)
+	sig_bg.position = Vector2(16, sig_y)
+	var sig_sb := _sb(Color(1,1,1, 0.03), Color(0,0,0,0), 8, 0)
+	sig_bg.add_theme_stylebox_override("panel", sig_sb)
+	sig_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(sig_bg)
+
+	_sig_lbl = Label.new()
+	_sig_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_sig_lbl.offset_left = 10; _sig_lbl.offset_right = -10
+	_sig_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_sig_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_sig_lbl.add_theme_font_size_override("font_size", 11)
+	_sig_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.5))
+	_sig_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sig_bg.add_child(_sig_lbl)
+
+	# ── Divider ──
+	var div := ColorRect.new()
+	div.size     = Vector2(LEFT_W - 32, 1)
+	div.position = Vector2(16, sig_y + 46)
+	div.color    = Color(1,1,1, 0.08)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(div)
+
+	# ── Stats mini grid ──
+	var stats_y := sig_y + 58.0
+	var col_w   := (LEFT_W - 32) / 3.0
+	for i in STATS.size():
+		var col := i % 3
+		var row := i / 3
+		var sx  := 16.0 + col * col_w
+		var sy  := stats_y + row * 52.0
+		var stat_bg := Panel.new()
+		stat_bg.size     = Vector2(col_w - 6, 44)
+		stat_bg.position = Vector2(sx, sy)
+		var s_sb := _sb(Color(1,1,1, 0.03), Color(0,0,0,0), 8, 0)
+		stat_bg.add_theme_stylebox_override("panel", s_sb)
+		stat_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.add_child(stat_bg)
+
+		var s_val := Label.new()
+		s_val.text = str(STATS[i]["value"])
+		s_val.add_theme_font_size_override("font_size", 15)
+		s_val.add_theme_color_override("font_color", Color(1,1,1, 0.9))
+		s_val.size     = Vector2(col_w - 6, 24)
+		s_val.position = Vector2(0, 4)
+		s_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		s_val.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stat_bg.add_child(s_val)
+
+		var s_lbl := Label.new()
+		s_lbl.text = str(STATS[i]["label"])
+		s_lbl.add_theme_font_size_override("font_size", 9)
+		s_lbl.add_theme_color_override("font_color", Color(1,1,1, 0.35))
+		s_lbl.size     = Vector2(col_w - 6, 14)
+		s_lbl.position = Vector2(0, 28)
+		s_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		s_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stat_bg.add_child(s_lbl)
+
+	# ── Domain bar ──
+	var dom_y := stats_y + 2 * 52.0 + 14.0
+	var dom_lbl := Label.new()
+	dom_lbl.text = "Domain"
+	dom_lbl.add_theme_font_size_override("font_size", 11)
+	dom_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.75))
+	dom_lbl.size     = Vector2(LEFT_W - 32, 18)
+	dom_lbl.position = Vector2(16, dom_y)
+	dom_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(dom_lbl)
+
+	var dom_bar_wrap := Panel.new()
+	dom_bar_wrap.size     = Vector2(LEFT_W - 80, 8)
+	dom_bar_wrap.position = Vector2(16, dom_y + 22)
+	dom_bar_wrap.add_theme_stylebox_override("panel", _sb(Color(1,1,1,0.06), Color(0,0,0,0), 4, 0))
+	dom_bar_wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(dom_bar_wrap)
+	_domain_bar_bg = dom_bar_wrap
+
+	_domain_fill = ColorRect.new()
+	_domain_fill.size     = Vector2(0, 8)
+	_domain_fill.color    = Color(0.388, 0.624, 1.0, 0.85)
+	_domain_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dom_bar_wrap.add_child(_domain_fill)
+
+	_domain_pct = Label.new()
+	_domain_pct.text = "0%"
+	_domain_pct.add_theme_font_size_override("font_size", 11)
+	_domain_pct.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
+	_domain_pct.size     = Vector2(50, 18)
+	_domain_pct.position = Vector2(LEFT_W - 64, dom_y + 18)
+	_domain_pct.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_domain_pct.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(_domain_pct)
+
+	# ── ⋮ dot button (edit menu) ──
+	_dot_btn = Button.new()
+	_dot_btn.text = "⋮"
+	_dot_btn.size     = Vector2(32, 32)
+	_dot_btn.position = Vector2(LEFT_W - 42, 10)
+	_dot_btn.add_theme_font_size_override("font_size", 20)
+	_dot_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 0.7))
+	_dot_btn.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0), 8, 0))
+	_dot_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.08), Color(0,0,0,0), 8, 0))
+	_dot_btn.add_theme_stylebox_override("pressed", _sb(Color(0,0,0,0), Color(0,0,0,0), 8, 0))
+	_dot_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	_dot_btn.pressed.connect(_toggle_dropdown)
+	panel.add_child(_dot_btn)
+
+	# ── Activity log (bottom of left panel) ──
+	_build_activity_in(panel, dom_y + 42)
+
+func _build_activity_in(parent: Panel, start_y: float) -> void:
+	var act_lbl := Label.new()
+	act_lbl.text = "กิจกรรมล่าสุด"
+	act_lbl.add_theme_font_size_override("font_size", 10)
+	act_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.55))
+	act_lbl.size     = Vector2(LEFT_W - 32, 18)
+	act_lbl.position = Vector2(16, start_y + 14)
+	act_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(act_lbl)
+
+	var ay := start_y + 36.0
+	for a in ACTIVITY:
+		if ay + 44 > H - TOP_H - 8: break
+		var icon_lbl := Label.new()
+		icon_lbl.text = str(a["icon"])
+		icon_lbl.add_theme_font_size_override("font_size", 16)
+		icon_lbl.size     = Vector2(28, 36)
+		icon_lbl.position = Vector2(16, ay + 4)
+		icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(icon_lbl)
+
+		var txt := Label.new()
+		txt.text = str(a["text"])
+		txt.add_theme_font_size_override("font_size", 11)
+		txt.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.88))
+		txt.size     = Vector2(LEFT_W - 72, 18)
+		txt.position = Vector2(48, ay + 4)
+		txt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(txt)
+
+		var time_lbl := Label.new()
+		time_lbl.text = str(a["time"])
+		time_lbl.add_theme_font_size_override("font_size", 9)
+		time_lbl.add_theme_color_override("font_color", Color(1,1,1, 0.3))
+		time_lbl.size     = Vector2(LEFT_W - 72, 14)
+		time_lbl.position = Vector2(48, ay + 22)
+		time_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(time_lbl)
+
+		var hdiv := ColorRect.new()
+		hdiv.size     = Vector2(LEFT_W - 32, 1)
+		hdiv.position = Vector2(16, ay + 42)
+		hdiv.color    = Color(1,1,1, 0.05)
+		hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(hdiv)
+		ay += 46.0
+
+# ── Right area ────────────────────────────────────────────────────
+func _build_right_area() -> void:
+	var rx := LEFT_W + 16.0
+	var rw := W - rx - 16.0
+	var ry := TOP_H + 16.0
+
+	# "CHARACTER SHOWCASE" label
+	var sc_lbl := Label.new()
+	sc_lbl.text = "CHARACTER SHOWCASE"
+	sc_lbl.add_theme_font_size_override("font_size", 11)
+	sc_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.55))
+	sc_lbl.size     = Vector2(rw, 20)
+	sc_lbl.position = Vector2(rx, ry)
+	sc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(sc_lbl)
+
+	# 3 showcase cards side by side
+	var card_y  := ry + 26.0
+	var card_h  := 340.0
+	var gap     := 12.0
+	var card_w  := (rw - gap * 2) / 3.0
+
+	for i in SHOWCASE.size():
+		var cx := rx + i * (card_w + gap)
+		add_child(_make_showcase_card(SHOWCASE[i], cx, card_y, card_w, card_h))
+
+	# Activity feed label (below cards on right) — replaces bottom-right empty space
+	var feed_y := card_y + card_h + 16.0
+	var feed_lbl := Label.new()
+	feed_lbl.text = "RECENT ACTIVITY"
+	feed_lbl.add_theme_font_size_override("font_size", 10)
+	feed_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.45))
+	feed_lbl.size     = Vector2(rw, 18)
+	feed_lbl.position = Vector2(rx, feed_y)
+	feed_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(feed_lbl)
+
+	# Horizontal activity chips
+	var chip_x := rx
+	for i in minf(ACTIVITY.size(), 3):
+		var a: Dictionary = ACTIVITY[i]
+		var chip_w := (rw - gap * 2) / 3.0
+		var chip := Panel.new()
+		chip.size     = Vector2(chip_w, 56)
+		chip.position = Vector2(chip_x, feed_y + 22)
+		chip.add_theme_stylebox_override("panel",
+			_sb(Color(1,1,1,0.03), Color(1,1,1,0.06), 10, 1))
+		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(chip)
+
+		var ic := Label.new()
+		ic.text = str(a["icon"])
+		ic.add_theme_font_size_override("font_size", 18)
+		ic.size     = Vector2(30, 56)
+		ic.position = Vector2(10, 0)
+		ic.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(ic)
+
+		var ct := Label.new()
+		ct.text = str(a["text"])
+		ct.add_theme_font_size_override("font_size", 10)
+		ct.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.85))
+		ct.size     = Vector2(chip_w - 50, 20)
+		ct.position = Vector2(44, 10)
+		ct.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ct.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(ct)
+
+		var tm := Label.new()
+		tm.text = str(a["time"])
+		tm.add_theme_font_size_override("font_size", 9)
+		tm.add_theme_color_override("font_color", Color(1,1,1, 0.28))
+		tm.size     = Vector2(chip_w - 50, 14)
+		tm.position = Vector2(44, 34)
+		tm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(tm)
+
+		chip_x += chip_w + gap
+
+func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: float) -> Panel:
+	var rarity: int = int(data.get("rarity", 3))
+	var acc: Color
+	match rarity:
+		5: acc = Color(1.0, 0.82, 0.2)
+		4: acc = Color(0.72, 0.45, 1.0)
+		_: acc = Color(0.4, 0.65, 1.0)
+
+	var card := Panel.new()
+	card.size     = Vector2(cw, ch)
+	card.position = Vector2(cx, cy)
+
+	var sb := StyleBoxFlat.new()
+	sb.bg_color     = Color(0.024, 0.05, 0.13, 0.94)
+	sb.border_color = Color(acc.r, acc.g, acc.b, 0.22)
+	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 1)
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 16)
+	sb.shadow_color = Color(acc.r, acc.g, acc.b, 0.15)
+	sb.shadow_size  = 10
+	card.add_theme_stylebox_override("panel", sb)
+
+	# Accent top bar
+	var top_bar := ColorRect.new()
+	top_bar.size  = Vector2(cw, 3)
+	top_bar.color = Color(acc.r, acc.g, acc.b, 0.7)
+	top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(top_bar)
+
+	# Large emoji art (center glow)
+	var art := Label.new()
+	art.text = str(data.get("element", "★"))
+	art.add_theme_font_size_override("font_size", 100)
+	art.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.12))
+	art.size     = Vector2(cw, ch)
+	art.position = Vector2.ZERO
+	art.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	art.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(art)
+
+	# Pulse
+	var tp := art.create_tween().set_loops()
+	tp.tween_property(art, "modulate:a", 0.5, 2.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tp.tween_property(art, "modulate:a", 1.0, 2.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	# Bottom dim gradient
+	var dim := ColorRect.new()
+	dim.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	dim.offset_top = -100
+	dim.color = Color(0, 0, 0.04, 0.8)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(dim)
+
+	# Stars
+	var stars := Label.new()
+	stars.text = "★".repeat(rarity)
+	stars.add_theme_font_size_override("font_size", 13)
+	stars.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.9))
+	stars.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	stars.offset_left=12; stars.offset_right=200; stars.offset_bottom=-44; stars.offset_top=-64
+	stars.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(stars)
+
+	# Element icon (top right)
+	var elem := Label.new()
+	elem.text = str(data.get("element",""))
+	elem.add_theme_font_size_override("font_size", 18)
+	elem.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	elem.offset_left=-36; elem.offset_right=-8; elem.offset_top=8; elem.offset_bottom=32
+	elem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(elem)
+
+	# Name
+	var name_lbl := Label.new()
+	name_lbl.text = str(data.get("name",""))
+	name_lbl.add_theme_font_size_override("font_size", 17)
+	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
+	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	name_lbl.offset_left=12; name_lbl.offset_right=200; name_lbl.offset_bottom=-24; name_lbl.offset_top=-46
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(name_lbl)
+
+	# Level
+	var lv := Label.new()
+	lv.text = "Lv.%d" % int(data.get("level",1))
+	lv.add_theme_font_size_override("font_size", 11)
+	lv.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.65))
+	lv.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	lv.offset_left=12; lv.offset_right=120; lv.offset_bottom=-8; lv.offset_top=-24
+	lv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(lv)
+
+	return card
+
+# ── Refresh player data ───────────────────────────────────────────
 func _refresh_from_player_data() -> void:
+	var idx := clampi(PlayerData.avatar_idx, 0, AVATAR_ICONS.size() - 1)
 	if _name_lbl:   _name_lbl.text  = PlayerData.player_name
 	if _sig_lbl:    _sig_lbl.text   = PlayerData.signature
 	if _level_lbl:  _level_lbl.text = "Lv. %d" % PlayerData.level
-	if _uid_lbl:    _uid_lbl.text   = "UID: %s" % PlayerData.uid
-	var idx := clampi(PlayerData.avatar_idx, 0, AVATAR_ICONS.size() - 1)
-	if _avatar_label:
-		_avatar_label.text    = AVATAR_ICONS[idx]
-	if _avatar_icon:
-		_avatar_icon.modulate = AVATAR_COLORS[idx]
+	if _uid_lbl:    _uid_lbl.text   = "UID: %s  " % PlayerData.uid
+	if _avatar_lbl: _avatar_lbl.text = AVATAR_ICONS[idx]
+	if _avatar_panel:
+		var av_sb := _avatar_panel.get_theme_stylebox("panel") as StyleBoxFlat
+		if av_sb:
+			av_sb.bg_color = AVATAR_COLORS[idx]
 
-# ── ⋮ dot button + dropdown ──────────────────────────────────────
-# PlayerCard absolute rect: x=16 y=60 w=352 h=286
-# dot_btn inside PlayerCard at (318,8), size 30×30
-# → absolute center: (16+318+15, 60+8+15) = (349, 83)
-# dropdown right-aligns to btn right edge (16+318+30 = 364), y = 60+8+30+4 = 102
+# ── Domain bar ────────────────────────────────────────────────────
+func _on_domain_changed(pct: float) -> void:
+	if not is_inside_tree(): return
+	if _domain_pct: _domain_pct.text = "%d%%" % int(pct)
+	_apply_domain_bar.call_deferred(pct)
 
-func _build_dot_menu() -> void:
-	var pc: Panel = get_node_or_null("PlayerCard") as Panel
-	if not pc: return
+func _apply_domain_bar(pct: float) -> void:
+	if not is_instance_valid(_domain_bar_bg) or not is_instance_valid(_domain_fill): return
+	_domain_fill.size.x = _domain_bar_bg.size.x * (pct / 100.0)
 
-	_dot_btn = Button.new()
-	_dot_btn.text = "⋮"
-	_dot_btn.position = Vector2(316, 6)
-	_dot_btn.size     = Vector2(30, 30)
-	_dot_btn.add_theme_font_size_override("font_size", 20)
-	_dot_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 0.75))
-
-	var dsb_n := StyleBoxFlat.new()
-	dsb_n.bg_color = Color(0, 0, 0, 0)
-	var dsb_h := StyleBoxFlat.new()
-	dsb_h.bg_color = Color(1, 1, 1, 0.08)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		dsb_h.set(r, 8)
-	_dot_btn.add_theme_stylebox_override("normal",  dsb_n)
-	_dot_btn.add_theme_stylebox_override("hover",   dsb_h)
-	_dot_btn.add_theme_stylebox_override("pressed", dsb_n)
-	_dot_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-	_dot_btn.pressed.connect(_toggle_dropdown)
-	pc.add_child(_dot_btn)
-
+# ── ⋮ dropdown ────────────────────────────────────────────────────
 func _toggle_dropdown() -> void:
-	if _dropdown and is_instance_valid(_dropdown):
-		_close_dropdown()
-		return
+	if _dropdown and is_instance_valid(_dropdown): _close_dropdown(); return
 	_open_dropdown()
 
 func _close_dropdown() -> void:
-	if _dropdown and is_instance_valid(_dropdown):
-		_dropdown.queue_free()
+	if _dropdown and is_instance_valid(_dropdown): _dropdown.queue_free()
 	_dropdown = null
 
 func _open_dropdown() -> void:
-	# ── Items: only READY ones — hide future items by omitting them ──
-	# Ordering: edit actions first, then info, then (future) settings/logout
-	const ITEMS_VISIBLE := [
-		{"icon": "✏",  "label": "แก้ไขโปรไฟล์",  "action": "แก้ไขโปรไฟล์"},
-		{"icon": "🖼",  "label": "เปลี่ยนอวตาร",   "action": "เปลี่ยนอวตาร"},
+	const ITEMS := [
+		{"icon": "✏",  "label": "แก้ไขโปรไฟล์", "action": "edit"},
+		{"icon": "🖼",  "label": "เปลี่ยนอวตาร",  "action": "avatar"},
 		{"sep": true},
-		{"icon": "📊", "label": "ดูสถิติ",          "action": "ดูสถิติ"},
-		# ── not ready yet — uncomment when scenes exist ──
-		# {"sep": true},
-		# {"icon": "⚙", "label": "ตั้งค่า",         "action": "ตั้งค่า"},
-		# {"icon": "🔗", "label": "แชร์โปรไฟล์",    "action": "แชร์โปรไฟล์"},
-		# {"icon": "🚪", "label": "ออกจากระบบ",     "action": "ออกจากระบบ"},
+		{"icon": "📊", "label": "ดูสถิติ",         "action": "stats"},
 	]
-
 	const ITEM_H  := 42.0
 	const SEP_H   := 9.0
 	const PANEL_W := 192.0
-	# right-align: PlayerCard(16) + btn(316) + btn_w(30) = 362; panel_x = 362 - PANEL_W
-	const PANEL_X := 170.0
-	const PANEL_Y := 102.0  # PlayerCard(60) + btn_y(6) + btn_h(30) + gap(6)
 
 	var panel_h := 8.0
-	for entry in ITEMS_VISIBLE:
-		panel_h += SEP_H if entry.get("sep", false) else ITEM_H
+	for e in ITEMS: panel_h += SEP_H if e.get("sep", false) else ITEM_H
+
+	# Drop-down position: below dot button inside left panel
+	var dot_abs_x := LEFT_W - 42.0 + 0.0   # left panel at x=0
+	var dot_abs_y := TOP_H + 10.0 + 32.0 + 4.0
+	var panel_x   := dot_abs_x + 32.0 - PANEL_W
+	var panel_y   := dot_abs_y
 
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0, 0, 0, 0)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.z_index = 18
+	dim.z_index = 20
 	add_child(dim)
 	_dropdown = dim
 
 	var sb := StyleBoxFlat.new()
 	sb.bg_color     = Color(0.05, 0.08, 0.20, 0.97)
 	sb.border_color = Color(0.42, 0.65, 1.0, 0.28)
-	for s in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: sb.set_border_width(s, 1)
+	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 1)
 	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
 		sb.set(r, 10)
 	sb.shadow_color = Color(0, 0, 0, 0.55)
 	sb.shadow_size  = 10
 
-	var panel := Panel.new()
-	panel.size     = Vector2(PANEL_W, panel_h)
-	panel.position = Vector2(PANEL_X, PANEL_Y)
-	panel.add_theme_stylebox_override("panel", sb)
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.add_child(panel)
+	var pop := Panel.new()
+	pop.size     = Vector2(PANEL_W, panel_h)
+	pop.position = Vector2(panel_x, panel_y - 12)
+	pop.modulate.a = 0.0
+	pop.add_theme_stylebox_override("panel", sb)
+	pop.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.add_child(pop)
 
-	# Slide down from just above
-	panel.position.y = PANEL_Y - 12
-	panel.modulate.a = 0.0
-	var ta := panel.create_tween().set_parallel(true)
-	ta.tween_property(panel, "position:y", PANEL_Y, 0.16).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	ta.tween_property(panel, "modulate:a", 1.0, 0.13)
+	var ta := pop.create_tween().set_parallel(true)
+	ta.tween_property(pop, "position:y", panel_y, 0.16).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	ta.tween_property(pop, "modulate:a", 1.0, 0.13)
 
-	var cur_y := 4.0
-	for entry in ITEMS_VISIBLE:
+	var cy := 4.0
+	for entry in ITEMS:
 		if entry.get("sep", false):
-			var div := ColorRect.new()
-			div.color = Color(1, 1, 1, 0.07)
-			div.position = Vector2(8, cur_y + 3)
-			div.size = Vector2(PANEL_W - 16, 1)
-			div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			panel.add_child(div)
-			cur_y += SEP_H
+			var sep := ColorRect.new()
+			sep.color = Color(1,1,1, 0.07)
+			sep.position = Vector2(8, cy + 3); sep.size = Vector2(PANEL_W - 16, 1)
+			sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			pop.add_child(sep)
+			cy += SEP_H
 			continue
-
 		var btn := Button.new()
-		btn.size     = Vector2(PANEL_W, ITEM_H)
-		btn.position = Vector2(0, cur_y)
+		btn.size = Vector2(PANEL_W, ITEM_H); btn.position = Vector2(0, cy)
 		btn.add_theme_font_size_override("font_size", 13)
 		btn.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 0.92))
-
-		var bsb_n := StyleBoxFlat.new(); bsb_n.bg_color = Color(0, 0, 0, 0)
-		var bsb_h := StyleBoxFlat.new()
-		bsb_h.bg_color = Color(0.38, 0.62, 1.0, 0.13)
-		for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-			bsb_h.set(r, 7)
-		btn.add_theme_stylebox_override("normal",  bsb_n)
-		btn.add_theme_stylebox_override("hover",   bsb_h)
-		btn.add_theme_stylebox_override("pressed", bsb_n)
+		btn.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0), 7, 0))
+		btn.add_theme_stylebox_override("hover",   _sb(Color(0.38,0.62,1,0.13), Color(0,0,0,0), 7, 0))
+		btn.add_theme_stylebox_override("pressed", _sb(Color(0,0,0,0), Color(0,0,0,0), 7, 0))
 		btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 
-		# Icon + label layout
-		var icon_lbl := Label.new()
-		icon_lbl.text = str(entry.get("icon", ""))
-		icon_lbl.position = Vector2(14, (ITEM_H - 20) * 0.5)
-		icon_lbl.size = Vector2(22, 20)
-		icon_lbl.add_theme_font_size_override("font_size", 14)
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(icon_lbl)
+		var ic := Label.new(); ic.text = str(entry.get("icon",""))
+		ic.position = Vector2(14, (ITEM_H-20)*0.5); ic.size = Vector2(22,20)
+		ic.add_theme_font_size_override("font_size", 14)
+		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(ic)
 
-		var text_lbl := Label.new()
-		text_lbl.text = str(entry.get("label", ""))
-		text_lbl.position = Vector2(40, (ITEM_H - 18) * 0.5)
-		text_lbl.size = Vector2(PANEL_W - 50, 18)
-		text_lbl.add_theme_font_size_override("font_size", 13)
-		text_lbl.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 0.92))
-		text_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(text_lbl)
+		var tl := Label.new(); tl.text = str(entry.get("label",""))
+		tl.position = Vector2(40, (ITEM_H-18)*0.5); tl.size = Vector2(PANEL_W-50, 18)
+		tl.add_theme_font_size_override("font_size", 13)
+		tl.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 0.92))
+		tl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(tl)
 
-		var action_str: String = str(entry.get("action", ""))
-		btn.pressed.connect(func():
-			_close_dropdown()
-			_on_dropdown_item(action_str))
-		panel.add_child(btn)
-		cur_y += ITEM_H
+		var act: String = str(entry.get("action",""))
+		btn.pressed.connect(func(): _close_dropdown(); _on_dropdown_item(act))
+		pop.add_child(btn)
+		cy += ITEM_H
 
 	dim.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed:
-			_close_dropdown())
+		if ev is InputEventMouseButton and ev.pressed: _close_dropdown())
 
-func _on_dropdown_item(label: String) -> void:
-	match label:
-		"แก้ไขโปรไฟล์": _open_edit_popup()
-		"เปลี่ยนอวตาร":  _open_avatar_popup()
-		"ดูสถิติ":        _open_stats_modal()
+func _on_dropdown_item(action: String) -> void:
+	match action:
+		"edit":   _open_edit_popup()
+		"avatar": _open_avatar_popup()
+		"stats":  _open_stats_modal()
 
-# ── Avatar picker ─────────────────────────────────────────────────
+# ── Avatar click ──────────────────────────────────────────────────
 func _on_avatar_click(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_open_avatar_popup()
 
+# ── Avatar picker popup ───────────────────────────────────────────
 func _open_avatar_popup() -> void:
-	const PW := 400.0; const PH := 190.0
+	const PW := 400.0; const PH := 200.0
 	var dim := _make_dim(20)
 	var panel := _make_panel(dim, PW, PH)
 
-	var title := _centered_label(panel, "เลือกอวตาร", 14, Color(1,1,1,0.9), 0, 14, PW, 24)
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_centered_label(panel, "เลือกอวตาร", 14, Color(1,1,1,0.9), 0, 14, PW, 24)
 
-	const BTN_W := 44.0; const GAP := 10.0
+	const BTN_W := 46.0; const GAP := 10.0
 	var n := AVATAR_COLORS.size()
 	var row_x := (PW - (n * BTN_W + (n-1) * GAP)) * 0.5
 	for i in n:
 		var p := Panel.new()
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = AVATAR_COLORS[i]
+		var asb := StyleBoxFlat.new()
+		asb.bg_color = AVATAR_COLORS[i]
 		for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-			sb.set(r, 24)
+			asb.set(r, int(BTN_W / 2))
 		if i == PlayerData.avatar_idx:
-			for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 2)
-			sb.border_color = Color(1,1,1,0.9)
-		p.add_theme_stylebox_override("panel", sb)
+			for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: asb.set_border_width(s, 2)
+			asb.border_color = Color(1,1,1,0.9)
+		p.add_theme_stylebox_override("panel", asb)
 		p.position = Vector2(row_x + i * (BTN_W + GAP), 50)
 		p.size     = Vector2(BTN_W, BTN_W)
-		var lbl := Label.new()
-		lbl.text = AVATAR_ICONS[i]
-		lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 20)
-		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		p.add_child(lbl)
+		var il := Label.new()
+		il.text = AVATAR_ICONS[i]
+		il.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		il.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		il.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		il.add_theme_font_size_override("font_size", 20)
+		il.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		p.add_child(il)
 		p.gui_input.connect(func(ev: InputEvent):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				PlayerData.set_avatar(i)
-				dim.queue_free())
+				PlayerData.set_avatar(i); dim.queue_free())
 		panel.add_child(p)
 
 	var cancel := _popup_btn("ยกเลิก", false)
-	cancel.position = Vector2((PW - 160) * 0.5, 136)
-	cancel.size     = Vector2(160, 36)
+	cancel.position = Vector2((PW-160)*0.5, 148); cancel.size = Vector2(160, 36)
 	cancel.pressed.connect(func(): dim.queue_free())
 	panel.add_child(cancel)
-
 	add_child(dim)
 
 # ── Edit profile popup ────────────────────────────────────────────
@@ -324,37 +727,29 @@ func _open_edit_popup() -> void:
 
 	_centered_label(panel, "แก้ไขโปรไฟล์", 15, Color(1,1,1,0.9), 0, 18, PW, 26)
 
-	var name_hint := _centered_label(panel, "ชื่อผู้เล่น", 11, Color(0.6,0.8,1,0.7), 24, 54, PW-48, 16)
-	name_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-
+	_centered_label(panel, "ชื่อผู้เล่น", 11, Color(0.6,0.8,1,0.7), 24, 54, PW-48, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var name_edit := _make_line_edit(PlayerData.player_name)
 	name_edit.position = Vector2(24, 72); name_edit.size = Vector2(PW-48, 32)
-	name_edit.max_length = 20
-	panel.add_child(name_edit)
+	name_edit.max_length = 20; panel.add_child(name_edit)
 
-	var sig_hint := _centered_label(panel, "คำขวัญ", 11, Color(0.6,0.8,1,0.7), 24, 118, PW-48, 16)
-	sig_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-
+	_centered_label(panel, "คำขวัญ", 11, Color(0.6,0.8,1,0.7), 24, 118, PW-48, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var sig_edit := _make_line_edit(PlayerData.signature)
 	sig_edit.position = Vector2(24, 136); sig_edit.size = Vector2(PW-48, 32)
-	sig_edit.max_length = 50
-	panel.add_child(sig_edit)
+	sig_edit.max_length = 50; panel.add_child(sig_edit)
 
-	const BTN_W := 180.0; const BTN_H := 38.0; const BTN_Y := 222.0
+	const BW := 180.0; const BH := 38.0; const BY := 222.0
 	var cancel := _popup_btn("ยกเลิก", false)
-	cancel.position = Vector2(20, BTN_Y); cancel.size = Vector2(BTN_W, BTN_H)
+	cancel.position = Vector2(20, BY); cancel.size = Vector2(BW, BH)
 	cancel.pressed.connect(func(): dim.queue_free())
 	panel.add_child(cancel)
 
 	var ok := _popup_btn("บันทึก", true)
-	ok.position = Vector2(PW - 20 - BTN_W, BTN_Y); ok.size = Vector2(BTN_W, BTN_H)
+	ok.position = Vector2(PW-20-BW, BY); ok.size = Vector2(BW, BH)
 	ok.pressed.connect(func():
-		var new_name := name_edit.text.strip_edges()
+		var nn := name_edit.text.strip_edges()
 		PlayerData.save_profile(
-			new_name if new_name.length() > 0 else PlayerData.player_name,
-			sig_edit.text.strip_edges(),
-			PlayerData.avatar_idx
-		)
+			nn if nn.length() > 0 else PlayerData.player_name,
+			sig_edit.text.strip_edges(), PlayerData.avatar_idx)
 		dim.queue_free())
 	panel.add_child(ok)
 
@@ -364,198 +759,88 @@ func _open_edit_popup() -> void:
 
 # ── Stats modal ───────────────────────────────────────────────────
 func _open_stats_modal() -> void:
-	const PW := 460.0; const PH := 520.0
+	const PW := 460.0; const PH := 420.0
 	var dim := _make_dim(20)
 	var panel := _make_panel(dim, PW, PH)
 
-	_centered_label(panel, "สถิติผู้เล่น", 15, Color(0.388, 0.624, 1, 0.9), 20, 16, PW-60, 26).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_centered_label(panel, "สถิติผู้เล่น", 15, Color(0.388,0.624,1,0.9), 20, 16, PW-60, 26).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
-	var close_btn := _ghost_btn("✕", 14)
-	close_btn.position = Vector2(PW - 44, 12); close_btn.size = Vector2(32, 32)
-	close_btn.pressed.connect(func(): dim.queue_free())
-	panel.add_child(close_btn)
+	var cb := _ghost_btn("✕", 14)
+	cb.position = Vector2(PW-44, 12); cb.size = Vector2(32, 32)
+	cb.pressed.connect(func(): dim.queue_free())
+	panel.add_child(cb)
 
 	var hdiv := ColorRect.new()
-	hdiv.color = Color(0.388, 0.624, 1, 0.15)
+	hdiv.color = Color(0.388,0.624,1,0.15)
 	hdiv.position = Vector2(16, 46); hdiv.size = Vector2(PW-32, 1)
 	hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(hdiv)
 
-	var y := 56.0
+	var sy := 56.0
 	for i in STATS.size():
-		var data: Dictionary = STATS[i]
+		var d: Dictionary = STATS[i]
 		var row_bg := ColorRect.new()
-		row_bg.color = Color(1,1,1, 0.02) if i % 2 == 0 else Color(0,0,0,0)
-		row_bg.position = Vector2(0, y-2); row_bg.size = Vector2(PW, 46)
+		row_bg.color = Color(1,1,1,0.02) if i % 2 == 0 else Color(0,0,0,0)
+		row_bg.position = Vector2(0, sy-2); row_bg.size = Vector2(PW, 46)
 		row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		panel.add_child(row_bg)
 
-		_icon_label(panel, str(data["icon"]), 16, Vector2(16, y+4), Vector2(26, 26))
-		_centered_label(panel, str(data["label"]), 10, Color(0.65,0.78,1,0.55), 50, y+2,  220, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		_centered_label(panel, str(data["value"]), 14, Color(1,1,1,0.92),       50, y+18, 360, 20).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		y += 48.0
+		var il := Label.new(); il.text = str(d["icon"])
+		il.add_theme_font_size_override("font_size", 16)
+		il.position = Vector2(16, sy+4); il.size = Vector2(26, 26)
+		il.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		il.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.add_child(il)
+
+		_centered_label(panel, str(d["label"]), 10, Color(0.65,0.78,1,0.55), 50, sy+2,  220, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_centered_label(panel, str(d["value"]), 14, Color(1,1,1,0.92),       50, sy+18, 360, 20).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		sy += 48.0
 
 	dim.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed: dim.queue_free())
 	add_child(dim)
 
-# ── Domain bar ────────────────────────────────────────────────────
-func _update_domain() -> void:
-	_on_domain_changed(DomainManager.get_percent())
+# ── Helpers ───────────────────────────────────────────────────────
+func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = bg; s.border_color = bdr
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: s.set_border_width(side, bw)
+	s.corner_radius_top_left     = radius
+	s.corner_radius_top_right    = radius
+	s.corner_radius_bottom_right = radius
+	s.corner_radius_bottom_left  = radius
+	return s
 
-func _on_domain_changed(pct: float) -> void:
-	if not is_inside_tree(): return
-	if _domain_pct: _domain_pct.text = "%d%%" % int(pct)
-	_apply_domain_bar.call_deferred(pct)
+func _ghost_btn(label: String, fsize: int) -> Button:
+	var btn := Button.new(); btn.text = label
+	btn.add_theme_font_size_override("font_size", fsize)
+	btn.add_theme_color_override("font_color", Color(1,1,1, 0.65))
+	btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.04), Color(1,1,1,0.10), 10, 1))
+	btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.08), Color(1,1,1,0.18), 10, 1))
+	btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.04), Color(1,1,1,0.10), 10, 1))
+	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	return btn
 
-func _apply_domain_bar(pct: float) -> void:
-	if not is_inside_tree() or not is_instance_valid(_domain_bar_bg) or not is_instance_valid(_domain_fill): return
-	_domain_fill.size.x = _domain_bar_bg.size.x * (pct / 100.0)
-
-# ── Showcase ─────────────────────────────────────────────────────
-func _build_showcase() -> void:
-	if not _showcase_row: return
-	for q in _showcase_row.get_children(): q.queue_free()
-	for entry in SHOWCASE:
-		_showcase_row.add_child(_make_showcase_card(entry))
-
-func _make_showcase_card(data: Dictionary) -> Control:
-	var card := Panel.new()
-	card.custom_minimum_size = Vector2(160, 240)
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var sb := StyleBoxFlat.new()
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]: sb.set(r, 14)
-	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 1)
-	if str(data.get("name","")) == "":
-		sb.bg_color = Color(1,1,1,0.025); sb.border_color = Color(1,1,1,0.06)
-		card.add_theme_stylebox_override("panel", sb)
-		var plus := Label.new()
-		plus.text = "+"; plus.add_theme_font_size_override("font_size", 28)
-		plus.add_theme_color_override("font_color", Color(1,1,1,0.15))
-		plus.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-		plus.offset_left=-16; plus.offset_right=16; plus.offset_top=-18; plus.offset_bottom=18
-		plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		card.add_child(plus)
-		return card
-
-	sb.bg_color = Color(0.031, 0.063, 0.137, 0.92)
-	sb.border_color = Color(0.388, 0.624, 1, 0.12)
-	card.add_theme_stylebox_override("panel", sb)
-
-	var art := TextureRect.new()
-	art.texture = data.get("art", null)
-	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	art.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(art)
-
-	var dim := ColorRect.new()
-	dim.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	dim.offset_top = -80; dim.color = Color(0,0,0.04,0.75)
-	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(dim)
-
-	var rarity: int = int(data.get("rarity", 3))
-	var stars := Label.new()
-	stars.text = "★".repeat(rarity)
-	stars.add_theme_font_size_override("font_size", 12)
-	match rarity:
-		5: stars.add_theme_color_override("font_color", Color(1.0,0.82,0.2,0.95))
-		4: stars.add_theme_color_override("font_color", Color(0.75,0.55,1.0,0.95))
-		_: stars.add_theme_color_override("font_color", Color(0.5,0.7,1.0,0.95))
-	stars.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	stars.offset_left=10; stars.offset_right=200; stars.offset_bottom=-38; stars.offset_top=-58
-	card.add_child(stars)
-
-	var elem := Label.new()
-	elem.text = str(data.get("element",""))
-	elem.add_theme_font_size_override("font_size", 16)
-	elem.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	elem.offset_left=-32; elem.offset_right=-6; elem.offset_top=8; elem.offset_bottom=30
-	card.add_child(elem)
-
-	var name_lbl := Label.new()
-	name_lbl.text = str(data.get("name",""))
-	name_lbl.add_theme_font_size_override("font_size", 15)
-	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
-	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	name_lbl.offset_left=10; name_lbl.offset_right=200; name_lbl.offset_bottom=-18; name_lbl.offset_top=-40
-	card.add_child(name_lbl)
-
-	var lv_lbl := Label.new()
-	lv_lbl.text = "Lv.%d" % int(data.get("level",1))
-	lv_lbl.add_theme_font_size_override("font_size", 11)
-	lv_lbl.add_theme_color_override("font_color", Color(0.7,0.87,1,0.7))
-	lv_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	lv_lbl.offset_left=10; lv_lbl.offset_right=120; lv_lbl.offset_bottom=-4; lv_lbl.offset_top=-20
-	card.add_child(lv_lbl)
-	return card
-
-# ── Activity ─────────────────────────────────────────────────────
-func _build_activity() -> void:
-	if not _activity_list: return
-	for a in ACTIVITY:
-		_activity_list.add_child(_make_activity_row(a))
-
-func _make_activity_row(data: Dictionary) -> Control:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size = Vector2(0, 46)
-	row.add_theme_constant_override("separation", 12)
-
-	var icon := Label.new()
-	icon.text = str(data.get("icon",""))
-	icon.add_theme_font_size_override("font_size", 18)
-	icon.custom_minimum_size = Vector2(28, 0)
-	icon.vertical_alignment  = VERTICAL_ALIGNMENT_CENTER
-	row.add_child(icon)
-
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 2)
-	var txt := Label.new()
-	txt.text = str(data.get("text",""))
-	txt.add_theme_font_size_override("font_size", 13)
-	txt.add_theme_color_override("font_color", Color(0.9,0.93,1,0.9))
-	col.add_child(txt)
-	var time_lbl := Label.new()
-	time_lbl.text = str(data.get("time",""))
-	time_lbl.add_theme_font_size_override("font_size", 10)
-	time_lbl.add_theme_color_override("font_color", Color(1,1,1,0.35))
-	col.add_child(time_lbl)
-	row.add_child(col)
-
-	var wrap := VBoxContainer.new()
-	wrap.add_theme_constant_override("separation", 0)
-	wrap.add_child(row)
-	var div := ColorRect.new()
-	div.color = Color(1,1,1,0.05)
-	div.custom_minimum_size = Vector2(0,1)
-	wrap.add_child(div)
-	return wrap
-
-# ── Builder helpers ───────────────────────────────────────────────
 func _make_dim(z: int) -> ColorRect:
-	var dim := ColorRect.new()
-	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	dim.color = Color(0,0,0,0.55)
-	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.z_index = z
-	return dim
+	var d := ColorRect.new()
+	d.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	d.color = Color(0,0,0,0.55); d.mouse_filter = Control.MOUSE_FILTER_STOP; d.z_index = z
+	return d
 
 func _make_panel(dim: ColorRect, pw: float, ph: float) -> Panel:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.04, 0.07, 0.16, 0.98)
 	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 1)
 	sb.border_color = Color(0.4, 0.6, 1, 0.25)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]: sb.set(r, 16)
-	var panel := Panel.new()
-	panel.add_theme_stylebox_override("panel", sb)
-	panel.size     = Vector2(pw, ph)
-	panel.position = Vector2((1152 - pw) * 0.5, (648 - ph) * 0.5)
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.add_child(panel)
-	return panel
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 16)
+	var p := Panel.new()
+	p.add_theme_stylebox_override("panel", sb)
+	p.size     = Vector2(pw, ph)
+	p.position = Vector2((W - pw) * 0.5, (H - ph) * 0.5)
+	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.add_child(p)
+	return p
 
 func _centered_label(parent: Control, text: String, fsize: int, col: Color, x: float, y: float, w: float, h: float) -> Label:
 	var lbl := Label.new()
@@ -569,23 +854,14 @@ func _centered_label(parent: Control, text: String, fsize: int, col: Color, x: f
 	parent.add_child(lbl)
 	return lbl
 
-func _icon_label(parent: Control, text: String, fsize: int, pos: Vector2, size: Vector2) -> void:
-	var lbl := Label.new()
-	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", fsize)
-	lbl.position = pos; lbl.size = size
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(lbl)
-
 func _make_line_edit(default_text: String) -> LineEdit:
-	var le := LineEdit.new()
-	le.text = default_text
+	var le := LineEdit.new(); le.text = default_text
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(1,1,1,0.06)
 	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb.set_border_width(s, 1)
 	sb.border_color = Color(0.4,0.6,1,0.35)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]: sb.set(r, 8)
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 8)
 	sb.content_margin_left=10; sb.content_margin_right=10
 	sb.content_margin_top=4;   sb.content_margin_bottom=4
 	le.add_theme_stylebox_override("normal", sb)
@@ -598,23 +874,29 @@ func _popup_btn(label: String, primary: bool) -> Button:
 	var btn := Button.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.15,0.35,0.85,1.0) if primary else Color(1,1,1,0.07)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]: sb.set(r, 8)
-	btn.add_theme_stylebox_override("normal",  sb)
-	btn.add_theme_stylebox_override("hover",   sb)
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 8)
+	btn.add_theme_stylebox_override("normal", sb); btn.add_theme_stylebox_override("hover", sb)
 	btn.add_theme_stylebox_override("pressed", sb)
 	btn.add_theme_color_override("font_color", Color(1,1,1,0.85))
-	btn.add_theme_font_size_override("font_size", 13)
-	btn.text = label
+	btn.add_theme_font_size_override("font_size", 13); btn.text = label
 	return btn
 
-func _ghost_btn(label: String, fsize: int) -> Button:
-	var btn := Button.new()
-	btn.text = label
-	btn.add_theme_font_size_override("font_size", fsize)
-	btn.add_theme_color_override("font_color", Color(1,1,1,0.5))
-	var sb := StyleBoxFlat.new(); sb.bg_color = Color(0,0,0,0)
-	for style in ["normal","hover","pressed","focus"]: btn.add_theme_stylebox_override(style, sb)
-	return btn
+func _add_stars(parent: Node) -> void:
+	var rng := RandomNumberGenerator.new(); rng.seed = 12345
+	for _i in 80:
+		var dot := ColorRect.new()
+		var sz  := rng.randf_range(1.0, 2.5)
+		dot.size = Vector2(sz, sz)
+		dot.position = Vector2(rng.randf_range(0, W), rng.randf_range(0, H))
+		var br := rng.randf_range(0.4, 1.0)
+		dot.color = Color(br, br, br+0.05, rng.randf_range(0.12, 0.45))
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(dot)
+		var td := dot.create_tween().set_loops()
+		td.tween_interval(rng.randf_range(0, 4.0))
+		td.tween_property(dot, "modulate:a", rng.randf_range(0.05,0.3), rng.randf_range(1.2,3.5)).set_ease(Tween.EASE_IN_OUT)
+		td.tween_property(dot, "modulate:a", 1.0, rng.randf_range(1.2,3.5)).set_ease(Tween.EASE_IN_OUT)
 
 # ── Navigation ────────────────────────────────────────────────────
 func _go_back() -> void:
