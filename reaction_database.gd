@@ -241,7 +241,7 @@ func get_reaction3(sym1: String, sym2: String, sym3: String) -> String:
 	return REACTIONS3.get(_reaction_key3(sym1, sym2, sym3), "")
 
 func get_compound(key: String) -> Dictionary:
-	var c := COMPOUNDS.get(key, {})
+	var c: Dictionary = COMPOUNDS.get(key, {})
 	if c.is_empty():
 		c = COMPOUNDS3.get(key, {})
 	return c
