@@ -436,7 +436,7 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 	var reward_str: String = str(ach.get("reward", ""))
 	var reward_n: int = int(ach.get("reward_n", 0))
 	if reward_str == "crystal" and reward_n > 0:
-		var tex := load("res://image/crystal_gem.png") as Texture2D
+		var tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
 		if tex:
 			var ico := TextureRect.new()
 			ico.texture = tex

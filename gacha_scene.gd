@@ -294,7 +294,7 @@ func _build_bottom_bar() -> void:
 	gem_row.position = Vector2(info_x, 12)
 	gem_row.add_theme_constant_override("separation", 4)
 	bar.add_child(gem_row)
-	var gem_tex := load("res://image/crystal_gem.png") as Texture2D
+	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
 	if gem_tex:
 		var gem_ico := TextureRect.new()
 		gem_ico.texture = gem_tex

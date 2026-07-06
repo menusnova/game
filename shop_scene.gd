@@ -269,7 +269,7 @@ func _build_content() -> void:
 func _rebuild_wallet() -> void:
 	for c in _wallet_row.get_children(): c.queue_free()
 	_wallet_pill("💰", null, _fmt(CurrencyManager.gold),         C_GOLD)
-	_wallet_pill("", load("res://image/crystal_gem.png"), _fmt(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
+	_wallet_pill("", ResourceLoader.load("res://image/crystal_gem.png", "Texture2D"), _fmt(CurrencyManager.free_crystal), Color(0.35, 0.90, 1.00, 1.0))
 	_wallet_pill("🔮", null, _fmt(CurrencyManager.paid_crystal), Color(0.76, 0.52, 0.92, 1.0))
 
 func _wallet_pill(icon: String, icon_tex: Texture2D, val: String, col: Color) -> void:

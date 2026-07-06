@@ -17,7 +17,7 @@ func setup(data):
 	description = data["description"]
 	var img_node = get_node_or_null("VBoxContainer/CardImage")
 	if img_node and data.has("image") and data["image"] != "":
-		var tex = load(data["image"])
+		var tex = ResourceLoader.load(data["image"], "Texture2D")
 		if tex:
 			img_node.texture = tex
 	var name_node = get_node_or_null("VBoxContainer/NameLabel")
