@@ -5,14 +5,11 @@ const TOTAL_COMPOUNDS := 29  # 20 tier-1/2 + 9 tier-3
 
 var _slot_a: String = ""
 var _slot_b: String = ""
-var _slot_c: String = ""
 
 var _slot_a_panel: Panel       = null
 var _slot_b_panel: Panel       = null
-var _slot_c_panel: Panel       = null
 var _slot_a_lbl:   Label       = null
 var _slot_b_lbl:   Label       = null
-var _slot_c_lbl:   Label       = null
 var _mix_btn:      Button      = null
 var _result_panel: Panel       = null
 var _progress_lbl: Label       = null
@@ -219,19 +216,15 @@ func _on_element_clicked(symbol: String) -> void:
 		_slot_a = symbol
 	elif _slot_b == "":
 		_slot_b = symbol
-	elif _slot_c == "":
-		_slot_c = symbol
 	else:
-		# All full — cycle: replace A, shift B→A, C→B
+		# Both full — shift: old B becomes A, new symbol goes to B
 		_slot_a = _slot_b
-		_slot_b = _slot_c
-		_slot_c = symbol
+		_slot_b = symbol
 	_update_slots()
 
 func _update_slots() -> void:
 	_refresh_slot(_slot_a_panel, _slot_a_lbl, _slot_a)
 	_refresh_slot(_slot_b_panel, _slot_b_lbl, _slot_b)
-	_refresh_slot(_slot_c_panel, _slot_c_lbl, _slot_c)
 	if _mix_btn:
 		_mix_btn.disabled = (_slot_a == "" or _slot_b == "")
 
@@ -272,31 +265,9 @@ func _build_center_panel() -> void:
 
 	const SLOT_S := 100.0
 	const SLOTS_Y := CY + 70.0
-	const GAP    := 18.0
-	const SLOT_A_X := CX + (CW - SLOT_S * 3.0 - GAP * 2.0) * 0.5
+	const GAP    := 24.0
+	const SLOT_A_X := CX + (CW - SLOT_S * 2.0 - GAP) * 0.5
 	const SLOT_B_X := SLOT_A_X + SLOT_S + GAP
-	const SLOT_C_X := SLOT_B_X + SLOT_S + GAP
-
-	# Tier labels above slots
-	var t12_lbl := Label.new()
-	t12_lbl.text = "Tier 1–2"
-	t12_lbl.position = Vector2(SLOT_A_X, SLOTS_Y - 18)
-	t12_lbl.size = Vector2(SLOT_S * 2.0 + GAP, 16)
-	t12_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	t12_lbl.add_theme_font_size_override("font_size", 9)
-	t12_lbl.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.35))
-	t12_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(t12_lbl)
-
-	var t3_lbl := Label.new()
-	t3_lbl.text = "Tier 3 ✦"
-	t3_lbl.position = Vector2(SLOT_C_X, SLOTS_Y - 18)
-	t3_lbl.size = Vector2(SLOT_S, 16)
-	t3_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	t3_lbl.add_theme_font_size_override("font_size", 9)
-	t3_lbl.add_theme_color_override("font_color", Color(1.0, 0.80, 0.25, 0.55))
-	t3_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(t3_lbl)
 
 	_slot_a_panel = _make_slot_panel()
 	_slot_a_panel.position = Vector2(SLOT_A_X, SLOTS_Y)
@@ -323,32 +294,6 @@ func _build_center_panel() -> void:
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			_slot_b = ""; _update_slots())
 	add_child(_slot_b_panel)
-
-	# Divider between tier-1/2 and tier-3 slot
-	var vdiv := ColorRect.new()
-	vdiv.color = Color(1.0, 0.80, 0.25, 0.18)
-	vdiv.position = Vector2(SLOT_C_X - 6, SLOTS_Y)
-	vdiv.size = Vector2(1, SLOT_S)
-	vdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(vdiv)
-
-	var plus2 := Label.new()
-	plus2.text = "+"
-	plus2.position = Vector2(SLOT_B_X + SLOT_S + 2, SLOTS_Y + SLOT_S * 0.5 - 14)
-	plus2.size = Vector2(GAP, 28)
-	plus2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	plus2.add_theme_font_size_override("font_size", 18)
-	plus2.add_theme_color_override("font_color", Color(1.0, 0.80, 0.25, 0.45))
-	plus2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(plus2)
-
-	_slot_c_panel = _make_slot_panel(Color(0.18, 0.12, 0.04, 0.85), Color(1.0, 0.75, 0.20, 0.25))
-	_slot_c_panel.position = Vector2(SLOT_C_X, SLOTS_Y)
-	_slot_c_lbl = _slot_c_panel.get_child(0) as Label
-	_slot_c_panel.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			_slot_c = ""; _update_slots())
-	add_child(_slot_c_panel)
 
 	var arrow := Label.new()
 	arrow.text = "↓"
@@ -447,17 +392,7 @@ func _show_placeholder() -> void:
 func _do_mix() -> void:
 	if _slot_a == "" or _slot_b == "": return
 
-	var key := ""
-	# Try 3-element reaction first if slot C is filled
-	if _slot_c != "":
-		key = ReactionDB.get_reaction3(_slot_a, _slot_b, _slot_c)
-	# Fall back to 2-element reaction
-	if key == "":
-		key = ReactionDB.get_reaction(_slot_a, _slot_b)
-	if key == "" and _slot_c != "":
-		key = ReactionDB.get_reaction(_slot_a, _slot_c)
-	if key == "" and _slot_c != "":
-		key = ReactionDB.get_reaction(_slot_b, _slot_c)
+	var key := ReactionDB.get_reaction(_slot_a, _slot_b)
 
 	if key == "":
 		_show_unknown()
@@ -502,9 +437,7 @@ func _show_unknown() -> void:
 	_result_panel.add_child(t)
 
 	var s := Label.new()
-	var combo := _slot_a + " + " + _slot_b
-	if _slot_c != "": combo += " + " + _slot_c
-	s.text = combo + " → ไม่พบปฏิกิริยา"
+	s.text = _slot_a + " + " + _slot_b + " → ไม่พบปฏิกิริยา"
 	s.position = Vector2(0, 184)
 	s.size = Vector2(W, 24)
 	s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
