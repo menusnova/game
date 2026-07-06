@@ -54,29 +54,14 @@ func _ready() -> void:
 		CurrencyManager.currency_changed.connect(_refresh_hud)
 
 func _load_icon_textures() -> void:
-	var map: Dictionary = {
-		"CurrBox1/CurrIcon1": "res://image/icon_gold.png",
-		"CurrBox2/CurrIcon2": "res://image/crystal_gem.png",
-		"CurrBox3/CurrIcon3": "res://image/icon_paid.png",
-		"CurrBox4/CurrIcon4": "res://image/icon_energy.png",
-		"MenuItem_Notice/Icon": "res://image/icon_notice.png",
-		"MenuItem_Missions/Icon": "res://image/icon_missions.png",
-		"MenuItem_Event/Icon": "res://image/icon_event.png",
-		"MenuItem_Pass/Icon": "res://image/icon_pass.png",
-		"MenuItem_Shop/Icon":    "res://image/icon_shop.png",
-		"NavBar/Nav_Gacha/Icon": "res://image/icon_nav_gacha.png",
-	}
-	for node_path in map:
-		var node := get_node_or_null(node_path) as TextureRect
-		if not node:
-			continue
-		var png_path: String = map[node_path]
-		var buf := FileAccess.get_file_as_bytes(png_path)
-		if buf.is_empty():
-			continue
-		var img := Image.new()
-		if img.load_png_from_buffer(buf) == OK:
-			node.texture = ImageTexture.create_from_image(img)
+	# โหลดเฉพาะ crystal_gem ที่ใช้แสดงในกล่องคริสตัลฟรี
+	var node := get_node_or_null("CurrBox2/CurrIcon2") as TextureRect
+	if node:
+		var buf := FileAccess.get_file_as_bytes("res://image/crystal_gem.png")
+		if not buf.is_empty():
+			var img := Image.new()
+			if img.load_png_from_buffer(buf) == OK:
+				node.texture = ImageTexture.create_from_image(img)
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:

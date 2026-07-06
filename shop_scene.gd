@@ -129,11 +129,23 @@ func _ready() -> void:
 #  UI BUILD
 # ══════════════════════════════════════════════════════════════════
 func _build_ui() -> void:
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	# Background image
+	var bg_img := Image.new()
+	bg_img.load_from_file("res://image/citypov.avif")
+	if not bg_img.is_empty():
+		var bg_tex := ImageTexture.create_from_image(bg_img)
+		var bg := TextureRect.new()
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.texture = bg_tex
+		bg.stretch_mode = TextureRect.STRETCH_COVER
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bg)
+	# Dark overlay
+	var overlay := ColorRect.new()
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.color = Color(0.0, 0.0, 0.05, 0.72)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(overlay)
 	_build_topbar()
 	_build_tabbar()
 	_build_subbar()
