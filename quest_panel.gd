@@ -7,27 +7,27 @@ var _is_open := false
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "current": 1, "total": 1, "go": "",          "reward": "💎×20"},
-		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "current": 0, "total": 3, "go": "battle",    "reward": "💎×60"},
-		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "current": 0, "total": 1, "go": "gacha",     "reward": "💎×30"},
-		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1, "go": "alchemist", "reward": "💎×30"},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "current": 1, "total": 1, "go": "",          "reward": "crystal", "reward_n": 20},
+		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "current": 0, "total": 3, "go": "battle",    "reward": "crystal", "reward_n": 60},
+		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "current": 0, "total": 1, "go": "gacha",     "reward": "crystal", "reward_n": 30},
+		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1, "go": "alchemist", "reward": "crystal", "reward_n": 30},
 	],
 	Tab.WEEKLY: [
-		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "current": 0, "total": 1,  "go": "battle",    "reward": "💎×120"},
-		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "current": 0, "total": 5,  "go": "battle",    "reward": "💎×100"},
-		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "current": 0, "total": 3,  "go": "gacha",     "reward": "💎×90"},
-		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "current": 0, "total": 5,  "go": "alchemist", "reward": "💎×80"},
+		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "current": 0, "total": 1,  "go": "battle",    "reward": "crystal", "reward_n": 120},
+		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "current": 0, "total": 5,  "go": "battle",    "reward": "crystal", "reward_n": 100},
+		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "current": 0, "total": 3,  "go": "gacha",     "reward": "crystal", "reward_n": 90},
+		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "current": 0, "total": 5,  "go": "alchemist", "reward": "crystal", "reward_n": 80},
 		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "current": 0, "total": 3,  "go": "battle",    "reward": "วัสดุ Ascend ×6"},
 	],
 	Tab.ENDGAME: [
 		{"id": "eg_boss",   "label": "สังหาร Weekly Boss",  "current": 0, "total": 1, "go": "battle", "reward": "วัสดุ Lv.4 ×4"},
-		{"id": "eg_chaos1", "label": "Memory of Chaos I",   "current": 0, "total": 1, "go": "battle", "reward": "💎×150"},
-		{"id": "eg_chaos2", "label": "Memory of Chaos II",  "current": 0, "total": 1, "go": "battle", "reward": "💎×150"},
+		{"id": "eg_chaos1", "label": "Memory of Chaos I",   "current": 0, "total": 1, "go": "battle", "reward": "crystal", "reward_n": 150},
+		{"id": "eg_chaos2", "label": "Memory of Chaos II",  "current": 0, "total": 1, "go": "battle", "reward": "crystal", "reward_n": 150},
 	],
 	Tab.CHALLENGE: [
-		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "current": 0, "total": 3,  "go": "battle", "reward": "💎×160"},
-		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "current": 0, "total": 1,  "go": "gacha",  "reward": "💎×200"},
-		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "current": 0, "total": 10, "go": "battle", "reward": "💎×100"},
+		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "current": 0, "total": 3,  "go": "battle", "reward": "crystal", "reward_n": 160},
+		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "current": 0, "total": 1,  "go": "gacha",  "reward": "crystal", "reward_n": 200},
+		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "current": 0, "total": 10, "go": "battle", "reward": "crystal", "reward_n": 100},
 	],
 }
 
@@ -182,12 +182,30 @@ class _QuestRow extends Control:
 		add_child(lbl)
 
 		# reward
-		var reward_lbl := Label.new()
-		reward_lbl.text = str(q.get("reward", ""))
-		reward_lbl.add_theme_font_size_override("font_size", 11)
-		reward_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
-		reward_lbl.position = Vector2(20, 44)
-		add_child(reward_lbl)
+		var reward_str: String = str(q.get("reward", ""))
+		var reward_n: int = int(q.get("reward_n", 0))
+		if reward_str == "crystal" and reward_n > 0:
+			var tex := load("res://image/crystal_gem.png") as Texture2D
+			if tex:
+				var ico := TextureRect.new()
+				ico.texture = tex
+				ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				ico.size = Vector2(18, 18)
+				ico.position = Vector2(20, 44)
+				add_child(ico)
+			var reward_lbl := Label.new()
+			reward_lbl.text = "×%d" % reward_n
+			reward_lbl.add_theme_font_size_override("font_size", 11)
+			reward_lbl.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 0.95))
+			reward_lbl.position = Vector2(42, 44)
+			add_child(reward_lbl)
+		else:
+			var reward_lbl := Label.new()
+			reward_lbl.text = reward_str
+			reward_lbl.add_theme_font_size_override("font_size", 11)
+			reward_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
+			reward_lbl.position = Vector2(20, 44)
+			add_child(reward_lbl)
 
 		# progress bar
 		var total: int = max(1, int(q.get("total", 1)))

@@ -81,23 +81,23 @@ const ELEMENTS: Array = [
 # ── Achievement data ──────────────────────────────────────────────
 const ACHIEVEMENTS: Array = [
 	# Combat
-	{"id":"first_blood",  "icon":"⚔",  "title":"First Blood",          "desc":"ชนะการต่อสู้ครั้งแรก",                "current":0, "total":1,  "reward":"💎×10",  "cat":"combat"},
-	{"id":"survivor",     "icon":"🛡",  "title":"Survivor",             "desc":"ชนะโดยที่ HP เหลือน้อยกว่า 10",     "current":0, "total":1,  "reward":"💎×20",  "cat":"combat"},
-	{"id":"veteran",      "icon":"⚔",  "title":"Veteran",              "desc":"ชนะการต่อสู้ 50 ครั้ง",             "current":0, "total":50, "reward":"🧪×500", "cat":"combat"},
-	{"id":"boss_slayer",  "icon":"💀",  "title":"Boss Slayer",          "desc":"กำจัด Boss ได้",                     "current":0, "total":1,  "reward":"💎×50",  "cat":"combat"},
-	{"id":"no_damage",    "icon":"✨",  "title":"Untouchable",          "desc":"ชนะโดยไม่โดนโจมตีเลย",             "current":0, "total":1,  "reward":"💎×30",  "cat":"combat"},
+	{"id":"first_blood",  "icon":"⚔",  "title":"First Blood",          "desc":"ชนะการต่อสู้ครั้งแรก",                "current":0, "total":1,  "reward":"crystal", "reward_n":10,  "cat":"combat"},
+	{"id":"survivor",     "icon":"🛡",  "title":"Survivor",             "desc":"ชนะโดยที่ HP เหลือน้อยกว่า 10",     "current":0, "total":1,  "reward":"crystal", "reward_n":20,  "cat":"combat"},
+	{"id":"veteran",      "icon":"⚔",  "title":"Veteran",              "desc":"ชนะการต่อสู้ 50 ครั้ง",             "current":0, "total":50, "reward":"🧪×500",  "cat":"combat"},
+	{"id":"boss_slayer",  "icon":"💀",  "title":"Boss Slayer",          "desc":"กำจัด Boss ได้",                     "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"combat"},
+	{"id":"no_damage",    "icon":"✨",  "title":"Untouchable",          "desc":"ชนะโดยไม่โดนโจมตีเลย",             "current":0, "total":1,  "reward":"crystal", "reward_n":30,  "cat":"combat"},
 	# Alchemy
 	{"id":"first_brew",   "icon":"⚗",  "title":"First Brew",           "desc":"สังเคราะห์สารประกอบครั้งแรก",       "current":0, "total":1,  "reward":"🧪×50",  "cat":"alchemy"},
 	{"id":"water_maker",  "icon":"💧",  "title":"Water Maker",          "desc":"สังเคราะห์น้ำ 10 ครั้ง",           "current":0, "total":10, "reward":"🧪×100", "cat":"alchemy"},
-	{"id":"poison_master","icon":"☠",  "title":"Poison Master",        "desc":"วางพิษศัตรู 20 ครั้ง",              "current":0, "total":20, "reward":"💎×25",  "cat":"alchemy"},
-	{"id":"all_recipes",  "icon":"📖",  "title":"Full Formula",         "desc":"ค้นพบสูตรสังเคราะห์ครบทุกสูตร",   "current":0, "total":3,  "reward":"💎×100", "cat":"alchemy"},
+	{"id":"poison_master","icon":"☠",  "title":"Poison Master",        "desc":"วางพิษศัตรู 20 ครั้ง",              "current":0, "total":20, "reward":"crystal", "reward_n":25,  "cat":"alchemy"},
+	{"id":"all_recipes",  "icon":"📖",  "title":"Full Formula",         "desc":"ค้นพบสูตรสังเคราะห์ครบทุกสูตร",   "current":0, "total":3,  "reward":"crystal", "reward_n":100, "cat":"alchemy"},
 	# Collection
-	{"id":"collector",    "icon":"🌟",  "title":"Collector",            "desc":"ปลดล็อคธาตุในสารานุกรมครบทุกตัว", "current":0, "total":8,  "reward":"💎×200", "cat":"collect"},
+	{"id":"collector",    "icon":"🌟",  "title":"Collector",            "desc":"ปลดล็อคธาตุในสารานุกรมครบทุกตัว", "current":0, "total":8,  "reward":"crystal", "reward_n":200, "cat":"collect"},
 	{"id":"gacha_once",   "icon":"🎲",  "title":"Lucky Draw",           "desc":"สุ่มกาชาครั้งแรก",                 "current":0, "total":1,  "reward":"🧪×200", "cat":"collect"},
-	{"id":"pity_hit",     "icon":"⭐",  "title":"Pity Saved Me",        "desc":"ได้ตัวละคร 5★ จาก pity",           "current":0, "total":1,  "reward":"💎×50",  "cat":"collect"},
+	{"id":"pity_hit",     "icon":"⭐",  "title":"Pity Saved Me",        "desc":"ได้ตัวละคร 5★ จาก pity",           "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"collect"},
 	# Progression
-	{"id":"stage_10",     "icon":"🗺",  "title":"Explorer",             "desc":"ผ่าน Stage 10",                    "current":0, "total":10, "reward":"💎×30",  "cat":"progress"},
-	{"id":"domain_full",  "icon":"🌐",  "title":"Domain Master",        "desc":"เติม Domain Gauge เต็ม",           "current":0, "total":1,  "reward":"💎×40",  "cat":"progress"},
+	{"id":"stage_10",     "icon":"🗺",  "title":"Explorer",             "desc":"ผ่าน Stage 10",                    "current":0, "total":10, "reward":"crystal", "reward_n":30,  "cat":"progress"},
+	{"id":"domain_full",  "icon":"🌐",  "title":"Domain Master",        "desc":"เติม Domain Gauge เต็ม",           "current":0, "total":1,  "reward":"crystal", "reward_n":40,  "cat":"progress"},
 	{"id":"ultimate_x5",  "icon":"💥",  "title":"Limit Breaker",        "desc":"ใช้ Ultimate 5 ครั้ง",             "current":0, "total":5,  "reward":"🧪×150", "cat":"progress"},
 ]
 
@@ -433,12 +433,30 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 	row.add_child(cnt)
 
 	# Reward
-	var rew := Label.new()
-	rew.text = "🎁 " + ach["reward"]
-	rew.position = Vector2(900, 22)
-	rew.add_theme_font_size_override("font_size", 12)
-	rew.add_theme_color_override("font_color", C_GOLD if done else Color(0.6, 0.65, 0.8))
-	row.add_child(rew)
+	var reward_str: String = str(ach.get("reward", ""))
+	var reward_n: int = int(ach.get("reward_n", 0))
+	if reward_str == "crystal" and reward_n > 0:
+		var tex := load("res://image/crystal_gem.png") as Texture2D
+		if tex:
+			var ico := TextureRect.new()
+			ico.texture = tex
+			ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			ico.size = Vector2(18, 18)
+			ico.position = Vector2(900, 26)
+			row.add_child(ico)
+		var rew := Label.new()
+		rew.text = "×%d" % reward_n
+		rew.position = Vector2(922, 22)
+		rew.add_theme_font_size_override("font_size", 12)
+		rew.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 0.95) if done else Color(0.4, 0.6, 0.75))
+		row.add_child(rew)
+	else:
+		var rew := Label.new()
+		rew.text = "🎁 " + reward_str
+		rew.position = Vector2(900, 22)
+		rew.add_theme_font_size_override("font_size", 12)
+		rew.add_theme_color_override("font_color", C_GOLD if done else Color(0.6, 0.65, 0.8))
+		row.add_child(rew)
 
 	# Divider
 	var div := ColorRect.new()

@@ -294,10 +294,18 @@ func _build_bottom_bar() -> void:
 	gem_row.position = Vector2(info_x, 12)
 	gem_row.add_theme_constant_override("separation", 4)
 	bar.add_child(gem_row)
-	var gem_ico := Label.new()
-	gem_ico.text = "💎"
-	gem_ico.add_theme_font_size_override("font_size", 18)
-	gem_row.add_child(gem_ico)
+	var gem_tex := load("res://image/crystal_gem.png") as Texture2D
+	if gem_tex:
+		var gem_ico := TextureRect.new()
+		gem_ico.texture = gem_tex
+		gem_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		gem_ico.custom_minimum_size = Vector2(22, 22)
+		gem_row.add_child(gem_ico)
+	else:
+		var gem_ico := Label.new()
+		gem_ico.text = "💠"
+		gem_ico.add_theme_font_size_override("font_size", 18)
+		gem_row.add_child(gem_ico)
 	_new_gem_lbl = Label.new()
 	_new_gem_lbl.text = "0"
 	_new_gem_lbl.add_theme_font_size_override("font_size", 18)
@@ -334,13 +342,13 @@ func _build_bottom_bar() -> void:
 	var btn_h := 52.0
 	var bx    := W - (btn_w * 2 + 12 + 16)
 
-	_new_pull1 = _pull_btn("Warp  ×1\n160 💎", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
+	_new_pull1 = _pull_btn("Warp  ×1\n160 คริสตัล", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
 	_new_pull1.size     = Vector2(btn_w, btn_h)
 	_new_pull1.position = Vector2(bx, (BOT_H - btn_h) * 0.5)
 	_new_pull1.pressed.connect(func(): _do_pull(1))
 	bar.add_child(_new_pull1)
 
-	_new_pull10 = _pull_btn("Warp  ×10\n1,600 💎", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
+	_new_pull10 = _pull_btn("Warp  ×10\n1,600 คริสตัล", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
 	_new_pull10.size     = Vector2(btn_w, btn_h)
 	_new_pull10.position = Vector2(bx + btn_w + 12, (BOT_H - btn_h) * 0.5)
 	_new_pull10.pressed.connect(func(): _do_pull(10))
