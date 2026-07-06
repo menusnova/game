@@ -8,9 +8,32 @@ const PITY_SOFT    := 75
 const RATE_5 := 0.016
 const RATE_4 := 0.051
 
+# 5★ characters
 const POOL_5: Array[String] = ["Lyra", "Seraph"]
-const POOL_4: Array[String] = ["Kael", "Mira", "Voss"]
-const POOL_3: Array[String] = ["Common Shard", "Iron Catalyst", "Void Dust"]
+# 4★ characters + support cards
+const POOL_4: Array[String] = [
+	"Kael", "Mira", "Voss",               # characters
+	"Acid Flask", "Iron Shield", "Ember Seal",  # support cards
+]
+# 3★ element cards (from the lab element set)
+const POOL_3: Array[String] = [
+	"H", "O", "Na", "Cl", "C",
+	"Fe", "N", "S", "Ca", "Mg",
+	"K", "Cu", "Zn", "P", "Si",
+]
+
+# card type lookup for display
+const CARD_TYPE: Dictionary = {
+	"Lyra": "CHARACTER", "Seraph": "CHARACTER",
+	"Kael": "CHARACTER", "Mira": "CHARACTER", "Voss": "CHARACTER",
+	"Acid Flask": "SUPPORT", "Iron Shield": "SUPPORT", "Ember Seal": "SUPPORT",
+}
+const ELEM_NAME: Dictionary = {
+	"H": "Hydrogen", "O": "Oxygen",    "Na": "Sodium",   "Cl": "Chlorine",
+	"C": "Carbon",   "Fe": "Iron",     "N":  "Nitrogen",  "S":  "Sulfur",
+	"Ca": "Calcium", "Mg": "Magnesium","K":  "Potassium", "Cu": "Copper",
+	"Zn": "Zinc",    "P":  "Phosphorus","Si": "Silicon",
+}
 
 # Warp type definitions (left selector)
 const WARP_TYPES := [
@@ -639,20 +662,41 @@ func _build_reveal_card(char_name: String, rarity: int,
 	stars.offset_top=12; stars.offset_bottom=34
 	card.add_child(stars)
 
-	var name_lbl := Label.new()
-	name_lbl.text = char_name
-	name_lbl.add_theme_font_size_override("font_size", 15)
-	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	name_lbl.offset_top=-36; name_lbl.offset_bottom=-10
-	card.add_child(name_lbl)
+	# For element cards show symbol big + full name; for others just name
+	if rarity == 3 and ELEM_NAME.has(char_name):
+		var sym_lbl := Label.new()
+		sym_lbl.text = char_name
+		sym_lbl.add_theme_font_size_override("font_size", 54)
+		sym_lbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.9))
+		sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sym_lbl.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+		sym_lbl.offset_top = 50; sym_lbl.offset_bottom = 130
+		sym_lbl.offset_left = -80; sym_lbl.offset_right = 80
+		card.add_child(sym_lbl)
+
+		var name_lbl := Label.new()
+		name_lbl.text = ELEM_NAME.get(char_name, char_name)
+		name_lbl.add_theme_font_size_override("font_size", 13)
+		name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.85))
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+		name_lbl.offset_top=-36; name_lbl.offset_bottom=-10
+		card.add_child(name_lbl)
+	else:
+		var name_lbl := Label.new()
+		name_lbl.text = char_name
+		name_lbl.add_theme_font_size_override("font_size", 15)
+		name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+		name_lbl.offset_top=-36; name_lbl.offset_bottom=-10
+		card.add_child(name_lbl)
 
 	var rlbl := Label.new()
-	match rarity:
-		5: rlbl.text = "5★  CHARACTER"
-		4: rlbl.text = "4★  CHARACTER"
-		_: rlbl.text = "3★  MATERIAL"
+	var ctype: String = CARD_TYPE.get(char_name, "")
+	if rarity == 3: ctype = "ELEMENT CARD"
+	elif ctype == "": ctype = "CHARACTER"
+	rlbl.text = "%d★  %s" % [rarity, ctype]
 	rlbl.add_theme_font_size_override("font_size", 10)
 	rlbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.8))
 	rlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -685,9 +729,20 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	stars.offset_bottom=-6; stars.offset_left=4; stars.offset_right=84; stars.offset_top=-18
 	card.add_child(stars)
 
+	# Element cards: show symbol large, full name tiny
+	if rarity == 3 and ELEM_NAME.has(char_name):
+		var sym := Label.new()
+		sym.text = char_name
+		sym.add_theme_font_size_override("font_size", 28)
+		sym.add_theme_color_override("font_color", Color(0.5, 0.78, 1.0, 0.9))
+		sym.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sym.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+		sym.offset_top=14; sym.offset_bottom=54; sym.offset_left=-44; sym.offset_right=44
+		card.add_child(sym)
+
 	var name_lbl := Label.new()
-	name_lbl.text = char_name
-	name_lbl.add_theme_font_size_override("font_size", 9)
+	name_lbl.text = ELEM_NAME.get(char_name, char_name) if rarity == 3 else char_name
+	name_lbl.add_theme_font_size_override("font_size", 8)
 	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.9))
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
