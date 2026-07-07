@@ -72,9 +72,7 @@ func _ready() -> void:
 	for i in range(MAX_SPARKS):
 		sparks.append(_new_spark(randf()))
 
-	fade.color = Color(0, 0, 0, 1)
-	var t := create_tween()
-	t.tween_property(fade, "color:a", 0.0, 1.2)
+	fade.color = Color(0, 0, 0, 0)  # SceneTransition handles the fade-in
 	dot_timer.start()
 
 
@@ -243,10 +241,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _go() -> void:
-	var t := create_tween()
-	t.tween_property(fade, "color:a", 1.0, 0.9)
-	await t.finished
-	get_tree().change_scene_to_file(NEXT_SCENE)
+	SceneTransition.fade_to(NEXT_SCENE, 0.9)
 
 
 func _on_dot_timer_timeout() -> void:
