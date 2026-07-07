@@ -503,23 +503,24 @@ func _build_bottom_bar() -> void:
 	bar.z_index  = 6
 	add_child(bar)
 
-	# Two warp buttons on the right side
-	var btn_w  := 220.0
+	# Two warp buttons on the right side (left btn wider, stretches toward right)
 	var btn_h  := 50.0
 	var btn_y  := (BOT_H - btn_h) * 0.5
-	var bx2    := W - btn_w - 16.0
-	var bx1    := bx2 - btn_w - 12.0
+	var btn_w2 := 220.0   # Warp ×10
+	var btn_w1 := 256.0   # Warp ×1 — wider, extends toward right
+	var bx2    := W - btn_w2 - 16.0
+	var bx1    := bx2 - btn_w1 - 10.0
 
 	# Warp ×1 — gem icon + count + label
 	_new_pull1 = _warp_btn(1)
-	_new_pull1.size     = Vector2(btn_w, btn_h)
+	_new_pull1.size     = Vector2(btn_w1, btn_h)
 	_new_pull1.position = Vector2(bx1, btn_y)
 	_new_pull1.pressed.connect(func(): _do_pull(1))
 	bar.add_child(_new_pull1)
 
 	# Warp ×10
 	_new_pull10 = _warp_btn(10)
-	_new_pull10.size     = Vector2(btn_w, btn_h)
+	_new_pull10.size     = Vector2(btn_w2, btn_h)
 	_new_pull10.position = Vector2(bx2, btn_y)
 	_new_pull10.pressed.connect(func(): _do_pull(10))
 	bar.add_child(_new_pull10)
@@ -561,7 +562,7 @@ func _warp_btn(count: int) -> Button:
 
 	# Warp label (bottom)
 	var warp_lbl := Label.new()
-	warp_lbl.text = "Warp  ×%d" % count
+	warp_lbl.text = "สุ่ม  ×%d" % count
 	warp_lbl.add_theme_font_size_override("font_size", 15)
 	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	warp_lbl.position = Vector2(12, 26)
