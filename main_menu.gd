@@ -46,14 +46,20 @@ func _ready() -> void:
 		CurrencyManager.currency_changed.connect(_refresh_hud)
 
 func _load_icon_textures() -> void:
-	# โหลดเฉพาะ crystal_gem ที่ใช้แสดงในกล่องคริสตัลฟรี
-	var node := get_node_or_null("CurrBox2/CurrIcon2") as TextureRect
-	if node:
-		var buf := FileAccess.get_file_as_bytes("res://image/crystal_gem.png")
-		if not buf.is_empty():
-			var img := Image.new()
-			if img.load_png_from_buffer(buf) == OK:
-				node.texture = ImageTexture.create_from_image(img)
+	var icons := [
+		["CurrBox1/CurrIcon1", "res://image/icon_gold.png"],
+		["CurrBox2/CurrIcon2", "res://image/crystal_gem.png"],
+		["CurrBox3/CurrIcon3", "res://image/icon_paid.png"],
+		["CurrBox4/CurrIcon4", "res://image/icon_energy.png"],
+	]
+	for pair in icons:
+		var node := get_node_or_null(pair[0]) as TextureRect
+		if node:
+			var buf := FileAccess.get_file_as_bytes(pair[1])
+			if not buf.is_empty():
+				var img := Image.new()
+				if img.load_png_from_buffer(buf) == OK:
+					node.texture = ImageTexture.create_from_image(img)
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:
