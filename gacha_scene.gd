@@ -45,6 +45,11 @@ const WARP_TYPES := [
 		"banner_sub":   "5★  Rate Up  •  LIMITED",
 		"art_icon":     "🔥",
 		"art_col":      Color(1.0, 0.40, 0.15),
+		"duration":     "อีก 21 วัน",
+		"desc_lines": [
+			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
+			"ตัวละครหลักในแบนเนอร์นี้มีอัตราได้รับสูงขึ้น",
+		],
 	},
 	{
 		"id":     "lc",
@@ -56,6 +61,11 @@ const WARP_TYPES := [
 		"banner_sub":   "4★  Erudition Path  •  LC",
 		"art_icon":     "📖",
 		"art_col":      Color(1.0, 0.80, 0.25),
+		"duration":     "อีก 21 วัน",
+		"desc_lines": [
+			"ทุก 10 ครั้งรับประกันได้ไพ่ช่วย 4★ ขึ้นไป",
+			"ไพ่หลักในแบนเนอร์นี้มีอัตราได้รับสูงขึ้น",
+		],
 	},
 	{
 		"id":     "std",
@@ -67,6 +77,11 @@ const WARP_TYPES := [
 		"banner_sub":   "Standard 5★ Pool",
 		"art_icon":     "⋆",
 		"art_col":      Color(0.60, 0.65, 1.0),
+		"duration":     "ถาวร",
+		"desc_lines": [
+			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
+			"รวมตัวละครและไพ่ช่วยทุกประเภทในระบบ",
+		],
 	},
 ]
 
@@ -84,11 +99,7 @@ var _new_pity4_lbl:  Label       = null
 var _new_pity4_bar:  ProgressBar = null
 var _new_pull1:      Button      = null
 var _new_pull10:     Button      = null
-var _banner_title:   Label       = null
-var _banner_sub:     Label       = null
-var _banner_art:     Label       = null
-var _banner_glow:    ColorRect   = null
-var _banner_card_node: Panel     = null
+var _info_card_node: Panel       = null
 var _warp_btns:      Array[Button] = []
 
 @onready var _result_ov:  Control       = $ResultOverlay
@@ -111,342 +122,553 @@ func _ready() -> void:
 	_refresh_ui()
 
 # ── Layout constants ──────────────────────────────────────────────
-const W      := 1152.0
-const H      := 648.0
-const LEFT_W := 210.0
-const BOT_H  := 72.0    # slim bottom bar (back + gem + pity only)
-const TAB_H  := 112.0   # each warp tab height
-const TAB_GAP := 12.0   # gap between tabs
-const TAB_MX  := 8.0    # side margin inside left panel
+const W       := 1152.0
+const H       := 648.0
+const TOP_H   := 52.0    # top bar height
+const BOT_H   := 72.0    # bottom bar height
+const THUMB_W := 68.0    # left thumbnail strip width
+const INFO_W  := 310.0   # info card width
+const TAB_H   := 120.0   # warp tab thumbnail height
+const TAB_GAP := 8.0
 
 func _build_hsr_ui() -> void:
-	# Starfield background
+	# Dark gradient background
 	var bg := ColorRect.new()
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.025, 0.03, 0.08, 1.0)
+	bg.color = Color(0.07, 0.05, 0.14, 1.0)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg.z_index = -10
 	add_child(bg)
 	_add_stars(bg)
 
-	# ── Left selector panel ──
-	var left_sb := _sb(Color(0.03, 0.05, 0.13, 0.82), Color(1,1,1, 0.06), 0, 1)
-	var left_panel := Panel.new()
-	left_panel.size     = Vector2(LEFT_W, H - BOT_H)
-	left_panel.position = Vector2.ZERO
-	left_panel.add_theme_stylebox_override("panel", left_sb)
-	left_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_panel.z_index = 3
-	add_child(left_panel)
+	# ── Art placeholder area (center-right) ──
+	var art_x := THUMB_W + INFO_W + 16.0
+	var art_rect := ColorRect.new()
+	art_rect.size     = Vector2(W - art_x, H - TOP_H - BOT_H)
+	art_rect.position = Vector2(art_x, TOP_H)
+	art_rect.color    = Color(0, 0, 0, 0)
+	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	art_rect.z_index  = 0
+	add_child(art_rect)
 
-	var warp_hdr := Label.new()
-	warp_hdr.text = "WARP"
-	warp_hdr.add_theme_font_size_override("font_size", 22)
-	warp_hdr.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.9))
-	warp_hdr.size     = Vector2(LEFT_W, 36)
-	warp_hdr.position = Vector2(0, 18)
-	warp_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	warp_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_panel.add_child(warp_hdr)
+	# Art icon (large, centered in art area, animated)
+	var d: Dictionary = WARP_TYPES[_active_warp]
+	var art_lbl := Label.new()
+	art_lbl.text = str(d["art_icon"])
+	art_lbl.add_theme_font_size_override("font_size", 220)
+	art_lbl.add_theme_color_override("font_color",
+		Color((d["art_col"] as Color).r, (d["art_col"] as Color).g, (d["art_col"] as Color).b, 0.15))
+	art_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	art_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	art_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	art_lbl.offset_right = -60
+	art_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	art_lbl.z_index = 0
+	add_child(art_lbl)
+	var tp := art_lbl.create_tween().set_loops()
+	tp.tween_property(art_lbl, "modulate:a", 0.45, 3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tp.tween_property(art_lbl, "modulate:a", 1.0,  3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	var sep_hdr := ColorRect.new()
-	sep_hdr.size     = Vector2(LEFT_W - 24, 1)
-	sep_hdr.position = Vector2(12, 58)
-	sep_hdr.color    = Color(0.37, 0.62, 1.0, 0.18)
-	sep_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_panel.add_child(sep_hdr)
+	# ── Left thumbnail strip ──
+	_build_thumb_strip()
 
-	# Warp tabs — spaced with TAB_GAP, TAB_MX side margin
-	var tab_start_y := 68.0
-	for i in WARP_TYPES.size():
-		var d: Dictionary = WARP_TYPES[i]
-		var btn := _make_warp_tab(d, i == _active_warp)
-		btn.position = Vector2(TAB_MX, tab_start_y + i * (TAB_H + TAB_GAP))
-		btn.size     = Vector2(LEFT_W - TAB_MX * 2, TAB_H)
-		btn.pressed.connect(_on_warp_tab.bind(i))
-		left_panel.add_child(btn)
-		_warp_btns.append(btn)
+	# ── Info card ──
+	_build_info_card()
 
-	# ── Banner card (floating, rounded, not touching edges) ──
-	_build_banner_card()
+	# ── Top bar ──
+	_build_top_bar()
 
-	# ── Bottom bar (back + gem + pity only) ──
+	# ── Bottom bar ──
 	_build_bottom_bar()
 
 	if _result_ov:
 		_result_ov.z_index = 50
 		move_child(_result_ov, get_child_count() - 1)
 
-func _build_banner_card() -> void:
+# ── Thumbnail strip (far-left, warp type selector) ──────────────
+func _build_thumb_strip() -> void:
+	var strip_sb := _sb(Color(0.03, 0.04, 0.12, 0.90), Color(1,1,1, 0.05), 0, 1)
+	var strip := Panel.new()
+	strip.name     = "_ThumbStrip"
+	strip.size     = Vector2(THUMB_W, H - TOP_H - BOT_H)
+	strip.position = Vector2(0, TOP_H)
+	strip.add_theme_stylebox_override("panel", strip_sb)
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	strip.z_index  = 5
+	add_child(strip)
+
+	var start_y := (H - TOP_H - BOT_H - (WARP_TYPES.size() * TAB_H + (WARP_TYPES.size()-1) * TAB_GAP)) * 0.5
+	start_y = maxf(start_y, 12.0)
+	for i in WARP_TYPES.size():
+		var wd: Dictionary = WARP_TYPES[i]
+		var btn := _make_thumb_btn(wd, i == _active_warp)
+		btn.size     = Vector2(THUMB_W - 8, TAB_H)
+		btn.position = Vector2(4, start_y + i * (TAB_H + TAB_GAP))
+		btn.pressed.connect(_on_warp_tab.bind(i))
+		strip.add_child(btn)
+		_warp_btns.append(btn)
+
+# ── Info card (left panel, HSR-style white/translucent card) ─────
+func _build_info_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	# Floating card — inset from all edges
-	var cx := LEFT_W + 32.0
-	var cy := 32.0
-	var cw := W - cx - 32.0
-	var ch := H - BOT_H - cy - 24.0
+	var ix := THUMB_W + 12.0
+	var iy := TOP_H + 16.0
+	var iw := INFO_W
+	var ih := H - TOP_H - BOT_H - 32.0
 
-	var card_sb := _sb(
-		Color(acc.r * 0.04, acc.g * 0.04, acc.b * 0.10, 0.30),
-		Color(acc.r, acc.g, acc.b, 0.22),
-		20, 1
-	)
-	# Drop shadow via shadow_size
-	card_sb.shadow_color = Color(0, 0, 0, 0.55)
-	card_sb.shadow_size  = 14
+	var card_sb := _sb(Color(0.96, 0.97, 1.0, 0.11), Color(1.0, 1.0, 1.0, 0.16), 14, 1)
+	card_sb.shadow_color = Color(0, 0, 0, 0.40)
+	card_sb.shadow_size  = 12
 
 	var card := Panel.new()
-	card.name     = "_BannerCard"
-	card.size     = Vector2(cw, ch)
-	card.position = Vector2(cx, cy)
+	card.name     = "_InfoCard"
+	card.size     = Vector2(iw, ih)
+	card.position = Vector2(ix, iy)
 	card.add_theme_stylebox_override("panel", card_sb)
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.z_index  = 2
+	card.z_index  = 4
 	add_child(card)
-	_banner_card_node = card
+	_info_card_node = card
 
-	# Accent top bar
-	var top_bar := ColorRect.new()
-	top_bar.size     = Vector2(cw, 3)
-	top_bar.color    = Color(acc.r, acc.g, acc.b, 0.7)
-	top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(top_bar)
+	var pad := 16.0
+	var cy  := pad
 
-	# Glow blob
-	_banner_glow = ColorRect.new()
-	_banner_glow.size     = Vector2(cw * 0.6, ch * 0.7)
-	_banner_glow.position = Vector2((cw - cw * 0.6) * 0.5, ch * 0.1)
-	_banner_glow.color    = Color(acc.r, acc.g, acc.b, 0.055)
-	_banner_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_banner_glow)
+	# Tag chip "Character Event Warp"
+	var tag_sb := _sb(Color(acc.r * 0.15, acc.g * 0.2, acc.b * 0.45, 0.9),
+		Color(acc.r, acc.g, acc.b, 0.6), 4, 1)
+	var tag := Panel.new()
+	tag.size     = Vector2(iw - pad * 2, 24)
+	tag.position = Vector2(pad, cy)
+	tag.add_theme_stylebox_override("panel", tag_sb)
+	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(tag)
+	var tag_lbl := Label.new()
+	tag_lbl.text = str(d["label"]).replace("\n", " ")
+	tag_lbl.add_theme_font_size_override("font_size", 11)
+	tag_lbl.add_theme_color_override("font_color", Color(acc.r + 0.2, acc.g + 0.1, acc.b, 1.0))
+	tag_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tag_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tag.add_child(tag_lbl)
+	cy += 32
 
-	# Large art icon (center)
-	_banner_art = Label.new()
-	_banner_art.text = str(d["art_icon"])
-	_banner_art.add_theme_font_size_override("font_size", 120)
-	_banner_art.add_theme_color_override("font_color",
-		Color((d["art_col"] as Color).r, (d["art_col"] as Color).g, (d["art_col"] as Color).b, 0.18))
-	_banner_art.size     = Vector2(cw, ch)
-	_banner_art.position = Vector2.ZERO
-	_banner_art.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_banner_art.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_banner_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_banner_art)
+	# Banner title
+	var title := Label.new()
+	title.text = str(d["banner_title"])
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.97))
+	title.size     = Vector2(iw - pad * 2, 30)
+	title.position = Vector2(pad, cy)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(title)
+	cy += 36
 
-	var tp := _banner_art.create_tween().set_loops()
-	tp.tween_property(_banner_art, "modulate:a", 0.55, 2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tp.tween_property(_banner_art, "modulate:a", 1.0,  2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	# Timer row
+	var timer_row := HBoxContainer.new()
+	timer_row.position = Vector2(pad, cy)
+	timer_row.add_theme_constant_override("separation", 4)
+	timer_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(timer_row)
+	var timer_ico := Label.new()
+	timer_ico.text = "⏱"
+	timer_ico.add_theme_font_size_override("font_size", 13)
+	timer_ico.add_theme_color_override("font_color", Color(1.0, 0.6, 0.2, 0.9))
+	timer_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	timer_row.add_child(timer_ico)
+	var timer_lbl := Label.new()
+	timer_lbl.text = str(d.get("duration", "ถาวร"))
+	timer_lbl.add_theme_font_size_override("font_size", 13)
+	timer_lbl.add_theme_color_override("font_color", Color(1.0, 0.6, 0.2, 1.0))
+	timer_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	timer_row.add_child(timer_lbl)
+	cy += 28
 
-	# Title + sub + pity (bottom-left of card)
-	var info_y := ch - 110.0
-	_banner_title = Label.new()
-	_banner_title.text = str(d["banner_title"])
-	_banner_title.add_theme_font_size_override("font_size", 26)
-	_banner_title.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-	_banner_title.size     = Vector2(cw * 0.50, 34)
-	_banner_title.position = Vector2(18, info_y)
-	_banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_banner_title)
+	# Description lines
+	for desc_line in d.get("desc_lines", []) as Array:
+		var dl := Label.new()
+		dl.text = str(desc_line)
+		dl.add_theme_font_size_override("font_size", 11)
+		dl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.95, 0.75))
+		dl.size     = Vector2(iw - pad * 2, 32)
+		dl.position = Vector2(pad, cy)
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(dl)
+		cy += 36
 
-	_banner_sub = Label.new()
-	_banner_sub.text = str(d["banner_sub"])
-	_banner_sub.add_theme_font_size_override("font_size", 12)
-	_banner_sub.add_theme_color_override("font_color", Color(acc.r + 0.1, acc.g + 0.05, acc.b, 0.8))
-	_banner_sub.size     = Vector2(cw * 0.50, 20)
-	_banner_sub.position = Vector2(18, info_y + 38)
-	_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_banner_sub)
+	# Separator
+	var sep := ColorRect.new()
+	sep.size     = Vector2(iw - pad * 2, 1)
+	sep.position = Vector2(pad, cy)
+	sep.color    = Color(1, 1, 1, 0.10)
+	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(sep)
+	cy += 10
 
-	# ── Pity section — bottom-left, below sub ──
-	# 5★ pity
-	var pity_desc := Label.new()
-	pity_desc.text = "รับประกัน 5★ ที่ 90 ครั้ง  •  Soft pity เริ่มที่ 75"
-	pity_desc.add_theme_font_size_override("font_size", 10)
-	pity_desc.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.45))
-	pity_desc.size     = Vector2(cw * 0.50, 16)
-	pity_desc.position = Vector2(18, info_y + 62)
-	pity_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(pity_desc)
+	# Featured header
+	var feat_hdr := Label.new()
+	feat_hdr.text = "ตัวละครเด่น"
+	feat_hdr.add_theme_font_size_override("font_size", 11)
+	feat_hdr.add_theme_color_override("font_color", Color(0.7, 0.8, 1.0, 0.6))
+	feat_hdr.size     = Vector2(iw - pad * 2, 18)
+	feat_hdr.position = Vector2(pad, cy)
+	feat_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(feat_hdr)
+	cy += 22
+
+	# Featured character portrait slots (3 slots)
+	var feat_w  := 72.0
+	var feat_h  := 90.0
+	var feat_gap := 8.0
+	for fi in 3:
+		var feat_sb2 := _sb(Color(0.08, 0.10, 0.20, 0.80), Color(1,1,1, 0.12), 8, 1)
+		var feat_slot := Panel.new()
+		feat_slot.size     = Vector2(feat_w, feat_h)
+		feat_slot.position = Vector2(pad + fi * (feat_w + feat_gap), cy)
+		feat_slot.add_theme_stylebox_override("panel", feat_sb2)
+		feat_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(feat_slot)
+		# placeholder icon
+		var fi_lbl := Label.new()
+		fi_lbl.text = str(d["art_icon"])
+		fi_lbl.add_theme_font_size_override("font_size", 28)
+		fi_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.25))
+		fi_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		fi_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		fi_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		fi_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		feat_slot.add_child(fi_lbl)
+	cy += feat_h + 8
+
+	# Pity section
+	var sep2 := ColorRect.new()
+	sep2.size     = Vector2(iw - pad * 2, 1)
+	sep2.position = Vector2(pad, cy)
+	sep2.color    = Color(1, 1, 1, 0.10)
+	sep2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(sep2)
+	cy += 10
+
+	var pity5_hdr := Label.new()
+	pity5_hdr.text = "รับประกัน 5★ ทุก 90 ครั้ง (Soft pity 75)"
+	pity5_hdr.add_theme_font_size_override("font_size", 10)
+	pity5_hdr.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.50))
+	pity5_hdr.size     = Vector2(iw - pad * 2, 16)
+	pity5_hdr.position = Vector2(pad, cy)
+	pity5_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity5_hdr)
+	cy += 18
+
+	var pity5_row := HBoxContainer.new()
+	pity5_row.size     = Vector2(iw - pad * 2, 16)
+	pity5_row.position = Vector2(pad, cy)
+	pity5_row.add_theme_constant_override("separation", 8)
+	pity5_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity5_row)
 
 	_new_pity_bar = ProgressBar.new()
 	_new_pity_bar.max_value       = PITY_HARD
 	_new_pity_bar.value           = _pity
 	_new_pity_bar.show_percentage = false
-	_new_pity_bar.size            = Vector2(200, 4)
-	_new_pity_bar.position        = Vector2(18, info_y + 81)
+	_new_pity_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_new_pity_bar)
+	pity5_row.add_child(_new_pity_bar)
 
 	_new_pity_lbl = Label.new()
-	_new_pity_lbl.text = "Pity  %d / %d" % [_pity, PITY_HARD]
+	_new_pity_lbl.text = "%d / %d" % [_pity, PITY_HARD]
 	_new_pity_lbl.add_theme_font_size_override("font_size", 11)
-	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.85))
-	_new_pity_lbl.size     = Vector2(200, 16)
-	_new_pity_lbl.position = Vector2(226, info_y + 77)
+	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.90))
 	_new_pity_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_new_pity_lbl)
+	pity5_row.add_child(_new_pity_lbl)
+	cy += 22
 
-	# 4★ pity — ทุก 10 ครั้งได้ 4★
-	var pity4_desc := Label.new()
-	pity4_desc.text = "ทุก 10 ครั้งจะได้ 4★"
-	pity4_desc.add_theme_font_size_override("font_size", 10)
-	pity4_desc.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.45))
-	pity4_desc.size     = Vector2(200, 16)
-	pity4_desc.position = Vector2(18, info_y + 97)
-	pity4_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(pity4_desc)
+	var pity4_hdr := Label.new()
+	pity4_hdr.text = "รับประกัน 4★ ทุก 10 ครั้ง"
+	pity4_hdr.add_theme_font_size_override("font_size", 10)
+	pity4_hdr.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.50))
+	pity4_hdr.size     = Vector2(iw - pad * 2, 16)
+	pity4_hdr.position = Vector2(pad, cy)
+	pity4_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity4_hdr)
+	cy += 18
+
+	var pity4_row := HBoxContainer.new()
+	pity4_row.size     = Vector2(iw - pad * 2, 16)
+	pity4_row.position = Vector2(pad, cy)
+	pity4_row.add_theme_constant_override("separation", 8)
+	pity4_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity4_row)
 
 	_new_pity4_bar = ProgressBar.new()
 	_new_pity4_bar.max_value       = 10
 	_new_pity4_bar.value           = _pity_4
 	_new_pity4_bar.show_percentage = false
-	_new_pity4_bar.size            = Vector2(100, 4)
-	_new_pity4_bar.position        = Vector2(18, info_y + 116)
+	_new_pity4_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity4_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_new_pity4_bar)
+	pity4_row.add_child(_new_pity4_bar)
 
 	_new_pity4_lbl = Label.new()
-	_new_pity4_lbl.text = "4★  %d / 10" % _pity_4
+	_new_pity4_lbl.text = "%d / 10" % _pity_4
 	_new_pity4_lbl.add_theme_font_size_override("font_size", 11)
-	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.85))
-	_new_pity4_lbl.size     = Vector2(120, 16)
-	_new_pity4_lbl.position = Vector2(126, info_y + 112)
+	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.90))
 	_new_pity4_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(_new_pity4_lbl)
+	pity4_row.add_child(_new_pity4_lbl)
+	cy += 22
 
-	# ── Pull buttons — bottom-right inside card ──
-	var btn_w  := 200.0
-	var btn_h  := 50.0
-	var btn_pad := 16.0
-	var bx2 := cw - (btn_w * 2 + 10 + btn_pad)
-	var by2 := ch - btn_h - btn_pad
+	# Bottom action buttons (Exchange / View Details)
+	var btn_y := ih - 52.0
+	var ex_btn := _ghost_btn("แลกเปลี่ยน", 12)
+	ex_btn.size     = Vector2((iw - pad * 2 - 8) * 0.5, 38)
+	ex_btn.position = Vector2(pad, btn_y)
+	card.add_child(ex_btn)
 
-	_new_pull1 = _pull_btn("Warp  ×1\n150 💠", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
-	_new_pull1.size     = Vector2(btn_w, btn_h)
-	_new_pull1.position = Vector2(bx2, by2)
-	_new_pull1.z_index  = 3
-	_new_pull1.pressed.connect(func(): _do_pull(1))
-	card.add_child(_new_pull1)
+	var det_btn := _ghost_btn("ดูรายละเอียด", 12)
+	det_btn.size     = Vector2((iw - pad * 2 - 8) * 0.5, 38)
+	det_btn.position = Vector2(pad + (iw - pad * 2 - 8) * 0.5 + 8, btn_y)
+	card.add_child(det_btn)
 
-	_new_pull10 = _pull_btn("Warp  ×10\n1,500 💠", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
-	_new_pull10.size     = Vector2(btn_w, btn_h)
-	_new_pull10.position = Vector2(bx2 + btn_w + 10, by2)
-	_new_pull10.z_index  = 3
-	_new_pull10.pressed.connect(func(): _do_pull(10))
-	card.add_child(_new_pull10)
+# ── Top bar ──────────────────────────────────────────────────────
+func _build_top_bar() -> void:
+	var bar_sb := _sb(Color(0.04, 0.04, 0.12, 0.88), Color(1,1,1, 0.06), 0, 1)
+	var bar := Panel.new()
+	bar.name     = "_TopBar"
+	bar.size     = Vector2(W, TOP_H)
+	bar.position = Vector2.ZERO
+	bar.add_theme_stylebox_override("panel", bar_sb)
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.z_index  = 6
+	add_child(bar)
 
+	# Warp icon + title
+	var title_lbl := Label.new()
+	title_lbl.text = "Warp"
+	title_lbl.add_theme_font_size_override("font_size", 20)
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
+	title_lbl.size     = Vector2(220, TOP_H)
+	title_lbl.position = Vector2(16, 0)
+	title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(title_lbl)
+
+	# Banner sub-title
+	var d: Dictionary = WARP_TYPES[_active_warp]
+	var sub_lbl := Label.new()
+	sub_lbl.text = str(d["banner_title"])
+	sub_lbl.add_theme_font_size_override("font_size", 13)
+	sub_lbl.add_theme_color_override("font_color", Color(0.72, 0.85, 1.0, 0.65))
+	sub_lbl.size     = Vector2(400, TOP_H)
+	sub_lbl.position = Vector2(100, 0)
+	sub_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(sub_lbl)
+
+	# Currency row (top-right): free crystal + paid crystal
+	var curr_row := HBoxContainer.new()
+	curr_row.add_theme_constant_override("separation", 12)
+	curr_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(curr_row)
+
+	# Free crystal
+	var free_box := HBoxContainer.new()
+	free_box.add_theme_constant_override("separation", 4)
+	free_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	curr_row.add_child(free_box)
+	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
+	if gem_tex:
+		var ico := TextureRect.new()
+		ico.texture = gem_tex
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.custom_minimum_size = Vector2(22, 22)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		free_box.add_child(ico)
+	_new_gem_lbl = Label.new()
+	_new_gem_lbl.add_theme_font_size_override("font_size", 16)
+	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	_new_gem_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	free_box.add_child(_new_gem_lbl)
+
+	# + button
+	var plus_btn := Button.new()
+	plus_btn.text = "+"
+	plus_btn.add_theme_font_size_override("font_size", 16)
+	plus_btn.add_theme_color_override("font_color", Color(1,1,1,0.8))
+	plus_btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.08), Color(1,1,1,0.15), 10, 1))
+	plus_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.14), Color(1,1,1,0.22), 10, 1))
+	plus_btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.08), Color(1,1,1,0.15), 10, 1))
+	plus_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	plus_btn.custom_minimum_size = Vector2(26, 26)
+	plus_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	curr_row.add_child(plus_btn)
+
+	# X close button
+	var close_btn := _ghost_btn("✕", 16)
+	close_btn.custom_minimum_size = Vector2(36, 36)
+	close_btn.pressed.connect(_go_back)
+	curr_row.add_child(close_btn)
+
+	# Position currency row at far right
+	curr_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	curr_row.offset_right = -12
+	curr_row.offset_left  = -250
+
+# ── Bottom bar (Warp ×1 and Warp ×10 buttons) ───────────────────
 func _build_bottom_bar() -> void:
-	var bar_sb := _sb(Color(0.03, 0.05, 0.12, 0.92), Color(1,1,1, 0.07), 0, 1)
+	var bar_sb := _sb(Color(0.03, 0.04, 0.12, 0.92), Color(1,1,1, 0.07), 0, 1)
 	var bar := Panel.new()
 	bar.name     = "_BottomBar"
 	bar.size     = Vector2(W, BOT_H)
 	bar.position = Vector2(0, H - BOT_H)
 	bar.add_theme_stylebox_override("panel", bar_sb)
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.z_index  = 4
+	bar.z_index  = 6
 	add_child(bar)
 
-	# ◀ Back
-	var back := _ghost_btn("◀  ย้อนกลับ", 13)
-	back.size     = Vector2(110, 44)
-	back.position = Vector2(14, (BOT_H - 44) * 0.5)
-	back.pressed.connect(_go_back)
-	bar.add_child(back)
+	# Two warp buttons on the right side
+	var btn_w  := 220.0
+	var btn_h  := 50.0
+	var btn_y  := (BOT_H - btn_h) * 0.5
+	var bx2    := W - btn_w - 16.0
+	var bx1    := bx2 - btn_w - 12.0
 
-	# Gem count
-	var info_x := 140.0
-	var gem_row := HBoxContainer.new()
-	gem_row.position = Vector2(info_x, (BOT_H - 26) * 0.5 - 4)
-	gem_row.add_theme_constant_override("separation", 4)
-	bar.add_child(gem_row)
+	# Warp ×1 — gem icon + count + label
+	_new_pull1 = _warp_btn(1)
+	_new_pull1.size     = Vector2(btn_w, btn_h)
+	_new_pull1.position = Vector2(bx1, btn_y)
+	_new_pull1.pressed.connect(func(): _do_pull(1))
+	bar.add_child(_new_pull1)
+
+	# Warp ×10
+	_new_pull10 = _warp_btn(10)
+	_new_pull10.size     = Vector2(btn_w, btn_h)
+	_new_pull10.position = Vector2(bx2, btn_y)
+	_new_pull10.pressed.connect(func(): _do_pull(10))
+	bar.add_child(_new_pull10)
+
+func _warp_btn(count: int) -> Button:
+	var cost := PULL_COST_1 * count
+	var cost_str := "%d" % cost if count == 1 else "1,500"
+	var btn := Button.new()
+	# Build layout inside button manually via sub-labels
+	var sb_n := _sb(Color(0.14, 0.22, 0.55, 1.0), Color(0.35, 0.55, 1.0, 0.5), 10, 1)
+	var sb_h := _sb(Color(0.20, 0.30, 0.68, 1.0), Color(0.45, 0.65, 1.0, 0.7), 10, 1)
+	btn.add_theme_stylebox_override("normal",  sb_n)
+	btn.add_theme_stylebox_override("hover",   sb_h)
+	btn.add_theme_stylebox_override("pressed", sb_n)
+	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Gem icon + cost (top area)
+	var top_row := HBoxContainer.new()
+	top_row.add_theme_constant_override("separation", 4)
+	top_row.position = Vector2(12, 6)
+	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(top_row)
 
 	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
 	if gem_tex:
-		var gem_ico := TextureRect.new()
-		gem_ico.texture = gem_tex
-		gem_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		gem_ico.custom_minimum_size = Vector2(22, 22)
-		gem_row.add_child(gem_ico)
-	else:
-		var gem_ico := Label.new()
-		gem_ico.text = "💠"
-		gem_ico.add_theme_font_size_override("font_size", 18)
-		gem_row.add_child(gem_ico)
+		var ico := TextureRect.new()
+		ico.texture = gem_tex
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.custom_minimum_size = Vector2(18, 18)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		top_row.add_child(ico)
+	var cost_lbl := Label.new()
+	cost_lbl.text = "×%s" % cost_str
+	cost_lbl.add_theme_font_size_override("font_size", 13)
+	cost_lbl.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0, 1.0))
+	cost_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_row.add_child(cost_lbl)
 
-	_new_gem_lbl = Label.new()
-	_new_gem_lbl.add_theme_font_size_override("font_size", 18)
-	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	gem_row.add_child(_new_gem_lbl)
-
+	# Warp label (bottom)
+	var warp_lbl := Label.new()
+	warp_lbl.text = "Warp  ×%d" % count
+	warp_lbl.add_theme_font_size_override("font_size", 15)
+	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	warp_lbl.position = Vector2(12, 26)
+	warp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(warp_lbl)
+	return btn
 
 # ── Warp tab ──────────────────────────────────────────────────────
 func _on_warp_tab(idx: int) -> void:
 	if idx == _active_warp: return
 	_active_warp = idx
-	if is_instance_valid(_banner_card_node):
-		_banner_card_node.free()
-		_banner_card_node = null
+	if is_instance_valid(_info_card_node):
+		_info_card_node.free()
+		_info_card_node = null
 	_new_pull1    = null
 	_new_pull10   = null
 	_new_pity_lbl = null
 	_new_pity_bar = null
 	_new_pity4_lbl = null
 	_new_pity4_bar = null
-	_build_banner_card()
+	_build_info_card()
 	for i in _warp_btns.size():
-		_restyle_warp_tab(_warp_btns[i], WARP_TYPES[i], i == _active_warp)
+		_restyle_thumb_btn(_warp_btns[i], WARP_TYPES[i], i == _active_warp)
 	_refresh_ui()
 
-func _make_warp_tab(d: Dictionary, active: bool) -> Button:
+func _make_thumb_btn(d: Dictionary, active: bool) -> Button:
 	var btn := Button.new()
-	_restyle_warp_tab(btn, d, active)
+	_restyle_thumb_btn(btn, d, active)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	return btn
 
-func _restyle_warp_tab(btn: Button, d: Dictionary, active: bool) -> void:
+func _restyle_thumb_btn(btn: Button, d: Dictionary, active: bool) -> void:
 	var acc: Color = d["accent"] as Color
-	var bg_col  := Color(acc.r * 0.18, acc.g * 0.18, acc.b * 0.28, 0.95) if active else Color(0.02, 0.03, 0.08, 0.0)
-	var bdr_col := Color(acc.r, acc.g, acc.b, 0.7) if active else Color(1,1,1, 0.07)
-	var bdr_w   := 1 if active else 0
+	var bg_col  := Color(acc.r * 0.22, acc.g * 0.22, acc.b * 0.35, 0.95) if active else Color(0.04, 0.05, 0.14, 0.80)
+	var bdr_col := Color(acc.r, acc.g, acc.b, 0.8) if active else Color(1,1,1, 0.09)
+	var bdr_w   := 2 if active else 1
 
-	var sb  := _sb(bg_col, bdr_col, 12, bdr_w)
+	var sb  := _sb(bg_col, bdr_col, 8, bdr_w)
 	var sbf := StyleBoxFlat.new()
 	btn.add_theme_stylebox_override("normal",  sb)
-	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.12, acc.g*0.12, acc.b*0.22, 0.88), bdr_col, 12, 1))
+	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.15, acc.g*0.15, acc.b*0.28, 0.92), bdr_col, 8, 1))
 	btn.add_theme_stylebox_override("pressed", sb)
 	btn.add_theme_stylebox_override("focus",   sbf)
 
 	for c in btn.get_children(): c.queue_free()
 
+	# Thumbnail placeholder (empty TextureRect for user's art)
+	var thumb := ColorRect.new()
+	thumb.size     = Vector2(THUMB_W - 16, TAB_H * 0.65)
+	thumb.position = Vector2(4, 4)
+	thumb.color    = Color(acc.r * 0.08, acc.g * 0.08, acc.b * 0.15, 0.9)
+	thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(thumb)
+
 	var icon_lbl := Label.new()
 	icon_lbl.text = str(d["icon"])
-	icon_lbl.add_theme_font_size_override("font_size", 26)
-	icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.9 if active else 0.45))
-	icon_lbl.size     = Vector2(LEFT_W - TAB_MX * 2, 34)
-	icon_lbl.position = Vector2(0, 14)
+	icon_lbl.add_theme_font_size_override("font_size", 18)
+	icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.7 if active else 0.35))
+	icon_lbl.size     = thumb.size
+	icon_lbl.position = thumb.position
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(icon_lbl)
 
-	var name_lbl := Label.new()
-	name_lbl.text = str(d["label"])
-	name_lbl.add_theme_font_size_override("font_size", 11)
-	name_lbl.add_theme_color_override("font_color",
-		Color(1.0, 1.0, 1.0, 0.95) if active else Color(0.60, 0.68, 0.80, 0.65))
-	name_lbl.size     = Vector2(LEFT_W - TAB_MX * 2 - 8, 36)
-	name_lbl.position = Vector2(4, 52)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(name_lbl)
+	var tab_lbl := Label.new()
+	tab_lbl.text = str(d["label"])
+	tab_lbl.add_theme_font_size_override("font_size", 8)
+	tab_lbl.add_theme_color_override("font_color",
+		Color(1.0, 1.0, 1.0, 0.90) if active else Color(0.55, 0.65, 0.80, 0.55))
+	tab_lbl.size     = Vector2(THUMB_W - 8, TAB_H - thumb.size.y - 10)
+	tab_lbl.position = Vector2(2, 4 + thumb.size.y + 4)
+	tab_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tab_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	tab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(tab_lbl)
 
 	if active:
-		var bar := ColorRect.new()
-		bar.size     = Vector2(3, TAB_H - 20)
-		bar.position = Vector2(0, 10)
-		bar.color    = Color(acc.r, acc.g, acc.b, 1.0)
-		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(bar)
+		var bar2 := ColorRect.new()
+		bar2.size     = Vector2(3, TAB_H - 8)
+		bar2.position = Vector2(0, 4)
+		bar2.color    = Color(acc.r, acc.g, acc.b, 1.0)
+		bar2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(bar2)
 
 # ── Helpers ───────────────────────────────────────────────────────
 func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
