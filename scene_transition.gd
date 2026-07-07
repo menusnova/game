@@ -17,6 +17,9 @@ func _ready() -> void:
 	var t := create_tween()
 	t.tween_property(_overlay, "color:a", 0.0, 0.32).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
+func is_busy() -> bool:
+	return _busy
+
 func fade_to(path: String, duration: float = 0.28) -> void:
 	if _busy or not ResourceLoader.exists(path):
 		return
@@ -27,8 +30,8 @@ func fade_to(path: String, duration: float = 0.28) -> void:
 	await t.finished
 	get_tree().change_scene_to_file(path)
 	await get_tree().process_frame
-	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var t2 := create_tween()
 	t2.tween_property(_overlay, "color:a", 0.0, 0.32).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	await t2.finished
+	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_busy = false

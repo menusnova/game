@@ -606,6 +606,7 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
+	if SceneTransition.is_busy(): return
 	_navigating = true
 	SceneTransition.fade_to(path)
 
