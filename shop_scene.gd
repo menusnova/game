@@ -200,7 +200,8 @@ func _build_topbar() -> void:
 	_wallet_row.add_theme_constant_override("separation", 6)
 	_wallet_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_wallet_row)
-	_wallet_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	_wallet_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_wallet_row.offset_top   = 10
 	_wallet_row.offset_right = -12
 	_wallet_row.offset_left  = -300
 
