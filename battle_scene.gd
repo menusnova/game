@@ -1292,7 +1292,7 @@ func _refresh_ui() -> void:
 
 	# Player HP
 	var max_hp: float = float(CHARACTER["max_hp"])
-	if _player_hp_bar: _player_hp_bar.size.x = 236.0 * (maxi(0, _player_hp) / max_hp)
+	if _player_hp_bar: _player_hp_bar.size.x = 288.0 * (maxi(0, _player_hp) / max_hp)
 	if _player_hp_lbl: _player_hp_lbl.text = "HP %d/%d" % [maxi(0,_player_hp), int(max_hp)]
 	if _shield_lbl:    _shield_lbl.text = "🛡 %d" % _player_shield if _player_shield > 0 else ""
 

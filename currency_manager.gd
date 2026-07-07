@@ -118,4 +118,3 @@ func _load() -> void:
 		energy       = int(cfg.get_value("currency", "energy",       240))
 	if gold == 0:         gold = 5000000
 	if free_crystal == 0: free_crystal = 100000
-	energy = MAX_ENERGY
