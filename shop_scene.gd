@@ -49,6 +49,7 @@ var _active_cat   := "crystal_pack"
 var _cat_btns:    Array[Button] = []
 var _content_root: Control
 var _wallet_row:   HBoxContainer
+var _gold_lbl:     Label
 var _free_lbl:     Label
 var _paid_lbl:     Label
 
@@ -203,11 +204,13 @@ func _build_topbar() -> void:
 	_wallet_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	_wallet_row.offset_top   = 10
 	_wallet_row.offset_right = -12
-	_wallet_row.offset_left  = -300
+	_wallet_row.offset_left  = -420
 
-	var gem_tex := _load_png("res://image/crystal_gem.png")
-	_free_lbl = _make_curr_pill(_wallet_row, gem_tex, Color(0.35, 0.85, 1.0, 1.0))
-	_paid_lbl = _make_curr_pill(_wallet_row, gem_tex, Color(0.78, 0.55, 1.0, 1.0))
+	var gold_tex := _load_png("res://image/icon_gold.png")
+	var gem_tex  := _load_png("res://image/crystal_gem.png")
+	_gold_lbl = _make_curr_pill(_wallet_row, gold_tex, Color(0.95, 0.78, 0.25, 1.0))
+	_free_lbl = _make_curr_pill(_wallet_row, gem_tex,  Color(0.35, 0.85, 1.0,  1.0))
+	_paid_lbl = _make_curr_pill(_wallet_row, gem_tex,  Color(0.78, 0.55, 1.0,  1.0))
 	_rebuild_wallet()
 
 # ── Content area ──────────────────────────────────────────────────
@@ -470,6 +473,7 @@ func _build_coming_soon_page() -> void:
 
 # ── Wallet (top-right) ────────────────────────────────────────────
 func _rebuild_wallet() -> void:
+	if _gold_lbl: _gold_lbl.text = _fmt(CurrencyManager.gold)
 	if _free_lbl: _free_lbl.text = _fmt(CurrencyManager.free_crystal)
 	if _paid_lbl: _paid_lbl.text = _fmt(CurrencyManager.paid_crystal)
 
