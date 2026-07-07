@@ -390,8 +390,8 @@ func _build_player_sprite() -> void:
 # ── Player HUD — floats above hand strip, left side ───────
 func _build_player_hud() -> void:
 	var pp := Panel.new()
-	pp.size     = Vector2(312, 128)
-	pp.position = Vector2(8, HAND_Y - 140.0)
+	pp.size     = Vector2(312, 120)
+	pp.position = Vector2(8, HAND_Y - 132.0)
 	pp.add_theme_stylebox_override("panel", _flat(C_PANEL, C_BORDER, 10, 1))
 	add_child(pp)
 
@@ -413,15 +413,25 @@ func _build_player_hud() -> void:
 	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 40))
 	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(180, 40))
 
-	# AP section — image slot + large dots
+	# AP section — image slot left + dots fill remaining width
+	var ap_row := Panel.new()
+	ap_row.size     = Vector2(288, 56)
+	ap_row.position = Vector2(12, 56)
+	ap_row.add_theme_stylebox_override("panel",
+		_flat(Color(C_AP.r*0.06, C_AP.g*0.06, C_AP.b*0.12, 0.70),
+			  Color(C_AP.r, C_AP.g, C_AP.b, 0.18), 8, 1))
+	ap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(ap_row)
+
+	# Image slot inside row
 	var ap_img_bg := Panel.new()
-	ap_img_bg.size     = Vector2(46, 46)
-	ap_img_bg.position = Vector2(12, 58)
+	ap_img_bg.size     = Vector2(44, 44)
+	ap_img_bg.position = Vector2(6, 6)
 	ap_img_bg.add_theme_stylebox_override("panel",
-		_flat(Color(C_AP.r*0.10, C_AP.g*0.10, C_AP.b*0.18, 0.85),
-			  Color(C_AP.r, C_AP.g, C_AP.b, 0.30), 8, 1))
+		_flat(Color(C_AP.r*0.14, C_AP.g*0.14, C_AP.b*0.22, 0.90),
+			  Color(C_AP.r, C_AP.g, C_AP.b, 0.35), 7, 1))
 	ap_img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pp.add_child(ap_img_bg)
+	ap_row.add_child(ap_img_bg)
 
 	var ap_img := TextureRect.new()
 	ap_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -429,18 +439,27 @@ func _build_player_hud() -> void:
 	ap_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ap_img_bg.add_child(ap_img)
 
-	_ap_lbl = _mk_label("", 22, C_AP, pp, Vector2(66, 54))
-
+	# AP sub-label
 	var ap_sub := Label.new()
-	ap_sub.text = "Action Points"
-	ap_sub.position = Vector2(66, 84)
+	ap_sub.text = "AP"
+	ap_sub.position = Vector2(56, 6)
 	ap_sub.add_theme_font_size_override("font_size", 9)
 	ap_sub.add_theme_color_override("font_color", C_SUB)
 	ap_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pp.add_child(ap_sub)
+	ap_row.add_child(ap_sub)
 
-	_deck_lbl    = _mk_label("", 10, C_SUB,              pp, Vector2(14,  112))
-	_discard_lbl = _mk_label("", 10, Color(0.6,0.5,0.4), pp, Vector2(120, 112))
+	# Dots — fill full width of row after image slot
+	_ap_lbl = Label.new()
+	_ap_lbl.position = Vector2(54, 18)
+	_ap_lbl.size     = Vector2(228, 30)
+	_ap_lbl.add_theme_font_size_override("font_size", 24)
+	_ap_lbl.add_theme_color_override("font_color", C_AP)
+	_ap_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ap_row.add_child(_ap_lbl)
+
+	# hidden refs for _refresh_ui (still needed)
+	_deck_lbl    = Label.new(); _deck_lbl.visible    = false; pp.add_child(_deck_lbl)
+	_discard_lbl = Label.new(); _discard_lbl.visible = false; pp.add_child(_discard_lbl)
 
 # ── Reaction hint bar ──────────────────────────────────────
 func _build_react_hint() -> void:
@@ -609,7 +628,17 @@ func _build_ult_button() -> void:
 	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circ.add_child(tex)
 
-	# Gauge % label
+	# Center icon 💥
+	var icon_lbl := Label.new()
+	icon_lbl.text = "💥"
+	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.add_theme_font_size_override("font_size", 32)
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(icon_lbl)
+
+	# Gauge % label (bottom of circle)
 	_gauge_lbl = _mk_label("0%", 9, C_GOLD, circ,
 		Vector2(0, ULT_R * 2 - 14), Vector2(ULT_R * 2, 14), true)
 
@@ -627,11 +656,11 @@ func _build_ult_button() -> void:
 	circ.add_child(btn)
 	_btn_ult = btn
 
-	# Label below
+	# "ULT" label centered below the circle
 	var lbl := Label.new()
 	lbl.text = "ULT"
 	lbl.size = Vector2(ULT_R * 2, 14)
-	lbl.position = Vector2(-ULT_R, ULT_R + 4)
+	lbl.position = Vector2(0, ULT_R * 2 + 3)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.add_theme_font_size_override("font_size", 9)
 	lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
