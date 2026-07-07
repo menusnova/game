@@ -49,6 +49,8 @@ var _active_cat   := "crystal_pack"
 var _cat_btns:    Array[Button] = []
 var _content_root: Control
 var _wallet_row:   HBoxContainer
+var _free_lbl:     Label
+var _paid_lbl:     Label
 
 # ══════════════════════════════════════════════════════════════════
 func _ready() -> void:
@@ -182,20 +184,6 @@ func _restyle_cats() -> void:
 
 # ── Top bar ───────────────────────────────────────────────────────
 func _build_topbar() -> void:
-	var bar := ColorRect.new()
-	bar.position = Vector2(SIDE_W, 0)
-	bar.size     = Vector2(W - SIDE_W, TOP_H)
-	bar.color    = C_TOP
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bar)
-
-	var bot_line := ColorRect.new()
-	bot_line.position = Vector2(SIDE_W, TOP_H - 1)
-	bot_line.size     = Vector2(W - SIDE_W, 1)
-	bot_line.color    = C_LINE
-	bot_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bot_line)
-
 	var back := Button.new()
 	back.text     = "◀"
 	back.size     = Vector2(44, TOP_H)
@@ -207,11 +195,18 @@ func _build_topbar() -> void:
 	back.pressed.connect(_go_back)
 	add_child(back)
 
-	# Currency row — top-right
+	# Currency row — top-right (two pills: free crystal + paid crystal)
 	_wallet_row = HBoxContainer.new()
-	_wallet_row.position = Vector2(W - 320, (TOP_H - 28) * 0.5)
 	_wallet_row.add_theme_constant_override("separation", 6)
+	_wallet_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_wallet_row)
+	_wallet_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	_wallet_row.offset_right = -12
+	_wallet_row.offset_left  = -300
+
+	var gem_tex := _load_png("res://image/crystal_gem.png")
+	_free_lbl = _make_curr_pill(_wallet_row, gem_tex, Color(0.35, 0.85, 1.0, 1.0))
+	_paid_lbl = _make_curr_pill(_wallet_row, gem_tex, Color(0.78, 0.55, 1.0, 1.0))
 	_rebuild_wallet()
 
 # ── Content area ──────────────────────────────────────────────────
@@ -474,59 +469,55 @@ func _build_coming_soon_page() -> void:
 
 # ── Wallet (top-right) ────────────────────────────────────────────
 func _rebuild_wallet() -> void:
-	for c in _wallet_row.get_children(): c.queue_free()
-
-	# Paid crystal
-	var paid_tex := _load_png("res://image/icon_paid.png")
-	_wallet_pill(paid_tex, "💜", _fmt(CurrencyManager.paid_crystal), Color(0.78, 0.55, 1.0, 1.0), true)
-
-	# Free crystal
-	var free_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
-	_wallet_pill(free_tex, "💠", _fmt(CurrencyManager.free_crystal), Color(0.35, 0.85, 1.0, 1.0), false)
-
-func _wallet_pill(tex: Texture2D, fallback_icon: String, val: String, col: Color, show_plus: bool) -> void:
-	var pill := HBoxContainer.new()
-	pill.add_theme_constant_override("separation", 4)
-
-	if tex:
-		var ico := TextureRect.new()
-		ico.texture    = tex
-		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.custom_minimum_size = Vector2(20, 20)
-		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		pill.add_child(ico)
-	else:
-		var ico := Label.new()
-		ico.text = fallback_icon
-		ico.add_theme_font_size_override("font_size", 14)
-		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		pill.add_child(ico)
-
-	var amt := Label.new()
-	amt.text = val
-	amt.add_theme_font_size_override("font_size", 13)
-	amt.add_theme_color_override("font_color", col)
-	amt.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pill.add_child(amt)
-
-	if show_plus:
-		var plus := Label.new()
-		plus.text = " +"
-		plus.add_theme_font_size_override("font_size", 13)
-		plus.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
-		plus.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		pill.add_child(plus)
-
-	# divider
-	var div := ColorRect.new()
-	div.size = Vector2(1, 22)
-	div.color = Color(1, 1, 1, 0.15)
-	div.custom_minimum_size = Vector2(1, 22)
-	pill.add_child(div)
-
-	_wallet_row.add_child(pill)
+	if _free_lbl: _free_lbl.text = _fmt(CurrencyManager.free_crystal)
+	if _paid_lbl: _paid_lbl.text = _fmt(CurrencyManager.paid_crystal)
 
 # ── Helpers ───────────────────────────────────────────────────────
+func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, col: Color) -> Label:
+	var pill := Panel.new()
+	var pill_sb := StyleBoxFlat.new()
+	pill_sb.bg_color = Color(0.08, 0.09, 0.14, 0.92)
+	pill_sb.border_color = Color(1, 1, 1, 0.08)
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: pill_sb.set_border_width(side, 1)
+	pill_sb.corner_radius_top_left     = 8
+	pill_sb.corner_radius_top_right    = 8
+	pill_sb.corner_radius_bottom_right = 8
+	pill_sb.corner_radius_bottom_left  = 8
+	pill.add_theme_stylebox_override("panel", pill_sb)
+	pill.custom_minimum_size = Vector2(110, 30)
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(pill)
+
+	if icon_tex:
+		var ico := TextureRect.new()
+		ico.texture = icon_tex
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.size     = Vector2(22, 22)
+		ico.position = Vector2(5, 4)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pill.add_child(ico)
+
+	var val_lbl := Label.new()
+	val_lbl.add_theme_font_size_override("font_size", 11)
+	val_lbl.add_theme_color_override("font_color", Color(0.93, 0.96, 1.0, 1.0))
+	val_lbl.size     = Vector2(60, 30)
+	val_lbl.position = Vector2(31, 0)
+	val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.add_child(val_lbl)
+
+	var plus_lbl := Label.new()
+	plus_lbl.text = "+"
+	plus_lbl.add_theme_font_size_override("font_size", 14)
+	plus_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.65))
+	plus_lbl.size     = Vector2(18, 30)
+	plus_lbl.position = Vector2(92, 0)
+	plus_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	plus_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.add_child(plus_lbl)
+
+	return val_lbl
+
 func _load_png(path: String) -> Texture2D:
 	var buf := FileAccess.get_file_as_bytes(path)
 	if buf.is_empty(): return null

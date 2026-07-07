@@ -92,7 +92,8 @@ var _active_warp := 0
 var _revealing   := false
 var _skip_to_end := false
 
-var _new_gem_lbl:    Label       = null
+var _new_gem_lbl:    Label       = null  # kept for compat — shows free crystal
+var _paid_gem_lbl:   Label       = null
 var _new_pity_lbl:   Label       = null
 var _new_pity_bar:   ProgressBar = null
 var _new_pity4_lbl:  Label       = null
@@ -432,7 +433,7 @@ func _build_info_card() -> void:
 
 # ── Top bar ──────────────────────────────────────────────────────
 func _build_top_bar() -> void:
-	var bar_sb := _sb(Color(0.04, 0.04, 0.12, 0.88), Color(1,1,1, 0.06), 0, 1)
+	var bar_sb := _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0)
 	var bar := Panel.new()
 	bar.name     = "_TopBar"
 	bar.size     = Vector2(W, TOP_H)
@@ -465,43 +466,19 @@ func _build_top_bar() -> void:
 	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(sub_lbl)
 
-	# Currency row (top-right): free crystal + paid crystal
+	# Currency row (top-right): free crystal pill + paid crystal pill + close
 	var curr_row := HBoxContainer.new()
-	curr_row.add_theme_constant_override("separation", 12)
+	curr_row.add_theme_constant_override("separation", 6)
 	curr_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(curr_row)
 
-	# Free crystal
-	var free_box := HBoxContainer.new()
-	free_box.add_theme_constant_override("separation", 4)
-	free_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	curr_row.add_child(free_box)
-	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
-	if gem_tex:
-		var ico := TextureRect.new()
-		ico.texture = gem_tex
-		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.custom_minimum_size = Vector2(18, 18)
-		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		free_box.add_child(ico)
-	_new_gem_lbl = Label.new()
-	_new_gem_lbl.add_theme_font_size_override("font_size", 14)
-	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	_new_gem_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	free_box.add_child(_new_gem_lbl)
+	var gem_tex := _load_png("res://image/crystal_gem.png")
 
-	# + button
-	var plus_btn := Button.new()
-	plus_btn.text = "+"
-	plus_btn.add_theme_font_size_override("font_size", 16)
-	plus_btn.add_theme_color_override("font_color", Color(1,1,1,0.8))
-	plus_btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.08), Color(1,1,1,0.15), 10, 1))
-	plus_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.14), Color(1,1,1,0.22), 10, 1))
-	plus_btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.08), Color(1,1,1,0.15), 10, 1))
-	plus_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-	plus_btn.custom_minimum_size = Vector2(26, 26)
-	plus_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	curr_row.add_child(plus_btn)
+	# Free crystal pill
+	_new_gem_lbl = _make_curr_pill(curr_row, gem_tex, Color(0.35, 0.85, 1.0, 1.0))
+
+	# Paid crystal pill
+	_paid_gem_lbl = _make_curr_pill(curr_row, gem_tex, Color(0.78, 0.55, 1.0, 1.0))
 
 	# X close button
 	var close_btn := _ghost_btn("✕", 16)
@@ -511,8 +488,8 @@ func _build_top_bar() -> void:
 
 	# Position currency row at far right
 	curr_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	curr_row.offset_right = -12
-	curr_row.offset_left  = -250
+	curr_row.offset_right = -8
+	curr_row.offset_left  = -340
 
 # ── Bottom bar (Warp ×1 and Warp ×10 buttons) ───────────────────
 func _build_bottom_bar() -> void:
@@ -671,6 +648,60 @@ func _restyle_thumb_btn(btn: Button, d: Dictionary, active: bool) -> void:
 		btn.add_child(bar2)
 
 # ── Helpers ───────────────────────────────────────────────────────
+func _load_png(path: String) -> Texture2D:
+	var buf := FileAccess.get_file_as_bytes(path)
+	if buf.is_empty(): return null
+	var img := Image.new()
+	if img.load_png_from_buffer(buf) != OK: return null
+	return ImageTexture.create_from_image(img)
+
+# Builds a main-menu-style pill (dark bg + icon + amount label + "+")
+# Returns the Label so the caller can update the value.
+func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, col: Color) -> Label:
+	var pill := Panel.new()
+	var pill_sb := StyleBoxFlat.new()
+	pill_sb.bg_color = Color(0.08, 0.09, 0.14, 0.92)
+	pill_sb.border_color = Color(1, 1, 1, 0.08)
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: pill_sb.set_border_width(side, 1)
+	pill_sb.corner_radius_top_left     = 8
+	pill_sb.corner_radius_top_right    = 8
+	pill_sb.corner_radius_bottom_right = 8
+	pill_sb.corner_radius_bottom_left  = 8
+	pill.add_theme_stylebox_override("panel", pill_sb)
+	pill.custom_minimum_size = Vector2(110, 30)
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(pill)
+
+	if icon_tex:
+		var ico := TextureRect.new()
+		ico.texture = icon_tex
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.size     = Vector2(22, 22)
+		ico.position = Vector2(5, 4)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pill.add_child(ico)
+
+	var val_lbl := Label.new()
+	val_lbl.add_theme_font_size_override("font_size", 11)
+	val_lbl.add_theme_color_override("font_color", Color(0.93, 0.96, 1.0, 1.0))
+	val_lbl.size     = Vector2(60, 30)
+	val_lbl.position = Vector2(31, 0)
+	val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.add_child(val_lbl)
+
+	var plus_lbl := Label.new()
+	plus_lbl.text = "+"
+	plus_lbl.add_theme_font_size_override("font_size", 14)
+	plus_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.65))
+	plus_lbl.size     = Vector2(18, 30)
+	plus_lbl.position = Vector2(92, 0)
+	plus_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	plus_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.add_child(plus_lbl)
+
+	return val_lbl
+
 func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = bg; s.border_color = bdr
@@ -732,7 +763,8 @@ func _on_skip() -> void:
 
 func _refresh_ui() -> void:
 	var gems := CurrencyManager.total_crystal()
-	if _new_gem_lbl:   _new_gem_lbl.text    = str(gems)
+	if _new_gem_lbl:   _new_gem_lbl.text    = str(CurrencyManager.free_crystal)
+	if _paid_gem_lbl:  _paid_gem_lbl.text   = str(CurrencyManager.paid_crystal)
 	if _new_pity_bar:  _new_pity_bar.value  = _pity
 	if _new_pity_lbl:  _new_pity_lbl.text   = "Pity  %d / %d" % [_pity, PITY_HARD]
 	if _new_pity4_bar: _new_pity4_bar.value = _pity_4
