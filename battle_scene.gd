@@ -112,6 +112,14 @@ var _btn_skill:        Button
 var _btn_ult:          Button
 var _btn_end:          Button
 
+var _deck_cnt_lbl:  Label   = null
+var _disc_cnt_lbl:  Label   = null
+var _info_panel:    Panel   = null
+var _card_nodes:    Array[Control] = []
+var _press_card_id: String  = ""
+var _press_start:   float   = -1.0
+var _info_shown:    bool    = false
+
 # ── Colors ────────────────────────────────────────────────
 const C_BG     := Color(0.04, 0.045, 0.10, 1.0)
 const C_PANEL  := Color(0.06, 0.08,  0.16, 0.92)
@@ -140,6 +148,25 @@ const RING_R   := 88.0
 # Card hand strip
 const HAND_Y   := 556.0
 const HAND_H   := 88.0
+# Fan hand layout
+const FAN_CENTER_X := 340.0
+const FAN_BASE_Y   := 636.0
+const FAN_ARC_R    := 520.0
+const FAN_SPREAD   := 6.5
+const CARD_W       := 84.0
+const CARD_H       := 110.0
+# Deck / Discard circles
+const DECK_CX  := 830.0
+const DECK_CY  := 558.0
+const DISC_CX  := 738.0
+const DISC_CY  := 558.0
+const CIRC_R   := 36.0
+# Ultimate standalone circle
+const ULT_CX   := 875.0
+const ULT_CY   := 490.0
+const ULT_R    := 46.0
+# Card hold threshold (seconds)
+const HOLD_THRESH := 0.32
 
 # ════════════════════════════════════════════════════════════
 #  ENTRY
@@ -227,7 +254,10 @@ func _build_ui() -> void:
 	_build_player_hud()
 	_build_react_hint()
 	_build_hand_panel()
+	_build_deck_discard_circles()
 	_build_action_ring()
+	_build_ult_button()
+	_build_card_info_panel()
 	_build_message_bar()
 
 # ── Top bar ───────────────────────────────────────────────
@@ -359,10 +389,9 @@ func _build_player_sprite() -> void:
 
 # ── Player HUD — floats above hand strip, left side ───────
 func _build_player_hud() -> void:
-	# HUD card sits just above the hand area
 	var pp := Panel.new()
-	pp.size     = Vector2(260, 100)
-	pp.position = Vector2(8, HAND_Y - 110.0)
+	pp.size     = Vector2(312, 128)
+	pp.position = Vector2(8, HAND_Y - 140.0)
 	pp.add_theme_stylebox_override("panel", _flat(C_PANEL, C_BORDER, 10, 1))
 	add_child(pp)
 
@@ -371,57 +400,47 @@ func _build_player_hud() -> void:
 	# HP bar
 	var phb_bg := ColorRect.new()
 	phb_bg.color    = Color(1,1,1,0.08)
-	phb_bg.size     = Vector2(236, 10)
+	phb_bg.size     = Vector2(288, 10)
 	phb_bg.position = Vector2(12, 26)
 	pp.add_child(phb_bg)
 
 	_player_hp_bar          = ColorRect.new()
 	_player_hp_bar.color    = C_HP
-	_player_hp_bar.size     = Vector2(236, 10)
+	_player_hp_bar.size     = Vector2(288, 10)
 	_player_hp_bar.position = Vector2(12, 26)
 	pp.add_child(_player_hp_bar)
 
-	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 39))
-	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(140, 39))
+	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 40))
+	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(180, 40))
 
-	# AP dots
-	_ap_lbl = _mk_label("", 16, C_AP, pp, Vector2(12, 56))
-	_mk_label("AP", 9, C_SUB, pp, Vector2(12, 78))
+	# AP section — image slot + large dots
+	var ap_img_bg := Panel.new()
+	ap_img_bg.size     = Vector2(46, 46)
+	ap_img_bg.position = Vector2(12, 58)
+	ap_img_bg.add_theme_stylebox_override("panel",
+		_flat(Color(C_AP.r*0.10, C_AP.g*0.10, C_AP.b*0.18, 0.85),
+			  Color(C_AP.r, C_AP.g, C_AP.b, 0.30), 8, 1))
+	ap_img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(ap_img_bg)
 
-	# Deck / Discard
-	_deck_lbl    = _mk_label("", 10, C_SUB,              pp, Vector2(80,  78))
-	_discard_lbl = _mk_label("", 10, Color(0.6,0.5,0.4), pp, Vector2(168, 78))
+	var ap_img := TextureRect.new()
+	ap_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ap_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ap_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ap_img_bg.add_child(ap_img)
 
-	# Ultimate gauge ring — top right corner
-	_build_ult_ring()
+	_ap_lbl = _mk_label("", 22, C_AP, pp, Vector2(66, 54))
 
-# ── Ultimate gauge ring — top right ───────────────────────
-func _build_ult_ring() -> void:
-	# Sits bottom-left, next to player HUD above the hand strip
-	var ring_panel := Panel.new()
-	ring_panel.size     = Vector2(72, 72)
-	ring_panel.position = Vector2(278, HAND_Y - 110.0 + 14.0)
-	ring_panel.add_theme_stylebox_override("panel",
-		_flat(Color(0.06,0.06,0.14,0.90), Color(C_GAUGE.r,C_GAUGE.g,C_GAUGE.b,0.50), 36, 2))
-	add_child(ring_panel)
+	var ap_sub := Label.new()
+	ap_sub.text = "Action Points"
+	ap_sub.position = Vector2(66, 84)
+	ap_sub.add_theme_font_size_override("font_size", 9)
+	ap_sub.add_theme_color_override("font_color", C_SUB)
+	ap_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(ap_sub)
 
-	_gauge_bar = ColorRect.new()
-	_gauge_bar.color    = Color(C_GAUGE.r, C_GAUGE.g, C_GAUGE.b, 0.35)
-	_gauge_bar.size     = Vector2(0, 72)
-	_gauge_bar.position = Vector2(0, 0)
-	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ring_panel.add_child(_gauge_bar)
-
-	var ult_icon := Label.new()
-	ult_icon.text = "💥"
-	ult_icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ult_icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ult_icon.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	ult_icon.add_theme_font_size_override("font_size", 24)
-	ult_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ring_panel.add_child(ult_icon)
-
-	_gauge_lbl = _mk_label("0%", 9, C_GOLD, ring_panel, Vector2(0, 56), Vector2(72, 14), true)
+	_deck_lbl    = _mk_label("", 10, C_SUB,              pp, Vector2(14,  112))
+	_discard_lbl = _mk_label("", 10, Color(0.6,0.5,0.4), pp, Vector2(120, 112))
 
 # ── Reaction hint bar ──────────────────────────────────────
 func _build_react_hint() -> void:
@@ -436,26 +455,10 @@ func _build_react_hint() -> void:
 
 # ── Hand area — bottom strip ───────────────────────────────
 func _build_hand_panel() -> void:
-	var hp := Panel.new()
-	hp.size     = Vector2(740, HAND_H + 20.0)
-	hp.position = Vector2(0, HAND_Y - 14.0)
-	hp.add_theme_stylebox_override("panel",
-		_flat(Color(0.03,0.04,0.10,0.90), C_BORDER, 0, 1))
-	add_child(hp)
-
-	_mk_label("HAND", 9, C_SUB, hp, Vector2(10, 4))
-
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(6, 18)
-	scroll.size     = Vector2(728, HAND_H)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	scroll.vertical_scroll_mode   = ScrollContainer.SCROLL_MODE_DISABLED
-	hp.add_child(scroll)
-
+	# No background strip — cards float as fan (UNO style)
 	_hand_container = HBoxContainer.new()
-	_hand_container.add_theme_constant_override("separation", 6)
-	_hand_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_hand_container)
+	_hand_container.visible = false
+	add_child(_hand_container)
 
 # ── Action ring — Persona-style circle, bottom-right ──────
 func _build_action_ring() -> void:
@@ -472,11 +475,10 @@ func _build_action_ring() -> void:
 	# Angles: spread around bottom-right arc (right side)
 	# 0=Attack(top), 1=Skill, 2=EndTurn(bottom), 3=Defend, 4=Ult (center-right)
 	const DEFS := [
-		["Attack",   "⚔",  "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],  # top
-		["Skill",    "⚡",  "SKL\n2AP",  Color(0.80,0.50,1.00),  -18.0],  # top-right
-		["EndTurn",  "▶",  "END",        Color(0.55,0.75,0.55),   54.0],  # right
-		["Defend",   "🛡",  "DEF\n1AP",  Color(0.35,0.65,1.00),  126.0],  # bottom-right
-		["Ultimate", "💥",  "ULT",       Color(1.00,0.75,0.25),  198.0],  # bottom-left
+		["Attack",  "⚔",  "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],
+		["Skill",   "⚡",  "SKL\n2AP",  Color(0.80,0.50,1.00),   -8.0],
+		["EndTurn", "▶",  "END",        Color(0.55,0.75,0.55),   74.0],
+		["Defend",  "🛡",  "DEF\n1AP",  Color(0.35,0.65,1.00),  156.0],
 	]
 	const BTN_R := 34.0  # button half-size
 
@@ -505,11 +507,10 @@ func _build_action_ring() -> void:
 		btn.add_theme_color_override("font_color_disabled", Color(0.30,0.33,0.42))
 		add_child(btn)
 		match id:
-			"Attack":   _btn_attack = btn; btn.pressed.connect(_on_attack)
-			"Defend":   _btn_defend = btn; btn.pressed.connect(_on_defend)
-			"Skill":    _btn_skill  = btn; btn.pressed.connect(_on_skill)
-			"Ultimate": _btn_ult    = btn; btn.pressed.connect(_on_ultimate)
-			"EndTurn":  _btn_end    = btn; btn.pressed.connect(_on_end_turn)
+			"Attack":  _btn_attack = btn; btn.pressed.connect(_on_attack)
+			"Defend":  _btn_defend = btn; btn.pressed.connect(_on_defend)
+			"Skill":   _btn_skill  = btn; btn.pressed.connect(_on_skill)
+			"EndTurn": _btn_end    = btn; btn.pressed.connect(_on_end_turn)
 
 # ── Message bar ────────────────────────────────────────────
 func _build_message_bar() -> void:
@@ -527,6 +528,243 @@ func _build_message_bar() -> void:
 	_msg_lbl.add_theme_color_override("font_color", C_TEXT)
 	_msg_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mb.add_child(_msg_lbl)
+
+# ── Deck / Discard circles ────────────────────────────────
+func _build_deck_discard_circles() -> void:
+	for is_deck in [true, false]:
+		var cx    := DECK_CX if is_deck else DISC_CX
+		var cy    := DECK_CY if is_deck else DISC_CY
+		var label := "เด็ค" if is_deck else "ทิ้ง"
+		var col   := Color(0.35, 0.62, 1.0) if is_deck else Color(0.65, 0.45, 0.40)
+
+		var circ := Panel.new()
+		circ.size     = Vector2(CIRC_R * 2, CIRC_R * 2)
+		circ.position = Vector2(cx - CIRC_R, cy - CIRC_R)
+		circ.add_theme_stylebox_override("panel",
+			_flat(Color(col.r*0.10, col.g*0.10, col.b*0.18, 0.92),
+				  Color(col.r, col.g, col.b, 0.50), int(CIRC_R), 2))
+		circ.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.z_index = 4
+		add_child(circ)
+
+		# TextureRect placeholder for future image
+		var tex := TextureRect.new()
+		tex.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		tex.offset_left  = -16; tex.offset_right  = 16
+		tex.offset_top   = -16; tex.offset_bottom = 16
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(tex)
+
+		# Count label (center)
+		var cnt := Label.new()
+		cnt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		cnt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cnt.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		cnt.add_theme_font_size_override("font_size", 16)
+		cnt.add_theme_color_override("font_color", Color(col.r + 0.1, col.g + 0.05, col.b, 0.9))
+		cnt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(cnt)
+		if is_deck: _deck_cnt_lbl = cnt
+		else:       _disc_cnt_lbl = cnt
+
+		# Label below circle
+		var lbl := Label.new()
+		lbl.text = label
+		lbl.size = Vector2(CIRC_R * 2, 14)
+		lbl.position = Vector2(0, CIRC_R * 2 + 2)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(lbl)
+
+# ── Ultimate standalone circle ────────────────────────────
+func _build_ult_button() -> void:
+	var col := C_GAUGE
+	var circ := Panel.new()
+	circ.size     = Vector2(ULT_R * 2, ULT_R * 2)
+	circ.position = Vector2(ULT_CX - ULT_R, ULT_CY - ULT_R)
+	circ.add_theme_stylebox_override("panel",
+		_flat(Color(col.r*0.10, col.g*0.08, col.b*0.04, 0.92),
+			  Color(col.r, col.g, col.b, 0.45), int(ULT_R), 2))
+	circ.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.z_index = 4
+	add_child(circ)
+
+	# Gauge fill (fills from bottom as gauge increases)
+	_gauge_bar = ColorRect.new()
+	_gauge_bar.color    = Color(col.r, col.g, col.b, 0.28)
+	_gauge_bar.size     = Vector2(ULT_R * 2, 0)
+	_gauge_bar.position = Vector2(0, ULT_R * 2)
+	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(_gauge_bar)
+
+	# TextureRect placeholder for ULT art
+	var tex := TextureRect.new()
+	tex.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	tex.offset_left  = -20; tex.offset_right  = 20
+	tex.offset_top   = -20; tex.offset_bottom = 20
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(tex)
+
+	# Gauge % label
+	_gauge_lbl = _mk_label("0%", 9, C_GOLD, circ,
+		Vector2(0, ULT_R * 2 - 14), Vector2(ULT_R * 2, 14), true)
+
+	# Clickable button overlay
+	var btn := Button.new()
+	btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	btn.add_theme_stylebox_override("normal",   _flat(Color(0,0,0,0), Color(0,0,0,0), int(ULT_R)))
+	btn.add_theme_stylebox_override("hover",    _flat(Color(1,1,1,0.10), Color(col.r,col.g,col.b,0.6), int(ULT_R), 2))
+	btn.add_theme_stylebox_override("pressed",  _flat(Color(0,0,0,0.15), Color(0,0,0,0), int(ULT_R)))
+	btn.add_theme_stylebox_override("disabled", _flat(Color(0,0,0,0), Color(0,0,0,0)))
+	btn.add_theme_stylebox_override("focus",    StyleBoxFlat.new())
+	btn.text = ""
+	btn.pressed.connect(_on_ultimate)
+	btn.z_index = 1
+	circ.add_child(btn)
+	_btn_ult = btn
+
+	# Label below
+	var lbl := Label.new()
+	lbl.text = "ULT"
+	lbl.size = Vector2(ULT_R * 2, 14)
+	lbl.position = Vector2(-ULT_R, ULT_R + 4)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(lbl)
+
+# ── Card info panel (slide in from right on hold) ─────────
+func _build_card_info_panel() -> void:
+	_info_panel = Panel.new()
+	_info_panel.size     = Vector2(320, 400)
+	_info_panel.position = Vector2(1160, 56)  # off-screen
+	_info_panel.add_theme_stylebox_override("panel",
+		_flat(Color(0.05, 0.07, 0.16, 0.97), Color(0.35, 0.62, 1.0, 0.35), 12, 1))
+	_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.z_index = 20
+	add_child(_info_panel)
+
+func _show_card_info(id: String) -> void:
+	if not is_instance_valid(_info_panel): return
+	var data: Dictionary = CARD_DB.get(id, {})
+	if data.is_empty(): return
+	for c in _info_panel.get_children(): c.queue_free()
+
+	var col: Color = data.get("color", Color(0.5,0.5,0.8))
+	var ctype: String = data.get("type","element")
+
+	# Top color stripe
+	var stripe := ColorRect.new()
+	stripe.size  = Vector2(320, 3); stripe.color = Color(col.r, col.g, col.b, 0.7)
+	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(stripe)
+
+	# Symbol large
+	var sym: String = data.get("symbol", data.get("name", id))
+	var sym_lbl := Label.new()
+	sym_lbl.text = sym; sym_lbl.position = Vector2(16, 14)
+	sym_lbl.add_theme_font_size_override("font_size", 48)
+	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.88))
+	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(sym_lbl)
+
+	# Name + type
+	var name_lbl := Label.new()
+	name_lbl.text = data.get("name", id)
+	name_lbl.position = Vector2(104, 18)
+	name_lbl.add_theme_font_size_override("font_size", 18)
+	name_lbl.add_theme_color_override("font_color", C_TEXT)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(name_lbl)
+
+	# Type chip
+	var type_info: Dictionary = ELEM_INFO.get(id, {})
+	var type_str: String = type_info.get("type", ctype.to_upper())
+	var type_lbl := Label.new()
+	type_lbl.text = type_str; type_lbl.position = Vector2(104, 42)
+	type_lbl.add_theme_font_size_override("font_size", 11)
+	type_lbl.add_theme_color_override("font_color", Color(col.r + 0.1, col.g, col.b, 0.75))
+	type_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(type_lbl)
+
+	# Divider
+	var div := ColorRect.new()
+	div.color = Color(1,1,1,0.08); div.size = Vector2(288, 1); div.position = Vector2(16, 76)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(div)
+
+	# Real-world description
+	var desc_str: String = type_info.get("desc", data.get("desc", ""))
+	if not desc_str.is_empty():
+		var hdr := Label.new()
+		hdr.text = "ข้อมูลจริง"; hdr.position = Vector2(16, 86)
+		hdr.add_theme_font_size_override("font_size", 10)
+		hdr.add_theme_color_override("font_color", C_GOLD)
+		hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(hdr)
+		var desc_lbl := Label.new()
+		desc_lbl.text = desc_str; desc_lbl.position = Vector2(16, 102)
+		desc_lbl.size = Vector2(288, 80)
+		desc_lbl.add_theme_font_size_override("font_size", 11)
+		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(desc_lbl)
+
+	# Game effect
+	var effect_y := 196.0
+	if data.has("desc") and ctype != "element":
+		var div2 := ColorRect.new()
+		div2.color = Color(1,1,1,0.08); div2.size = Vector2(288,1); div2.position = Vector2(16, effect_y - 8)
+		div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(div2)
+		var eff_hdr := Label.new()
+		eff_hdr.text = "ผลในเกม"; eff_hdr.position = Vector2(16, effect_y)
+		eff_hdr.add_theme_font_size_override("font_size", 10)
+		eff_hdr.add_theme_color_override("font_color", C_GOLD)
+		eff_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(eff_hdr)
+		var eff_lbl := Label.new()
+		eff_lbl.text = data["desc"]; eff_lbl.position = Vector2(16, effect_y + 16)
+		eff_lbl.size = Vector2(288, 40)
+		eff_lbl.add_theme_font_size_override("font_size", 12)
+		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
+		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(eff_lbl)
+
+	# AP cost
+	if data.has("ap"):
+		var ap_lbl2 := Label.new()
+		ap_lbl2.text = "AP Cost: %d" % data["ap"]
+		ap_lbl2.position = Vector2(16, 370)
+		ap_lbl2.add_theme_font_size_override("font_size", 11)
+		ap_lbl2.add_theme_color_override("font_color", C_AP)
+		ap_lbl2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(ap_lbl2)
+
+	# Slide in
+	var t := _info_panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_info_panel, "position:x", 820.0, 0.20)
+
+func _hide_card_info() -> void:
+	if not is_instance_valid(_info_panel): return
+	var t := _info_panel.create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_info_panel, "position:x", 1160.0, 0.15)
+
+# ── Card tap handler (replaces old _on_card_click) ────────
+func _on_card_tap(id: String, _idx: int) -> void:
+	if not _player_turn or _battle_over: return
+	var data: Dictionary = CARD_DB.get(id, {})
+	match data.get("type", "element"):
+		"element":  _handle_element_select(id)
+		"reaction": _use_reaction_card(id)
+		"support":  _use_support_card(id)
 
 # ════════════════════════════════════════════════════════════
 #  GAME SETUP
@@ -594,41 +832,62 @@ func _reshuffle() -> void:
 #  HAND RENDERING
 # ════════════════════════════════════════════════════════════
 func _refresh_hand() -> void:
-	for c in _hand_container.get_children():
-		_hand_container.remove_child(c)
-		c.queue_free()
-	for i in _hand.size():
+	for c in _card_nodes:
+		if is_instance_valid(c): c.queue_free()
+	_card_nodes.clear()
+	var n := _hand.size()
+	for i in n:
 		var id: String = _hand[i]
 		var data: Dictionary = CARD_DB.get(id, {})
 		if data.is_empty(): continue
-		_hand_container.add_child(_make_card_node(id, data, i))
+		var card := _make_card_node(id, data, i, n)
+		add_child(card)
+		_card_nodes.append(card)
 
-func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
+const ELEM_INFO := {
+	"H":  {"desc":"ธาตุที่เบาที่สุด พบมากที่สุดในจักรวาล 75% ของมวลสาร ใช้เป็นเชื้อเพลิงสะอาด", "type":"Nonmetal"},
+	"O":  {"desc":"ก๊าซ 21% ของบรรยากาศโลก จำเป็นต่อการหายใจของสิ่งมีชีวิต",                     "type":"Nonmetal"},
+	"Na": {"desc":"โลหะอ่อนสีเงิน ระเบิดรุนแรงเมื่อสัมผัสน้ำ ควบคุมแรงดันเลือดในร่างกาย",       "type":"Alkali Metal"},
+	"Cl": {"desc":"แก๊สพิษสีเหลือง-เขียว เคยใช้เป็นอาวุธในสงครามโลก ปัจจุบันใช้ฆ่าเชื้อ",       "type":"Halogen"},
+	"Fe": {"desc":"โลหะที่พบมากที่สุดในโลก เป็นส่วนประกอบหลักของแกนโลก ใช้ในการก่อสร้าง",       "type":"Transition Metal"},
+	"C":  {"desc":"พบในสิ่งมีชีวิตทุกชนิด รากฐานของสารอินทรีย์ มีทั้งรูปกราไฟต์และเพชร",         "type":"Nonmetal"},
+}
+
+func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Control:
 	var ctype: String = data.get("type", "element")
 	var col:   Color  = data.get("color", Color(0.5,0.5,0.6))
 	var selected := (_selected_elem == id and ctype == "element")
 
-	var border_a := 0.9 if selected else 0.4
+	# Fan position on arc
+	var half      := (total - 1) / 2.0
+	var angle_rad := deg_to_rad((idx - half) * FAN_SPREAD)
+	var bx        := FAN_CENTER_X + FAN_ARC_R * sin(angle_rad)
+	var by        := FAN_BASE_Y   + FAN_ARC_R * (1.0 - cos(angle_rad))
+
+	var border_a := 0.9 if selected else 0.35
 	var bg_r     := 0.28 if selected else 0.10
-	var bw       := 2 if selected else 1
+	var bw       := 2   if selected else 1
 	var panel    := Panel.new()
-	panel.custom_minimum_size = Vector2(112, 110)
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.size          = Vector2(CARD_W, CARD_H)
+	panel.position      = Vector2(bx - CARD_W * 0.5, by - CARD_H)
+	panel.pivot_offset  = Vector2(CARD_W * 0.5, CARD_H)
+	panel.rotation      = angle_rad
+	panel.z_index       = 8 + idx
+	panel.mouse_filter  = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel",
 		_flat(Color(col.r*bg_r, col.g*bg_r, col.b*(bg_r+0.06), 1.0),
-			  Color(col.r, col.g, col.b, border_a), 16, bw))
+			  Color(col.r, col.g, col.b, border_a), 12, bw))
 
 	# Type tag
 	var tag_txt: String
 	match ctype:
 		"element":  tag_txt = "ELEMENT"
-		"reaction": tag_txt = "TIER %d  •  %d AP" % [data.get("tier",1), data.get("ap",1)]
-		"support":  tag_txt = "SUPPORT  •  %d AP" % data.get("ap",1)
+		"reaction": tag_txt = "TIER%d %dAP" % [data.get("tier",1), data.get("ap",1)]
+		"support":  tag_txt = "SUPPORT %dAP" % data.get("ap",1)
 	var tag := Label.new()
-	tag.text = tag_txt
-	tag.position = Vector2(8, 8)
-	tag.add_theme_font_size_override("font_size", 9)
-	tag.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.7))
+	tag.text = tag_txt; tag.position = Vector2(4, 5)
+	tag.add_theme_font_size_override("font_size", 7)
+	tag.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.60))
 	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(tag)
 
@@ -636,72 +895,72 @@ func _make_card_node(id: String, data: Dictionary, idx: int) -> Control:
 	var sym: String = data.get("symbol", data.get("name","?"))
 	var sym_lbl := Label.new()
 	sym_lbl.text = sym
-	sym_lbl.size = Vector2(112, 52)
-	sym_lbl.position = Vector2(0, 18)
+	sym_lbl.size = Vector2(CARD_W, 50)
+	sym_lbl.position = Vector2(0, 16)
 	sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sym_lbl.add_theme_font_size_override("font_size", 32 if ctype == "element" else 18)
+	sym_lbl.add_theme_font_size_override("font_size", 28 if ctype == "element" else 14)
 	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.9))
 	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(sym_lbl)
 
 	# Divider
 	var div := ColorRect.new()
-	div.color = Color(col.r, col.g, col.b, 0.2)
-	div.size = Vector2(96, 1)
-	div.position = Vector2(8, 72)
+	div.color = Color(col.r, col.g, col.b, 0.18)
+	div.size  = Vector2(CARD_W - 10, 1); div.position = Vector2(5, 68)
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(div)
 
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
-	name_lbl.size = Vector2(104, 28)
-	name_lbl.position = Vector2(4, 76)
+	name_lbl.size = Vector2(CARD_W - 6, 28); name_lbl.position = Vector2(3, 72)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_font_size_override("font_size", 9)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_lbl)
 
-	# Desc (reaction/support only)
-	if ctype != "element" and data.has("desc"):
-		var desc_lbl := Label.new()
-		desc_lbl.text = data["desc"]
-		desc_lbl.size = Vector2(104, 22)
-		desc_lbl.position = Vector2(4, 88)
-		desc_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		desc_lbl.add_theme_font_size_override("font_size", 9)
-		desc_lbl.add_theme_color_override("font_color", C_SUB)
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.add_child(desc_lbl)
-
-	# Selection glow overlay
+	# Selection glow
 	if selected:
 		var glow := ColorRect.new()
 		glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		glow.color = Color(col.r, col.g, col.b, 0.10)
+		glow.color = Color(col.r, col.g, col.b, 0.12)
 		glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		panel.add_child(glow)
 
-	panel.gui_input.connect(_on_card_click.bind(id, idx))
+	# Hover: lift up
+	var base_y := by - CARD_H
+	panel.mouse_entered.connect(func():
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT)
+		t.tween_property(panel, "position:y", base_y - 18.0, 0.12)
+	)
+	panel.mouse_exited.connect(func():
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT)
+		t.tween_property(panel, "position:y", base_y if not selected else base_y - 18.0, 0.10)
+	)
+
+	# Tap / Hold detection
+	panel.gui_input.connect(func(ev: InputEvent):
+		if not (ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT):
+			return
+		if ev.pressed:
+			_press_card_id = id
+			_press_start   = Time.get_ticks_msec() / 1000.0
+			_info_shown    = false
+		else:
+			var held := Time.get_ticks_msec() / 1000.0 - _press_start
+			_press_start = -1.0
+			_hide_card_info()
+			_info_shown = false
+			if held < HOLD_THRESH and _player_turn and not _battle_over:
+				_on_card_tap(id, idx)
+	)
 	return panel
 
 # ════════════════════════════════════════════════════════════
 #  CARD INTERACTION
 # ════════════════════════════════════════════════════════════
-func _on_card_click(ev: InputEvent, id: String, _idx: int) -> void:
-	if not (ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT):
-		return
-	if not _player_turn or _battle_over:
-		return
-	var data: Dictionary = CARD_DB.get(id, {})
-	match data.get("type", "element"):
-		"element":  _handle_element_select(id)
-		"reaction": _use_reaction_card(id)
-		"support":  _use_support_card(id)
-
 func _handle_element_select(id: String) -> void:
 	if _selected_elem == "":
 		_selected_elem = id
@@ -979,6 +1238,12 @@ func _add_gauge(amount: int) -> void:
 # ════════════════════════════════════════════════════════════
 #  UI REFRESH
 # ════════════════════════════════════════════════════════════
+func _process(_delta: float) -> void:
+	if _press_start >= 0.0 and not _info_shown:
+		if Time.get_ticks_msec() / 1000.0 - _press_start >= HOLD_THRESH:
+			_show_card_info(_press_card_id)
+			_info_shown = true
+
 func _refresh_ui() -> void:
 	if _stage_lbl:   _stage_lbl.text = "Stage %d" % _current_stage
 	if _turn_lbl:    _turn_lbl.text  = "เทิร์นของคุณ" if _player_turn else "เทิร์นศัตรู"
@@ -988,10 +1253,17 @@ func _refresh_ui() -> void:
 		var dots := "●".repeat(_ap) + "○".repeat(MAX_AP - _ap)
 		_ap_lbl.text = dots
 
-	# Ultimate gauge ring (width fills the 72px disc)
+	# Ultimate gauge circle (fills from bottom)
 	var ult_ratio := _ult_gauge / float(MAX_GAUGE)
-	if _gauge_bar:  _gauge_bar.size.x = 72.0 * ult_ratio
+	var fill_h    := ULT_R * 2.0 * ult_ratio
+	if _gauge_bar:
+		_gauge_bar.size.y     = fill_h
+		_gauge_bar.position.y = ULT_R * 2.0 - fill_h
 	if _gauge_lbl:  _gauge_lbl.text = "%d%%" % int(ult_ratio * 100.0)
+
+	# Deck / Discard circles
+	if _deck_cnt_lbl: _deck_cnt_lbl.text = str(_deck.size())
+	if _disc_cnt_lbl: _disc_cnt_lbl.text = str(_discard.size())
 
 	# Player HP
 	var max_hp: float = float(CHARACTER["max_hp"])
