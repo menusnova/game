@@ -806,7 +806,7 @@ func _roll() -> Array:
 func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 	_revealing   = true
 	_skip_to_end = false
-	_skip_btn.text = "แตะเพื่อข้าม"
+	if is_instance_valid(_skip_btn): _skip_btn.text = "แตะเพื่อข้าม"
 	for child in _result_con.get_children(): child.queue_free()
 	_result_ov.visible  = true
 	_result_con.visible = false
@@ -834,7 +834,7 @@ func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 
 	_revealing   = false
 	_skip_to_end = false
-	_skip_btn.text = "CLOSE"
+	if is_instance_valid(_skip_btn): _skip_btn.text = "CLOSE"
 
 func _reveal_one(char_name: String, rarity: int) -> void:
 	if rarity == 5: await _reveal_5star(char_name)

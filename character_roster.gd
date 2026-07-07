@@ -246,6 +246,7 @@ func _make_card(data: Dictionary) -> Control:
 	return card
 
 func _go_detail() -> void:
+	if not ResourceLoader.exists(SC_DETAIL): return
 	SceneTransition.fade_to(SC_DETAIL)
 
 func _go_back() -> void:

@@ -116,5 +116,3 @@ func _load() -> void:
 		paid_crystal = int(cfg.get_value("currency", "paid_crystal", 0))
 		free_crystal = int(cfg.get_value("currency", "free_crystal", 100000))
 		energy       = int(cfg.get_value("currency", "energy",       240))
-	if gold == 0:         gold = 5000000
-	if free_crystal == 0: free_crystal = 100000

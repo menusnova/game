@@ -278,7 +278,9 @@ func _build_topbar() -> void:
 	for s in ["normal","hover","pressed","focus"]:
 		back.add_theme_stylebox_override(s, _flat(Color(0,0,0,0), Color(0,0,0,0)))
 	back.add_theme_color_override("font_color", C_SUB)
-	back.pressed.connect(_go_back)
+	back.pressed.connect(func():
+		if _battle_over or _player_turn: _go_back()
+	)
 	bar.add_child(back)
 
 # ── Enemy — center-top, smaller (distance perspective) ───
@@ -1164,6 +1166,7 @@ func _enemy_turn() -> void:
 		if _enemy_hp <= 0:
 			_check_battle(); return
 		await get_tree().create_timer(0.7).timeout
+		if not is_instance_valid(self): return
 
 	# Enemy attacks
 	var dmg: int = _enemy_data.get("attack", 10)
@@ -1183,6 +1186,7 @@ func _enemy_turn() -> void:
 	_refresh_ui()
 
 	await get_tree().create_timer(0.7).timeout
+	if not is_instance_valid(self): return
 
 	if _player_hp <= 0:
 		_check_battle(); return

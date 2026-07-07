@@ -409,7 +409,7 @@ func _build_right_area() -> void:
 
 	# Horizontal activity chips
 	var chip_x := rx
-	for i in minf(ACTIVITY.size(), 3):
+	for i in mini(ACTIVITY.size(), 3):
 		var a: Dictionary = ACTIVITY[i]
 		var chip_w := (rw - gap * 2) / 3.0
 		var chip := Panel.new()
