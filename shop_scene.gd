@@ -531,18 +531,9 @@ func _load_png(path: String) -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 func _fmt(n: int) -> String:
-	return _fmt_comma(n)
-
-func _fmt_comma(n: int) -> String:
-	var s := str(n)
-	var result := ""
-	var count := 0
-	for i in range(s.length() - 1, -1, -1):
-		if count > 0 and count % 3 == 0:
-			result = "," + result
-		result = s[i] + result
-		count += 1
-	return result
+	if n >= 1000000: return "%.1fM" % (n / 1000000.0)
+	if n >= 1000:    return "%.1fK" % (n / 1000.0)
+	return str(n)
 
 func _flat(bg: Color, border: Color, radius: int = 0, bw: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
