@@ -189,7 +189,7 @@ class _QuestRow extends Control:
 
 		const REWARDS := [
 			["exp",     "⭐",  "",                            "EXP",     Color(1.00, 0.82, 0.25)],
-			["gold",    "💰",  "",                            "Gold",    Color(0.95, 0.72, 0.20)],
+			["gold",    "💰",  "res://image/icon_gold.png",    "Gold",    Color(0.95, 0.72, 0.20)],
 			["crystal", "💠",  "res://image/crystal_gem.png", "Crystal", Color(0.40, 0.88, 1.00)],
 		]
 

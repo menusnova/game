@@ -75,6 +75,9 @@ func _load_icon_textures() -> void:
 					ok = img.load_png_from_buffer(buf) == OK
 				if ok:
 					node.texture = ImageTexture.create_from_image(img)
+					if pair[0].begins_with("NavBar/"):
+						node.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:
