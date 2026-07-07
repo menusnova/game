@@ -9,9 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://jjmih2jw2aq8" path="res://bar_textures/particle_spark.png" id="9_spark"]
 [ext_resource type="Shader" uid="uid://clmpdwfenctxe" path="res://bar_textures/plasma_ring.gdshader" id="10_shader"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_u524s"]
-load_path = "res://.godot/imported/3c3a8024-006c-45b9-98e9-3ba94bfd6565.png-dc2c48fc8888bb27a51b892e5c532d00.ctex"
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
 shader = ExtResource("3_barshader")
 shader_parameter/progress = 0.0
@@ -75,7 +72,7 @@ offset_top = 140.0
 offset_right = 876.0
 offset_bottom = 500.0
 mouse_filter = 2
-texture = SubResource("CompressedTexture2D_u524s")
+texture = ExtResource("2_mrh31")
 expand_mode = 1
 stretch_mode = 5
 
