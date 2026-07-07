@@ -236,13 +236,13 @@ func _build_banner_card() -> void:
 	tp.tween_property(_banner_art, "modulate:a", 0.55, 2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tp.tween_property(_banner_art, "modulate:a", 1.0,  2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# Title + sub (bottom-left of card)
-	var info_y := ch - 84.0
+	# Title + sub + pity (bottom-left of card)
+	var info_y := ch - 110.0
 	_banner_title = Label.new()
 	_banner_title.text = str(d["banner_title"])
 	_banner_title.add_theme_font_size_override("font_size", 26)
 	_banner_title.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-	_banner_title.size     = Vector2(cw * 0.55, 34)
+	_banner_title.size     = Vector2(cw * 0.50, 34)
 	_banner_title.position = Vector2(18, info_y)
 	_banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_title)
@@ -251,10 +251,38 @@ func _build_banner_card() -> void:
 	_banner_sub.text = str(d["banner_sub"])
 	_banner_sub.add_theme_font_size_override("font_size", 12)
 	_banner_sub.add_theme_color_override("font_color", Color(acc.r + 0.1, acc.g + 0.05, acc.b, 0.8))
-	_banner_sub.size     = Vector2(cw * 0.55, 20)
+	_banner_sub.size     = Vector2(cw * 0.50, 20)
 	_banner_sub.position = Vector2(18, info_y + 38)
 	_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_sub)
+
+	# Pity — bottom-left, below sub
+	var pity_desc := Label.new()
+	pity_desc.text = "รับประกัน 5★ ที่ 90 ครั้ง  •  Soft pity เริ่มที่ 75"
+	pity_desc.add_theme_font_size_override("font_size", 10)
+	pity_desc.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.45))
+	pity_desc.size     = Vector2(cw * 0.50, 16)
+	pity_desc.position = Vector2(18, info_y + 62)
+	pity_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity_desc)
+
+	_new_pity_bar = ProgressBar.new()
+	_new_pity_bar.max_value       = PITY_HARD
+	_new_pity_bar.value           = _pity
+	_new_pity_bar.show_percentage = false
+	_new_pity_bar.size            = Vector2(200, 5)
+	_new_pity_bar.position        = Vector2(18, info_y + 82)
+	_new_pity_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
+	card.add_child(_new_pity_bar)
+
+	_new_pity_lbl = Label.new()
+	_new_pity_lbl.text = "Pity  %d / %d" % [_pity, PITY_HARD]
+	_new_pity_lbl.add_theme_font_size_override("font_size", 11)
+	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.85))
+	_new_pity_lbl.size     = Vector2(200, 16)
+	_new_pity_lbl.position = Vector2(18, info_y + 91)
+	_new_pity_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(_new_pity_lbl)
 
 	# ── Pull buttons — bottom-right inside card ──
 	var btn_w  := 200.0
@@ -320,21 +348,6 @@ func _build_bottom_bar() -> void:
 	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	gem_row.add_child(_new_gem_lbl)
 
-	# Pity
-	_new_pity_lbl = Label.new()
-	_new_pity_lbl.add_theme_font_size_override("font_size", 12)
-	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.85))
-	_new_pity_lbl.position = Vector2(info_x + 120, (BOT_H - 16) * 0.5 - 2)
-	_new_pity_lbl.size     = Vector2(110, 16)
-	bar.add_child(_new_pity_lbl)
-
-	_new_pity_bar = ProgressBar.new()
-	_new_pity_bar.max_value       = PITY_HARD
-	_new_pity_bar.value           = 0
-	_new_pity_bar.show_percentage = false
-	_new_pity_bar.size            = Vector2(140, 5)
-	_new_pity_bar.position        = Vector2(info_x + 120, (BOT_H + 18) * 0.5)
-	bar.add_child(_new_pity_bar)
 
 # ── Warp tab ──────────────────────────────────────────────────────
 func _on_warp_tab(idx: int) -> void:
