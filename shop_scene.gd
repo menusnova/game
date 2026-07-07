@@ -497,6 +497,7 @@ func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, col: Color) -> 
 		var ico := TextureRect.new()
 		ico.texture = icon_tex
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ico.size     = Vector2(22, 22)
 		ico.position = Vector2(5, 4)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
