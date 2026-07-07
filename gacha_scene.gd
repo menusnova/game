@@ -481,11 +481,12 @@ func _build_top_bar() -> void:
 		var ico := TextureRect.new()
 		ico.texture = gem_tex
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.custom_minimum_size = Vector2(22, 22)
+		ico.custom_minimum_size = Vector2(18, 18)
+		ico.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		free_box.add_child(ico)
 	_new_gem_lbl = Label.new()
-	_new_gem_lbl.add_theme_font_size_override("font_size", 16)
+	_new_gem_lbl.add_theme_font_size_override("font_size", 14)
 	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	_new_gem_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	free_box.add_child(_new_gem_lbl)
