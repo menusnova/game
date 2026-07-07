@@ -5,17 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://c4hscoe02b0gn" path="res://image/lock_chain_x.png" id="3_lockchain"]
 [ext_resource type="Texture2D" uid="uid://dcrystalgem001" path="res://image/crystal_gem.png" id="4_crystalgem"]
 
-[sub_resource type="StyleBoxFlat" id="SB_TogBtn"]
-bg_color = Color(0, 0, 0, 0.55)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.22, 0.62, 1, 0.25)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="SB_Blank"]
 bg_color = Color(0, 0, 0, 0)
@@ -188,38 +177,6 @@ texture = ExtResource("2_fu7sn")
 expand_mode = 2
 stretch_mode = 6
 
-[node name="FemaleCharacter" type="TextureRect" parent="." unique_id=312128909]
-layout_mode = 0
-offset_left = 260.0
-offset_right = 890.0
-offset_bottom = 648.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MaleCharacter" type="TextureRect" parent="." unique_id=953256853]
-visible = false
-layout_mode = 0
-offset_left = 260.0
-offset_right = 890.0
-offset_bottom = 648.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="ToggleBtn" type="Button" parent="." unique_id=835957511]
-layout_mode = 0
-offset_left = 466.0
-offset_top = 570.0
-offset_right = 686.0
-offset_bottom = 610.0
-theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("SB_TogBtn")
-theme_override_styles/pressed = SubResource("SB_TogBtn")
-theme_override_styles/hover = SubResource("SB_TogBtn")
-theme_override_styles/focus = SubResource("SB_Blank")
-text = "♀ · ♂"
 
 [node name="CurrBox1" type="Panel" parent="." unique_id=1464954599]
 layout_mode = 0
@@ -1845,4 +1802,3 @@ theme_override_font_sizes/font_size = 7
 text = "BONUS REWARD"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="ToggleBtn" to="." method="_on_toggle_char"]

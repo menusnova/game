@@ -24,15 +24,7 @@ const CARDS: Array[String] = [
 	"EventBanner"
 ]
 
-func _on_toggle_char() -> void:
-	pass  # stub — ToggleBtn hidden
-
 func _ready() -> void:
-	# Hide character sprite placeholders until art assets are ready
-	for n in ["FemaleCharacter", "MaleCharacter", "ToggleBtn"]:
-		var node := get_node_or_null(n) as Control
-		if node: node.visible = false
-
 	_setup_ambient_fx()
 	var _adv: Control = get_node_or_null("AdventureCard") as Control
 	if _adv: _adv.gui_input.connect(_on_adv_input)
