@@ -93,12 +93,6 @@ var _warp_btns:      Array[Button] = []
 @onready var _result_con: HBoxContainer = $ResultOverlay/ResultContainer
 @onready var _skip_btn:   Button        = $ResultOverlay/SkipBtn
 
-@onready var _pull1:    Button      = $PullBtn1
-@onready var _pull10:   Button      = $PullBtn10
-@onready var _back:     Button      = $BackBtn
-@onready var _pity_bar: ProgressBar = $BannerCard/PityBar
-@onready var _pity_lbl: Label       = $BannerCard/PityLabel
-@onready var _gem_lbl:  Label       = $InfoPanel/CurrencyRow/GemCount
 
 # ── Setup ─────────────────────────────────────────────────────────
 func _ready() -> void:
