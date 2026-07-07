@@ -152,23 +152,6 @@ func _build_hsr_ui() -> void:
 	art_rect.z_index  = 0
 	add_child(art_rect)
 
-	# Art icon (large, centered in art area, animated)
-	var d: Dictionary = WARP_TYPES[_active_warp]
-	var art_lbl := Label.new()
-	art_lbl.text = str(d["art_icon"])
-	art_lbl.add_theme_font_size_override("font_size", 220)
-	art_lbl.add_theme_color_override("font_color",
-		Color((d["art_col"] as Color).r, (d["art_col"] as Color).g, (d["art_col"] as Color).b, 0.15))
-	art_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	art_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	art_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	art_lbl.offset_right = -60
-	art_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_lbl.z_index = 0
-	add_child(art_lbl)
-	var tp := art_lbl.create_tween().set_loops()
-	tp.tween_property(art_lbl, "modulate:a", 0.45, 3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tp.tween_property(art_lbl, "modulate:a", 1.0,  3.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
 	# ── Left thumbnail strip ──
 	_build_thumb_strip()
