@@ -236,6 +236,7 @@ class _QuestRow extends Control:
 				var icon_img := TextureRect.new()
 				icon_img.texture = img_tex
 				icon_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon_img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 				icon_img.size     = Vector2(CARD_W, 38)
 				icon_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card_bg.add_child(icon_img)
