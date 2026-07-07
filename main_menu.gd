@@ -46,10 +46,15 @@ func _ready() -> void:
 
 func _load_icon_textures() -> void:
 	var icons := [
-		["CurrBox1/CurrIcon1", "res://image/icon_gold.png"],
-		["CurrBox2/CurrIcon2", "res://image/crystal_gem.png"],
-		["CurrBox3/CurrIcon3", "res://image/icon_paid.png"],
-		["CurrBox4/CurrIcon4", "res://image/icon_energy.png"],
+		["CurrBox1/CurrIcon1",        "res://image/icon_gold.png"],
+		["CurrBox2/CurrIcon2",        "res://image/crystal_gem.png"],
+		["CurrBox3/CurrIcon3",        "res://image/icon_paid.png"],
+		["CurrBox4/CurrIcon4",        "res://image/icon_energy.png"],
+		["MenuItem_Notice/Icon",      "res://image/icon_notice.png"],
+		["MenuItem_Missions/Icon",    "res://image/icon_missions.png"],
+		["MenuItem_Event/Icon",       "res://image/icon_event.png"],
+		["MenuItem_Pass/Icon",        "res://image/icon_pass.png"],
+		["MenuItem_Shop/Icon",        "res://image/icon_shop.png"],
 	]
 	for pair in icons:
 		var node := get_node_or_null(pair[0]) as TextureRect
