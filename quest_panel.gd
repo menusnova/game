@@ -7,27 +7,27 @@ var _is_open := false
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "current": 1, "total": 1, "go": "",          "reward": "crystal", "reward_n": 20},
-		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "current": 0, "total": 3, "go": "battle",    "reward": "crystal", "reward_n": 60},
-		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "current": 0, "total": 1, "go": "gacha",     "reward": "crystal", "reward_n": 30},
-		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1, "go": "alchemist", "reward": "crystal", "reward_n": 30},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "current": 1, "total": 1, "go": "",          "exp": 50,  "gold": 500,  "crystal": 20},
+		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "current": 0, "total": 3, "go": "battle",    "exp": 120, "gold": 1200, "crystal": 60},
+		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "current": 0, "total": 1, "go": "gacha",     "exp": 60,  "gold": 600,  "crystal": 30},
+		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1, "go": "alchemist", "exp": 60,  "gold": 600,  "crystal": 30},
 	],
 	Tab.WEEKLY: [
-		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "current": 0, "total": 1,  "go": "battle",    "reward": "crystal", "reward_n": 120},
-		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "current": 0, "total": 5,  "go": "battle",    "reward": "crystal", "reward_n": 100},
-		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "current": 0, "total": 3,  "go": "gacha",     "reward": "crystal", "reward_n": 90},
-		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "current": 0, "total": 5,  "go": "alchemist", "reward": "crystal", "reward_n": 80},
-		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "current": 0, "total": 3,  "go": "battle",    "reward": "วัสดุ Ascend ×6"},
+		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "current": 0, "total": 1,  "go": "battle",    "exp": 300, "gold": 3000, "crystal": 120},
+		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "current": 0, "total": 5,  "go": "battle",    "exp": 250, "gold": 2500, "crystal": 100},
+		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "current": 0, "total": 3,  "go": "gacha",     "exp": 220, "gold": 2200, "crystal": 90},
+		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "current": 0, "total": 5,  "go": "alchemist", "exp": 200, "gold": 2000, "crystal": 80},
+		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "current": 0, "total": 3,  "go": "battle",    "exp": 180, "gold": 1800, "crystal": 70},
 	],
 	Tab.ENDGAME: [
-		{"id": "eg_boss",   "label": "สังหาร Weekly Boss",  "current": 0, "total": 1, "go": "battle", "reward": "วัสดุ Lv.4 ×4"},
-		{"id": "eg_chaos1", "label": "Memory of Chaos I",   "current": 0, "total": 1, "go": "battle", "reward": "crystal", "reward_n": 150},
-		{"id": "eg_chaos2", "label": "Memory of Chaos II",  "current": 0, "total": 1, "go": "battle", "reward": "crystal", "reward_n": 150},
+		{"id": "eg_boss",   "label": "สังหาร Weekly Boss",  "current": 0, "total": 1, "go": "battle", "exp": 400, "gold": 4000, "crystal": 150},
+		{"id": "eg_chaos1", "label": "Memory of Chaos I",   "current": 0, "total": 1, "go": "battle", "exp": 350, "gold": 3500, "crystal": 150},
+		{"id": "eg_chaos2", "label": "Memory of Chaos II",  "current": 0, "total": 1, "go": "battle", "exp": 350, "gold": 3500, "crystal": 150},
 	],
 	Tab.CHALLENGE: [
-		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "current": 0, "total": 3,  "go": "battle", "reward": "crystal", "reward_n": 160},
-		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "current": 0, "total": 1,  "go": "gacha",  "reward": "crystal", "reward_n": 200},
-		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "current": 0, "total": 10, "go": "battle", "reward": "crystal", "reward_n": 100},
+		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "current": 0, "total": 3,  "go": "battle", "exp": 400, "gold": 4000, "crystal": 160},
+		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "current": 0, "total": 1,  "go": "gacha",  "exp": 500, "gold": 5000, "crystal": 200},
+		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "current": 0, "total": 10, "go": "battle", "exp": 250, "gold": 2500, "crystal": 100},
 	],
 }
 
@@ -156,10 +156,10 @@ func _rebuild_list() -> void:
 				SceneTransition.fade_to(scene_path)
 		_list.add_child(_QuestRow.new(q, nav))
 
-# ── Quest row (Daily / Endgame / Challenge) ──────────────────────────────────
+# ── Quest row ────────────────────────────────────────────────────────────────
 class _QuestRow extends Control:
 	func _init(q: Dictionary, nav: Callable = Callable()) -> void:
-		custom_minimum_size = Vector2(0, 68)
+		custom_minimum_size = Vector2(0, 76)
 
 		var bg := ColorRect.new()
 		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -169,7 +169,7 @@ class _QuestRow extends Control:
 
 		var done: bool = int(q.get("current", 0)) >= int(q.get("total", 1))
 
-		# label
+		# Quest label
 		var lbl := Label.new()
 		lbl.text = ("✓  " if done else "○  ") + str(q.get("label", ""))
 		lbl.add_theme_font_size_override("font_size", 13)
@@ -177,84 +177,133 @@ class _QuestRow extends Control:
 			Color(0.5, 1.0, 0.6, 0.85) if done else Color(0.9, 0.93, 1.0, 0.95))
 		lbl.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
 		lbl.offset_left  = 20
-		lbl.offset_right = 460
+		lbl.offset_right = 420
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		add_child(lbl)
 
-		# reward — inline icon + count
-		var reward_str: String = str(q.get("reward", ""))
-		var reward_n: int = int(q.get("reward_n", 0))
-		var reward_row := HBoxContainer.new()
-		reward_row.position = Vector2(480, 20)
-		reward_row.add_theme_constant_override("separation", 4)
-		if reward_str == "crystal" and reward_n > 0:
-			var tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
-			if tex:
-				var ico := TextureRect.new()
-				ico.texture = tex
-				ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				ico.custom_minimum_size = Vector2(18, 18)
-				reward_row.add_child(ico)
-			var reward_lbl := Label.new()
-			reward_lbl.text = "+%d" % reward_n
-			reward_lbl.add_theme_font_size_override("font_size", 12)
-			reward_lbl.add_theme_color_override("font_color", Color(0.4, 0.88, 1.0, 1.0))
-			reward_row.add_child(reward_lbl)
-		else:
-			var reward_lbl := Label.new()
-			reward_lbl.text = reward_str
-			reward_lbl.add_theme_font_size_override("font_size", 11)
-			reward_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
-			reward_row.add_child(reward_lbl)
-		add_child(reward_row)
+		# ── Reward cards (right side) ─────────────────────────
+		const CARD_W  := 54.0
+		const CARD_H  := 62.0
+		const CARD_X0 := 428.0
+		const CARD_GAP := 6.0
 
-		# progress bar
+		const REWARDS := [
+			["exp",     "⭐", "EXP",     Color(1.00, 0.82, 0.25)],
+			["gold",    "💰", "Gold",    Color(0.95, 0.72, 0.20)],
+			["crystal", "💠", "Crystal", Color(0.40, 0.88, 1.00)],
+		]
+
+		for ri in REWARDS.size():
+			var rdef  : Array  = REWARDS[ri]
+			var r_key : String = rdef[0]
+			var r_icon: String = rdef[1]
+			var r_name: String = rdef[2]
+			var r_col : Color  = rdef[3]
+			var r_val : int    = int(q.get(r_key, 0))
+			if r_val <= 0:
+				continue
+
+			var cx := CARD_X0 + ri * (CARD_W + CARD_GAP)
+
+			# Card background
+			var card_bg := Panel.new()
+			card_bg.size     = Vector2(CARD_W, CARD_H)
+			card_bg.position = Vector2(cx, 7)
+			card_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var sb := StyleBoxFlat.new()
+			sb.bg_color = Color(r_col.r * 0.10, r_col.g * 0.10, r_col.b * 0.14, 0.90)
+			sb.border_color = Color(r_col.r, r_col.g, r_col.b, 0.30)
+			sb.border_width_left  = 1; sb.border_width_right  = 1
+			sb.border_width_top   = 1; sb.border_width_bottom = 1
+			sb.corner_radius_top_left     = 6; sb.corner_radius_top_right    = 6
+			sb.corner_radius_bottom_right = 6; sb.corner_radius_bottom_left  = 6
+			card_bg.add_theme_stylebox_override("panel", sb)
+			add_child(card_bg)
+
+			# Icon box (top portion)
+			var icon_box := ColorRect.new()
+			icon_box.size     = Vector2(CARD_W, 38)
+			icon_box.color    = Color(r_col.r * 0.14, r_col.g * 0.14, r_col.b * 0.20, 0.85)
+			icon_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card_bg.add_child(icon_box)
+
+			# Icon emoji centered in box
+			var icon_lbl := Label.new()
+			icon_lbl.text = r_icon
+			icon_lbl.size = Vector2(CARD_W, 38)
+			icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+			icon_lbl.add_theme_font_size_override("font_size", 20)
+			icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card_bg.add_child(icon_lbl)
+
+			# Value label
+			var val_lbl := Label.new()
+			val_lbl.text = "+%d" % r_val
+			val_lbl.size = Vector2(CARD_W, 12)
+			val_lbl.position = Vector2(0, 38)
+			val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			val_lbl.add_theme_font_size_override("font_size", 9)
+			val_lbl.add_theme_color_override("font_color", Color(r_col.r + 0.1, r_col.g, r_col.b, 0.95))
+			val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card_bg.add_child(val_lbl)
+
+			# Name label below value
+			var name_lbl := Label.new()
+			name_lbl.text = r_name
+			name_lbl.size = Vector2(CARD_W, 12)
+			name_lbl.position = Vector2(0, 50)
+			name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			name_lbl.add_theme_font_size_override("font_size", 8)
+			name_lbl.add_theme_color_override("font_color", Color(r_col.r, r_col.g, r_col.b, 0.55))
+			name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card_bg.add_child(name_lbl)
+
+		# Progress bar
 		var total: int = max(1, int(q.get("total", 1)))
 		var cur:   int = clampi(int(q.get("current", 0)), 0, total)
 
 		var bar_bg := ColorRect.new()
 		bar_bg.color    = Color(1, 1, 1, 0.07)
 		bar_bg.size     = Vector2(260, 5)
-		bar_bg.position = Vector2(20, 58)
+		bar_bg.position = Vector2(20, 64)
 		add_child(bar_bg)
 
 		var fill := ColorRect.new()
 		fill.color    = Color(0.3, 0.85, 0.5, 0.9) if done else Color(0.37, 0.62, 1.0, 0.9)
 		fill.size     = Vector2(260.0 * cur / total, 5)
-		fill.position = Vector2(20, 58)
+		fill.position = Vector2(20, 64)
 		add_child(fill)
 
 		var cnt := Label.new()
 		cnt.text = "%d / %d" % [cur, total]
 		cnt.add_theme_font_size_override("font_size", 10)
 		cnt.add_theme_color_override("font_color", Color(1, 1, 1, 0.35))
-		cnt.position = Vector2(290, 52)
+		cnt.position = Vector2(290, 58)
 		add_child(cnt)
 
-		# go button
+		# Go button
 		if not done and nav.is_valid():
 			var btn := Button.new()
-			var sb := StyleBoxFlat.new()
-			sb.bg_color = Color(0.15, 0.33, 0.78, 1.0)
-			sb.corner_radius_top_left     = 8
-			sb.corner_radius_top_right    = 8
-			sb.corner_radius_bottom_right = 8
-			sb.corner_radius_bottom_left  = 8
-			btn.add_theme_stylebox_override("normal",  sb)
-			btn.add_theme_stylebox_override("hover",   sb)
-			btn.add_theme_stylebox_override("pressed", sb)
+			var sb2 := StyleBoxFlat.new()
+			sb2.bg_color = Color(0.15, 0.33, 0.78, 1.0)
+			sb2.corner_radius_top_left     = 8; sb2.corner_radius_top_right    = 8
+			sb2.corner_radius_bottom_right = 8; sb2.corner_radius_bottom_left  = 8
+			btn.add_theme_stylebox_override("normal",  sb2)
+			btn.add_theme_stylebox_override("hover",   sb2)
+			btn.add_theme_stylebox_override("pressed", sb2)
 			btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 			btn.add_theme_font_size_override("font_size", 12)
 			btn.text     = "ไป ›"
 			btn.size     = Vector2(64, 32)
-			btn.position = Vector2(640, 18)
+			btn.position = Vector2(656, 22)
 			btn.pressed.connect(nav)
 			add_child(btn)
 
 		var div := ColorRect.new()
 		div.color        = Color(1, 1, 1, 0.05)
-		div.size         = Vector2(720, 1)
-		div.position     = Vector2(0, 67)
+		div.size         = Vector2(730, 1)
+		div.position     = Vector2(0, 75)
 		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(div)
 
