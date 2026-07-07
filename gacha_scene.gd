@@ -482,7 +482,6 @@ func _build_top_bar() -> void:
 		ico.texture = gem_tex
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		ico.custom_minimum_size = Vector2(18, 18)
-		ico.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		free_box.add_child(ico)
 	_new_gem_lbl = Label.new()
