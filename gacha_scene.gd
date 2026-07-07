@@ -577,8 +577,6 @@ func _on_warp_tab(idx: int) -> void:
 	if is_instance_valid(_info_card_node):
 		_info_card_node.free()
 		_info_card_node = null
-	_new_pull1    = null
-	_new_pull10   = null
 	_new_pity_lbl = null
 	_new_pity_bar = null
 	_new_pity4_lbl = null

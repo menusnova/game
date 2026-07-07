@@ -72,6 +72,8 @@ func _ready() -> void:
 	for i in range(MAX_SPARKS):
 		sparks.append(_new_spark(randf()))
 
+	bar_layer.draw.connect(_draw_bar.bind(bar_layer))
+
 	fade.color = Color(0, 0, 0, 0)  # SceneTransition handles the fade-in
 	dot_timer.start()
 
