@@ -350,6 +350,7 @@ theme_override_styles/focus = SubResource("SB_Blank")
 text = " E2"
 
 [node name="BtnSettings" type="Button" parent="." unique_id=1883020327]
+visible = false
 layout_mode = 0
 offset_left = 1082.0
 offset_top = 8.0
