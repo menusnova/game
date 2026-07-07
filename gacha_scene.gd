@@ -649,6 +649,17 @@ func _restyle_thumb_btn(btn: Button, d: Dictionary, active: bool) -> void:
 		btn.add_child(bar2)
 
 # ── Helpers ───────────────────────────────────────────────────────
+func _fmt_comma(n: int) -> String:
+	var s := str(n)
+	var result := ""
+	var count := 0
+	for i in range(s.length() - 1, -1, -1):
+		if count > 0 and count % 3 == 0:
+			result = "," + result
+		result = s[i] + result
+		count += 1
+	return result
+
 func _load_png(path: String) -> Texture2D:
 	var buf := FileAccess.get_file_as_bytes(path)
 	if buf.is_empty(): return null
@@ -694,7 +705,7 @@ func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, col: Color) -> 
 	var plus_lbl := Label.new()
 	plus_lbl.text = "+"
 	plus_lbl.add_theme_font_size_override("font_size", 14)
-	plus_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.65))
+	plus_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55, 0.80))
 	plus_lbl.size     = Vector2(18, 30)
 	plus_lbl.position = Vector2(92, 0)
 	plus_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -764,8 +775,8 @@ func _on_skip() -> void:
 
 func _refresh_ui() -> void:
 	var gems := CurrencyManager.total_crystal()
-	if _new_gem_lbl:   _new_gem_lbl.text    = str(CurrencyManager.free_crystal)
-	if _paid_gem_lbl:  _paid_gem_lbl.text   = str(CurrencyManager.paid_crystal)
+	if _new_gem_lbl:   _new_gem_lbl.text    = _fmt_comma(CurrencyManager.free_crystal)
+	if _paid_gem_lbl:  _paid_gem_lbl.text   = _fmt_comma(CurrencyManager.paid_crystal)
 	if _new_pity_bar:  _new_pity_bar.value  = _pity
 	if _new_pity_lbl:  _new_pity_lbl.text   = "Pity  %d / %d" % [_pity, PITY_HARD]
 	if _new_pity4_bar: _new_pity4_bar.value = _pity_4
