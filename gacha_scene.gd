@@ -80,6 +80,8 @@ var _skip_to_end := false
 var _new_gem_lbl:    Label       = null
 var _new_pity_lbl:   Label       = null
 var _new_pity_bar:   ProgressBar = null
+var _new_pity4_lbl:  Label       = null
+var _new_pity4_bar:  ProgressBar = null
 var _new_pull1:      Button      = null
 var _new_pull10:     Button      = null
 var _banner_title:   Label       = null
@@ -256,7 +258,8 @@ func _build_banner_card() -> void:
 	_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_sub)
 
-	# Pity — bottom-left, below sub
+	# ── Pity section — bottom-left, below sub ──
+	# 5★ pity
 	var pity_desc := Label.new()
 	pity_desc.text = "รับประกัน 5★ ที่ 90 ครั้ง  •  Soft pity เริ่มที่ 75"
 	pity_desc.add_theme_font_size_override("font_size", 10)
@@ -270,8 +273,8 @@ func _build_banner_card() -> void:
 	_new_pity_bar.max_value       = PITY_HARD
 	_new_pity_bar.value           = _pity
 	_new_pity_bar.show_percentage = false
-	_new_pity_bar.size            = Vector2(200, 5)
-	_new_pity_bar.position        = Vector2(18, info_y + 82)
+	_new_pity_bar.size            = Vector2(200, 4)
+	_new_pity_bar.position        = Vector2(18, info_y + 81)
 	_new_pity_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_new_pity_bar)
 
@@ -280,9 +283,37 @@ func _build_banner_card() -> void:
 	_new_pity_lbl.add_theme_font_size_override("font_size", 11)
 	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.85))
 	_new_pity_lbl.size     = Vector2(200, 16)
-	_new_pity_lbl.position = Vector2(18, info_y + 91)
+	_new_pity_lbl.position = Vector2(226, info_y + 77)
 	_new_pity_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_new_pity_lbl)
+
+	# 4★ pity — ทุก 10 ครั้งได้ 4★
+	var pity4_desc := Label.new()
+	pity4_desc.text = "ทุก 10 ครั้งจะได้ 4★"
+	pity4_desc.add_theme_font_size_override("font_size", 10)
+	pity4_desc.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.45))
+	pity4_desc.size     = Vector2(200, 16)
+	pity4_desc.position = Vector2(18, info_y + 97)
+	pity4_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pity4_desc)
+
+	_new_pity4_bar = ProgressBar.new()
+	_new_pity4_bar.max_value       = 10
+	_new_pity4_bar.value           = _pity_4
+	_new_pity4_bar.show_percentage = false
+	_new_pity4_bar.size            = Vector2(100, 4)
+	_new_pity4_bar.position        = Vector2(18, info_y + 116)
+	_new_pity4_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
+	card.add_child(_new_pity4_bar)
+
+	_new_pity4_lbl = Label.new()
+	_new_pity4_lbl.text = "4★  %d / 10" % _pity_4
+	_new_pity4_lbl.add_theme_font_size_override("font_size", 11)
+	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.85))
+	_new_pity4_lbl.size     = Vector2(120, 16)
+	_new_pity4_lbl.position = Vector2(126, info_y + 112)
+	_new_pity4_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(_new_pity4_lbl)
 
 	# ── Pull buttons — bottom-right inside card ──
 	var btn_w  := 200.0
@@ -356,8 +387,12 @@ func _on_warp_tab(idx: int) -> void:
 	if is_instance_valid(_banner_card_node):
 		_banner_card_node.free()
 		_banner_card_node = null
-	_new_pull1  = null
-	_new_pull10 = null
+	_new_pull1    = null
+	_new_pull10   = null
+	_new_pity_lbl = null
+	_new_pity_bar = null
+	_new_pity4_lbl = null
+	_new_pity4_bar = null
 	_build_banner_card()
 	for i in _warp_btns.size():
 		_restyle_warp_tab(_warp_btns[i], WARP_TYPES[i], i == _active_warp)
@@ -475,11 +510,13 @@ func _on_skip() -> void:
 
 func _refresh_ui() -> void:
 	var gems := CurrencyManager.total_crystal()
-	if _new_gem_lbl:  _new_gem_lbl.text    = str(gems)
-	if _new_pity_bar: _new_pity_bar.value  = _pity
-	if _new_pity_lbl: _new_pity_lbl.text   = "Pity  %d / %d" % [_pity, PITY_HARD]
-	if _new_pull1:    _new_pull1.disabled  = gems < PULL_COST_1
-	if _new_pull10:   _new_pull10.disabled = gems < PULL_COST_10
+	if _new_gem_lbl:   _new_gem_lbl.text    = str(gems)
+	if _new_pity_bar:  _new_pity_bar.value  = _pity
+	if _new_pity_lbl:  _new_pity_lbl.text   = "Pity  %d / %d" % [_pity, PITY_HARD]
+	if _new_pity4_bar: _new_pity4_bar.value = _pity_4
+	if _new_pity4_lbl: _new_pity4_lbl.text  = "4★  %d / 10" % _pity_4
+	if _new_pull1:     _new_pull1.disabled  = gems < PULL_COST_1
+	if _new_pull10:    _new_pull10.disabled = gems < PULL_COST_10
 
 # ── Pull logic ────────────────────────────────────────────────────
 func _do_pull(count: int) -> void:
