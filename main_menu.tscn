@@ -310,46 +310,6 @@ theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
 theme_override_font_sizes/font_size = 14
 text = "+"
 
-[node name="BtnPeople" type="Button" parent="." unique_id=612209923]
-visible = false
-layout_mode = 0
-offset_left = 978.0
-offset_top = 8.0
-offset_right = 1008.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
-text = " 65"
-
-[node name="BtnMail" type="Button" parent="." unique_id=1021252319]
-visible = false
-layout_mode = 0
-offset_left = 1014.0
-offset_top = 8.0
-offset_right = 1044.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
-text = "✉"
-
-[node name="BtnMega" type="Button" parent="." unique_id=1274612004]
-layout_mode = 0
-offset_left = 1048.0
-offset_top = 8.0
-offset_right = 1078.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("SB_Blank")
-theme_override_styles/pressed = SubResource("SB_Blank")
-theme_override_styles/hover = SubResource("SB_Blank")
-theme_override_styles/focus = SubResource("SB_Blank")
-text = " E2"
 
 [node name="BtnSettings" type="Button" parent="." unique_id=1883020327]
 visible = false
