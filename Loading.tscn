@@ -66,6 +66,7 @@ expand_mode = 2
 stretch_mode = 6
 
 [node name="Logo" type="TextureRect" parent="." unique_id=1100000001]
+visible = false
 layout_mode = 0
 offset_left = 276.0
 offset_top = 140.0
