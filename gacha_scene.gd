@@ -528,12 +528,14 @@ func _warp_btn(count: int) -> Button:
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(top_row)
 
-	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
+	var gem_tex := _load_png("res://image/crystal_gem.png")
 	if gem_tex:
 		var ico := TextureRect.new()
 		ico.texture = gem_tex
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ico.custom_minimum_size = Vector2(18, 18)
+		ico.size = Vector2(18, 18)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		top_row.add_child(ico)
 	var cost_lbl := Label.new()
