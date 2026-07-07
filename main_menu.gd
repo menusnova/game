@@ -78,6 +78,9 @@ func _load_icon_textures() -> void:
 					if pair[0].begins_with("NavBar/"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+						var mat := CanvasItemMaterial.new()
+						mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+						node.material = mat
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:
