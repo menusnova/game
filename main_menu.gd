@@ -76,7 +76,7 @@ func _load_icon_textures() -> void:
 				if ok:
 					node.texture = ImageTexture.create_from_image(img)
 					if pair[0].begins_with("NavBar/"):
-						node.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 func _fmt_n(n: int) -> String:
@@ -172,6 +172,19 @@ func _spawn_orb(layer: Control, zone: Array) -> void:
 	tw_alpha.tween_callback(orb.queue_free)
 
 func _setup_navbar() -> void:
+	# Full-width backdrop behind NavBar to cover transparent gaps
+	var nav_backdrop := ColorRect.new()
+	nav_backdrop.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	nav_backdrop.offset_top = -56.0
+	nav_backdrop.color = Color(0.04, 0.05, 0.12, 0.92)
+	nav_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var navbar := get_node_or_null("NavBar")
+	if navbar:
+		add_child(nav_backdrop)
+		move_child(nav_backdrop, navbar.get_index())  # insert just before NavBar
+	else:
+		add_child(nav_backdrop)
+
 	var db_node: Control = get_node_or_null("NavBar/Nav4_Database") as Control
 	if db_node and not _is_locked(db_node):
 		db_node.gui_input.connect(func(ev):
