@@ -12,17 +12,16 @@ const RATE_4 := 0.051
 const POOL_5: Array[String] = ["Lyra", "Seraph"]
 # 4★ characters + support cards
 const POOL_4: Array[String] = [
-	"Kael", "Mira", "Voss",               # characters
-	"Acid Flask", "Iron Shield", "Ember Seal",  # support cards
+	"Kael", "Mira", "Voss",
+	"Acid Flask", "Iron Shield", "Ember Seal",
 ]
-# 3★ element cards (from the lab element set)
+# 3★ element cards
 const POOL_3: Array[String] = [
 	"H", "O", "Na", "Cl", "C",
 	"Fe", "N", "S", "Ca", "Mg",
 	"K", "Cu", "Zn", "P", "Si",
 ]
 
-# card type lookup for display
 const CARD_TYPE: Dictionary = {
 	"Lyra": "CHARACTER", "Seraph": "CHARACTER",
 	"Kael": "CHARACTER", "Mira": "CHARACTER", "Voss": "CHARACTER",
@@ -35,7 +34,6 @@ const ELEM_NAME: Dictionary = {
 	"Zn": "Zinc",    "P":  "Phosphorus","Si": "Silicon",
 }
 
-# Warp type definitions (left selector)
 const WARP_TYPES := [
 	{
 		"id":     "char",
@@ -74,12 +72,11 @@ const WARP_TYPES := [
 
 var _pity   := 0
 var _pity_4 := 0
-var _active_warp := 0   # index into WARP_TYPES
+var _active_warp := 0
 
 var _revealing   := false
 var _skip_to_end := false
 
-# Dynamic UI refs
 var _new_gem_lbl:    Label       = null
 var _new_pity_lbl:   Label       = null
 var _new_pity_bar:   ProgressBar = null
@@ -92,12 +89,10 @@ var _banner_glow:    ColorRect   = null
 var _banner_card_node: Panel     = null
 var _warp_btns:      Array[Button] = []
 
-# .tscn overlay nodes (reveal animation)
 @onready var _result_ov:  Control       = $ResultOverlay
 @onready var _result_con: HBoxContainer = $ResultOverlay/ResultContainer
 @onready var _skip_btn:   Button        = $ResultOverlay/SkipBtn
 
-# Legacy .tscn nodes — hidden at runtime
 @onready var _pull1:    Button      = $PullBtn1
 @onready var _pull10:   Button      = $PullBtn10
 @onready var _back:     Button      = $BackBtn
@@ -119,14 +114,14 @@ func _ready() -> void:
 	_build_hsr_ui()
 	_refresh_ui()
 
-# ── HSR Layout ────────────────────────────────────────────────────
-const W := 1152.0
-const H := 648.0
-const LEFT_W  := 210.0   # left warp-type panel
-const BOT_H   := 64.0    # bottom info bar (slim)
-const TAB_H   := 128.0   # each warp tab height
-const TAB_GAP := 12.0    # gap between tabs
-const TAB_MX  := 10.0    # horizontal margin inside left panel
+# ── Layout constants ──────────────────────────────────────────────
+const W      := 1152.0
+const H      := 648.0
+const LEFT_W := 210.0
+const BOT_H  := 72.0    # slim bottom bar (back + gem + pity only)
+const TAB_H  := 112.0   # each warp tab height
+const TAB_GAP := 12.0   # gap between tabs
+const TAB_MX  := 8.0    # side margin inside left panel
 
 func _build_hsr_ui() -> void:
 	# Starfield background
@@ -139,7 +134,7 @@ func _build_hsr_ui() -> void:
 	_add_stars(bg)
 
 	# ── Left selector panel ──
-	var left_sb := _sb(Color(0.02, 0.04, 0.11, 0.88), Color(1,1,1, 0.07), 0, 1)
+	var left_sb := _sb(Color(0.03, 0.05, 0.13, 0.82), Color(1,1,1, 0.06), 0, 1)
 	var left_panel := Panel.new()
 	left_panel.size     = Vector2(LEFT_W, H - BOT_H)
 	left_panel.position = Vector2.ZERO
@@ -148,26 +143,25 @@ func _build_hsr_ui() -> void:
 	left_panel.z_index = 3
 	add_child(left_panel)
 
-	# "WARP" header
 	var warp_hdr := Label.new()
 	warp_hdr.text = "WARP"
-	warp_hdr.add_theme_font_size_override("font_size", 20)
-	warp_hdr.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.85))
-	warp_hdr.size     = Vector2(LEFT_W, 34)
-	warp_hdr.position = Vector2(0, 14)
+	warp_hdr.add_theme_font_size_override("font_size", 22)
+	warp_hdr.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.9))
+	warp_hdr.size     = Vector2(LEFT_W, 36)
+	warp_hdr.position = Vector2(0, 18)
 	warp_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	warp_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	left_panel.add_child(warp_hdr)
 
 	var sep_hdr := ColorRect.new()
-	sep_hdr.size     = Vector2(LEFT_W - 20, 1)
-	sep_hdr.position = Vector2(10, 52)
-	sep_hdr.color    = Color(0.37, 0.62, 1.0, 0.15)
+	sep_hdr.size     = Vector2(LEFT_W - 24, 1)
+	sep_hdr.position = Vector2(12, 58)
+	sep_hdr.color    = Color(0.37, 0.62, 1.0, 0.18)
 	sep_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	left_panel.add_child(sep_hdr)
 
-	# Warp tabs — spaced with TAB_GAP between each, TAB_MX side margin
-	var tab_start_y := 62.0
+	# Warp tabs — spaced with TAB_GAP, TAB_MX side margin
+	var tab_start_y := 68.0
 	for i in WARP_TYPES.size():
 		var d: Dictionary = WARP_TYPES[i]
 		var btn := _make_warp_tab(d, i == _active_warp)
@@ -177,16 +171,12 @@ func _build_hsr_ui() -> void:
 		left_panel.add_child(btn)
 		_warp_btns.append(btn)
 
-	# ── Main banner area (floating card) ──
+	# ── Banner card (floating, rounded, not touching edges) ──
 	_build_banner_card()
 
-	# ── Floating pull buttons (above bottom bar) ──
-	_build_pull_buttons()
-
-	# ── Bottom bar (slim — gem + pity + back only) ──
+	# ── Bottom bar (back + gem + pity only) ──
 	_build_bottom_bar()
 
-	# Ensure result overlay on top
 	if _result_ov:
 		_result_ov.z_index = 50
 		move_child(_result_ov, get_child_count() - 1)
@@ -195,17 +185,21 @@ func _build_banner_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	# Floating card — no heavy bg, just a subtle tinted border
-	var cx := LEFT_W + 40
-	var cy := 40.0
-	var cw := W - cx - 40
-	var ch := H - BOT_H - cy - 20
+	# Floating card — inset from all edges
+	var cx := LEFT_W + 32.0
+	var cy := 32.0
+	var cw := W - cx - 32.0
+	var ch := H - BOT_H - cy - 24.0
 
 	var card_sb := _sb(
 		Color(acc.r * 0.04, acc.g * 0.04, acc.b * 0.10, 0.30),
 		Color(acc.r, acc.g, acc.b, 0.22),
-		18, 1
+		20, 1
 	)
+	# Drop shadow via shadow_size
+	card_sb.shadow_color = Color(0, 0, 0, 0.55)
+	card_sb.shadow_size  = 14
+
 	var card := Panel.new()
 	card.name     = "_BannerCard"
 	card.size     = Vector2(cw, ch)
@@ -216,14 +210,14 @@ func _build_banner_card() -> void:
 	add_child(card)
 	_banner_card_node = card
 
-	# Accent corner bar (top)
+	# Accent top bar
 	var top_bar := ColorRect.new()
 	top_bar.size     = Vector2(cw, 3)
 	top_bar.color    = Color(acc.r, acc.g, acc.b, 0.7)
 	top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(top_bar)
 
-	# Glow blob behind art
+	# Glow blob
 	_banner_glow = ColorRect.new()
 	_banner_glow.size     = Vector2(cw * 0.6, ch * 0.7)
 	_banner_glow.position = Vector2((cw - cw * 0.6) * 0.5, ch * 0.1)
@@ -244,19 +238,18 @@ func _build_banner_card() -> void:
 	_banner_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_art)
 
-	# Pulse animation on art
 	var tp := _banner_art.create_tween().set_loops()
 	tp.tween_property(_banner_art, "modulate:a", 0.55, 2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tp.tween_property(_banner_art, "modulate:a", 1.0,  2.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# Banner title + sub (bottom of card)
-	var info_y := ch - 80.0
+	# Title + sub (bottom-left of card)
+	var info_y := ch - 84.0
 	_banner_title = Label.new()
 	_banner_title.text = str(d["banner_title"])
-	_banner_title.add_theme_font_size_override("font_size", 28)
+	_banner_title.add_theme_font_size_override("font_size", 26)
 	_banner_title.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-	_banner_title.size     = Vector2(cw - 32, 36)
-	_banner_title.position = Vector2(16, info_y)
+	_banner_title.size     = Vector2(cw * 0.55, 34)
+	_banner_title.position = Vector2(18, info_y)
 	_banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_title)
 
@@ -264,32 +257,31 @@ func _build_banner_card() -> void:
 	_banner_sub.text = str(d["banner_sub"])
 	_banner_sub.add_theme_font_size_override("font_size", 12)
 	_banner_sub.add_theme_color_override("font_color", Color(acc.r + 0.1, acc.g + 0.05, acc.b, 0.8))
-	_banner_sub.size     = Vector2(cw - 32, 20)
-	_banner_sub.position = Vector2(16, info_y + 40)
+	_banner_sub.size     = Vector2(cw * 0.55, 20)
+	_banner_sub.position = Vector2(18, info_y + 38)
 	_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(_banner_sub)
 
-func _build_pull_buttons() -> void:
-	var btn_w := 210.0
-	var btn_h := 56.0
-	var margin := 16.0
-	# Floating above bottom bar, anchored to right side of banner area
-	var by := H - BOT_H - btn_h - 16
-	var bx := W - (btn_w * 2 + 12 + margin)
+	# ── Pull buttons — bottom-right inside card ──
+	var btn_w  := 200.0
+	var btn_h  := 50.0
+	var btn_pad := 16.0
+	var bx2 := cw - (btn_w * 2 + 10 + btn_pad)
+	var by2 := ch - btn_h - btn_pad
 
-	_new_pull1 = _pull_btn("Warp  ×1\n150 💠", Color(0.10, 0.20, 0.52, 0.92), Color(0.18, 0.30, 0.65, 0.95))
+	_new_pull1 = _pull_btn("Warp  ×1\n150 💠", Color(0.13, 0.25, 0.58, 1.0), Color(0.20, 0.33, 0.68, 1.0))
 	_new_pull1.size     = Vector2(btn_w, btn_h)
-	_new_pull1.position = Vector2(bx, by)
-	_new_pull1.z_index  = 5
+	_new_pull1.position = Vector2(bx2, by2)
+	_new_pull1.z_index  = 3
 	_new_pull1.pressed.connect(func(): _do_pull(1))
-	add_child(_new_pull1)
+	card.add_child(_new_pull1)
 
-	_new_pull10 = _pull_btn("Warp  ×10\n1,500 💠", Color(0.28, 0.52, 0.95, 0.92), Color(0.38, 0.62, 1.0, 0.95))
+	_new_pull10 = _pull_btn("Warp  ×10\n1,500 💠", Color(0.32, 0.58, 1.0, 1.0), Color(0.42, 0.68, 1.0, 1.0))
 	_new_pull10.size     = Vector2(btn_w, btn_h)
-	_new_pull10.position = Vector2(bx + btn_w + 12, by)
-	_new_pull10.z_index  = 5
+	_new_pull10.position = Vector2(bx2 + btn_w + 10, by2)
+	_new_pull10.z_index  = 3
 	_new_pull10.pressed.connect(func(): _do_pull(10))
-	add_child(_new_pull10)
+	card.add_child(_new_pull10)
 
 func _build_bottom_bar() -> void:
 	var bar_sb := _sb(Color(0.03, 0.05, 0.12, 0.92), Color(1,1,1, 0.07), 0, 1)
@@ -302,19 +294,20 @@ func _build_bottom_bar() -> void:
 	bar.z_index  = 4
 	add_child(bar)
 
-	# ◀ Back (far left)
-	var back := _ghost_btn("◀", 13)
-	back.size     = Vector2(52, 44)
-	back.position = Vector2(16, (BOT_H - 44) * 0.5)
+	# ◀ Back
+	var back := _ghost_btn("◀  ย้อนกลับ", 13)
+	back.size     = Vector2(110, 44)
+	back.position = Vector2(14, (BOT_H - 44) * 0.5)
 	back.pressed.connect(_go_back)
 	bar.add_child(back)
 
-	# Gem + pity info (center-left)
-	var info_x := 84.0
+	# Gem count
+	var info_x := 140.0
 	var gem_row := HBoxContainer.new()
-	gem_row.position = Vector2(info_x, 12)
+	gem_row.position = Vector2(info_x, (BOT_H - 26) * 0.5 - 4)
 	gem_row.add_theme_constant_override("separation", 4)
 	bar.add_child(gem_row)
+
 	var gem_tex := ResourceLoader.load("res://image/crystal_gem.png", "Texture2D") as Texture2D
 	if gem_tex:
 		var gem_ico := TextureRect.new()
@@ -327,50 +320,41 @@ func _build_bottom_bar() -> void:
 		gem_ico.text = "💠"
 		gem_ico.add_theme_font_size_override("font_size", 18)
 		gem_row.add_child(gem_ico)
+
 	_new_gem_lbl = Label.new()
-	_new_gem_lbl.text = str(CurrencyManager.total_crystal())
 	_new_gem_lbl.add_theme_font_size_override("font_size", 18)
 	_new_gem_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	gem_row.add_child(_new_gem_lbl)
 
-	# Pity counter
-	var pity_cap := Label.new()
-	pity_cap.text = "Pity"
-	pity_cap.add_theme_font_size_override("font_size", 9)
-	pity_cap.add_theme_color_override("font_color", Color(1,1,1, 0.35))
-	pity_cap.position = Vector2(info_x, 38)
-	pity_cap.size     = Vector2(40, 14)
-	bar.add_child(pity_cap)
-
+	# Pity
 	_new_pity_lbl = Label.new()
-	_new_pity_lbl.text = "0 / 90"
 	_new_pity_lbl.add_theme_font_size_override("font_size", 12)
-	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.9))
-	_new_pity_lbl.position = Vector2(info_x + 36, 36)
-	_new_pity_lbl.size     = Vector2(90, 18)
+	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.85))
+	_new_pity_lbl.position = Vector2(info_x + 120, (BOT_H - 16) * 0.5 - 2)
+	_new_pity_lbl.size     = Vector2(110, 16)
 	bar.add_child(_new_pity_lbl)
 
 	_new_pity_bar = ProgressBar.new()
-	_new_pity_bar.max_value     = PITY_HARD
-	_new_pity_bar.value         = 0
+	_new_pity_bar.max_value       = PITY_HARD
+	_new_pity_bar.value           = 0
 	_new_pity_bar.show_percentage = false
-	_new_pity_bar.size     = Vector2(160, 5)
-	_new_pity_bar.position = Vector2(info_x, 56)
+	_new_pity_bar.size            = Vector2(140, 5)
+	_new_pity_bar.position        = Vector2(info_x + 120, (BOT_H + 18) * 0.5)
 	bar.add_child(_new_pity_bar)
 
-
-# ── Warp tab selection ─────────────────────────────────────────────
+# ── Warp tab ──────────────────────────────────────────────────────
 func _on_warp_tab(idx: int) -> void:
-	if idx == _active_warp:
-		return
+	if idx == _active_warp: return
 	_active_warp = idx
 	if is_instance_valid(_banner_card_node):
 		_banner_card_node.free()
 		_banner_card_node = null
+	_new_pull1  = null
+	_new_pull10 = null
 	_build_banner_card()
-	# Re-style warp tab buttons
 	for i in _warp_btns.size():
 		_restyle_warp_tab(_warp_btns[i], WARP_TYPES[i], i == _active_warp)
+	_refresh_ui()
 
 func _make_warp_tab(d: Dictionary, active: bool) -> Button:
 	var btn := Button.new()
@@ -380,26 +364,24 @@ func _make_warp_tab(d: Dictionary, active: bool) -> Button:
 
 func _restyle_warp_tab(btn: Button, d: Dictionary, active: bool) -> void:
 	var acc: Color = d["accent"] as Color
-	var bg_col := Color(acc.r * 0.18, acc.g * 0.18, acc.b * 0.28, 0.95) if active else Color(0.02, 0.03, 0.08, 0.0)
+	var bg_col  := Color(acc.r * 0.18, acc.g * 0.18, acc.b * 0.28, 0.95) if active else Color(0.02, 0.03, 0.08, 0.0)
 	var bdr_col := Color(acc.r, acc.g, acc.b, 0.7) if active else Color(1,1,1, 0.07)
-	var bdr_w := 1 if active else 0
+	var bdr_w   := 1 if active else 0
 
-	var sb := _sb(bg_col, bdr_col, 12, bdr_w)
+	var sb  := _sb(bg_col, bdr_col, 12, bdr_w)
 	var sbf := StyleBoxFlat.new()
 	btn.add_theme_stylebox_override("normal",  sb)
 	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.12, acc.g*0.12, acc.b*0.22, 0.88), bdr_col, 12, 1))
 	btn.add_theme_stylebox_override("pressed", sb)
 	btn.add_theme_stylebox_override("focus",   sbf)
 
-	# Clear children and rebuild content label inside
-	for c in btn.get_children():
-		c.queue_free()
+	for c in btn.get_children(): c.queue_free()
 
 	var icon_lbl := Label.new()
 	icon_lbl.text = str(d["icon"])
 	icon_lbl.add_theme_font_size_override("font_size", 26)
 	icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.9 if active else 0.45))
-	icon_lbl.size     = Vector2(LEFT_W, 34)
+	icon_lbl.size     = Vector2(LEFT_W - TAB_MX * 2, 34)
 	icon_lbl.position = Vector2(0, 14)
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -410,16 +392,15 @@ func _restyle_warp_tab(btn: Button, d: Dictionary, active: bool) -> void:
 	name_lbl.add_theme_font_size_override("font_size", 11)
 	name_lbl.add_theme_color_override("font_color",
 		Color(1.0, 1.0, 1.0, 0.95) if active else Color(0.60, 0.68, 0.80, 0.65))
-	name_lbl.size     = Vector2(LEFT_W - 16, 36)
-	name_lbl.position = Vector2(8, 50)
+	name_lbl.size     = Vector2(LEFT_W - TAB_MX * 2 - 8, 36)
+	name_lbl.position = Vector2(4, 52)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(name_lbl)
 
-	# Active indicator: left accent bar
 	if active:
 		var bar := ColorRect.new()
-		bar.size     = Vector2(3, 100)
+		bar.size     = Vector2(3, TAB_H - 20)
 		bar.position = Vector2(0, 10)
 		bar.color    = Color(acc.r, acc.g, acc.b, 1.0)
 		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -428,10 +409,8 @@ func _restyle_warp_tab(btn: Button, d: Dictionary, active: bool) -> void:
 # ── Helpers ───────────────────────────────────────────────────────
 func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
-	s.bg_color = bg
-	s.border_color = bdr
-	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
-		s.set_border_width(side, bw)
+	s.bg_color = bg; s.border_color = bdr
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: s.set_border_width(side, bw)
 	s.corner_radius_top_left     = radius
 	s.corner_radius_top_right    = radius
 	s.corner_radius_bottom_right = radius
@@ -477,27 +456,25 @@ func _add_stars(parent: Node) -> void:
 		td.tween_property(dot, "modulate:a", rng.randf_range(0.05, 0.3), rng.randf_range(1.2, 3.5)).set_ease(Tween.EASE_IN_OUT)
 		td.tween_property(dot, "modulate:a", 1.0, rng.randf_range(1.2, 3.5)).set_ease(Tween.EASE_IN_OUT)
 
-# ── Input / skip ─────────────────────────────────────────────────
+# ── Input / skip ──────────────────────────────────────────────────
 func _input(ev: InputEvent) -> void:
 	if not _revealing: return
 	if ev is InputEventMouseButton and ev.pressed:
 		_skip_to_end = true
 
 func _on_skip() -> void:
-	if _revealing:
-		_skip_to_end = true
-	else:
-		_result_ov.visible = false
+	if _revealing: _skip_to_end = true
+	else:          _result_ov.visible = false
 
 func _refresh_ui() -> void:
 	var gems := CurrencyManager.total_crystal()
-	if _new_gem_lbl:    _new_gem_lbl.text    = str(gems)
-	if _new_pity_bar:   _new_pity_bar.value  = _pity
-	if _new_pity_lbl:   _new_pity_lbl.text   = "%d / %d" % [_pity, PITY_HARD]
-	if _new_pull1:      _new_pull1.disabled  = gems < PULL_COST_1
-	if _new_pull10:     _new_pull10.disabled = gems < PULL_COST_10
+	if _new_gem_lbl:  _new_gem_lbl.text    = str(gems)
+	if _new_pity_bar: _new_pity_bar.value  = _pity
+	if _new_pity_lbl: _new_pity_lbl.text   = "Pity  %d / %d" % [_pity, PITY_HARD]
+	if _new_pull1:    _new_pull1.disabled  = gems < PULL_COST_1
+	if _new_pull10:   _new_pull10.disabled = gems < PULL_COST_10
 
-# ── Pull logic (unchanged) ────────────────────────────────────────
+# ── Pull logic ────────────────────────────────────────────────────
 func _do_pull(count: int) -> void:
 	if _revealing: return
 	var cost: int = PULL_COST_10 if count == 10 else PULL_COST_1 * count
@@ -542,8 +519,7 @@ func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 	_revealing   = true
 	_skip_to_end = false
 	_skip_btn.text = "แตะเพื่อข้าม"
-	for child in _result_con.get_children():
-		child.queue_free()
+	for child in _result_con.get_children(): child.queue_free()
 	_result_ov.visible  = true
 	_result_con.visible = false
 
@@ -675,7 +651,6 @@ func _build_reveal_card(char_name: String, rarity: int,
 	stars.offset_top=12; stars.offset_bottom=34
 	card.add_child(stars)
 
-	# For element cards show symbol big + full name; for others just name
 	if rarity == 3 and ELEM_NAME.has(char_name):
 		var sym_lbl := Label.new()
 		sym_lbl.text = char_name
@@ -683,10 +658,8 @@ func _build_reveal_card(char_name: String, rarity: int,
 		sym_lbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.9))
 		sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		sym_lbl.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-		sym_lbl.offset_top = 50; sym_lbl.offset_bottom = 130
-		sym_lbl.offset_left = -80; sym_lbl.offset_right = 80
+		sym_lbl.offset_top=50; sym_lbl.offset_bottom=130; sym_lbl.offset_left=-80; sym_lbl.offset_right=80
 		card.add_child(sym_lbl)
-
 		var name_lbl := Label.new()
 		name_lbl.text = ELEM_NAME.get(char_name, char_name)
 		name_lbl.add_theme_font_size_override("font_size", 13)
@@ -742,7 +715,6 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	stars.offset_bottom=-6; stars.offset_left=4; stars.offset_right=84; stars.offset_top=-18
 	card.add_child(stars)
 
-	# Element cards: show symbol large, full name tiny
 	if rarity == 3 and ELEM_NAME.has(char_name):
 		var sym := Label.new()
 		sym.text = char_name
