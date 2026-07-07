@@ -92,7 +92,7 @@ func _build_ui() -> void:
 		Vector2(start_x, card_y),
 		Vector2(card_w, card_h),
 		false,
-		func(): _goto(SC_STORY)
+		func(): _start_story()
 	))
 
 	add_child(_make_card(
@@ -232,6 +232,55 @@ func _make_card(
 		)
 
 	return card
+
+const ENERGY_COST := 10
+
+func _start_story() -> void:
+	if CurrencyManager.energy < ENERGY_COST:
+		_show_toast("พลังงานไม่เพียงพอ (ต้องการ ⚡%d)" % ENERGY_COST)
+		return
+	CurrencyManager.spend_energy(ENERGY_COST)
+	SceneTransition.fade_to(SC_STORY)
+
+func _show_toast(msg: String) -> void:
+	if get_node_or_null("_Toast") != null:
+		return
+	var toast := Panel.new()
+	toast.name = "_Toast"
+	toast.z_index = 100
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.06, 0.10, 0.22, 0.94)
+	sb.border_color = Color(0.37, 0.62, 1.0, 0.5)
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		sb.set_border_width(side, 1 if side != SIDE_LEFT else 2)
+	sb.corner_radius_top_left = 8; sb.corner_radius_top_right = 8
+	sb.corner_radius_bottom_right = 8; sb.corner_radius_bottom_left = 8
+	toast.add_theme_stylebox_override("panel", sb)
+	var lbl := Label.new()
+	lbl.text = msg
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 1.0))
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.offset_left = 14; lbl.offset_right = -14
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	toast.add_child(lbl)
+	toast.size = Vector2(320, 44)
+	toast.position = Vector2((1152 - 320) * 0.5, 540)
+	toast.modulate.a = 0.0
+	add_child(toast)
+	var t := create_tween().set_parallel(true)
+	t.tween_property(toast, "modulate:a", 1.0, 0.18)
+	t.tween_property(toast, "position:y", 524.0, 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	await t.finished
+	await get_tree().create_timer(1.6).timeout
+	if not is_instance_valid(toast): return
+	var t2 := create_tween()
+	t2.tween_property(toast, "modulate:a", 0.0, 0.25)
+	await t2.finished
+	if is_instance_valid(toast): toast.queue_free()
 
 func _goto(path: String) -> void:
 	SceneTransition.fade_to(path)
