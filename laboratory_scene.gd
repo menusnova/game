@@ -406,6 +406,12 @@ func _do_mix() -> void:
 	var is_new: bool = key not in PlayerData.discovered_compounds
 	if is_new:
 		PlayerData.discover_compound(key)
+		# บันทึก recipe "A+B" และ element ที่ใช้ผสม
+		var recipe_key := "%s+%s" % [_slot_a, _slot_b]
+		PlayerData.discover_recipe(recipe_key)
+		PlayerData.discover_element(_slot_a)
+		PlayerData.discover_element(_slot_b)
+		PlayerData.discover_element(key)  # compound id ด้วย
 		_show_new_discovery(compound)
 		_refresh_progress()
 	else:

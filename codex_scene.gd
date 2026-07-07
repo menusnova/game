@@ -120,7 +120,21 @@ var _detail_overlay: Control
 var _discovered: Array[String] = []  # element ids unlocked
 
 func _ready() -> void:
-	_discovered = ["Hydrogen", "Oxygen", "Iron", "Sodium", "Chlorine"]
+	# discovered_elements stores symbols ("H","O","Na"...) and compound keys ("Water","Salt"...)
+	# _discovered stores element["id"] values — build the mapping here
+	const SYM_TO_ID := {
+		"H": "Hydrogen", "O": "Oxygen",  "Na": "Sodium",
+		"Cl": "Chlorine", "Fe": "Iron",   "C":  "Carbon",
+	}
+	_discovered = []
+	for entry in PlayerData.discovered_elements:
+		var mapped: String = SYM_TO_ID.get(entry, entry)  # compound keys pass through as-is
+		if mapped not in _discovered:
+			_discovered.append(mapped)
+	# Fallback: always show base 5 until story system implemented
+	for base in ["Hydrogen","Oxygen","Sodium","Chlorine","Iron"]:
+		if base not in _discovered:
+			_discovered.append(base)
 	_build_ui()
 
 # ════════════════════════════════════════════════════════════════

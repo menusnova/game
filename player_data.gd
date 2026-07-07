@@ -9,7 +9,9 @@ var signature:          String        = "\"ความลับของสู�
 var avatar_idx:         int           = 0
 var level:              int           = 42
 var uid:                String        = "000000001"
-var discovered_compounds: Array[String] = []
+var discovered_compounds:  Array[String] = []
+var discovered_elements:   Array[String] = []
+var discovered_recipes:    Array[String] = []
 
 func _ready() -> void:
 	_load()
@@ -26,6 +28,16 @@ func discover_compound(key: String) -> void:
 		discovered_compounds.append(key)
 		_save()
 
+func discover_element(id: String) -> void:
+	if id not in discovered_elements:
+		discovered_elements.append(id)
+		_save()
+
+func discover_recipe(key: String) -> void:
+	if key not in discovered_recipes:
+		discovered_recipes.append(key)
+		_save()
+
 func set_avatar(idx: int) -> void:
 	avatar_idx = idx
 	_save()
@@ -39,6 +51,8 @@ func _save() -> void:
 	cfg.set_value("profile", "level",       level)
 	cfg.set_value("profile", "uid",               uid)
 	cfg.set_value("profile", "discovered_compounds", discovered_compounds)
+	cfg.set_value("profile", "discovered_elements",  discovered_elements)
+	cfg.set_value("profile", "discovered_recipes",   discovered_recipes)
 	cfg.save(SAVE_PATH)
 
 func _load() -> void:
@@ -51,3 +65,5 @@ func _load() -> void:
 	level       = cfg.get_value("profile", "level",       level)
 	uid         = cfg.get_value("profile", "uid",         uid)
 	discovered_compounds = cfg.get_value("profile", "discovered_compounds", [])
+	discovered_elements  = cfg.get_value("profile", "discovered_elements",  [])
+	discovered_recipes   = cfg.get_value("profile", "discovered_recipes",   [])
