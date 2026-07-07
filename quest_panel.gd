@@ -188,17 +188,18 @@ class _QuestRow extends Control:
 		const CARD_GAP := 6.0
 
 		const REWARDS := [
-			["exp",     "⭐", "EXP",     Color(1.00, 0.82, 0.25)],
-			["gold",    "💰", "Gold",    Color(0.95, 0.72, 0.20)],
-			["crystal", "💠", "Crystal", Color(0.40, 0.88, 1.00)],
+			["exp",     "⭐",  "",                            "EXP",     Color(1.00, 0.82, 0.25)],
+			["gold",    "💰",  "",                            "Gold",    Color(0.95, 0.72, 0.20)],
+			["crystal", "💠",  "res://image/crystal_gem.png", "Crystal", Color(0.40, 0.88, 1.00)],
 		]
 
 		for ri in REWARDS.size():
-			var rdef  : Array  = REWARDS[ri]
-			var r_key : String = rdef[0]
-			var r_icon: String = rdef[1]
-			var r_name: String = rdef[2]
-			var r_col : Color  = rdef[3]
+			var rdef   : Array  = REWARDS[ri]
+			var r_key  : String = rdef[0]
+			var r_icon : String = rdef[1]
+			var r_img  : String = rdef[2]
+			var r_name : String = rdef[3]
+			var r_col  : Color  = rdef[4]
 			var r_val : int    = int(q.get(r_key, 0))
 			if r_val <= 0:
 				continue
@@ -227,15 +228,26 @@ class _QuestRow extends Control:
 			icon_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card_bg.add_child(icon_box)
 
-			# Icon emoji centered in box
-			var icon_lbl := Label.new()
-			icon_lbl.text = r_icon
-			icon_lbl.size = Vector2(CARD_W, 38)
-			icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-			icon_lbl.add_theme_font_size_override("font_size", 20)
-			icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card_bg.add_child(icon_lbl)
+			# Icon: use real texture if path given, else emoji label
+			var img_tex: Texture2D = null
+			if r_img != "":
+				img_tex = _load_png(r_img)
+			if img_tex:
+				var icon_img := TextureRect.new()
+				icon_img.texture = img_tex
+				icon_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon_img.size     = Vector2(CARD_W, 38)
+				icon_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card_bg.add_child(icon_img)
+			else:
+				var icon_lbl := Label.new()
+				icon_lbl.text = r_icon
+				icon_lbl.size = Vector2(CARD_W, 38)
+				icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+				icon_lbl.add_theme_font_size_override("font_size", 20)
+				icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card_bg.add_child(icon_lbl)
 
 			# Value label
 			var val_lbl := Label.new()
@@ -306,4 +318,11 @@ class _QuestRow extends Control:
 		div.position     = Vector2(0, 75)
 		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(div)
+
+func _load_png(path: String) -> Texture2D:
+	var buf := FileAccess.get_file_as_bytes(path)
+	if buf.is_empty(): return null
+	var img := Image.new()
+	if img.load_png_from_buffer(buf) != OK: return null
+	return ImageTexture.create_from_image(img)
 
