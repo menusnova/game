@@ -37,7 +37,6 @@ func _ready() -> void:
 	_setup_locked_nodes()
 	_setup_menu_items()
 	_setup_cards_fx()
-	_setup_domain()
 	_setup_quest_panel()
 	_setup_navbar()
 	_setup_banner_carousel()
@@ -206,45 +205,6 @@ func _setup_chat_coming_soon() -> void:
 				_show_coming_soon("ระบบแชทยังไม่เปิดให้บริการ")
 		)
 
-func _setup_domain() -> void:
-	DomainManager.domain_changed.connect(_on_domain_changed)
-	_on_domain_changed(DomainManager.get_percent())
-	_update_domain_labels()
-
-func _on_domain_changed(percent: float) -> void:
-	var label: Label = get_node_or_null("DomainInner/DomainPercent") as Label
-	if label:
-		label.text = "%d%%" % int(percent)
-		var t := percent / 100.0
-		label.add_theme_color_override("font_color",
-			Color(0.4 + t * 0.6, 0.85 + t * 0.15, 1.0, 1.0))
-
-func _update_domain_labels() -> void:
-	# DomainTitle — หัวข้อ quest ที่ยังไม่เสร็จอันแรก
-	const DAILY := [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "current": 1, "total": 1},
-		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "current": 0, "total": 3},
-		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",      "current": 0, "total": 1},
-		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "current": 0, "total": 1},
-	]
-	var title_node: Label = get_node_or_null("DomainInner/DomainTitle") as Label
-	var sub_node:   Label = get_node_or_null("DomainInner/DomainSub")   as Label
-
-	var active_quest := ""
-	for q in DAILY:
-		if int(q["current"]) < int(q["total"]):
-			active_quest = str(q["label"])
-			break
-	if active_quest == "":
-		active_quest = "ภารกิจครบแล้ว!"
-
-	if title_node:
-		title_node.text = active_quest
-
-	# DomainSub — กิจกรรมล่าสุด
-	const LATEST_ACTIVITY := "ต่อสู้ใน Chapter 1-1"
-	if sub_node:
-		sub_node.text = LATEST_ACTIVITY
 
 # ── Locked-node helper ───────────────────────────────────────────
 func _is_locked(node: Control) -> bool:
@@ -628,7 +588,5 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 func _goto(path: String) -> void:
 	if _navigating or not ResourceLoader.exists(path): return
 	_navigating = true
-	if DomainManager.domain_changed.is_connected(_on_domain_changed):
-		DomainManager.domain_changed.disconnect(_on_domain_changed)
 	SceneTransition.fade_to(path)
 
