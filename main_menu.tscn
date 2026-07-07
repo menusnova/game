@@ -311,6 +311,7 @@ theme_override_font_sizes/font_size = 14
 text = "+"
 
 [node name="BtnPeople" type="Button" parent="." unique_id=612209923]
+visible = false
 layout_mode = 0
 offset_left = 978.0
 offset_top = 8.0
@@ -324,6 +325,7 @@ theme_override_styles/focus = SubResource("SB_Blank")
 text = " 65"
 
 [node name="BtnMail" type="Button" parent="." unique_id=1021252319]
+visible = false
 layout_mode = 0
 offset_left = 1014.0
 offset_top = 8.0
