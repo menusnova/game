@@ -264,7 +264,7 @@ func _build_ui() -> void:
 func _build_topbar() -> void:
 	var bar := Panel.new()
 	bar.size = Vector2(1152, 40)
-	bar.add_theme_stylebox_override("panel", _flat(Color(0.02,0.03,0.08,0.88), C_BORDER, 0, 1))
+	bar.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	add_child(bar)
 
 	_stage_lbl = _mk_label("Stage 1", 12, C_SUB, bar, Vector2(14, 11))
@@ -313,11 +313,11 @@ func _build_enemy_panel() -> void:
 	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# Enemy HUD bar — floats above enemy
+	# Enemy HUD bar — floats above enemy (no frame)
 	var ep := Panel.new()
 	ep.size     = Vector2(280, 52)
 	ep.position = Vector2(ENEMY_CX - 140.0, ENEMY_CY - 138.0)
-	ep.add_theme_stylebox_override("panel", _flat(Color(0.04,0.03,0.10,0.86), C_BORDER, 6, 1))
+	ep.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	add_child(ep)
 
 	_enemy_name_lbl = _mk_label("", 13, C_TEXT, ep, Vector2(10, 4))
@@ -392,7 +392,7 @@ func _build_player_hud() -> void:
 	var pp := Panel.new()
 	pp.size     = Vector2(312, 120)
 	pp.position = Vector2(8, HAND_Y - 132.0)
-	pp.add_theme_stylebox_override("panel", _flat(C_PANEL, C_BORDER, 10, 1))
+	pp.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	add_child(pp)
 
 	_mk_label(CHARACTER["name"], 12, C_TEXT, pp, Vector2(12, 6))
@@ -417,9 +417,7 @@ func _build_player_hud() -> void:
 	var ap_row := Panel.new()
 	ap_row.size     = Vector2(288, 56)
 	ap_row.position = Vector2(12, 56)
-	ap_row.add_theme_stylebox_override("panel",
-		_flat(Color(C_AP.r*0.06, C_AP.g*0.06, C_AP.b*0.12, 0.70),
-			  Color(C_AP.r, C_AP.g, C_AP.b, 0.18), 8, 1))
+	ap_row.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	ap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pp.add_child(ap_row)
 
@@ -427,9 +425,7 @@ func _build_player_hud() -> void:
 	var ap_img_bg := Panel.new()
 	ap_img_bg.size     = Vector2(44, 44)
 	ap_img_bg.position = Vector2(6, 6)
-	ap_img_bg.add_theme_stylebox_override("panel",
-		_flat(Color(C_AP.r*0.14, C_AP.g*0.14, C_AP.b*0.22, 0.90),
-			  Color(C_AP.r, C_AP.g, C_AP.b, 0.35), 7, 1))
+	ap_img_bg.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	ap_img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ap_row.add_child(ap_img_bg)
 
