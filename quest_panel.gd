@@ -319,10 +319,10 @@ class _QuestRow extends Control:
 		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(div)
 
-func _load_png(path: String) -> Texture2D:
-	var buf := FileAccess.get_file_as_bytes(path)
-	if buf.is_empty(): return null
-	var img := Image.new()
-	if img.load_png_from_buffer(buf) != OK: return null
-	return ImageTexture.create_from_image(img)
+	static func _load_png(path: String) -> Texture2D:
+		var buf := FileAccess.get_file_as_bytes(path)
+		if buf.is_empty(): return null
+		var img := Image.new()
+		if img.load_png_from_buffer(buf) != OK: return null
+		return ImageTexture.create_from_image(img)
 
