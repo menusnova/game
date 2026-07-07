@@ -161,9 +161,9 @@ const DECK_CY  := 558.0
 const DISC_CX  := 738.0
 const DISC_CY  := 558.0
 const CIRC_R   := 36.0
-# Ultimate standalone circle
-const ULT_CX   := 875.0
-const ULT_CY   := 490.0
+# Ultimate circle — center of action ring
+const ULT_CX   := RING_CX
+const ULT_CY   := RING_CY
 const ULT_R    := 46.0
 # Card hold threshold (seconds)
 const HOLD_THRESH := 0.32
