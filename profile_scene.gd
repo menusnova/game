@@ -396,59 +396,6 @@ func _build_right_area() -> void:
 		var cx := rx + i * (card_w + gap)
 		add_child(_make_showcase_card(SHOWCASE[i], cx, card_y, card_w, card_h))
 
-	# Activity feed label (below cards on right) — replaces bottom-right empty space
-	var feed_y := card_y + card_h + 16.0
-	var feed_lbl := Label.new()
-	feed_lbl.text = "RECENT ACTIVITY"
-	feed_lbl.add_theme_font_size_override("font_size", 10)
-	feed_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.45))
-	feed_lbl.size     = Vector2(rw, 18)
-	feed_lbl.position = Vector2(rx, feed_y)
-	feed_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(feed_lbl)
-
-	# Horizontal activity chips
-	var chip_x := rx
-	for i in mini(ACTIVITY.size(), 3):
-		var a: Dictionary = ACTIVITY[i]
-		var chip_w := (rw - gap * 2) / 3.0
-		var chip := Panel.new()
-		chip.size     = Vector2(chip_w, 56)
-		chip.position = Vector2(chip_x, feed_y + 22)
-		chip.add_theme_stylebox_override("panel",
-			_sb(Color(1,1,1,0.03), Color(1,1,1,0.06), 10, 1))
-		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(chip)
-
-		var ic := Label.new()
-		ic.text = str(a["icon"])
-		ic.add_theme_font_size_override("font_size", 18)
-		ic.size     = Vector2(30, 56)
-		ic.position = Vector2(10, 0)
-		ic.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chip.add_child(ic)
-
-		var ct := Label.new()
-		ct.text = str(a["text"])
-		ct.add_theme_font_size_override("font_size", 10)
-		ct.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.85))
-		ct.size     = Vector2(chip_w - 50, 20)
-		ct.position = Vector2(44, 10)
-		ct.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		ct.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chip.add_child(ct)
-
-		var tm := Label.new()
-		tm.text = str(a["time"])
-		tm.add_theme_font_size_override("font_size", 9)
-		tm.add_theme_color_override("font_color", Color(1,1,1, 0.28))
-		tm.size     = Vector2(chip_w - 50, 14)
-		tm.position = Vector2(44, 34)
-		tm.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chip.add_child(tm)
-
-		chip_x += chip_w + gap
 
 func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: float) -> Panel:
 	var rarity: int = int(data.get("rarity", 3))
