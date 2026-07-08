@@ -529,7 +529,7 @@ func _warp_btn(count: int) -> Button:
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(top_row)
 
-	var gem_tex := _load_png("res://image/crystal_gem.png")
+	var gem_tex := _load_png("res://image/icon_paid.png")
 	if gem_tex:
 		var ico := TextureRect.new()
 		ico.texture = gem_tex
