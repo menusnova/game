@@ -28,7 +28,7 @@ func _build_ui() -> void:
 	top.add_theme_constant_override("separation", 12)
 	add_child(top)
 
-	var back := _make_back_btn(Vector2(0, 0), Vector2(36, 36), _go_back)
+	var back := _make_visible_back_btn(Vector2(0, 0), Vector2(36, 36), _go_back)
 	back.custom_minimum_size = Vector2(36, 36)
 	top.add_child(back)
 
@@ -259,6 +259,58 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureBut
 		tw.tween_callback(callback)
 	)
 	return btn
+
+func _make_visible_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
+	var wrap := Panel.new()
+	wrap.position = pos
+	wrap.size = sz
+	var wsb := StyleBoxFlat.new()
+	wsb.bg_color = Color(1, 1, 1, 0.08)
+	wsb.border_color = Color(1, 1, 1, 0.18)
+	wsb.set_border_width_all(1)
+	wsb.corner_radius_top_left = 8; wsb.corner_radius_top_right = 8
+	wsb.corner_radius_bottom_right = 8; wsb.corner_radius_bottom_left = 8
+	wrap.add_theme_stylebox_override("panel", wsb)
+	wrap.mouse_filter = Control.MOUSE_FILTER_STOP
+	wrap.pivot_offset = sz / 2
+
+	var lbl := Label.new()
+	lbl.text = "◀"
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrap.add_child(lbl)
+
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			img.convert(Image.FORMAT_RGBA8)
+			for y in img.get_height():
+				for x in img.get_width():
+					var c := img.get_pixel(x, y)
+					var a := clampf(((c.r+c.g+c.b)/3.0 - 0.25) / 0.45, 0.0, 1.0)
+					img.set_pixel(x, y, Color(1.0, 1.0, 1.0, a))
+			var tex_rect := TextureRect.new()
+			tex_rect.texture = ImageTexture.create_from_image(img)
+			tex_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			wrap.add_child(tex_rect)
+			lbl.visible = false
+
+	wrap.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := wrap.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(wrap, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(wrap, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(callback)
+	)
+	return wrap
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)
