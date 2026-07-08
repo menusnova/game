@@ -129,8 +129,9 @@ const TOP_H   := 52.0    # top bar height
 const BOT_H   := 72.0    # bottom bar height
 const THUMB_W := 68.0    # left thumbnail strip width
 const INFO_W  := 310.0   # info card width
-const TAB_H   := 120.0   # warp tab thumbnail height
-const TAB_GAP := 8.0
+const TAB_H       := 80.0    # active warp tab height
+const TAB_H_INACT := 22.0    # collapsed inactive tab height
+const TAB_GAP     := 16.0
 
 func _build_hsr_ui() -> void:
 	# Dark gradient background
@@ -181,16 +182,20 @@ func _build_thumb_strip() -> void:
 	strip.z_index  = 5
 	add_child(strip)
 
-	var start_y := (H - TOP_H - BOT_H - (WARP_TYPES.size() * TAB_H + (WARP_TYPES.size()-1) * TAB_GAP)) * 0.5
-	start_y = maxf(start_y, 12.0)
+	var total_h := TAB_H + (WARP_TYPES.size() - 1) * (TAB_H_INACT + TAB_GAP) + (WARP_TYPES.size() - 1) * TAB_GAP
+	var start_y := maxf((H - TOP_H - BOT_H - total_h) * 0.5, 12.0)
+	var cy := start_y
 	for i in WARP_TYPES.size():
 		var wd: Dictionary = WARP_TYPES[i]
-		var btn := _make_thumb_btn(wd, i == _active_warp)
-		btn.size     = Vector2(THUMB_W - 8, TAB_H)
-		btn.position = Vector2(4, start_y + i * (TAB_H + TAB_GAP))
+		var active := i == _active_warp
+		var btn := _make_thumb_btn(wd, active)
+		var bh := TAB_H if active else TAB_H_INACT
+		btn.size     = Vector2(THUMB_W - 8, bh)
+		btn.position = Vector2(4, cy)
 		btn.pressed.connect(_on_warp_tab.bind(i))
 		strip.add_child(btn)
 		_warp_btns.append(btn)
+		cy += bh + TAB_GAP
 
 # ── Info card (left panel, HSR-style white/translucent card) ─────
 func _build_info_card() -> void:
@@ -567,8 +572,17 @@ func _on_warp_tab(idx: int) -> void:
 	_new_pity4_lbl = null
 	_new_pity4_bar = null
 	_build_info_card()
+	# Restyle and reposition all tab buttons
+	var strip := get_node_or_null("_ThumbStrip")
+	var total_h := TAB_H + (_warp_btns.size() - 1) * (TAB_H_INACT + TAB_GAP) + (_warp_btns.size() - 1) * TAB_GAP
+	var cy := maxf((H - TOP_H - BOT_H - total_h) * 0.5, 12.0)
 	for i in _warp_btns.size():
-		_restyle_thumb_btn(_warp_btns[i], WARP_TYPES[i], i == _active_warp)
+		var active := i == _active_warp
+		var bh := TAB_H if active else TAB_H_INACT
+		_warp_btns[i].size.y = bh
+		_warp_btns[i].position.y = cy
+		_restyle_thumb_btn(_warp_btns[i], WARP_TYPES[i], active)
+		cy += bh + TAB_GAP
 	_refresh_ui()
 
 func _make_thumb_btn(d: Dictionary, active: bool) -> Button:
@@ -579,57 +593,71 @@ func _make_thumb_btn(d: Dictionary, active: bool) -> Button:
 
 func _restyle_thumb_btn(btn: Button, d: Dictionary, active: bool) -> void:
 	var acc: Color = d["accent"] as Color
-	var bg_col  := Color(acc.r * 0.22, acc.g * 0.22, acc.b * 0.35, 0.95) if active else Color(0.04, 0.05, 0.14, 0.80)
-	var bdr_col := Color(acc.r, acc.g, acc.b, 0.8) if active else Color(1,1,1, 0.09)
+	var bh := TAB_H if active else TAB_H_INACT
+	btn.size.y = bh
+
+	var bg_col  := Color(acc.r * 0.22, acc.g * 0.22, acc.b * 0.35, 0.95) if active else Color(acc.r*0.06, acc.g*0.06, acc.b*0.12, 0.70)
+	var bdr_col := Color(acc.r, acc.g, acc.b, 0.8) if active else Color(acc.r, acc.g, acc.b, 0.25)
 	var bdr_w   := 2 if active else 1
 
-	var sb  := _sb(bg_col, bdr_col, 8, bdr_w)
+	var sb  := _sb(bg_col, bdr_col, 6, bdr_w)
 	var sbf := StyleBoxFlat.new()
 	btn.add_theme_stylebox_override("normal",  sb)
-	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.15, acc.g*0.15, acc.b*0.28, 0.92), bdr_col, 8, 1))
+	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.15, acc.g*0.15, acc.b*0.28, 0.92), bdr_col, 6, 1))
 	btn.add_theme_stylebox_override("pressed", sb)
 	btn.add_theme_stylebox_override("focus",   sbf)
 
 	for c in btn.get_children(): c.queue_free()
 
-	# Thumbnail placeholder (empty TextureRect for user's art)
-	var thumb := ColorRect.new()
-	thumb.size     = Vector2(THUMB_W - 16, TAB_H * 0.65)
-	thumb.position = Vector2(4, 4)
-	thumb.color    = Color(acc.r * 0.08, acc.g * 0.08, acc.b * 0.15, 0.9)
-	thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(thumb)
-
-	var icon_lbl := Label.new()
-	icon_lbl.text = str(d["icon"])
-	icon_lbl.add_theme_font_size_override("font_size", 18)
-	icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.7 if active else 0.35))
-	icon_lbl.size     = thumb.size
-	icon_lbl.position = thumb.position
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(icon_lbl)
-
-	var tab_lbl := Label.new()
-	tab_lbl.text = str(d["label"])
-	tab_lbl.add_theme_font_size_override("font_size", 8)
-	tab_lbl.add_theme_color_override("font_color",
-		Color(1.0, 1.0, 1.0, 0.90) if active else Color(0.55, 0.65, 0.80, 0.55))
-	tab_lbl.size     = Vector2(THUMB_W - 8, TAB_H - thumb.size.y - 10)
-	tab_lbl.position = Vector2(2, 4 + thumb.size.y + 4)
-	tab_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tab_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(tab_lbl)
-
 	if active:
+		# Thumbnail art area
+		var thumb := ColorRect.new()
+		thumb.size     = Vector2(THUMB_W - 16, TAB_H * 0.55)
+		thumb.position = Vector2(4, 4)
+		thumb.color    = Color(acc.r * 0.08, acc.g * 0.08, acc.b * 0.15, 0.9)
+		thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(thumb)
+
+		var icon_lbl := Label.new()
+		icon_lbl.text = str(d["icon"])
+		icon_lbl.add_theme_font_size_override("font_size", 16)
+		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.85))
+		icon_lbl.size     = thumb.size
+		icon_lbl.position = thumb.position
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(icon_lbl)
+
+		var tab_lbl := Label.new()
+		tab_lbl.text = str(d["label"])
+		tab_lbl.add_theme_font_size_override("font_size", 7)
+		tab_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.85))
+		tab_lbl.size     = Vector2(THUMB_W - 8, TAB_H - thumb.size.y - 8)
+		tab_lbl.position = Vector2(2, 4 + thumb.size.y + 2)
+		tab_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tab_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		tab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(tab_lbl)
+
+		# Active accent bar on left
 		var bar2 := ColorRect.new()
 		bar2.size     = Vector2(3, TAB_H - 8)
 		bar2.position = Vector2(0, 4)
 		bar2.color    = Color(acc.r, acc.g, acc.b, 1.0)
 		bar2.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		btn.add_child(bar2)
+	else:
+		# Collapsed: just icon + tiny label centered vertically
+		var icon_lbl := Label.new()
+		icon_lbl.text = str(d["icon"])
+		icon_lbl.add_theme_font_size_override("font_size", 11)
+		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.45))
+		icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(icon_lbl)
 
 # ── Helpers ───────────────────────────────────────────────────────
 func _fmt(n: int) -> String:

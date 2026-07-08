@@ -44,10 +44,11 @@ var _btn_fast:  Button = null
 @onready var _fade:       ColorRect     = $FadeOverlay
 
 func _ready() -> void:
-	# โหลด citypov เป็น background
-	var img := Image.load_from_file("res://image/citypov.avif")
-	if img != null and not img.is_empty():
-		bg_texture = ImageTexture.create_from_image(img)
+	var _buf := FileAccess.get_file_as_bytes("res://image/citypov.png")
+	if not _buf.is_empty():
+		var _img := Image.new()
+		if _img.load_png_from_buffer(_buf) == OK:
+			bg_texture = ImageTexture.create_from_image(_img)
 	if _bg:
 		_bg.texture = bg_texture
 		_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
