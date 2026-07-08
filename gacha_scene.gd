@@ -435,28 +435,6 @@ func _build_top_bar() -> void:
 	var back_btn := _make_visible_back_btn(Vector2(8, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
 	bar.add_child(back_btn)
 
-	# Warp icon + title
-	var title_lbl := Label.new()
-	title_lbl.text = "Warp"
-	title_lbl.add_theme_font_size_override("font_size", 20)
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
-	title_lbl.size     = Vector2(220, TOP_H)
-	title_lbl.position = Vector2(52, 0)
-	title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(title_lbl)
-
-	# Banner sub-title
-	var d: Dictionary = WARP_TYPES[_active_warp]
-	var sub_lbl := Label.new()
-	sub_lbl.text = str(d["banner_title"])
-	sub_lbl.add_theme_font_size_override("font_size", 13)
-	sub_lbl.add_theme_color_override("font_color", Color(0.72, 0.85, 1.0, 0.65))
-	sub_lbl.size     = Vector2(400, TOP_H)
-	sub_lbl.position = Vector2(100, 0)
-	sub_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(sub_lbl)
 
 	# Currency row (top-right): free crystal pill + paid crystal pill + close
 	var curr_row := HBoxContainer.new()
