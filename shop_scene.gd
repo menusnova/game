@@ -208,9 +208,10 @@ func _build_topbar() -> void:
 
 	var gold_tex := _load_png("res://image/icon_gold.png")
 	var gem_tex  := _load_png("res://image/crystal_gem.png")
+	var paid_tex := _load_png("res://image/icon_paid.png")
 	_gold_lbl = _make_curr_pill(_wallet_row, gold_tex, Color(0.95, 0.78, 0.25, 1.0))
 	_free_lbl = _make_curr_pill(_wallet_row, gem_tex,  Color(0.35, 0.85, 1.0,  1.0))
-	_paid_lbl = _make_curr_pill(_wallet_row, gem_tex,  Color(0.78, 0.55, 1.0,  1.0))
+	_paid_lbl = _make_curr_pill(_wallet_row, paid_tex, Color(0.78, 0.55, 1.0,  1.0))
 	_rebuild_wallet()
 
 # ── Content area ──────────────────────────────────────────────────

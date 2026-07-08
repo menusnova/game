@@ -455,13 +455,14 @@ func _build_top_bar() -> void:
 	curr_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(curr_row)
 
-	var gem_tex := _load_png("res://image/crystal_gem.png")
+	var gem_tex  := _load_png("res://image/crystal_gem.png")
+	var paid_tex := _load_png("res://image/icon_paid.png")
 
 	# Free crystal pill
-	_new_gem_lbl = _make_curr_pill(curr_row, gem_tex, Color(0.35, 0.85, 1.0, 1.0))
+	_new_gem_lbl = _make_curr_pill(curr_row, gem_tex,  Color(0.35, 0.85, 1.0, 1.0))
 
 	# Paid crystal pill
-	_paid_gem_lbl = _make_curr_pill(curr_row, gem_tex, Color(0.78, 0.55, 1.0, 1.0))
+	_paid_gem_lbl = _make_curr_pill(curr_row, paid_tex, Color(0.78, 0.55, 1.0, 1.0))
 
 	# X close button
 	var close_btn := _ghost_btn("✕", 16)
