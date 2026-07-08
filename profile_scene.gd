@@ -94,45 +94,17 @@ func _build_ui() -> void:
 
 # ── Top bar ───────────────────────────────────────────────────────
 func _build_top_bar() -> void:
-	var bar_sb := _sb(Color(0.02, 0.03, 0.09, 0.92), Color(1,1,1, 0.06), 0, 1)
-	var bar := Panel.new()
-	bar.size     = Vector2(W, TOP_H)
-	bar.position = Vector2.ZERO
-	bar.add_theme_stylebox_override("panel", bar_sb)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.z_index = 10
-	add_child(bar)
-
-	var back := _make_back_btn(Vector2(10, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
-	bar.add_child(back)
-
-	var title := Label.new()
-	title.text = "PROFILE"
-	title.add_theme_font_size_override("font_size", 15)
-	title.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.8))
-	title.size     = Vector2(W, TOP_H)
-	title.position = Vector2.ZERO
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(title)
-
-	_uid_lbl = Label.new()
-	_uid_lbl.add_theme_font_size_override("font_size", 11)
-	_uid_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.5))
-	_uid_lbl.size     = Vector2(200, TOP_H)
-	_uid_lbl.position = Vector2(W - 210, 0)
-	_uid_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_uid_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_uid_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(_uid_lbl)
+	# Back button — top right of screen
+	var back := _make_back_btn(Vector2(W - 46, 10), Vector2(36, 36), _go_back)
+	back.z_index = 10
+	add_child(back)
 
 # ── Left panel ────────────────────────────────────────────────────
 func _build_left_panel() -> void:
 	var panel_sb := _sb(Color(0.018, 0.03, 0.09, 0.92), Color(1,1,1, 0.07), 0, 1)
 	var panel := Panel.new()
-	panel.size     = Vector2(LEFT_W, H - TOP_H)
-	panel.position = Vector2(0, TOP_H)
+	panel.size     = Vector2(LEFT_W, H)
+	panel.position = Vector2(0, 0)
 	panel.add_theme_stylebox_override("panel", panel_sb)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.z_index = 3
@@ -144,6 +116,15 @@ func _build_left_panel() -> void:
 	acc_strip.color = Color(0.388, 0.624, 1.0, 0.5)
 	acc_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(acc_strip)
+
+	# ── UID top-left ──
+	_uid_lbl = Label.new()
+	_uid_lbl.add_theme_font_size_override("font_size", 10)
+	_uid_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.5))
+	_uid_lbl.size     = Vector2(LEFT_W - 16, 20)
+	_uid_lbl.position = Vector2(12, 8)
+	_uid_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(_uid_lbl)
 
 	# ── Avatar circle ──
 	var av_size := 96.0
@@ -300,7 +281,7 @@ func _build_activity_in(parent: Panel, start_y: float) -> void:
 func _build_right_area() -> void:
 	var rx := LEFT_W + 16.0
 	var rw := W - rx - 16.0
-	var ry := TOP_H + 16.0
+	var ry := 16.0
 
 	# "CHARACTER SHOWCASE" label
 	var sc_lbl := Label.new()
