@@ -28,7 +28,8 @@ func _build_ui() -> void:
 	top.add_theme_constant_override("separation", 12)
 	add_child(top)
 
-	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
+	var back := _make_back_btn(Vector2(0, 0), Vector2(36, 36), _go_back)
+	back.custom_minimum_size = Vector2(36, 36)
 	top.add_child(back)
 
 	var title := Label.new()
@@ -243,6 +244,12 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureBut
 	if not buf.is_empty():
 		var img := Image.new()
 		if img.load_jpg_from_buffer(buf) == OK:
+			img.convert(Image.FORMAT_RGBA8)
+			for y in img.get_height():
+				for x in img.get_width():
+					var c := img.get_pixel(x, y)
+					var a := clampf(((c.r+c.g+c.b)/3.0 - 0.25) / 0.45, 0.0, 1.0)
+					img.set_pixel(x, y, Color(1.0, 1.0, 1.0, a))
 			btn.texture_normal = ImageTexture.create_from_image(img)
 	btn.pivot_offset = sz / 2
 	btn.pressed.connect(func():
