@@ -14,7 +14,7 @@ var discovered_elements:   Array[String] = []
 var discovered_recipes:    Array[String] = []
 
 func _ready() -> void:
-	_load()
+	pass
 
 func save_profile(new_name: String, new_sig: String, new_avatar: int) -> void:
 	player_name = new_name
