@@ -17,9 +17,9 @@ const CHAR_SIDE := {
 const LINES: Array = [
 	{"speaker": "Lyra",  "text": "สูตรนี้... มันไม่ธรรมดาเลย"},
 	{"speaker": "Lyra",  "text": "ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง"},
-	{"speaker": "Kael",  "text": "รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ"},
+	{"speaker": "Lyra",  "text": "รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ"},
 	{"speaker": "Lyra",  "text": "ถ้าปล่อยไว้อีกคืนเดียว ห้องทดลองทั้งหมดจะระเบิด"},
-	{"speaker": "Kael",  "text": "งั้นเราต้องหยุดพวกเขาที่นี่และตอนนี้เลย"},
+	{"speaker": "Lyra",  "text": "งั้นเราต้องหยุดพวกเขาที่นี่และตอนนี้เลย"},
 	{"speaker": "Lyra",  "text": "...เตรียมพร้อม"},
 ]
 
@@ -199,17 +199,9 @@ func _typewrite(text: String) -> void:
 	if _auto_play:
 		_schedule_auto_advance()
 
-func _update_portraits(active_speaker: String) -> void:
-	if not _char_l or not _char_r:
-		return
-	var side: String = CHAR_SIDE.get(active_speaker, "left")
-	var t := create_tween().set_parallel(true)
-	if side == "left":
-		t.tween_property(_char_l, "modulate:a", 1.0, 0.2)
-		t.tween_property(_char_r, "modulate:a", 0.4, 0.2)
-	else:
-		t.tween_property(_char_r, "modulate:a", 1.0, 0.2)
-		t.tween_property(_char_l, "modulate:a", 0.4, 0.2)
+func _update_portraits(_active_speaker: String) -> void:
+	if _char_l: _char_l.modulate.a = 1.0
+	if _char_r: _char_r.modulate.a = 1.0
 
 func _on_next() -> void:
 	if _typing:
