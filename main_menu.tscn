@@ -1045,7 +1045,7 @@ offset_right = 200.0
 offset_bottom = 82.0
 theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 9
-text = "CHAPTER 12-9"
+text = ""
 
 [node name="Arrow" type="Label" parent="AdventureCard" unique_id=802940588]
 layout_mode = 0
