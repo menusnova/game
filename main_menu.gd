@@ -58,6 +58,7 @@ func _load_icon_textures() -> void:
 		["AdventureCard/AdventureArt",        "res://image/bstory.jpg"],
 		["SimulationCard/SimulationArt",      "res://image/bsimu.jpg"],
 		["ArenaCard/ArenaArt",                "res://image/barena.jpg"],
+		["ExpeditionCard/ExpeditionArt",      "res://image/citystory.png"],
 		["NavBar/Nav0_Alchemist/Icon",        "res://image/icon_nav_character.png"],
 		["NavBar/Nav2_Lab/Icon",              "res://image/icon_nav_lab.png"],
 		["NavBar/Nav_Gacha/Icon",             "res://image/icon_nav_gacha.jpg"],
@@ -84,6 +85,11 @@ func _load_icon_textures() -> void:
 					elif pair[0].ends_with("Art"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+						node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+						node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+						if node.get_parent() is Control:
+							(node.get_parent() as Control).clip_contents = true
+							node.get_parent().move_child(node, 0)
 					node.texture = ImageTexture.create_from_image(img)
 
 func _remove_bg(img: Image) -> void:
