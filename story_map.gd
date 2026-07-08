@@ -91,7 +91,8 @@ func _build_ui() -> void:
 		Vector2(start_x, card_y),
 		Vector2(card_w, card_h),
 		false,
-		func(): _start_story()
+		func(): _start_story(),
+		"res://image/citystory.png"
 	))
 
 	add_child(_make_card(
@@ -104,7 +105,8 @@ func _build_ui() -> void:
 		Vector2(start_x + card_w + gap, card_y),
 		Vector2(card_w, card_h),
 		true,
-		Callable()
+		Callable(),
+		"res://image/citystory.png"
 	))
 
 	# Fade in
@@ -120,7 +122,8 @@ func _make_card(
 		label: String, tag: String, desc: String,
 		bg_col: Color, border_col: Color, accent_col: Color,
 		pos: Vector2, sz: Vector2,
-		locked: bool, on_press: Callable) -> Panel:
+		locked: bool, on_press: Callable,
+		img_path: String = "") -> Panel:
 
 	var card := Panel.new()
 	card.position = pos
@@ -138,6 +141,23 @@ func _make_card(
 	sb.corner_radius_bottom_right = 12
 	sb.corner_radius_bottom_left  = 12
 	card.add_theme_stylebox_override("panel", sb)
+
+	# Card background image
+	if img_path != "":
+		var buf := FileAccess.get_file_as_bytes(img_path)
+		if not buf.is_empty():
+			var img := Image.new()
+			var ok := img.load_png_from_buffer(buf) == OK
+			if not ok: ok = img.load_jpg_from_buffer(buf) == OK
+			if ok:
+				var bg_tex := TextureRect.new()
+				bg_tex.texture = ImageTexture.create_from_image(img)
+				bg_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				bg_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				bg_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+				bg_tex.modulate     = Color(1, 1, 1, 0.22 if locked else 0.38)
+				bg_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(bg_tex)
 
 	# Accent bar top
 	var accent := ColorRect.new()
