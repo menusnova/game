@@ -85,6 +85,12 @@ func _ready() -> void:
 
 	if _char_l:
 		_char_l.texture = lyra_portraits[0] if lyra_portraits.size() > 0 else null
+		_char_l.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		_char_l.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_char_l.offset_left = 0
+		_char_l.offset_top = 0
+		_char_l.offset_right = 460
+		_char_l.offset_bottom = 700
 	if _char_r:
 		_char_r.texture = char_kael
 	if _next_btn:
