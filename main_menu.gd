@@ -389,8 +389,6 @@ func _input(ev: InputEvent) -> void:
 # ── Navigation ────────────────────────────────────────────────────
 func _on_profile_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-		_fx_scale($ProfileCard)
-		_fx_ripple($ProfileCard, ev.position)
 		_goto(SC_PROFILE)
 
 
