@@ -466,6 +466,7 @@ func _build_top_bar() -> void:
 
 	# Back button
 	var close_btn := _make_back_btn(Vector2(0,0), Vector2(36, 36), _go_back)
+	close_btn.custom_minimum_size = Vector2(36, 36)
 	curr_row.add_child(close_btn)
 
 	# Position currency row at far right
