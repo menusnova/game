@@ -242,29 +242,42 @@ func _show_toast(msg: String) -> void:
 	await t2.finished
 	if is_instance_valid(toast): toast.queue_free()
 
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
-	var btn := TextureButton.new()
-	btn.position = pos
-	btn.size = sz
-	btn.ignore_texture_size = true
-	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
-	if not buf.is_empty():
-		var img := Image.new()
-		if img.load_jpg_from_buffer(buf) == OK:
-			img.convert(Image.FORMAT_RGBA8)
-			for y in img.get_height():
-				for x in img.get_width():
-					var c := img.get_pixel(x, y)
-					var a := clampf(((c.r+c.g+c.b)/3.0 - 0.25) / 0.45, 0.0, 1.0)
-					img.set_pixel(x, y, Color(1.0, 1.0, 1.0, a))
-			btn.texture_normal = ImageTexture.create_from_image(img)
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
+	var btn := Panel.new()
+	btn.position = pos; btn.size = sz
 	btn.pivot_offset = sz / 2
-	btn.pressed.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-		tw.tween_callback(callback)
+	btn.z_index = 20
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
+	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
+	sb.set_border_width_all(1)
+	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
+		sb.set(r, 12)
+	btn.add_theme_stylebox_override("panel", sb)
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	var lbl := Label.new()
+	lbl.text = "‹"
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 22)
+	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(lbl)
+	btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+			tw.tween_callback(callback)
+	)
+	btn.mouse_entered.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
+		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	btn.mouse_exited.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
+		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 	)
 	return btn
 
