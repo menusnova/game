@@ -49,12 +49,22 @@ func _load_png_remove_white(path: String) -> ImageTexture:
 	var img := Image.new()
 	if img.load_png_from_buffer(buf) != OK: return null
 	img.convert(Image.FORMAT_RGBA8)
-	for y in img.get_height():
-		for x in img.get_width():
-			var c := img.get_pixel(x, y)
-			var whiteness := minf(c.r, minf(c.g, c.b))
-			var a := clampf((1.0 - whiteness) / 0.35, 0.0, 1.0)
-			img.set_pixel(x, y, Color(c.r, c.g, c.b, a))
+	# Check if image already has transparency (alpha channel used)
+	var has_transparency := false
+	for y in range(0, img.get_height(), 8):
+		for x in range(0, img.get_width(), 8):
+			if img.get_pixel(x, y).a < 0.99:
+				has_transparency = true
+				break
+		if has_transparency:
+			break
+	if not has_transparency:
+		for y in img.get_height():
+			for x in img.get_width():
+				var c := img.get_pixel(x, y)
+				var whiteness := minf(c.r, minf(c.g, c.b))
+				var a := clampf((1.0 - whiteness) / 0.35, 0.0, 1.0)
+				img.set_pixel(x, y, Color(c.r, c.g, c.b, a))
 	return ImageTexture.create_from_image(img)
 
 func _ready() -> void:
