@@ -160,7 +160,7 @@ func _make_card(
 	btn_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if locked:
-		btn_lbl.text = "🔒  เร็วๆ นี้"
+		btn_lbl.text = "เร็วๆ นี้"
 		btn_lbl.add_theme_color_override("font_color", Color(0.45, 0.45, 0.6, 0.6))
 	else:
 		btn_lbl.text = "▶  เริ่มเล่น"
