@@ -1,7 +1,8 @@
 extends Control
 
-const SC_MAIN  := "res://main_menu.tscn"
-const SC_STORY := "res://story_scene.tscn"
+const SC_MAIN       := "res://main_menu.tscn"
+const SC_STORY      := "res://story_scene.tscn"
+const SC_TRANSITION := "res://transition_scene.tscn"
 
 func _ready() -> void:
 	_build_ui()
@@ -226,7 +227,8 @@ func _start_story() -> void:
 	if not ResourceLoader.exists(SC_STORY):
 		_show_toast("ยังไม่พร้อมให้เล่น")
 		return
-	SceneTransition.fade_to(SC_STORY)
+	var target := SC_TRANSITION if ResourceLoader.exists(SC_TRANSITION) else SC_STORY
+	SceneTransition.fade_to(target)
 
 func _show_toast(msg: String) -> void:
 	if get_node_or_null("_Toast") != null:
