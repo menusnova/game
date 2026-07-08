@@ -74,13 +74,21 @@ func _load_icon_textures() -> void:
 				else:
 					ok = img.load_png_from_buffer(buf) == OK
 				if ok:
-					node.texture = ImageTexture.create_from_image(img)
 					if pair[0].begins_with("NavBar/"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-						var mat := CanvasItemMaterial.new()
-						mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-						node.material = mat
+						_remove_bg(img)
+					node.texture = ImageTexture.create_from_image(img)
+
+func _remove_bg(img: Image) -> void:
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			var bright := (c.r + c.g + c.b) / 3.0
+			# ลบพื้นขาว (>0.82) และพื้นดำ (<0.18) ออก
+			if bright > 0.82 or bright < 0.18:
+				img.set_pixel(x, y, Color(c.r, c.g, c.b, 0.0))
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:
