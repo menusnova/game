@@ -93,6 +93,10 @@ func _load_icon_textures() -> void:
 						if node.get_parent() is Control:
 							(node.get_parent() as Control).clip_contents = true
 							node.get_parent().move_child(node, 0)
+							# ซ่อน ArtBg ColorRect ที่อยู่ทับบนรูป
+							var art_bg := node.get_parent().get_node_or_null("ArtBg")
+							if art_bg:
+								art_bg.visible = false
 					node.texture = ImageTexture.create_from_image(img)
 
 func _remove_white_bg(img: Image) -> void:
@@ -211,7 +215,7 @@ func _setup_navbar() -> void:
 	var nav_backdrop := ColorRect.new()
 	nav_backdrop.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	nav_backdrop.offset_top = -56.0
-	nav_backdrop.color = Color(0.04, 0.05, 0.12, 0.35)
+	nav_backdrop.color = Color(1.0, 1.0, 1.0, 0.08)
 	nav_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var navbar := get_node_or_null("NavBar")
 	if navbar:
