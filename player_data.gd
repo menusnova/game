@@ -7,7 +7,7 @@ signal profile_changed
 var player_name:        String        = "Trailblazer"
 var signature:          String        = "\"ความลับของสูตรนั้น... ยังไม่จบ\""
 var avatar_idx:         int           = 0
-var level:              int           = 42
+var level:              int           = 0
 var uid:                String        = "000000001"
 var discovered_compounds:  Array[String] = []
 var discovered_elements:   Array[String] = []
