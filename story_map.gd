@@ -7,58 +7,42 @@ func _ready() -> void:
 	_build_ui()
 
 func _build_ui() -> void:
-	# Background
-	var bg_loaded := false
-	var bg_img := Image.load_from_file("res://image/citypov.avif")
-	if bg_img != null and not bg_img.is_empty():
-		var bg_tex := ImageTexture.create_from_image(bg_img)
-		var bg := TextureRect.new()
-		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		bg.texture = bg_tex
-		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(bg)
-		bg_loaded = true
-	if not bg_loaded:
-		var bg := ColorRect.new()
-		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		bg.color = Color(0.02, 0.03, 0.08, 1.0)
-		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(bg)
-	# Dark overlay ให้อ่าน UI ได้ชัด
+	# Background — citystory.png เต็มจอ
+	var bg_buf := FileAccess.get_file_as_bytes("res://image/citystory.png")
+	if not bg_buf.is_empty():
+		var bg_img := Image.new()
+		if bg_img.load_png_from_buffer(bg_buf) == OK:
+			var bg := TextureRect.new()
+			bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			bg.texture = ImageTexture.create_from_image(bg_img)
+			bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(bg)
+	# Dark overlay
 	var overlay := ColorRect.new()
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay.color = Color(0.0, 0.0, 0.0, 0.52)
+	overlay.color = Color(0.0, 0.0, 0.0, 0.55)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(overlay)
 
-	# Top bar
-	var bar := Panel.new()
-	bar.position = Vector2(0, 0)
-	bar.size     = Vector2(1152, 56)
-	var bsb := StyleBoxFlat.new()
-	bsb.bg_color = Color(0.02, 0.04, 0.12, 0.88)
-	bsb.border_width_bottom = 1
-	bsb.border_color = Color(0.25, 0.5, 1.0, 0.2)
-	bar.add_theme_stylebox_override("panel", bsb)
-	add_child(bar)
-
-	var back := _make_back_btn(Vector2(10, 8), Vector2(36, 36), _go_back)
-	bar.add_child(back)
+	# ปุ่มกลับ + ข้อความ "เนื้อเรื่อง" ลอยบนซ้าย
+	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
+	add_child(back)
 
 	var title := Label.new()
 	title.text = "เนื้อเรื่อง"
-	title.size     = Vector2(1152, 56)
-	title.position = Vector2(0, 0)
+	title.position = Vector2(0, 10)
+	title.size     = Vector2(1152, 40)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.90))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(title)
+	add_child(title)
 
-	# Card area — กึ่งกลางแนวตั้ง
-	var card_y    := 148.0
+	# Card area
+	var card_y    := 120.0
 	var card_h    := 352.0
 	var card_w    := 420.0
 	var gap       := 48.0
