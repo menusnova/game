@@ -479,7 +479,7 @@ func _rebuild_wallet() -> void:
 	if _paid_lbl: _paid_lbl.text = _fmt(CurrencyManager.paid_crystal)
 
 # ── Helpers ───────────────────────────────────────────────────────
-func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, col: Color) -> Label:
+func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, _col: Color) -> Label:
 	var pill := Panel.new()
 	var pill_sb := StyleBoxFlat.new()
 	pill_sb.bg_color = Color(0.08, 0.09, 0.14, 0.92)

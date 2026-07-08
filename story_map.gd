@@ -8,10 +8,9 @@ func _ready() -> void:
 
 func _build_ui() -> void:
 	# Background
-	var bg_img := Image.new()
 	var bg_loaded := false
-	bg_img.load_from_file("res://image/citypov.avif")
-	if not bg_img.is_empty():
+	var bg_img := Image.load_from_file("res://image/citypov.avif")
+	if bg_img != null and not bg_img.is_empty():
 		var bg_tex := ImageTexture.create_from_image(bg_img)
 		var bg := TextureRect.new()
 		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

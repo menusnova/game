@@ -45,9 +45,8 @@ var _btn_fast:  Button = null
 
 func _ready() -> void:
 	# โหลด citypov เป็น background
-	var img := Image.new()
-	img.load_from_file("res://image/citypov.avif")
-	if not img.is_empty():
+	var img := Image.load_from_file("res://image/citypov.avif")
+	if img != null and not img.is_empty():
 		bg_texture = ImageTexture.create_from_image(img)
 	if _bg:
 		_bg.texture = bg_texture
