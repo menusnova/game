@@ -83,7 +83,7 @@ func _load_icon_textures() -> void:
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 						if pair[0].ends_with("Guild/Icon"):
 							_remove_white_bg(img)
-						else:
+						elif pair[1].ends_with(".jpg") or pair[1].ends_with(".jpeg"):
 							_remove_bg(img)
 					elif pair[0].ends_with("Art"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
