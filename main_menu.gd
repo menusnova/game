@@ -81,7 +81,10 @@ func _load_icon_textures() -> void:
 					if pair[0].begins_with("NavBar/"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-						_remove_bg(img)
+						if pair[0].ends_with("Guild/Icon"):
+							_remove_white_bg(img)
+						else:
+							_remove_bg(img)
 					elif pair[0].ends_with("Art"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -91,6 +94,15 @@ func _load_icon_textures() -> void:
 							(node.get_parent() as Control).clip_contents = true
 							node.get_parent().move_child(node, 0)
 					node.texture = ImageTexture.create_from_image(img)
+
+func _remove_white_bg(img: Image) -> void:
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			var whiteness := minf(c.r, minf(c.g, c.b))
+			var alpha := clampf((1.0 - whiteness) / 0.45, 0.0, 1.0)
+			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
 
 func _remove_bg(img: Image) -> void:
 	img.convert(Image.FORMAT_RGBA8)
