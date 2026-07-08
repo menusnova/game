@@ -52,15 +52,24 @@ anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.35)
 mouse_filter = 2
 
-[node name="CharacterLeft" type="TextureRect" parent="."]
+[node name="CharacterLeftClip" type="Control" parent="."]
 layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 460.0
-offset_bottom = 700.0
+offset_bottom = 480.0
+mouse_filter = 2
+clip_contents = true
+
+[node name="CharacterLeft" type="TextureRect" parent="CharacterLeftClip"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 460.0
+offset_bottom = 640.0
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 2
 modulate = Color(1, 1, 1, 0)
 
 [node name="CharacterRight" type="TextureRect" parent="."]
