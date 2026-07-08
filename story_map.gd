@@ -235,13 +235,9 @@ func _make_card(
 const ENERGY_COST := 10
 
 func _start_story() -> void:
-	if CurrencyManager.energy < ENERGY_COST:
-		_show_toast("พลังงานไม่เพียงพอ (ต้องการ ⚡%d)" % ENERGY_COST)
-		return
 	if not ResourceLoader.exists(SC_STORY):
 		_show_toast("ยังไม่พร้อมให้เล่น")
 		return
-	CurrencyManager.spend_energy(ENERGY_COST)
 	SceneTransition.fade_to(SC_STORY)
 
 func _show_toast(msg: String) -> void:
