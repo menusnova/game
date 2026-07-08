@@ -305,7 +305,7 @@ func _setup_menu_items() -> void:
 		item.mouse_exited.connect(_on_menu_hover.bind(item, orig_y, false))
 		item.gui_input.connect(_on_menu_click.bind(item))
 	# Top-right icon buttons (NewCharCard excluded — handled in _setup_cards_fx)
-	for btn_name in ["BtnPeople", "BtnMail", "BtnMega", "BtnSettings", "ProfileCard"]:
+	for btn_name in ["BtnPeople", "BtnMail", "BtnMega", "BtnSettings"]:
 		var n: Control = get_node_or_null(btn_name) as Control
 		if n:
 			_attach_hover_bounce(n)
