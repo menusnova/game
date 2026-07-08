@@ -199,7 +199,7 @@ func _setup_navbar() -> void:
 	var nav_backdrop := ColorRect.new()
 	nav_backdrop.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	nav_backdrop.offset_top = -56.0
-	nav_backdrop.color = Color(0.04, 0.05, 0.12, 0.92)
+	nav_backdrop.color = Color(0.04, 0.05, 0.12, 0.35)
 	nav_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var navbar := get_node_or_null("NavBar")
 	if navbar:
