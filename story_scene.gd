@@ -177,7 +177,8 @@ func _show_line(idx: int) -> void:
 
 	_name_label.text = speaker
 	if _char_l and lyra_portraits.size() > 2:
-		_char_l.texture = lyra_portraits[2]
+		var portrait_idx := clampi(idx, 0, 2)
+		_char_l.texture = lyra_portraits[portrait_idx]
 	_update_portraits(speaker)
 	_full_text = line
 	_text.text = ""
