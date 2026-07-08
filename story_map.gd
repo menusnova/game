@@ -31,16 +31,7 @@ func _build_ui() -> void:
 	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
 	add_child(back)
 
-	var title := Label.new()
-	title.text = "เนื้อเรื่อง"
-	title.position = Vector2(0, 10)
-	title.size     = Vector2(1152, 40)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 20)
-	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.90))
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(title)
+
 
 	# Card area
 	var card_y    := 120.0
