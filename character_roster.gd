@@ -28,22 +28,7 @@ func _build_ui() -> void:
 	top.add_theme_constant_override("separation", 12)
 	add_child(top)
 
-	var back := Button.new()
-	back.text = "◀"
-	back.custom_minimum_size = Vector2(80, 32)
-	var bsb := StyleBoxFlat.new()
-	bsb.bg_color = Color(1, 1, 1, 0.05)
-	bsb.border_width_top = 1; bsb.border_width_right = 1
-	bsb.border_width_bottom = 1; bsb.border_width_left = 1
-	bsb.border_color = Color(1, 1, 1, 0.1)
-	bsb.corner_radius_top_left = 10; bsb.corner_radius_top_right = 10
-	bsb.corner_radius_bottom_right = 10; bsb.corner_radius_bottom_left = 10
-	back.add_theme_stylebox_override("normal",  bsb)
-	back.add_theme_stylebox_override("hover",   bsb)
-	back.add_theme_stylebox_override("pressed", bsb)
-	back.add_theme_color_override("font_color", Color(1, 1, 1, 0.7))
-	back.add_theme_font_size_override("font_size", 13)
-	back.pressed.connect(_go_back)
+	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
 	top.add_child(back)
 
 	var title := Label.new()
@@ -248,6 +233,25 @@ func _make_card(data: Dictionary) -> Control:
 func _go_detail() -> void:
 	if not ResourceLoader.exists(SC_DETAIL): return
 	SceneTransition.fade_to(SC_DETAIL)
+
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
+	var btn := TextureButton.new()
+	btn.position = pos; btn.size = sz
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			btn.texture_normal = ImageTexture.create_from_image(img)
+	btn.pivot_offset = sz / 2
+	btn.pressed.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+		tw.tween_callback(callback)
+	)
+	return btn
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)

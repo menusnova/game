@@ -43,23 +43,7 @@ func _build_ui() -> void:
 	bar.add_theme_stylebox_override("panel", bsb)
 	add_child(bar)
 
-	var back := Button.new()
-	back.text = "◀"
-	back.position = Vector2(16, 12)
-	back.size     = Vector2(80, 32)
-	var bbsb := StyleBoxFlat.new()
-	bbsb.bg_color = Color(1, 1, 1, 0.05)
-	bbsb.border_width_left = 1; bbsb.border_width_top = 1
-	bbsb.border_width_right = 1; bbsb.border_width_bottom = 1
-	bbsb.border_color = Color(1, 1, 1, 0.12)
-	bbsb.corner_radius_top_left = 8; bbsb.corner_radius_top_right = 8
-	bbsb.corner_radius_bottom_right = 8; bbsb.corner_radius_bottom_left = 8
-	back.add_theme_stylebox_override("normal",  bbsb)
-	back.add_theme_stylebox_override("hover",   bbsb)
-	back.add_theme_stylebox_override("pressed", bbsb)
-	back.add_theme_color_override("font_color", Color(1, 1, 1, 0.65))
-	back.add_theme_font_size_override("font_size", 13)
-	back.pressed.connect(_go_back)
+	var back := _make_back_btn(Vector2(10, 8), Vector2(36, 36), _go_back)
 	bar.add_child(back)
 
 	var title := Label.new()
@@ -300,6 +284,26 @@ func _show_toast(msg: String) -> void:
 	t2.tween_property(toast, "modulate:a", 0.0, 0.25)
 	await t2.finished
 	if is_instance_valid(toast): toast.queue_free()
+
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
+	var btn := TextureButton.new()
+	btn.position = pos
+	btn.size = sz
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			btn.texture_normal = ImageTexture.create_from_image(img)
+	btn.pivot_offset = sz / 2
+	btn.pressed.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+		tw.tween_callback(callback)
+	)
+	return btn
 
 func _goto(path: String) -> void:
 	SceneTransition.fade_to(path)

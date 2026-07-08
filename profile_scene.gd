@@ -105,10 +105,7 @@ func _build_top_bar() -> void:
 	bar.z_index = 10
 	add_child(bar)
 
-	var back := _ghost_btn("◀  ย้อนกลับ", 13)
-	back.size     = Vector2(100, 34)
-	back.position = Vector2(12, (TOP_H - 34) * 0.5)
-	back.pressed.connect(_go_back)
+	var back := _make_back_btn(Vector2(10, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
 	bar.add_child(back)
 
 	var title := Label.new()
@@ -846,6 +843,25 @@ func _add_stars(parent: Node) -> void:
 		td.tween_property(dot, "modulate:a", 1.0, rng.randf_range(1.2,3.5)).set_ease(Tween.EASE_IN_OUT)
 
 # ── Navigation ────────────────────────────────────────────────────
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
+	var btn := TextureButton.new()
+	btn.position = pos; btn.size = sz
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			btn.texture_normal = ImageTexture.create_from_image(img)
+	btn.pivot_offset = sz / 2
+	btn.pressed.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+		tw.tween_callback(callback)
+	)
+	return btn
+
 func _go_back() -> void:
 	if DomainManager.domain_changed.is_connected(_on_domain_changed):
 		DomainManager.domain_changed.disconnect(_on_domain_changed)

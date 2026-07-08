@@ -185,15 +185,7 @@ func _restyle_cats() -> void:
 
 # ── Top bar ───────────────────────────────────────────────────────
 func _build_topbar() -> void:
-	var back := Button.new()
-	back.text     = "◀"
-	back.size     = Vector2(44, TOP_H)
-	back.position = Vector2(SIDE_W, 0)
-	back.add_theme_font_size_override("font_size", 20)
-	back.add_theme_color_override("font_color", C_TXT)
-	for st in ["normal","hover","pressed","focus"]:
-		back.add_theme_stylebox_override(st, _flat(Color(0,0,0,0), Color(0,0,0,0)))
-	back.pressed.connect(_go_back)
+	var back := _make_back_btn(Vector2(SIDE_W + 4, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
 	add_child(back)
 
 	# Currency row — top-right (two pills: free crystal + paid crystal)
@@ -554,6 +546,25 @@ func _fx_scale(node: Control) -> void:
 	var t := node.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	t.tween_property(node, "scale", Vector2(0.93, 0.93), 0.07)
 	t.tween_property(node, "scale", Vector2(1.0,  1.0),  0.15)
+
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
+	var btn := TextureButton.new()
+	btn.position = pos; btn.size = sz
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			btn.texture_normal = ImageTexture.create_from_image(img)
+	btn.pivot_offset = sz / 2
+	btn.pressed.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+		tw.tween_callback(callback)
+	)
+	return btn
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)

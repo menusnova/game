@@ -464,10 +464,8 @@ func _build_top_bar() -> void:
 	# Paid crystal pill
 	_paid_gem_lbl = _make_curr_pill(curr_row, paid_tex, Color(0.78, 0.55, 1.0, 1.0))
 
-	# X close button
-	var close_btn := _ghost_btn("✕", 16)
-	close_btn.custom_minimum_size = Vector2(36, 36)
-	close_btn.pressed.connect(_go_back)
+	# Back button
+	var close_btn := _make_back_btn(Vector2(0,0), Vector2(36, 36), _go_back)
 	curr_row.add_child(close_btn)
 
 	# Position currency row at far right
@@ -1035,6 +1033,25 @@ func _shake(node: Control) -> void:
 	for _i in 5:
 		t.tween_property(node, "position:x", orig.x + randf_range(-5, 5), 0.04)
 	t.tween_property(node, "position:x", orig.x, 0.04)
+
+func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureButton:
+	var btn := TextureButton.new()
+	btn.position = pos; btn.size = sz
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	var buf := FileAccess.get_file_as_bytes("res://image/back.jpg")
+	if not buf.is_empty():
+		var img := Image.new()
+		if img.load_jpg_from_buffer(buf) == OK:
+			btn.texture_normal = ImageTexture.create_from_image(img)
+	btn.pivot_offset = sz / 2
+	btn.pressed.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+		tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+		tw.tween_callback(callback)
+	)
+	return btn
 
 func _go_back() -> void:
 	if _revealing: return
