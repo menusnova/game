@@ -85,6 +85,8 @@ func _load_icon_textures() -> void:
 							_remove_white_bg(img)
 						elif pair[1].ends_with(".jpg") or pair[1].ends_with(".jpeg"):
 							_remove_bg(img)
+						else:
+							_remove_dark_bg(img)
 					elif pair[0].ends_with("Art"):
 						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -106,6 +108,15 @@ func _remove_white_bg(img: Image) -> void:
 			var c := img.get_pixel(x, y)
 			var whiteness := minf(c.r, minf(c.g, c.b))
 			var alpha := clampf((1.0 - whiteness) / 0.45, 0.0, 1.0)
+			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
+
+func _remove_dark_bg(img: Image) -> void:
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			var brightness := maxf(c.r, maxf(c.g, c.b))
+			var alpha := clampf(brightness / 0.35, 0.0, 1.0)
 			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
 
 func _remove_bg(img: Image) -> void:
