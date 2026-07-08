@@ -57,7 +57,7 @@ func _load_icon_textures() -> void:
 		["MenuItem_Shop/Icon",                "res://image/icon_shop.png"],
 		["AdventureCard/AdventureArt",        "res://image/bstory.jpg"],
 		["SimulationCard/SimulationArt",      "res://image/bsimu.jpg"],
-		["ArenaCard/ArenaArt",                "res://image/barena.jpg"],
+		["ArenaCard/ArenaArt",                "res://image/chl.jpg"],
 		["ExpeditionCard/ExpeditionArt",      "res://image/citystory.png"],
 		["NavBar/Nav0_Alchemist/Icon",        "res://image/icon_nav_character.png"],
 		["NavBar/Nav2_Lab/Icon",              "res://image/icon_nav_lab.png"],
