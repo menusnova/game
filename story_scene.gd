@@ -30,10 +30,6 @@ var _auto_play  := false   # auto-advance after each line finishes
 var _fast_mode  := false   # typewriter speed-up
 var _auto_timer: SceneTreeTimer = null
 
-var _btn_skip:  Button = null
-var _btn_auto:  Button = null
-var _btn_fast:  Button = null
-
 @onready var _bg:         TextureRect   = $Background
 @onready var _char_l:     TextureRect   = $CharacterLeftClip/CharacterLeft
 @onready var _char_r:     TextureRect   = $CharacterRight
@@ -42,6 +38,9 @@ var _btn_fast:  Button = null
 @onready var _text:       RichTextLabel = $DialoguePanel/DialogueText
 @onready var _next_btn:   Button        = $DialoguePanel/NextBtn
 @onready var _fade:       ColorRect     = $FadeOverlay
+@onready var _btn_skip:   Button        = $CtrlBar/BtnSkip
+@onready var _btn_auto:   Button        = $CtrlBar/BtnAuto
+@onready var _btn_fast:   Button        = $CtrlBar/BtnFast
 
 func _load_png_remove_white(path: String) -> ImageTexture:
 	var buf := FileAccess.get_file_as_bytes(path)
@@ -89,7 +88,10 @@ func _ready() -> void:
 		_char_r.texture = char_kael
 	if _next_btn:
 		_next_btn.pressed.connect(_on_next)
-	_build_dialogue_controls()
+	_btn_skip.pressed.connect(_on_skip_all)
+	_btn_fast.pressed.connect(_on_toggle_fast)
+	_btn_auto.pressed.connect(_on_toggle_auto)
+	_refresh_ctrl_buttons()
 	# fade in
 	if _fade:
 		var ti := create_tween()
@@ -97,48 +99,6 @@ func _ready() -> void:
 		await ti.finished
 	_show_line(0)
 
-func _build_dialogue_controls() -> void:
-	const BTN_W := 72.0; const BTN_H := 28.0
-	const BY    := 10.0  # y from top of screen
-	const GAP   := 6.0
-	const RIGHT  := 1152.0
-
-	var _make_ctrl_btn := func(label: String, bx: float, accent: Color) -> Button:
-		var b := Button.new()
-		b.text = label
-		b.position = Vector2(bx, BY)
-		b.size = Vector2(BTN_W, BTN_H)
-		b.add_theme_font_size_override("font_size", 11)
-		b.add_theme_color_override("font_color", Color(accent.r, accent.g, accent.b, 0.85))
-		var sb_n := StyleBoxFlat.new()
-		sb_n.bg_color = Color(0.03, 0.05, 0.12, 0.78)
-		sb_n.border_color = Color(accent.r, accent.g, accent.b, 0.3)
-		for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: sb_n.set_border_width(s, 1)
-		for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-			sb_n.set(r, 6)
-		var sb_h := sb_n.duplicate() as StyleBoxFlat
-		sb_h.bg_color = Color(accent.r * 0.22, accent.g * 0.22, accent.b * 0.22, 0.92)
-		sb_h.border_color = Color(accent.r, accent.g, accent.b, 0.65)
-		b.add_theme_stylebox_override("normal",  sb_n)
-		b.add_theme_stylebox_override("hover",   sb_h)
-		b.add_theme_stylebox_override("pressed", sb_n)
-		b.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-		b.z_index = 10
-		add_child(b)
-		return b
-
-	var skip_x := RIGHT - BTN_W - 10
-	var fast_x := skip_x - BTN_W - GAP
-	var auto_x := fast_x - BTN_W - GAP
-
-	_btn_skip = _make_ctrl_btn.call("⏭ Skip", skip_x, Color(1.0, 0.4, 0.4))
-	_btn_fast = _make_ctrl_btn.call("⏩ เร่ง",  fast_x, Color(1.0, 0.78, 0.2))
-	_btn_auto = _make_ctrl_btn.call("▶ Auto",  auto_x, Color(0.4, 1.0, 0.6))
-
-	_btn_skip.pressed.connect(_on_skip_all)
-	_btn_fast.pressed.connect(_on_toggle_fast)
-	_btn_auto.pressed.connect(_on_toggle_auto)
-	_refresh_ctrl_buttons()
 
 func _refresh_ctrl_buttons() -> void:
 	if _btn_auto:

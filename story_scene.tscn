@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://story_scene_001"]
+[gd_scene load_steps=14 format=3 uid="uid://story_scene_001"]
 
 [ext_resource type="Script" path="res://story_scene.gd" id="1_story"]
 
@@ -27,6 +27,80 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="SB_AutoN"]
+bg_color = Color(0.03, 0.05, 0.12, 0.78)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(0.4, 1.0, 0.6, 0.3)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_AutoH"]
+bg_color = Color(0.088, 0.22, 0.132, 0.92)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(0.4, 1.0, 0.6, 0.65)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_FastN"]
+bg_color = Color(0.03, 0.05, 0.12, 0.78)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1.0, 0.78, 0.2, 0.3)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_FastH"]
+bg_color = Color(0.22, 0.172, 0.044, 0.92)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1.0, 0.78, 0.2, 0.65)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_SkipN"]
+bg_color = Color(0.03, 0.05, 0.12, 0.78)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1.0, 0.4, 0.4, 0.3)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="SB_SkipH"]
+bg_color = Color(0.22, 0.088, 0.088, 0.92)
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1.0, 0.4, 0.4, 0.65)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxEmpty" id="SB_Focus"]
 
 [node name="StoryScene" type="Control"]
 layout_mode = 3
@@ -135,6 +209,59 @@ theme_override_colors/font_color = Color(0.388, 0.624, 1, 0.7)
 theme_override_font_sizes/font_size = 11
 text = "ถัดไป ›"
 visible = false
+
+[node name="CtrlBar" type="Control" parent="."]
+layout_mode = 0
+offset_left = 906.0
+offset_top = 8.0
+offset_right = 1148.0
+offset_bottom = 38.0
+mouse_filter = 2
+
+[node name="BtnAuto" type="Button" parent="CtrlBar"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 72.0
+offset_bottom = 28.0
+theme_override_styles/normal = SubResource("SB_AutoN")
+theme_override_styles/hover = SubResource("SB_AutoH")
+theme_override_styles/pressed = SubResource("SB_AutoN")
+theme_override_styles/focus = SubResource("SB_Focus")
+theme_override_colors/font_color = Color(0.4, 1.0, 0.6, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "▶ Auto"
+z_index = 10
+
+[node name="BtnFast" type="Button" parent="CtrlBar"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 0.0
+offset_right = 150.0
+offset_bottom = 28.0
+theme_override_styles/normal = SubResource("SB_FastN")
+theme_override_styles/hover = SubResource("SB_FastH")
+theme_override_styles/pressed = SubResource("SB_FastN")
+theme_override_styles/focus = SubResource("SB_Focus")
+theme_override_colors/font_color = Color(1.0, 0.78, 0.2, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "⏩ เร่ง"
+z_index = 10
+
+[node name="BtnSkip" type="Button" parent="CtrlBar"]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 0.0
+offset_right = 236.0
+offset_bottom = 28.0
+theme_override_styles/normal = SubResource("SB_SkipN")
+theme_override_styles/hover = SubResource("SB_SkipH")
+theme_override_styles/pressed = SubResource("SB_SkipN")
+theme_override_styles/focus = SubResource("SB_Focus")
+theme_override_colors/font_color = Color(1.0, 0.4, 0.4, 0.85)
+theme_override_font_sizes/font_size = 11
+text = "⏭ Skip"
+z_index = 10
 
 [node name="FadeOverlay" type="ColorRect" parent="."]
 layout_mode = 3
