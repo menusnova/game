@@ -44,10 +44,10 @@ var _btn_fast:  Button = null
 @onready var _fade:       ColorRect     = $FadeOverlay
 
 func _ready() -> void:
-	var _buf := FileAccess.get_file_as_bytes("res://image/citypov.png")
+	var _buf := FileAccess.get_file_as_bytes("res://image/m3.jpg")
 	if not _buf.is_empty():
 		var _img := Image.new()
-		if _img.load_png_from_buffer(_buf) == OK:
+		if _img.load_jpg_from_buffer(_buf) == OK:
 			bg_texture = ImageTexture.create_from_image(_img)
 	if _bg:
 		_bg.texture = bg_texture
