@@ -176,10 +176,8 @@ func _show_line(idx: int) -> void:
 	var line: String    = entry.get("text", "")
 
 	_name_label.text = speaker
-	# สลับรูป Lyra ตาม index บทพูด (วนซ้ำถ้าเกิน)
-	if _char_l and lyra_portraits.size() > 0:
-		var portrait_idx := idx % lyra_portraits.size()
-		_char_l.texture = lyra_portraits[portrait_idx]
+	if _char_l and lyra_portraits.size() > 2:
+		_char_l.texture = lyra_portraits[2]
 	_update_portraits(speaker)
 	_full_text = line
 	_text.text = ""
