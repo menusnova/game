@@ -100,7 +100,7 @@ func _remove_bg(img: Image) -> void:
 			var bright := (c.r + c.g + c.b) / 3.0
 			# alpha ของ pixel ที่ "สว่างพอ" (icon) = ความเข้ม, พื้นหลังโปร่งใส
 			var alpha := clampf((bright - 0.25) / 0.45, 0.0, 1.0)
-			img.set_pixel(x, y, Color(1.0, 1.0, 1.0, alpha * 0.72))
+			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:
