@@ -32,12 +32,12 @@ const AVATAR_COLORS: Array = [
 const AVATAR_ICONS: Array[String] = ["⚗", "⚔", "🌙", "★", "♦", "✦"]
 
 const STATS: Array = [
-	{"icon": "⏱", "label": "วันที่เล่น",    "value": "12 วัน"},
-	{"icon": "⚔", "label": "การต่อสู้",      "value": "38"},
-	{"icon": "✅", "label": "ความสำเร็จ",    "value": "7 / 120"},
-	{"icon": "🎲", "label": "กาชาทั้งหมด",   "value": "47"},
-	{"icon": "👤", "label": "ตัวละครที่มี",  "value": "4"},
-	{"icon": "🌐", "label": "ระดับโลก",       "value": "3"},
+	{"icon": "⏱", "label": "วันที่เล่น",    "value": "1 วัน"},
+	{"icon": "⚔", "label": "การต่อสู้",      "value": "0"},
+	{"icon": "✅", "label": "ความสำเร็จ",    "value": "0 / 120"},
+	{"icon": "🎲", "label": "กาชาทั้งหมด",   "value": "0"},
+	{"icon": "👤", "label": "ตัวละครที่มี",  "value": "2"},
+	{"icon": "🌐", "label": "ระดับโลก",       "value": "1"},
 ]
 
 # ── Runtime refs ──────────────────────────────────────────────────
@@ -59,8 +59,6 @@ func _ready() -> void:
 	_build_ui()
 	_refresh_from_player_data()
 	PlayerData.profile_changed.connect(_refresh_from_player_data)
-	DomainManager.domain_changed.connect(_on_domain_changed)
-	_on_domain_changed(DomainManager.get_percent())
 
 	if _fade:
 		var t := create_tween()
@@ -267,40 +265,7 @@ func _build_left_panel() -> void:
 		s_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		stat_bg.add_child(s_lbl)
 
-	# ── Domain bar ──
 	var dom_y := stats_y + 2 * 52.0 + 14.0
-	var dom_lbl := Label.new()
-	dom_lbl.text = "Domain"
-	dom_lbl.add_theme_font_size_override("font_size", 11)
-	dom_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.75))
-	dom_lbl.size     = Vector2(LEFT_W - 32, 18)
-	dom_lbl.position = Vector2(16, dom_y)
-	dom_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(dom_lbl)
-
-	var dom_bar_wrap := Panel.new()
-	dom_bar_wrap.size     = Vector2(LEFT_W - 80, 8)
-	dom_bar_wrap.position = Vector2(16, dom_y + 22)
-	dom_bar_wrap.add_theme_stylebox_override("panel", _sb(Color(1,1,1,0.06), Color(0,0,0,0), 4, 0))
-	dom_bar_wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(dom_bar_wrap)
-	_domain_bar_bg = dom_bar_wrap
-
-	_domain_fill = ColorRect.new()
-	_domain_fill.size     = Vector2(0, 8)
-	_domain_fill.color    = Color(0.388, 0.624, 1.0, 0.85)
-	_domain_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	dom_bar_wrap.add_child(_domain_fill)
-
-	_domain_pct = Label.new()
-	_domain_pct.text = "0%"
-	_domain_pct.add_theme_font_size_override("font_size", 11)
-	_domain_pct.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 0.7))
-	_domain_pct.size     = Vector2(50, 18)
-	_domain_pct.position = Vector2(LEFT_W - 64, dom_y + 18)
-	_domain_pct.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_domain_pct.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(_domain_pct)
 
 	# ── ⋮ dot button (edit menu) ──
 	_dot_btn = Button.new()
@@ -316,56 +281,20 @@ func _build_left_panel() -> void:
 	_dot_btn.pressed.connect(_toggle_dropdown)
 	panel.add_child(_dot_btn)
 
-	# ── Activity log (bottom of left panel) ──
-	_build_activity_in(panel, dom_y + 42)
+	# ── No activity placeholder ──
+	_build_activity_in(panel, dom_y + 14)
 
 func _build_activity_in(parent: Panel, start_y: float) -> void:
-	var act_lbl := Label.new()
-	act_lbl.text = "กิจกรรมล่าสุด"
-	act_lbl.add_theme_font_size_override("font_size", 10)
-	act_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.55))
-	act_lbl.size     = Vector2(LEFT_W - 32, 18)
-	act_lbl.position = Vector2(16, start_y + 14)
-	act_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(act_lbl)
-
-	var ay := start_y + 36.0
-	for a in ACTIVITY:
-		if ay + 44 > H - TOP_H - 8: break
-		var icon_lbl := Label.new()
-		icon_lbl.text = str(a["icon"])
-		icon_lbl.add_theme_font_size_override("font_size", 16)
-		icon_lbl.size     = Vector2(28, 36)
-		icon_lbl.position = Vector2(16, ay + 4)
-		icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		parent.add_child(icon_lbl)
-
-		var txt := Label.new()
-		txt.text = str(a["text"])
-		txt.add_theme_font_size_override("font_size", 11)
-		txt.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.88))
-		txt.size     = Vector2(LEFT_W - 72, 18)
-		txt.position = Vector2(48, ay + 4)
-		txt.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		parent.add_child(txt)
-
-		var time_lbl := Label.new()
-		time_lbl.text = str(a["time"])
-		time_lbl.add_theme_font_size_override("font_size", 9)
-		time_lbl.add_theme_color_override("font_color", Color(1,1,1, 0.3))
-		time_lbl.size     = Vector2(LEFT_W - 72, 14)
-		time_lbl.position = Vector2(48, ay + 22)
-		time_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		parent.add_child(time_lbl)
-
-		var hdiv := ColorRect.new()
-		hdiv.size     = Vector2(LEFT_W - 32, 1)
-		hdiv.position = Vector2(16, ay + 42)
-		hdiv.color    = Color(1,1,1, 0.05)
-		hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		parent.add_child(hdiv)
-		ay += 46.0
+	var no_act := Label.new()
+	no_act.text = "ยังไม่มีกิจกรรม"
+	no_act.add_theme_font_size_override("font_size", 11)
+	no_act.add_theme_color_override("font_color", Color(1, 1, 1, 0.25))
+	no_act.size     = Vector2(LEFT_W - 32, 32)
+	no_act.position = Vector2(16, start_y + 16)
+	no_act.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	no_act.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	no_act.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(no_act)
 
 # ── Right area ────────────────────────────────────────────────────
 func _build_right_area() -> void:
@@ -869,8 +798,6 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> TextureBut
 	return btn
 
 func _go_back() -> void:
-	if DomainManager.domain_changed.is_connected(_on_domain_changed):
-		DomainManager.domain_changed.disconnect(_on_domain_changed)
 	if PlayerData.profile_changed.is_connected(_refresh_from_player_data):
 		PlayerData.profile_changed.disconnect(_refresh_from_player_data)
 	SceneTransition.fade_to(SC_MAIN)
