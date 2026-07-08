@@ -35,7 +35,7 @@ func _load_jpg(path: String) -> ImageTexture:
 func _run() -> void:
 	for i in SLIDE_PATHS.size():
 		if _bg:    _bg.texture = _load_jpg(SLIDE_PATHS[i])
-		if _label: _label.text = SLIDE_LABELS[i] if i < SLIDE_LABELS.size() else ""
+		if _label: _label.text = ""
 
 		if _fade:
 			var ti := create_tween()
