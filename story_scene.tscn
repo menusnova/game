@@ -54,13 +54,13 @@ mouse_filter = 2
 
 [node name="CharacterLeft" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 20.0
-offset_top = -80.0
-offset_right = 580.0
-offset_bottom = 510.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 520.0
+offset_bottom = 900.0
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 2
 modulate = Color(1, 1, 1, 0)
 
 [node name="CharacterRight" type="TextureRect" parent="."]
