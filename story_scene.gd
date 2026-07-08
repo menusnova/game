@@ -3,9 +3,9 @@ extends Control
 const TYPEWRITER_SPEED := 0.032
 const TYPEWRITER_FAST  := 0.006   # speed-up mode
 
-var bg_texture:   Texture2D = null   # ภาพพื้นหลัง scene สนทนา
-var char_lyra:    Texture2D = null   # portrait Lyra (ซ้าย)
-var char_kael:    Texture2D = null   # portrait Kael (ขวา)
+var bg_texture:   Texture2D = null
+var char_kael:    Texture2D = null
+var lyra_portraits: Array[Texture2D] = []  # [บทพูด0, บทพูด1, บทพูด2]
 
 # map ชื่อตัวละคร → side ("left" / "right")
 const CHAR_SIDE := {
@@ -43,6 +43,20 @@ var _btn_fast:  Button = null
 @onready var _next_btn:   Button        = $DialoguePanel/NextBtn
 @onready var _fade:       ColorRect     = $FadeOverlay
 
+func _load_png_remove_white(path: String) -> ImageTexture:
+	var buf := FileAccess.get_file_as_bytes(path)
+	if buf.is_empty(): return null
+	var img := Image.new()
+	if img.load_png_from_buffer(buf) != OK: return null
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			var whiteness := minf(c.r, minf(c.g, c.b))
+			var a := clampf((1.0 - whiteness) / 0.35, 0.0, 1.0)
+			img.set_pixel(x, y, Color(c.r, c.g, c.b, a))
+	return ImageTexture.create_from_image(img)
+
 func _ready() -> void:
 	var _buf := FileAccess.get_file_as_bytes("res://image/m3.jpg")
 	if not _buf.is_empty():
@@ -52,8 +66,15 @@ func _ready() -> void:
 	if _bg:
 		_bg.texture = bg_texture
 		_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+
+	lyra_portraits = [
+		_load_png_remove_white("res://image/lyra_1.png"),
+		_load_png_remove_white("res://image/lyra_2.png"),
+		_load_png_remove_white("res://image/lyra_3.png"),
+	]
+
 	if _char_l:
-		_char_l.texture = char_lyra
+		_char_l.texture = lyra_portraits[0] if lyra_portraits.size() > 0 else null
 	if _char_r:
 		_char_r.texture = char_kael
 	if _next_btn:
@@ -155,6 +176,10 @@ func _show_line(idx: int) -> void:
 	var line: String    = entry.get("text", "")
 
 	_name_label.text = speaker
+	# สลับรูป Lyra ตาม index บทพูด (วนซ้ำถ้าเกิน)
+	if _char_l and lyra_portraits.size() > 0:
+		var portrait_idx := idx % lyra_portraits.size()
+		_char_l.texture = lyra_portraits[portrait_idx]
 	_update_portraits(speaker)
 	_full_text = line
 	_text.text = ""
