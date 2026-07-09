@@ -174,8 +174,8 @@ mouse_filter = 0
 [node name="NameTag" type="TextureRect" parent="DialoguePanel"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = -40.0
-offset_right = 210.0
+offset_top = -68.0
+offset_right = 230.0
 offset_bottom = -4.0
 mouse_filter = 2
 texture = ExtResource("4_nameup")
