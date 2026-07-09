@@ -365,11 +365,11 @@ class _QuestRow extends Control:
 
 		# Reward cards
 		const REWARDS := [
-			["exp",     "⭐", "res://image/icon_exp.png",          Color(1.00, 0.82, 0.25)],
-			["gold",    "",   "res://image/icon_gold.png",         Color(0.95, 0.72, 0.20)],
-			["crystal", "",   "res://image/crystal_gem.png",       Color(0.40, 0.88, 1.00)],
-			["upgrade", "",   "res://image/icon_upgrade.jpg",      Color(0.55, 0.80, 1.00)],
-			["bond",    "",   "res://image/icon_bond.jpg",         Color(0.85, 0.55, 1.00)],
+			["exp",     "⭐", "res://image/icon_exp.png",     Color(1.00, 0.82, 0.25)],
+			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20)],
+			["crystal", "",   "res://image/crystal_gem.png",  Color(0.40, 0.88, 1.00)],
+			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00)],
+			["bond",    "",   "res://image/icon_bond.png",    Color(0.85, 0.55, 1.00)],
 		]
 		const CW := 48.0; const CH := 56.0; const CG := 6.0
 		var rx := 498.0
@@ -394,13 +394,6 @@ class _QuestRow extends Control:
 			sb_card.corner_radius_bottom_right = 5; sb_card.corner_radius_bottom_left  = 5
 			card.add_theme_stylebox_override("panel", sb_card)
 			add_child(card)
-
-			# Icon bg strip
-			var icon_bg := ColorRect.new()
-			icon_bg.color = Color(rcol.r * 0.12, rcol.g * 0.12, rcol.b * 0.18, 0.90)
-			icon_bg.size  = Vector2(CW, 36)
-			icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(icon_bg)
 
 			var tex: Texture2D = load(rpath)
 			if tex:
