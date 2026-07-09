@@ -84,7 +84,6 @@ func _load_icon_textures() -> void:
 					var art_bg := node.get_parent().get_node_or_null("ArtBg")
 					if art_bg:
 						art_bg.visible = false
-					node.texture = ImageTexture.create_from_image(img)
 
 func _remove_white_bg(img: Image) -> void:
 	img.convert(Image.FORMAT_RGBA8)
