@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://shop_scene_001"]
+[gd_scene load_steps=11 format=3 uid="uid://shop_scene_001"]
 
 [ext_resource type="Script" path="res://shop_scene.gd" id="1_shop"]
 [ext_resource type="Texture2D" uid="uid://2xpv5st2hhk8" path="res://image/icon_gold.png" id="2_gold"]
 [ext_resource type="Texture2D" uid="uid://fybvqrm46eke" path="res://image/crystal_gem.png" id="3_gem"]
 [ext_resource type="Texture2D" uid="uid://d2cr12fqf0208" path="res://image/icon_paid.png" id="4_paid"]
+[ext_resource type="Texture2D" uid="uid://cityshop_png_001" path="res://image/cityshop.png" id="5_cityshop"]
 
 [ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
 
@@ -41,13 +42,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_shop")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.085, 0.090, 0.120, 1.0)
+texture = ExtResource("5_cityshop")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BgDim" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.04, 0.04, 0.07, 0.72)
 
 [node name="Sidebar" type="ColorRect" parent="."]
 layout_mode = 0
