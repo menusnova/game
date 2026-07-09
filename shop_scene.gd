@@ -5,63 +5,138 @@ const SC_MAIN := "res://main_menu.tscn"
 # ── Layout ────────────────────────────────────────────────────────
 const W      := 1152.0
 const H      := 648.0
-const SIDE_W := 190.0   # left sidebar
-const TOP_H  := 52.0    # topbar height
+const SIDE_W := 200.0
+const TOP_H  := 52.0
 
 # ── Palette ───────────────────────────────────────────────────────
-const C_BG    := Color(0.085, 0.090, 0.120, 1.0)
-const C_SIDE  := Color(0.055, 0.058, 0.082, 1.0)
-const C_TOP   := Color(0.072, 0.076, 0.105, 1.0)
-const C_LINE  := Color(1.0, 1.0, 1.0, 0.07)
-const C_ACT   := Color(0.42, 0.72, 1.00, 1.0)
-const C_TXT   := Color(0.92, 0.94, 1.00, 1.0)
-const C_DIM   := Color(0.55, 0.60, 0.74, 0.80)
-const C_CARD  := Color(0.22, 0.16, 0.38, 1.0)
-const C_BONUS := Color(0.50, 0.38, 0.85, 1.0)
+const C_BG   := Color(0.085, 0.090, 0.120, 1.0)
+const C_SIDE := Color(0.055, 0.058, 0.082, 1.0)
+const C_TXT  := Color(0.92, 0.94, 1.00, 1.0)
+const C_DIM  := Color(0.55, 0.60, 0.74, 0.80)
+const C_LINE := Color(1.0, 1.0, 1.0, 0.07)
 
-# ── Categories (left sidebar) ─────────────────────────────────────
-const CATS := [
-	{"id": "recommend",    "label": "แนะนำ"},
-	{"id": "crystal_pack", "label": "คริสตัลเติม"},
-	{"id": "starlight",    "label": "แลกสตาร์ไลท์"},
-	{"id": "embers",       "label": "แลกแอมเบอร์"},
-	{"id": "contract",     "label": "ร้านสัญญา"},
-	{"id": "stellar",      "label": "ค้าดาวฤกษ์"},
+# ── Shop definitions ──────────────────────────────────────────────
+const SHOPS := [
+	{
+		"id":       "void_market",
+		"label":    "Void Market",
+		"icon":     "🏪",
+		"currency": "Aether Credit",
+		"cur_sym":  "AC",
+		"cur_col":  Color(1.00, 0.82, 0.28, 1.0),
+		"desc":     "ใช้ Aether Credit แลกวัตถุดิบและของใช้ทั่วไป",
+		"accent":   Color(0.42, 0.72, 1.00, 1.0),
+	},
+	{
+		"id":       "synthesis",
+		"label":    "Synthesis Exchange",
+		"icon":     "⚡",
+		"currency": "Void Crystal",
+		"cur_sym":  "VC",
+		"cur_col":  Color(0.55, 0.40, 1.00, 1.0),
+		"desc":     "ใช้ Void Crystal แลก Aether Shard และพลังงาน",
+		"accent":   Color(0.70, 0.50, 1.00, 1.0),
+	},
+	{
+		"id":       "honor_store",
+		"label":    "Honor Store",
+		"icon":     "🎖️",
+		"currency": "Honor Point",
+		"cur_sym":  "HP",
+		"cur_col":  Color(1.00, 0.70, 0.25, 1.0),
+		"desc":     "ใช้ Honor Point จาก PVP และ Achievement",
+		"accent":   Color(1.00, 0.75, 0.30, 1.0),
+	},
+	{
+		"id":       "event_exchange",
+		"label":    "Event Exchange",
+		"icon":     "🎪",
+		"currency": "Event Token",
+		"cur_sym":  "ET",
+		"cur_col":  Color(0.30, 1.00, 0.65, 1.0),
+		"desc":     "ใช้ Event Token จาก Event พิเศษ",
+		"accent":   Color(0.25, 0.90, 0.60, 1.0),
+	},
+	{
+		"id":       "premium",
+		"label":    "Premium Store",
+		"icon":     "💎",
+		"currency": "Void Crystal X",
+		"cur_sym":  "VCX",
+		"cur_col":  Color(0.40, 0.85, 1.00, 1.0),
+		"desc":     "ใช้ Void Crystal X (เติมเงินเท่านั้น)",
+		"accent":   Color(0.35, 0.78, 1.00, 1.0),
+	},
 ]
 
-# ── Crystal packages (Oneiric Pouch equivalent) ───────────────────
-const CRYSTAL_PACKS := [
-	{"n": 60,   "bonus": 60,   "price": "฿49",    "first_double": true},
-	{"n": 300,  "bonus": 300,  "price": "฿169",   "first_double": true},
-	{"n": 980,  "bonus": 980,  "price": "฿549",   "first_double": true},
-	{"n": 1980, "bonus": 1980, "price": "฿1,099", "first_double": true},
-	{"n": 3280, "bonus": 3280, "price": "฿1,849", "first_double": true},
-	{"n": 6480, "bonus": 6480, "price": "฿3,699", "first_double": true},
+# ── Item data ─────────────────────────────────────────────────────
+const VOID_MARKET_ITEMS := [
+	# วัตถุดิบ synthesis
+	{"name": "Iron Ore",         "sub": "วัตถุดิบ ×10",    "cost": 100,  "icon": "🪨", "tag": "material"},
+	{"name": "Carbon Dust",      "sub": "วัตถุดิบ ×10",    "cost": 80,   "icon": "⬛", "tag": "material"},
+	{"name": "Hydrogen Gas",     "sub": "วัตถุดิบ ×10",    "cost": 60,   "icon": "💨", "tag": "material"},
+	{"name": "Reaction Catalyst","sub": "เพิ่มอัตรา synthesis","cost": 150, "icon": "⚗", "tag": "material"},
+	{"name": "Compound Base",    "sub": "สารประกอบ ×5",    "cost": 300,  "icon": "🧪", "tag": "material"},
+	# EXP material
+	{"name": "EXP Card S",       "sub": "EXP +500",         "cost": 50,   "icon": "📘", "tag": "exp"},
+	{"name": "EXP Card M",       "sub": "EXP +2000",        "cost": 200,  "icon": "📗", "tag": "exp"},
+	{"name": "EXP Card L",       "sub": "EXP +10000",       "cost": 800,  "icon": "📕", "tag": "exp"},
+	# อาหาร / ฟื้นฟู
+	{"name": "HP Potion S",      "sub": "ฟื้นฟู HP +30",   "cost": 30,   "icon": "🍶", "tag": "recovery"},
+	{"name": "HP Potion M",      "sub": "ฟื้นฟู HP +120",  "cost": 120,  "icon": "🍾", "tag": "recovery"},
+	{"name": "Elixir Fragment",  "sub": "ฟื้นฟู AP +2",    "cost": 80,   "icon": "✨", "tag": "recovery"},
+	{"name": "Battle Ration",    "sub": "บัฟ ATK +10% 3 รอบ","cost": 200, "icon": "🍱", "tag": "recovery"},
 ]
 
-const OTHER_ITEMS := [
-	{"name": "Express Supply Pass", "price": "฿59",  "sub": "รับรางวัลพิเศษ 30 วัน"},
-	{"name": "Trailblaze Pass",     "price": "฿219", "sub": "Battle Pass เดือนนี้"},
+const SYNTHESIS_ITEMS := [
+	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 160,  "icon": "💠", "tag": "gacha"},
+	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1600, "icon": "💎", "tag": "gacha",  "badge": "Best"},
+	{"name": "Aether Pulse",     "sub": "พลังงาน Farm ×1",  "cost": 40,   "icon": "⚡", "tag": "energy"},
+	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "icon": "🔋", "tag": "energy", "badge": "Save"},
+	{"name": "Card Selector",    "sub": "เลือกการ์ดตัวละคร", "cost": 3200, "icon": "🃏", "tag": "selector"},
+	{"name": "Lens Selector",    "sub": "เลือก Light Lens",  "cost": 1600, "icon": "🔭", "tag": "selector"},
+]
+
+const HONOR_ITEMS := [
+	{"name": "Signature Card",   "sub": "การ์ด Signature ตัวละคร", "cost": 600, "icon": "🌟", "tag": "exclusive"},
+	{"name": "Prismatic Ore",    "sub": "วัตถุดิบหายาก ×3",         "cost": 120, "icon": "🪩", "tag": "material"},
+	{"name": "Honor Catalyst",   "sub": "วัตถุดิบหายาก ×5",         "cost": 200, "icon": "🔮", "tag": "material"},
+	{"name": "Title: Alchemist", "sub": "Exclusive Title",           "cost": 800, "icon": "📜", "tag": "cosmetic"},
+	{"name": "Honor Frame",      "sub": "กรอบ Avatar พิเศษ",        "cost": 500, "icon": "🖼️", "tag": "cosmetic"},
+	{"name": "Medal of Chemia",  "sub": "เครื่องหมายเกียรติยศ",      "cost": 300, "icon": "🏅", "tag": "cosmetic"},
+]
+
+const EVENT_ITEMS := [
+	{"name": "Event Skin",       "sub": "Skin Limited",            "cost": 800, "icon": "👗", "tag": "skin",   "badge": "Limited"},
+	{"name": "Event Card",       "sub": "การ์ด Event Exclusive",   "cost": 400, "icon": "🎴", "tag": "card",   "badge": "Limited"},
+	{"name": "Event Emblem",     "sub": "Decoration พิเศษ",        "cost": 200, "icon": "🎗️", "tag": "deco"},
+	{"name": "Event Material",   "sub": "วัสดุ Event Bundle ×10",  "cost": 100, "icon": "🎁", "tag": "material"},
+	{"name": "Prism Dye",        "sub": "เปลี่ยนสี Avatar",        "cost": 150, "icon": "🎨", "tag": "cosmetic"},
+]
+
+const PREMIUM_ITEMS := [
+	{"name": "Aether Shard ×10","sub": "ครบชุด + Bonus ×10",      "price": "฿169", "icon": "💎", "tag": "shard",   "badge": "Best"},
+	{"name": "Aether Pulse ×60","sub": "พลังงาน Farm 60 วัน",     "price": "฿59",  "icon": "🔋", "tag": "energy"},
+	{"name": "Monthly Pass",    "sub": "รับรางวัลพิเศษ 30 วัน",  "price": "฿59",  "icon": "📅", "tag": "pass",    "badge": "Popular"},
+	{"name": "Starter Pack",    "sub": "ชุดสตาร์ท ซื้อได้ครั้งเดียว","price": "฿99","icon": "🎒", "tag": "pack",   "badge": "New"},
+	{"name": "Premium Skin",    "sub": "Skin Exclusive สุดพิเศษ",  "price": "฿399", "icon": "✨", "tag": "skin",    "badge": "Exclusive"},
 ]
 
 # ── State ─────────────────────────────────────────────────────────
-var _active_cat   := "crystal_pack"
-var _cat_btns:    Array[Button] = []
+var _active_shop := "void_market"
+var _cat_btns: Array[Button] = []
 
-@onready var _back_btn:     Panel          = $BackBtn
-@onready var _content_root: Control        = $ContentScroll/ContentRoot
-@onready var _gold_lbl:     Label          = $WalletRow/GoldPill/GoldVal
-@onready var _free_lbl:     Label          = $WalletRow/FreePill/FreeVal
-@onready var _paid_lbl:     Label          = $WalletRow/PaidPill/PaidVal
-@onready var _fade:         ColorRect      = $FadeOverlay
+@onready var _back_btn:     Panel     = $BackBtn
+@onready var _content_root: Control   = $ContentScroll/ContentRoot
+@onready var _gold_lbl:     Label     = $WalletRow/GoldPill/GoldVal
+@onready var _free_lbl:     Label     = $WalletRow/FreePill/FreeVal
+@onready var _paid_lbl:     Label     = $WalletRow/PaidPill/PaidVal
+@onready var _fade:         ColorRect = $FadeOverlay
 
 # ══════════════════════════════════════════════════════════════════
 func _ready() -> void:
-	# Fade in
-	var t := create_tween()
-	t.tween_property(_fade, "color:a", 0.0, 0.25)
+	create_tween().tween_property(_fade, "color:a", 0.0, 0.25)
 
-	# Back button
 	_back_btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
@@ -76,352 +151,371 @@ func _ready() -> void:
 		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 	)
 
-	_build_sidebar_cats()
-	_switch_cat("crystal_pack")
+	_build_sidebar()
+	_switch_shop("void_market")
 
 	if not CurrencyManager.currency_changed.is_connected(_rebuild_wallet):
 		CurrencyManager.currency_changed.connect(_rebuild_wallet)
 	_rebuild_wallet()
 
-# ── Left sidebar category buttons (dynamic) ───────────────────────
-func _build_sidebar_cats() -> void:
-	var cat_y := 52.0
-	for cat in CATS:
-		var btn := _make_cat_btn(str(cat["label"]), str(cat["id"]))
-		btn.position = Vector2(0, cat_y)
+# ── Sidebar ───────────────────────────────────────────────────────
+func _build_sidebar() -> void:
+	var y := TOP_H
+	for shop in SHOPS:
+		var btn := _make_shop_btn(shop)
+		btn.position = Vector2(0, y)
 		add_child(btn)
 		_cat_btns.append(btn)
-		cat_y += 56.0
+		y += 106.0
 
-func _make_cat_btn(label: String, cat_id: String) -> Button:
+func _make_shop_btn(shop: Dictionary) -> Button:
+	var accent: Color = shop["accent"]
 	var btn := Button.new()
-	btn.size = Vector2(SIDE_W, 52)
+	btn.size = Vector2(SIDE_W, 102)
 	btn.clip_contents = false
-	btn.pressed.connect(_switch_cat.bind(cat_id))
-
-	# blank style
+	btn.focus_mode = Control.FOCUS_NONE
 	for st in ["normal","hover","pressed","focus"]:
 		btn.add_theme_stylebox_override(st, _flat(Color(0,0,0,0), Color(0,0,0,0)))
+	btn.pressed.connect(_switch_shop.bind(str(shop["id"])))
 
-	# icon slot (empty TextureRect — user fills in)
-	var ico_slot := TextureRect.new()
-	ico_slot.size     = Vector2(32, 32)
-	ico_slot.position = Vector2(14, 10)
-	ico_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	ico_slot.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	ico_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(ico_slot)
+	# Icon circle
+	var icon_bg := Panel.new()
+	icon_bg.size     = Vector2(48, 48)
+	icon_bg.position = Vector2(16, 26)
+	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_bg.add_theme_stylebox_override("panel",
+		_flat(Color(accent.r,accent.g,accent.b,0.12), Color(accent.r,accent.g,accent.b,0.3), 24, 1))
+	btn.add_child(icon_bg)
 
-	# icon placeholder circle
-	var ico_ph := StyleBoxFlat.new()
-	ico_ph.bg_color = Color(1, 1, 1, 0.06)
-	ico_ph.corner_radius_top_left     = 16
-	ico_ph.corner_radius_top_right    = 16
-	ico_ph.corner_radius_bottom_right = 16
-	ico_ph.corner_radius_bottom_left  = 16
-	var ico_panel := Panel.new()
-	ico_panel.size     = Vector2(32, 32)
-	ico_panel.position = Vector2(14, 10)
-	ico_panel.add_theme_stylebox_override("panel", ico_ph)
-	ico_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(ico_panel)
+	var icon_lbl := Label.new()
+	icon_lbl.text = str(shop["icon"])
+	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.add_theme_font_size_override("font_size", 22)
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_bg.add_child(icon_lbl)
 
-	var lbl := Label.new()
-	lbl.text = label
-	lbl.add_theme_font_size_override("font_size", 13)
-	lbl.add_theme_color_override("font_color", C_DIM)
-	lbl.size     = Vector2(SIDE_W - 58, 52)
-	lbl.position = Vector2(54, 0)
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
+	# Name
+	var name_lbl := Label.new()
+	name_lbl.text = str(shop["label"])
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", C_DIM)
+	name_lbl.size     = Vector2(SIDE_W - 76, 22)
+	name_lbl.position = Vector2(72, 28)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(name_lbl)
 
-	# active left bar (hidden by default)
+	# Currency label
+	var cur_lbl := Label.new()
+	cur_lbl.text = str(shop["cur_sym"])
+	cur_lbl.add_theme_font_size_override("font_size", 10)
+	cur_lbl.add_theme_color_override("font_color", shop["cur_col"])
+	cur_lbl.size     = Vector2(SIDE_W - 76, 16)
+	cur_lbl.position = Vector2(72, 52)
+	cur_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(cur_lbl)
+
+	# Divider
+	var div := ColorRect.new()
+	div.size = Vector2(SIDE_W - 24, 1)
+	div.position = Vector2(12, 101)
+	div.color = C_LINE
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(div)
+
+	# Active bar
 	var act_bar := ColorRect.new()
 	act_bar.name = "ActiveBar"
-	act_bar.size     = Vector2(3, 36)
-	act_bar.position = Vector2(0, 8)
-	act_bar.color    = C_ACT
+	act_bar.size     = Vector2(3, 60)
+	act_bar.position = Vector2(0, 20)
+	act_bar.color    = accent
 	act_bar.visible  = false
 	act_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(act_bar)
 
 	return btn
 
-func _restyle_cats() -> void:
+func _restyle_sidebar() -> void:
 	for i in _cat_btns.size():
 		var btn := _cat_btns[i]
-		var cat_id: String = str(CATS[i]["id"])
-		var active: bool = cat_id == _active_cat
-		var lbl := btn.get_child(2) as Label
-		var bar := btn.get_node("ActiveBar") as ColorRect
-		if lbl:
-			lbl.add_theme_color_override("font_color", C_TXT if active else C_DIM)
-		if bar:
-			bar.visible = active
+		var shop: Dictionary = SHOPS[i]
+		var active := str(shop["id"]) == _active_shop
+		var accent: Color = shop["accent"]
+		var name_lbl := btn.get_child(1) as Label
+		var cur_lbl  := btn.get_child(2) as Label
+		var act_bar  := btn.get_node("ActiveBar") as ColorRect
+
+		if name_lbl: name_lbl.add_theme_color_override("font_color", C_TXT if active else C_DIM)
+		if act_bar:  act_bar.visible = active
 		if active:
-			btn.add_theme_stylebox_override("normal",  _flat(Color(C_ACT.r,C_ACT.g,C_ACT.b,0.10), Color(0,0,0,0)))
-			btn.add_theme_stylebox_override("hover",   _flat(Color(C_ACT.r,C_ACT.g,C_ACT.b,0.14), Color(0,0,0,0)))
+			btn.add_theme_stylebox_override("normal", _flat(Color(accent.r,accent.g,accent.b,0.10), Color(0,0,0,0)))
+			btn.add_theme_stylebox_override("hover",  _flat(Color(accent.r,accent.g,accent.b,0.15), Color(0,0,0,0)))
 		else:
-			btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
-			btn.add_theme_stylebox_override("hover",   _flat(Color(1,1,1,0.04), Color(0,0,0,0)))
+			btn.add_theme_stylebox_override("normal", _flat(Color(0,0,0,0), Color(0,0,0,0)))
+			btn.add_theme_stylebox_override("hover",  _flat(Color(1,1,1,0.04), Color(0,0,0,0)))
 
-
-func _switch_cat(cat_id: String) -> void:
-	_active_cat = cat_id
-	_restyle_cats()
+# ── Switch shop ───────────────────────────────────────────────────
+func _switch_shop(shop_id: String) -> void:
+	_active_shop = shop_id
+	_restyle_sidebar()
 	for c in _content_root.get_children(): c.queue_free()
-	match cat_id:
-		"crystal_pack": _build_crystal_pack_page()
-		_:              _build_coming_soon_page()
+	match shop_id:
+		"void_market":    _build_shop_page(VOID_MARKET_ITEMS, SHOPS[0])
+		"synthesis":      _build_shop_page(SYNTHESIS_ITEMS,   SHOPS[1])
+		"honor_store":    _build_shop_page(HONOR_ITEMS,        SHOPS[2])
+		"event_exchange": _build_shop_page(EVENT_ITEMS,        SHOPS[3])
+		"premium":        _build_premium_page()
 
-# ── Crystal Pack page (Oneiric Pouch style) ───────────────────────
-func _build_crystal_pack_page() -> void:
+# ── Generic item grid page ────────────────────────────────────────
+func _build_shop_page(items: Array, shop: Dictionary) -> void:
 	var cw := W - SIDE_W
+	var accent: Color = shop["accent"]
+	var cur_col: Color = shop["cur_col"]
 
-	# "Double bonus on first top-up" banner
-	var notice_bg := ColorRect.new()
-	notice_bg.size     = Vector2(cw, 36)
-	notice_bg.position = Vector2(0, 0)
-	notice_bg.color    = Color(0.28, 0.18, 0.50, 0.55)
-	notice_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(notice_bg)
+	# Header banner
+	var banner := ColorRect.new()
+	banner.size  = Vector2(cw, 56)
+	banner.color = Color(accent.r * 0.18, accent.g * 0.18, accent.b * 0.22, 1.0)
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner)
 
-	var notice_lbl := Label.new()
-	notice_lbl.text = "รับโบนัสสองเท่าสำหรับการเติมเงินครั้งแรก  (ครั้งเดียวเท่านั้น)"
-	notice_lbl.add_theme_font_size_override("font_size", 12)
-	notice_lbl.add_theme_color_override("font_color", Color(0.90, 0.78, 1.0, 0.95))
-	notice_lbl.size     = Vector2(cw, 36)
-	notice_lbl.position = Vector2(0, 0)
-	notice_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	notice_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	notice_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(notice_lbl)
+	var banner_title := Label.new()
+	banner_title.text = "%s  %s" % [str(shop["icon"]), str(shop["label"])]
+	banner_title.position = Vector2(20, 8)
+	banner_title.add_theme_font_size_override("font_size", 18)
+	banner_title.add_theme_color_override("font_color", Color(accent.r + 0.2, accent.g + 0.1, accent.b + 0.1, 1.0))
+	banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner_title)
 
-	# 6 crystal pack cards
-	const PACK_W  := 148.0
-	const PACK_H  := 186.0
-	const PACK_PAD := 16.0
-	const ROW_Y   := 56.0
-	var total_w   := PACK_W * 6 + PACK_PAD * 5
-	var start_x   := (cw - total_w) * 0.5
+	var banner_sub := Label.new()
+	banner_sub.text = str(shop["desc"])
+	banner_sub.position = Vector2(20, 32)
+	banner_sub.add_theme_font_size_override("font_size", 10)
+	banner_sub.add_theme_color_override("font_color", Color(accent.r, accent.g, accent.b, 0.65))
+	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner_sub)
 
-	for i in CRYSTAL_PACKS.size():
-		var pack: Dictionary = CRYSTAL_PACKS[i]
-		var px := start_x + i * (PACK_W + PACK_PAD)
-		_content_root.add_child(_make_pack_card(pack, px, ROW_Y, PACK_W, PACK_H))
+	# Currency balance pill
+	var cur_sym: String = shop["cur_sym"]
+	var balance_bg := Panel.new()
+	balance_bg.size     = Vector2(130, 28)
+	balance_bg.position = Vector2(cw - 144, 14)
+	balance_bg.add_theme_stylebox_override("panel",
+		_flat(Color(cur_col.r*0.12, cur_col.g*0.12, cur_col.b*0.14, 1.0),
+			  Color(cur_col.r, cur_col.g, cur_col.b, 0.45), 6, 1))
+	balance_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(balance_bg)
 
-	# Other items row (Express Supply Pass etc.)
-	const ITEM_W := 148.0
-	const ITEM_H := 148.0
-	const ITEM_Y := 260.0
-	var item_start_x := start_x
+	var balance_lbl := Label.new()
+	balance_lbl.text = "%s  9,999" % cur_sym
+	balance_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	balance_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	balance_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	balance_lbl.add_theme_font_size_override("font_size", 11)
+	balance_lbl.add_theme_color_override("font_color", cur_col)
+	balance_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	balance_bg.add_child(balance_lbl)
 
-	for i in OTHER_ITEMS.size():
-		var item: Dictionary = OTHER_ITEMS[i]
-		var ix := item_start_x + i * (ITEM_W + PACK_PAD)
-		_content_root.add_child(_make_other_card(item, ix, ITEM_Y, ITEM_W, ITEM_H))
+	# Item grid: 3 columns
+	const COLS   := 3
+	const CARD_W := 274.0
+	const CARD_H := 120.0
+	const PAD_X  := 14.0
+	const PAD_Y  := 12.0
+	const START_X := 20.0
+	const START_Y := 68.0
 
-func _make_pack_card(pack: Dictionary, px: float, py: float, pw: float, ph: float) -> Panel:
+	for i in items.size():
+		var item: Dictionary = items[i]
+		var col := i % COLS
+		var row := i / COLS
+		var px := START_X + col * (CARD_W + PAD_X)
+		var py := START_Y + row * (CARD_H + PAD_Y)
+		_content_root.add_child(_make_item_card(item, px, py, CARD_W, CARD_H, shop))
+
+func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: float, shop: Dictionary) -> Panel:
+	var accent: Color = shop["accent"]
+	var cur_col: Color = shop["cur_col"]
+	var is_premium := str(shop["id"]) == "premium"
+
 	var card := Panel.new()
 	card.position = Vector2(px, py)
 	card.size     = Vector2(pw, ph)
-
-	var card_sb := StyleBoxFlat.new()
-	card_sb.bg_color = Color(0.19, 0.13, 0.34, 0.97)
-	card_sb.border_color = Color(0.55, 0.40, 0.85, 0.55)
-	card_sb.set_border_width(SIDE_LEFT,   1)
-	card_sb.set_border_width(SIDE_RIGHT,  1)
-	card_sb.set_border_width(SIDE_TOP,    1)
-	card_sb.set_border_width(SIDE_BOTTOM, 1)
-	card_sb.corner_radius_top_left     = 8
-	card_sb.corner_radius_top_right    = 8
-	card_sb.corner_radius_bottom_right = 8
-	card_sb.corner_radius_bottom_left  = 8
-	card.add_theme_stylebox_override("panel", card_sb)
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.add_theme_stylebox_override("panel",
+		_flat(Color(0.10, 0.10, 0.18, 0.97),
+			  Color(accent.r, accent.g, accent.b, 0.22), 8, 1))
 
-	# "Bonus +N" badge at top-center
-	var bonus_n: int = int(pack["bonus"])
-	var badge_bg := StyleBoxFlat.new()
-	badge_bg.bg_color = Color(0.45, 0.30, 0.78, 1.0)
-	badge_bg.corner_radius_top_left     = 4
-	badge_bg.corner_radius_top_right    = 4
-	badge_bg.corner_radius_bottom_right = 4
-	badge_bg.corner_radius_bottom_left  = 4
-	var badge := Panel.new()
-	badge.size     = Vector2(pw - 24, 20)
-	badge.position = Vector2(12, 8)
-	badge.add_theme_stylebox_override("panel", badge_bg)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(badge)
+	# Icon circle
+	var icon_bg := Panel.new()
+	icon_bg.size     = Vector2(72, 72)
+	icon_bg.position = Vector2(14, 24)
+	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_bg.add_theme_stylebox_override("panel",
+		_flat(Color(accent.r*0.15, accent.g*0.15, accent.b*0.20, 1.0),
+			  Color(accent.r, accent.g, accent.b, 0.35), 10, 1))
+	card.add_child(icon_bg)
 
-	var badge_lbl := Label.new()
-	badge_lbl.text = "Bonus +%d" % bonus_n
-	badge_lbl.add_theme_font_size_override("font_size", 10)
-	badge_lbl.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55, 1.0))
-	badge_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	badge_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	badge_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_child(badge_lbl)
-
-	# Crystal icon image area (empty — user fills in)
-	var img_slot := TextureRect.new()
-	img_slot.size     = Vector2(pw - 24, 80)
-	img_slot.position = Vector2(12, 34)
-	img_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	img_slot.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	img_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(img_slot)
-
-	# placeholder background for image area
-	var img_ph_sb := StyleBoxFlat.new()
-	img_ph_sb.bg_color = Color(0.30, 0.22, 0.50, 0.35)
-	img_ph_sb.corner_radius_top_left     = 4
-	img_ph_sb.corner_radius_top_right    = 4
-	img_ph_sb.corner_radius_bottom_right = 4
-	img_ph_sb.corner_radius_bottom_left  = 4
-	var img_ph := Panel.new()
-	img_ph.size     = Vector2(pw - 24, 80)
-	img_ph.position = Vector2(12, 34)
-	img_ph.add_theme_stylebox_override("panel", img_ph_sb)
-	img_ph.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(img_ph)
-
-	# "Crystal ×N" label
-	var n: int = int(pack["n"])
-	var name_lbl := Label.new()
-	name_lbl.text = "Crystal ×%d" % n
-	name_lbl.add_theme_font_size_override("font_size", 12)
-	name_lbl.add_theme_color_override("font_color", Color(0.88, 0.82, 1.0, 0.95))
-	name_lbl.size     = Vector2(pw, 20)
-	name_lbl.position = Vector2(0, 120)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(name_lbl)
-
-	# separator line
-	var sep := ColorRect.new()
-	sep.size     = Vector2(pw - 24, 1)
-	sep.position = Vector2(12, 144)
-	sep.color    = Color(1, 1, 1, 0.10)
-	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(sep)
-
-	# Price
-	var price_lbl := Label.new()
-	price_lbl.text = str(pack["price"])
-	price_lbl.add_theme_font_size_override("font_size", 13)
-	price_lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 1.0, 1.0))
-	price_lbl.size     = Vector2(pw, 30)
-	price_lbl.position = Vector2(0, 150)
-	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(price_lbl)
-
-	# hover effect
-	card.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			_fx_scale(card)
-	)
-
-	return card
-
-func _make_other_card(item: Dictionary, px: float, py: float, pw: float, ph: float) -> Panel:
-	var card := Panel.new()
-	card.position = Vector2(px, py)
-	card.size     = Vector2(pw, ph)
-
-	var card_sb := StyleBoxFlat.new()
-	card_sb.bg_color = Color(0.12, 0.10, 0.20, 0.97)
-	card_sb.border_color = Color(0.40, 0.32, 0.65, 0.45)
-	card_sb.set_border_width(SIDE_LEFT,   1)
-	card_sb.set_border_width(SIDE_RIGHT,  1)
-	card_sb.set_border_width(SIDE_TOP,    1)
-	card_sb.set_border_width(SIDE_BOTTOM, 1)
-	card_sb.corner_radius_top_left     = 8
-	card_sb.corner_radius_top_right    = 8
-	card_sb.corner_radius_bottom_right = 8
-	card_sb.corner_radius_bottom_left  = 8
-	card.add_theme_stylebox_override("panel", card_sb)
-	card.mouse_filter = Control.MOUSE_FILTER_STOP
-
-	# image placeholder
-	var img_ph_sb := StyleBoxFlat.new()
-	img_ph_sb.bg_color = Color(0.22, 0.18, 0.36, 0.45)
-	img_ph_sb.corner_radius_top_left     = 6
-	img_ph_sb.corner_radius_top_right    = 6
-	img_ph_sb.corner_radius_bottom_right = 6
-	img_ph_sb.corner_radius_bottom_left  = 6
-	var img_ph := Panel.new()
-	img_ph.size     = Vector2(pw - 20, 70)
-	img_ph.position = Vector2(10, 10)
-	img_ph.add_theme_stylebox_override("panel", img_ph_sb)
-	img_ph.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(img_ph)
-
-	# Image TextureRect (empty)
-	var img_slot := TextureRect.new()
-	img_slot.size     = Vector2(pw - 20, 70)
-	img_slot.position = Vector2(10, 10)
-	img_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	img_slot.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	img_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(img_slot)
+	var icon_lbl := Label.new()
+	icon_lbl.text = str(item.get("icon", "📦"))
+	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.add_theme_font_size_override("font_size", 30)
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_bg.add_child(icon_lbl)
 
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = str(item["name"])
-	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.position = Vector2(98, 18)
+	name_lbl.size     = Vector2(pw - 110, 22)
+	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.add_theme_color_override("font_color", C_TXT)
-	name_lbl.size     = Vector2(pw - 16, 32)
-	name_lbl.position = Vector2(8, 84)
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
-	# Price
-	var price_lbl := Label.new()
-	price_lbl.text = str(item["price"])
-	price_lbl.add_theme_font_size_override("font_size", 12)
-	price_lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 1.0, 1.0))
-	price_lbl.size     = Vector2(pw, 24)
-	price_lbl.position = Vector2(0, 118)
-	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(price_lbl)
+	# Sub / desc
+	var sub_lbl := Label.new()
+	sub_lbl.text = str(item.get("sub", ""))
+	sub_lbl.position = Vector2(98, 42)
+	sub_lbl.size     = Vector2(pw - 110, 18)
+	sub_lbl.add_theme_font_size_override("font_size", 10)
+	sub_lbl.add_theme_color_override("font_color", C_DIM)
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(sub_lbl)
 
+	# Badge (Limited, Best, etc.)
+	if item.has("badge"):
+		var badge_col := Color(1.0, 0.60, 0.20, 1.0)
+		if item["badge"] == "Best":   badge_col = Color(0.30, 0.90, 0.55, 1.0)
+		if item["badge"] == "Limited": badge_col = Color(0.95, 0.35, 0.45, 1.0)
+		if item["badge"] == "Popular": badge_col = Color(0.50, 0.80, 1.00, 1.0)
+		if item["badge"] == "Exclusive": badge_col = Color(0.85, 0.55, 1.00, 1.0)
+		var badge := Panel.new()
+		badge.size     = Vector2(62, 16)
+		badge.position = Vector2(98, 63)
+		badge.add_theme_stylebox_override("panel",
+			_flat(Color(badge_col.r*0.18, badge_col.g*0.18, badge_col.b*0.22, 1.0),
+				  Color(badge_col.r, badge_col.g, badge_col.b, 0.70), 4, 1))
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(badge)
+
+		var badge_lbl := Label.new()
+		badge_lbl.text = str(item["badge"])
+		badge_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		badge_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		badge_lbl.add_theme_font_size_override("font_size", 8)
+		badge_lbl.add_theme_color_override("font_color", badge_col)
+		badge_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		badge.add_child(badge_lbl)
+
+	# Cost / price button
+	var cost_text: String
+	if is_premium:
+		cost_text = str(item.get("price", "฿?"))
+	else:
+		cost_text = "%d %s" % [int(item.get("cost", 0)), str(shop["cur_sym"])]
+
+	var buy_btn := Panel.new()
+	buy_btn.size     = Vector2(pw - 106, 26)
+	buy_btn.position = Vector2(98, ph - 36)
+	buy_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	buy_btn.add_theme_stylebox_override("panel",
+		_flat(Color(accent.r*0.22, accent.g*0.22, accent.b*0.28, 1.0),
+			  Color(accent.r, accent.g, accent.b, 0.60), 6, 1))
+	card.add_child(buy_btn)
+
+	var buy_lbl := Label.new()
+	buy_lbl.text = cost_text
+	buy_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	buy_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	buy_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	buy_lbl.add_theme_font_size_override("font_size", 11)
+	buy_lbl.add_theme_color_override("font_color", cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0))
+	buy_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	buy_btn.add_child(buy_lbl)
+
+	# Hover / click
 	card.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			_fx_scale(card)
 	)
 	return card
 
-# ── Coming soon page ──────────────────────────────────────────────
-func _build_coming_soon_page() -> void:
-	var lbl := Label.new()
-	lbl.text = "กำลังจะมาเร็วๆนี้"
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", C_DIM)
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(lbl)
+# ── Premium page (special layout) ────────────────────────────────
+func _build_premium_page() -> void:
+	var shop: Dictionary = SHOPS[4]
+	var accent: Color = shop["accent"]
+	var cw := W - SIDE_W
 
-# ── Wallet (top-right) ────────────────────────────────────────────
+	# Header banner with premium gradient feel
+	var banner := ColorRect.new()
+	banner.size  = Vector2(cw, 56)
+	banner.color = Color(0.05, 0.12, 0.22, 1.0)
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner)
+
+	var banner_title := Label.new()
+	banner_title.text = "💎  Premium Store"
+	banner_title.position = Vector2(20, 8)
+	banner_title.add_theme_font_size_override("font_size", 18)
+	banner_title.add_theme_color_override("font_color", Color(0.55, 0.90, 1.0, 1.0))
+	banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner_title)
+
+	var banner_sub := Label.new()
+	banner_sub.text = "ใช้ Void Crystal X (เติมเงินเท่านั้น)  ·  ปลอดภัย · ไม่บังคับ"
+	banner_sub.position = Vector2(20, 32)
+	banner_sub.add_theme_font_size_override("font_size", 10)
+	banner_sub.add_theme_color_override("font_color", Color(0.45, 0.75, 1.0, 0.65))
+	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(banner_sub)
+
+	# "First top-up bonus" notice
+	var notice := ColorRect.new()
+	notice.size     = Vector2(cw - 24, 32)
+	notice.position = Vector2(12, 64)
+	notice.color    = Color(0.18, 0.30, 0.55, 0.55)
+	notice.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(notice)
+
+	var notice_lbl := Label.new()
+	notice_lbl.text = "✦  รับโบนัสสองเท่าสำหรับการเติมเงินครั้งแรก — ครั้งเดียวตลอดชีพ"
+	notice_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	notice_lbl.offset_left = 12; notice_lbl.offset_right = 12
+	notice_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	notice_lbl.add_theme_font_size_override("font_size", 11)
+	notice_lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.90))
+	notice_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	notice.add_child(notice_lbl)
+
+	# 2-column grid for premium items
+	const COLS   := 2
+	const CARD_W := 440.0
+	const CARD_H := 110.0
+	const PAD_X  := 24.0
+	const PAD_Y  := 12.0
+	const START_X := 20.0
+	const START_Y := 108.0
+
+	for i in PREMIUM_ITEMS.size():
+		var item: Dictionary = PREMIUM_ITEMS[i]
+		var col := i % COLS
+		var row := i / COLS
+		var px := START_X + col * (CARD_W + PAD_X)
+		var py := START_Y + row * (CARD_H + PAD_Y)
+		_content_root.add_child(_make_item_card(item, px, py, CARD_W, CARD_H, shop))
+
+# ── Wallet ────────────────────────────────────────────────────────
 func _rebuild_wallet() -> void:
 	if _gold_lbl: _gold_lbl.text = _fmt(CurrencyManager.gold)
 	if _free_lbl: _free_lbl.text = _fmt(CurrencyManager.free_crystal)
 	if _paid_lbl: _paid_lbl.text = _fmt(CurrencyManager.paid_crystal)
 
-func _load_png(path: String) -> Texture2D:
-	if ResourceLoader.exists(path):
-		return load(path) as Texture2D
-	return null
-
+# ── Helpers ───────────────────────────────────────────────────────
 func _fmt(n: int) -> String:
 	if n >= 1000000: return "%.1fM" % (n / 1000000.0)
 	if n >= 1000:    return "%.1fK" % (n / 1000.0)
@@ -429,7 +523,8 @@ func _fmt(n: int) -> String:
 
 func _flat(bg: Color, border: Color, radius: int = 0, bw: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg; sb.border_color = border
+	sb.bg_color    = bg
+	sb.border_color = border
 	sb.set_border_width(SIDE_LEFT,   bw)
 	sb.set_border_width(SIDE_TOP,    bw)
 	sb.set_border_width(SIDE_RIGHT,  bw)
