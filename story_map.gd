@@ -4,191 +4,41 @@ const SC_MAIN       := "res://main_menu.tscn"
 const SC_STORY      := "res://story_scene.tscn"
 const SC_TRANSITION := "res://transition_scene.tscn"
 
+@onready var _back_btn:   Panel     = $BackBtn
+@onready var _main_card:  Panel     = $MainStoryCard
+@onready var _fade:       ColorRect = $FadeOverlay
+
 func _ready() -> void:
-	_build_ui()
-
-func _build_ui() -> void:
-	# Background — citystory.png เต็มจอ
-	var bg := TextureRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.texture = preload("res://image/citystory.png")
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
-	# Dark overlay
-	var overlay := ColorRect.new()
-	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay.color = Color(0.0, 0.0, 0.0, 0.55)
-	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(overlay)
-
-	# ปุ่มกลับ + ข้อความ "เนื้อเรื่อง" ลอยบนซ้าย
-	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
-	add_child(back)
-
-
-
-	# Card area
-	var card_y    := 120.0
-	var card_h    := 352.0
-	var card_w    := 420.0
-	var gap       := 48.0
-	var total_w   := card_w * 2 + gap
-	var start_x   := (1152 - total_w) / 2.0
-
-	add_child(_make_card(
-		"📖  เนื้อเรื่องหลัก",
-		"MAIN STORY",
-		"ติดตามการผจญภัยของ Alchemist\nและการต่อสู้กับ Void Syndicate",
-		Color(0.08, 0.15, 0.32, 0.55),
-		Color(0.22, 0.55, 1.0, 0.5),
-		Color(0.22, 0.72, 1.0, 1.0),
-		Vector2(start_x, card_y),
-		Vector2(card_w, card_h),
-		false,
-		func(): _start_story()
-	))
-
-	add_child(_make_card(
-		"✦  เนื้อเรื่องแยก",
-		"SIDE STORY",
-		"เรื่องราวของตัวละครแต่ละคน\nจะเปิดให้เล่นในอนาคต",
-		Color(0.06, 0.06, 0.16, 0.45),
-		Color(0.3, 0.3, 0.5, 0.25),
-		Color(0.4, 0.4, 0.6, 0.5),
-		Vector2(start_x + card_w + gap, card_y),
-		Vector2(card_w, card_h),
-		true,
-		Callable()
-	))
-
 	# Fade in
-	var fade := ColorRect.new()
-	fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	fade.color = Color(0, 0, 0, 1)
-	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(fade)
 	var t := create_tween()
-	t.tween_property(fade, "color:a", 0.0, 0.30)
+	t.tween_property(_fade, "color:a", 0.0, 0.30)
 
-func _make_card(
-		label: String, tag: String, desc: String,
-		bg_col: Color, border_col: Color, accent_col: Color,
-		pos: Vector2, sz: Vector2,
-		locked: bool, on_press: Callable) -> Panel:
+	# Back button
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
 
-	var card := Panel.new()
-	card.position = pos
-	card.size     = sz
-
-	var sb := StyleBoxFlat.new()
-	sb.bg_color     = bg_col
-	sb.border_color = border_col
-	sb.border_width_left   = 1
-	sb.border_width_top    = 1
-	sb.border_width_right  = 1
-	sb.border_width_bottom = 1
-	sb.corner_radius_top_left     = 12
-	sb.corner_radius_top_right    = 12
-	sb.corner_radius_bottom_right = 12
-	sb.corner_radius_bottom_left  = 12
-	card.add_theme_stylebox_override("panel", sb)
-
-	# Accent bar top
-	var accent := ColorRect.new()
-	accent.size     = Vector2(sz.x, 3)
-	accent.position = Vector2(0, 0)
-	accent.color    = Color(accent_col.r, accent_col.g, accent_col.b, 0.7 if not locked else 0.2)
-	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(accent)
-
-	# Tag chip
-	var tag_lbl := Label.new()
-	tag_lbl.text = tag
-	tag_lbl.add_theme_font_size_override("font_size", 10)
-	tag_lbl.add_theme_color_override("font_color",
-		Color(accent_col.r, accent_col.g, accent_col.b, 0.8) if not locked else Color(0.4, 0.4, 0.55, 0.5))
-	tag_lbl.position = Vector2(20, 24)
-	tag_lbl.size     = Vector2(sz.x - 40, 18)
-	tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(tag_lbl)
-
-	# Title
-	var title_lbl := Label.new()
-	title_lbl.text = label
-	title_lbl.add_theme_font_size_override("font_size", 20)
-	title_lbl.add_theme_color_override("font_color",
-		Color(0.93, 0.96, 1, 1) if not locked else Color(0.4, 0.4, 0.5, 0.5))
-	title_lbl.position = Vector2(20, 52)
-	title_lbl.size     = Vector2(sz.x - 40, 36)
-	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(title_lbl)
-
-	# Divider
-	var div := ColorRect.new()
-	div.size     = Vector2(sz.x - 48, 1)
-	div.position = Vector2(24, 100)
-	div.color    = Color(accent_col.r, accent_col.g, accent_col.b, 0.15)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(div)
-
-	# Description
-	var desc_lbl := Label.new()
-	desc_lbl.text = desc
-	desc_lbl.add_theme_font_size_override("font_size", 12)
-	desc_lbl.add_theme_color_override("font_color",
-		Color(0.65, 0.78, 1, 0.75) if not locked else Color(0.35, 0.35, 0.45, 0.5))
-	desc_lbl.position = Vector2(24, 116)
-	desc_lbl.size     = Vector2(sz.x - 48, 60)
-	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(desc_lbl)
-
-	# Bottom button / lock indicator
-	var btn_lbl := Label.new()
-	btn_lbl.add_theme_font_size_override("font_size", 13)
-	btn_lbl.size     = Vector2(sz.x - 48, 36)
-	btn_lbl.position = Vector2(24, sz.y - 56)
-	btn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	btn_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if locked:
-		btn_lbl.text = "เร็วๆ นี้"
-		btn_lbl.add_theme_color_override("font_color", Color(0.45, 0.45, 0.6, 0.6))
-	else:
-		btn_lbl.text = "▶  เริ่มเล่น"
-		btn_lbl.add_theme_color_override("font_color", accent_col)
-	card.add_child(btn_lbl)
-
-	# Lock dim overlay
-	if locked:
-		var dim := ColorRect.new()
-		dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		dim.color = Color(0, 0, 0, 0.38)
-		dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(dim)
-		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	else:
-		card.mouse_filter = Control.MOUSE_FILTER_STOP
-		card.gui_input.connect(func(ev: InputEvent):
-			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				on_press.call()
-		)
-		card.mouse_entered.connect(func():
-			var tw := card.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-			tw.tween_property(card, "modulate", Color(1.06, 1.06, 1.10, 1), 0.10)
-		)
-		card.mouse_exited.connect(func():
-			var tw := card.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-			tw.tween_property(card, "modulate", Color(1, 1, 1, 1), 0.15)
-		)
-
-	return card
-
-const ENERGY_COST := 10
+	# Main story card
+	_main_card.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			_start_story()
+	)
+	_main_card.mouse_entered.connect(func():
+		_main_card.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).tween_property(_main_card, "modulate", Color(1.06, 1.06, 1.10, 1), 0.10)
+	)
+	_main_card.mouse_exited.connect(func():
+		_main_card.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).tween_property(_main_card, "modulate", Color(1, 1, 1, 1), 0.15)
+	)
 
 func _start_story() -> void:
 	if not ResourceLoader.exists(SC_STORY):
@@ -196,6 +46,9 @@ func _start_story() -> void:
 		return
 	var target := SC_TRANSITION if ResourceLoader.exists(SC_TRANSITION) else SC_STORY
 	SceneTransition.fade_to(target)
+
+func _go_back() -> void:
+	SceneTransition.fade_to(SC_MAIN)
 
 func _show_toast(msg: String) -> void:
 	if get_node_or_null("_Toast") != null:
@@ -237,48 +90,3 @@ func _show_toast(msg: String) -> void:
 	t2.tween_property(toast, "modulate:a", 0.0, 0.25)
 	await t2.finished
 	if is_instance_valid(toast): toast.queue_free()
-
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2
-	btn.z_index = 20
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
-	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
-	sb.set_border_width_all(1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 12)
-	btn.add_theme_stylebox_override("panel", sb)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var lbl := Label.new()
-	lbl.text = "‹"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-			tw.tween_callback(callback)
-	)
-	btn.mouse_entered.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
-	)
-	btn.mouse_exited.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
-	)
-	return btn
-
-func _goto(path: String) -> void:
-	SceneTransition.fade_to(path)
-
-func _go_back() -> void:
-	SceneTransition.fade_to(SC_MAIN)

@@ -1,6 +1,43 @@
-[gd_scene load_steps=2 format=3 uid="uid://story_map"]
+[gd_scene load_steps=7 format=3 uid="uid://story_map"]
 
 [ext_resource type="Script" path="res://story_map.gd" id="1_storymap"]
+[ext_resource type="Texture2D" uid="uid://b1hfna4eql6j0" path="res://image/citystory.png" id="2_bg"]
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.04, 0.07, 0.16, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.55, 1.0, 0.30)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_MainCard"]
+bg_color = Color(0.08, 0.15, 0.32, 0.55)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.55, 1.0, 0.5)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_SideCard"]
+bg_color = Color(0.06, 0.06, 0.16, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.3, 0.5, 0.25)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="StoryMap" type="Control"]
 layout_mode = 3
@@ -8,3 +45,210 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_storymap")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BgDim" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="BackBtn" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 46.0
+offset_bottom = 46.0
+pivot_offset = Vector2(18, 18)
+z_index = 20
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BtnLabel" type="Label" parent="BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.75, 0.88, 1.0, 0.95)
+text = "‹"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MainStoryCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 132.0
+offset_top = 120.0
+offset_right = 552.0
+offset_bottom = 472.0
+theme_override_styles/panel = SubResource("SB_MainCard")
+mouse_filter = 0
+
+[node name="AccentBar" type="ColorRect" parent="MainStoryCard"]
+layout_mode = 0
+offset_right = 420.0
+offset_bottom = 3.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1.0, 0.7)
+
+[node name="TagLabel" type="Label" parent="MainStoryCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 24.0
+offset_right = 400.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.22, 0.72, 1.0, 0.8)
+text = "MAIN STORY"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MainStoryCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 52.0
+offset_right = 400.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+text = "📖  เนื้อเรื่องหลัก"
+horizontal_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="MainStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 100.0
+offset_right = 396.0
+offset_bottom = 101.0
+mouse_filter = 2
+color = Color(0.22, 0.55, 1.0, 0.15)
+
+[node name="DescLabel" type="Label" parent="MainStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 116.0
+offset_right = 396.0
+offset_bottom = 176.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.65, 0.78, 1, 0.75)
+text = "ติดตามการผจญภัยของ Alchemist
+และการต่อสู้กับ Void Syndicate"
+autowrap_mode = 3
+
+[node name="PlayBtn" type="Label" parent="MainStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 296.0
+offset_right = 396.0
+offset_bottom = 332.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.22, 0.72, 1.0, 1.0)
+text = "▶  เริ่มเล่น"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SideStoryCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 600.0
+offset_top = 120.0
+offset_right = 1020.0
+offset_bottom = 472.0
+theme_override_styles/panel = SubResource("SB_SideCard")
+mouse_filter = 2
+
+[node name="AccentBar" type="ColorRect" parent="SideStoryCard"]
+layout_mode = 0
+offset_right = 420.0
+offset_bottom = 3.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.6, 0.2)
+
+[node name="TagLabel" type="Label" parent="SideStoryCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 24.0
+offset_right = 400.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.4, 0.4, 0.55, 0.5)
+text = "SIDE STORY"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="SideStoryCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 52.0
+offset_right = 400.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 0.5)
+text = "✦  เนื้อเรื่องแยก"
+horizontal_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="SideStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 100.0
+offset_right = 396.0
+offset_bottom = 101.0
+mouse_filter = 2
+color = Color(0.4, 0.4, 0.6, 0.15)
+
+[node name="DescLabel" type="Label" parent="SideStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 116.0
+offset_right = 396.0
+offset_bottom = 176.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 0.5)
+text = "เรื่องราวของตัวละครแต่ละคน
+จะเปิดให้เล่นในอนาคต"
+autowrap_mode = 3
+
+[node name="ComingSoon" type="Label" parent="SideStoryCard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 296.0
+offset_right = 396.0
+offset_bottom = 332.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.45, 0.45, 0.6, 0.6)
+text = "เร็วๆ นี้"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LockDim" type="ColorRect" parent="SideStoryCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.38)
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
