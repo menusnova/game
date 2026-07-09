@@ -232,6 +232,7 @@ func _make_element_card(elem: Dictionary) -> Control:
 	var bg_col := Color(col.r * 0.12, col.g * 0.12, col.b * 0.15, 1.0) if discovered else C_LOCK
 	card.add_theme_stylebox_override("panel", _flat(bg_col, border_col, 10, 1))
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.clip_contents = true
 
 	if discovered:
 		# Symbol badge
@@ -371,6 +372,8 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 	var desc := Label.new()
 	desc.text = ach["desc"]
 	desc.position = Vector2(56, 30)
+	desc.size = Vector2(600, 20)
+	desc.clip_text = true
 	desc.add_theme_font_size_override("font_size", 11)
 	desc.add_theme_color_override("font_color", C_SUB)
 	row.add_child(desc)
