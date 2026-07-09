@@ -450,7 +450,7 @@ offset_right = 246.0
 offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
 theme_override_font_sizes/font_size = 8
-text = "UID 10000001"
+text = "UID 700491823"
 
 [node name="MenuItem_Notice" type="Control" parent="." unique_id=802706443]
 anchors_preset = 0

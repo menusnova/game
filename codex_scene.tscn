@@ -1,6 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://codex_scene_001"]
+[gd_scene load_steps=8 format=3 uid="uid://codex_scene_001"]
 
 [ext_resource type="Script" path="res://codex_scene.gd" id="1_codex"]
+
+[ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
 
 [sub_resource type="StyleBoxFlat" id="SB_Header"]
 bg_color = Color(0.05, 0.07, 0.14, 1.0)
@@ -11,16 +13,16 @@ border_width_bottom = 1
 border_color = Color(0.22, 0.50, 0.90, 0.30)
 
 [sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
-bg_color = Color(0.04, 0.07, 0.16, 0.92)
+bg_color = Color(0, 0, 0, 0)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.35, 0.55, 1.0, 0.30)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="SB_TabBar"]
 bg_color = Color(0.055, 0.075, 0.15, 1.0)
@@ -78,17 +80,15 @@ z_index = 10
 theme_override_styles/panel = SubResource("SB_BackBtn")
 mouse_filter = 0
 
-[node name="BtnLabel" type="Label" parent="Header/BackBtn"]
+[node name="BackIcon" type="TextureRect" parent="Header/BackBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.75, 0.88, 1.0, 0.95)
-text = "‹"
-horizontal_alignment = 1
-vertical_alignment = 1
+texture = ExtResource("EXT_BACK_PNG")
+expand_mode = 0
+stretch_mode = 5
 
 [node name="TitleLabel" type="Label" parent="Header"]
 layout_mode = 0
