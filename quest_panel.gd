@@ -365,15 +365,15 @@ class _QuestRow extends Control:
 
 		# Reward cards
 		const REWARDS := [
-			["exp",     "⭐",                        "",                          Color(1.00, 0.82, 0.25)],
-			["gold",    "",                           "res://image/icon_gold.png", Color(0.95, 0.72, 0.20)],
-			["crystal", "",                           "res://image/crystal_gem.png", Color(0.40, 0.88, 1.00)],
+			["exp",     "⭐", "res://image/icon_exp.jpg",       Color(1.00, 0.82, 0.25)],
+			["gold",    "",   "res://image/icon_gold.png",      Color(0.95, 0.72, 0.20)],
+			["crystal", "",   "res://image/crystal_gem.png",    Color(0.40, 0.88, 1.00)],
 		]
 		const CW := 48.0; const CH := 56.0; const CG := 6.0
 		var rx := 498.0
 		for ri in REWARDS.size():
 			var rkey   : String = REWARDS[ri][0]
-			var ricon  : String = REWARDS[ri][1]
+			var rfallback : String = REWARDS[ri][1]
 			var rpath  : String = REWARDS[ri][2]
 			var rcol   : Color  = REWARDS[ri][3]
 			var rval   : int    = int(q.get(rkey, 0))
@@ -400,21 +400,18 @@ class _QuestRow extends Control:
 			icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(icon_bg)
 
-			if rpath != "":
-				var tex: Texture2D = load(rpath)
-				if tex:
-					var icon_tx := TextureRect.new()
-					icon_tx.texture     = tex
-					icon_tx.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-					icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-					icon_tx.size = Vector2(CW, 36)
-					icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
-					card.add_child(icon_tx)
-				else:
-					ricon = REWARDS[ri][1]
-			if rpath == "" or ricon != "":
+			var tex: Texture2D = load(rpath)
+			if tex:
+				var icon_tx := TextureRect.new()
+				icon_tx.texture      = tex
+				icon_tx.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon_tx.size         = Vector2(CW, 36)
+				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(icon_tx)
+			else:
 				var icon_l := Label.new()
-				icon_l.text = ricon
+				icon_l.text = rfallback
 				icon_l.size = Vector2(CW, 36)
 				icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
