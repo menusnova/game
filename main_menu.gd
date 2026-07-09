@@ -61,10 +61,10 @@ func _load_icon_textures() -> void:
 		["ExpeditionCard/ExpeditionArt",     preload("res://image/chl.jpg")],
 		["NavBar/Nav0_Alchemist/Icon",       preload("res://image/icon_nav_character.png")],
 		["NavBar/Nav2_Lab/Icon",             preload("res://image/icon_nav_lab.png")],
-		["NavBar/Nav_Gacha/Icon",            preload("res://image/icon_nav_gacha.jpg")],
+		["NavBar/Nav_Gacha/Icon",            preload("res://image/icon_nav_gacha.png")],
 		["NavBar/Nav3_Inventory/Icon",       preload("res://image/icon_nav_inventory.png")],
-		["NavBar/Nav4_Database/Icon",        preload("res://image/icon_nav_achievement.jpg")],
-		["NavBar/Nav5_Guild/Icon",           preload("res://image/icon_nav_guild.jpg")],
+		["NavBar/Nav4_Database/Icon",        preload("res://image/icon_nav_achievement.png")],
+		["NavBar/Nav5_Guild/Icon",           preload("res://image/icon_nav_guild.png")],
 	]
 	for pair in icons:
 		var node := get_node_or_null(pair[0]) as TextureRect
