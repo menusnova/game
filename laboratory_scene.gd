@@ -12,134 +12,41 @@ var _slot_a_lbl:   Label       = null
 var _slot_b_lbl:   Label       = null
 var _mix_btn:      Button      = null
 var _result_panel: Panel       = null
-var _progress_lbl: Label       = null
-var _progress_bar: ProgressBar = null
-var _elem_grid:    GridContainer = null
+
+@onready var _progress_lbl: Label        = $TopBar/ProgressLbl
+@onready var _progress_bar: ProgressBar  = $TopBar/ProgressBar
+@onready var _elem_grid:    GridContainer = $LeftPanel/ElemScroll/ElemGrid
+@onready var _back_btn:     Panel        = $TopBar/BackBtn
+@onready var _archive_btn:  Button       = $TopBar/ArchiveBtn
+@onready var _right_panel:  Panel        = $RightPanel
+@onready var _fade:         ColorRect    = $FadeOverlay
 
 # ── Ready ─────────────────────────────────────────────────────────
 func _ready() -> void:
-	_build_ui()
-	_refresh_progress()
-
-func _build_ui() -> void:
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.02, 0.04, 0.10)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
+	_archive_btn.pressed.connect(_open_archive)
+	_result_panel = _right_panel
 
 	_add_stars()
-	_build_top_bar()
-	_build_left_panel()
 	_build_center_panel()
-	_build_right_panel()
+	_populate_elements()
+	_show_placeholder()
+	_refresh_progress()
+	create_tween().tween_property(_fade, "color:a", 0.0, 0.30)
 
 # ── Top bar ───────────────────────────────────────────────────────
-func _build_top_bar() -> void:
-	const H := 52.0
-	var bar := Panel.new()
-	bar.position = Vector2.ZERO
-	bar.size = Vector2(1152, H)
-	bar.z_index = 5
-	bar.add_theme_stylebox_override("panel",
-		_sb(Color(0.03, 0.06, 0.14, 0.97), Color(0.3, 0.5, 1, 0.2), 0, 1))
-	add_child(bar)
-
-	var back := _make_back_btn(Vector2(10, 10), Vector2(36, 36), _go_back)
-	bar.add_child(back)
-
-	var title := Label.new()
-	title.text = "LABORATORY"
-	title.position = Vector2(52, 0)
-	title.size = Vector2(200, H)
-	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.45, 0.85, 1, 0.9))
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(title)
-
-	var disc_lbl := Label.new()
-	disc_lbl.text = "Discovery"
-	disc_lbl.position = Vector2(420, 6)
-	disc_lbl.size = Vector2(90, 18)
-	disc_lbl.add_theme_font_size_override("font_size", 10)
-	disc_lbl.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.45))
-	disc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(disc_lbl)
-
-	_progress_lbl = Label.new()
-	_progress_lbl.text = "0 / %d" % TOTAL_COMPOUNDS
-	_progress_lbl.position = Vector2(516, 6)
-	_progress_lbl.size = Vector2(110, 18)
-	_progress_lbl.add_theme_font_size_override("font_size", 10)
-	_progress_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
-	_progress_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(_progress_lbl)
-
-	_progress_bar = ProgressBar.new()
-	_progress_bar.max_value = TOTAL_COMPOUNDS
-	_progress_bar.value = 0
-	_progress_bar.show_percentage = false
-	_progress_bar.position = Vector2(420, 28)
-	_progress_bar.size = Vector2(220, 8)
-	bar.add_child(_progress_bar)
-
-	var arch_btn := Button.new()
-	arch_btn.text = "📚  Archive"
-	arch_btn.position = Vector2(900, 10)
-	arch_btn.size = Vector2(130, 32)
-	arch_btn.add_theme_font_size_override("font_size", 13)
-	arch_btn.add_theme_color_override("font_color", Color(0.85, 0.75, 1, 0.9))
-	arch_btn.add_theme_stylebox_override("normal",
-		_sb(Color(0.18, 0.10, 0.38, 0.8), Color(0.55, 0.38, 1, 0.35), 8, 1))
-	arch_btn.add_theme_stylebox_override("hover",
-		_sb(Color(0.24, 0.15, 0.50, 0.9), Color(0.70, 0.52, 1, 0.55), 8, 1))
-	arch_btn.add_theme_stylebox_override("pressed",
-		_sb(Color(0.18, 0.10, 0.38, 0.8), Color(0.55, 0.38, 1, 0.35), 8, 1))
-	arch_btn.add_theme_stylebox_override("focus", StyleBoxFlat.new())
-	arch_btn.pressed.connect(_open_archive)
-	bar.add_child(arch_btn)
-
-# ── Left panel — element tiles ────────────────────────────────────
-func _build_left_panel() -> void:
-	const X := 10.0; const Y := 62.0; const W := 220.0; const H := 578.0
-	var panel := Panel.new()
-	panel.position = Vector2(X, Y)
-	panel.size = Vector2(W, H)
-	panel.add_theme_stylebox_override("panel",
-		_sb(Color(0.03, 0.06, 0.14, 0.90), Color(0.3, 0.5, 1, 0.12), 12, 1))
-	add_child(panel)
-
-	var hdr := Label.new()
-	hdr.text = "Elements"
-	hdr.position = Vector2(12, 10)
-	hdr.size = Vector2(W - 24, 22)
-	hdr.add_theme_font_size_override("font_size", 13)
-	hdr.add_theme_color_override("font_color", Color(0.5, 0.85, 1, 0.65))
-	hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(hdr)
-
-	var div := ColorRect.new()
-	div.color = Color(0.3, 0.5, 1, 0.1)
-	div.position = Vector2(8, 34)
-	div.size = Vector2(W - 16, 1)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(div)
-
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(4, 40)
-	scroll.size = Vector2(W - 8, H - 48)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	panel.add_child(scroll)
-
-	_elem_grid = GridContainer.new()
-	_elem_grid.columns = 4
-	_elem_grid.add_theme_constant_override("h_separation", 6)
-	_elem_grid.add_theme_constant_override("v_separation", 6)
-	scroll.add_child(_elem_grid)
-
-	_populate_elements()
-
 func _populate_elements() -> void:
 	if not _elem_grid: return
 	for ch in _elem_grid.get_children(): ch.queue_free()
@@ -341,17 +248,6 @@ func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(lbl)
 	return panel
-
-# ── Right panel — result display ──────────────────────────────────
-func _build_right_panel() -> void:
-	const RX := 630.0; const RY := 62.0; const RW := 512.0; const RH := 578.0
-	_result_panel = Panel.new()
-	_result_panel.position = Vector2(RX, RY)
-	_result_panel.size = Vector2(RW, RH)
-	_result_panel.add_theme_stylebox_override("panel",
-		_sb(Color(0.03, 0.06, 0.14, 0.90), Color(0.3, 0.5, 1, 0.12), 12, 1))
-	add_child(_result_panel)
-	_show_placeholder()
 
 func _show_placeholder() -> void:
 	if not _result_panel: return

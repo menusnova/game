@@ -1,6 +1,45 @@
-[gd_scene format=3 uid="uid://bo4hfu7en6plg"]
+[gd_scene load_steps=6 format=3 uid="uid://bo4hfu7en6plg"]
 
 [ext_resource type="Script" uid="uid://cy28iwu5ao7wb" path="res://battle_scene.gd" id="1_fw8re"]
+
+[sub_resource type="StyleBoxFlat" id="SB_TopBar"]
+bg_color = Color(0.04, 0.045, 0.10, 0.90)
+
+[sub_resource type="StyleBoxFlat" id="SB_EnemyZone"]
+bg_color = Color(0.06, 0.04, 0.08, 0.80)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.90, 0.25, 0.25, 0.20)
+corner_radius_top_left = 70
+corner_radius_top_right = 70
+corner_radius_bottom_right = 70
+corner_radius_bottom_left = 70
+
+[sub_resource type="StyleBoxFlat" id="SB_HandArea"]
+bg_color = Color(0.05, 0.07, 0.16, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.50, 0.90, 0.18)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_PlayerZone"]
+bg_color = Color(0.04, 0.07, 0.12, 0.70)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.85, 0.45, 0.18)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="BattleScene" type="Control"]
 layout_mode = 3
@@ -8,3 +47,81 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_fw8re")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.04, 0.045, 0.10, 1.0)
+
+[node name="TopBarBg" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_TopBar")
+
+[node name="EnemyZoneBg" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 490.0
+offset_top = 130.0
+offset_right = 630.0
+offset_bottom = 270.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_EnemyZone")
+
+[node name="EnemyLabel" type="Label" parent="EnemyZoneBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 52
+text = "👾"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerZoneBg" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 290.0
+offset_right = 280.0
+offset_bottom = 590.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_PlayerZone")
+
+[node name="PlayerLabel" type="Label" parent="PlayerZoneBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 72
+text = "⚗"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HandAreaBg" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 548.0
+offset_right = 900.0
+offset_bottom = 644.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_HandArea")
+
+[node name="HandAreaLabel" type="Label" parent="HandAreaBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.55, 0.68, 0.90, 0.45)
+text = "Hand"
+horizontal_alignment = 1
+vertical_alignment = 1

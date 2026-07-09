@@ -1,12 +1,157 @@
-[gd_scene format=3 uid="uid://codex_scene_001"]
+[gd_scene load_steps=7 format=3 uid="uid://codex_scene_001"]
 
 [ext_resource type="Script" path="res://codex_scene.gd" id="1_codex"]
+
+[sub_resource type="StyleBoxFlat" id="SB_Header"]
+bg_color = Color(0.05, 0.07, 0.14, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.50, 0.90, 0.30)
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.04, 0.07, 0.16, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.55, 1.0, 0.30)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_TabBar"]
+bg_color = Color(0.055, 0.075, 0.15, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.50, 0.90, 0.30)
+
+[sub_resource type="StyleBoxFlat" id="SB_TabBlank"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="SB_BtnHover"]
+bg_color = Color(1, 1, 1, 0.05)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
 
 [node name="CodexScene" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1_codex")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.04, 0.05, 0.10, 1.0)
+
+[node name="Header" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 52.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Header")
+
+[node name="BackBtn" type="Panel" parent="Header"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 7.0
+offset_right = 46.0
+offset_bottom = 43.0
+pivot_offset = Vector2(18, 18)
+z_index = 10
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BtnLabel" type="Label" parent="Header/BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.75, 0.88, 1.0, 0.95)
+text = "‹"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Header"]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 14.0
+offset_right = 350.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 1.0)
+text = "CODEX"
+
+[node name="TabBar" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 52.0
+offset_right = 1152.0
+offset_bottom = 96.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_TabBar")
+
+[node name="ElementsBtn" type="Button" parent="TabBar"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 5.0
+offset_right = 210.0
+offset_bottom = 39.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.70, 0.90, 0.8)
+theme_override_styles/normal = SubResource("SB_TabBlank")
+theme_override_styles/hover = SubResource("SB_BtnHover")
+theme_override_styles/pressed = SubResource("SB_TabBlank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "⚗  ธาตุ & สูตร"
+
+[node name="AchievBtn" type="Button" parent="TabBar"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 5.0
+offset_right = 420.0
+offset_bottom = 39.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.70, 0.90, 0.8)
+theme_override_styles/normal = SubResource("SB_TabBlank")
+theme_override_styles/hover = SubResource("SB_BtnHover")
+theme_override_styles/pressed = SubResource("SB_TabBlank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "🏆  ความสำเร็จ"
+
+[node name="ContentScroll" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 96.0
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 1
+horizontal_scroll_mode = 0
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+z_index = 100
+color = Color(0, 0, 0, 1)

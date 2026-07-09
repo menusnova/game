@@ -103,253 +103,36 @@ var _skill_type_lbl: Label
 var _skill_desc_lbl: Label
 var _skill_val_lbl:  Label
 
+@onready var _back_btn: Panel = $RightPanel/BackBtn
+
 func _ready() -> void:
-	_build_ui()
+	_tab_btns  = [$RightPanel/TabBar/SkillsBtn, $RightPanel/TabBar/ResonanceBtn, $RightPanel/TabBar/InfoBtn]
+	_tab_pages = [$RightPanel/SkillsPage, $RightPanel/ResonancePage, $RightPanel/InfoPage]
 
-# ════════════════════════════════════════════════════════════════
-func _build_ui() -> void:
-	# Base bg
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
 
-	_build_art_column()
-	_build_right_panel()
-	_build_fade_in()
-
-# ── Art column (left) ─────────────────────────────────────────────
-func _build_art_column() -> void:
-	var el: Color = CHARACTER["element_color"]
-
-	# Subtle element glow strip behind art
-	var glow := ColorRect.new()
-	glow.size = Vector2(ART_W + 60, 648)
-	glow.position = Vector2(0, 0)
-	glow.color = Color(el.r * 0.06, el.g * 0.07, el.b * 0.14, 1.0)
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(glow)
-
-	# Diagonal accent lines (Honkai style)
-	for i in 4:
-		var line := ColorRect.new()
-		line.size = Vector2(1, 648)
-		line.position = Vector2(40 + i * 130, 0)
-		line.color = Color(el.r, el.g, el.b, 0.03 + i * 0.01)
-		line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(line)
-
-	# Art placeholder (full height, no top crop)
-	var art_bg := Panel.new()
-	art_bg.size = Vector2(ART_W, 648)
-	art_bg.position = Vector2(0, 0)
-	art_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_bg.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0), Color(0, 0, 0, 0)))
-	add_child(art_bg)
-
-	# Large element emoji as art placeholder
-	var art_lbl := Label.new()
-	art_lbl.text = CHARACTER["element"]
-	art_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	art_lbl.offset_top = -80
-	art_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	art_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	art_lbl.add_theme_font_size_override("font_size", 160)
-	art_lbl.add_theme_color_override("font_color", Color(el.r, el.g, el.b, 0.12))
-	art_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_bg.add_child(art_lbl)
-
-	# Bottom gradient fade-out
-	for i in 5:
-		var grad := ColorRect.new()
-		grad.size = Vector2(ART_W, 80)
-		grad.position = Vector2(0, 648 - (i + 1) * 80)
-		grad.color = Color(C_BG.r, C_BG.g, C_BG.b, 0.08 * (i + 1))
-		grad.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(grad)
-
-	# Vertical separator line (element colored)
-	var sep := ColorRect.new()
-	sep.size = Vector2(1, 648)
-	sep.position = Vector2(ART_W - 1, 0)
-	sep.color = Color(el.r, el.g, el.b, 0.18)
-	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(sep)
-
-	# ── Bottom info overlay ───────────────────────────────────────
-	# Name (large, Honkai style — bottom-left)
-	var name_lbl := Label.new()
-	name_lbl.text = CHARACTER["name"].to_upper()
-	name_lbl.position = Vector2(24, 520)
-	name_lbl.size = Vector2(ART_W - 40, 48)
-	name_lbl.add_theme_font_size_override("font_size", 36)
-	name_lbl.add_theme_color_override("font_color", C_TEXT)
-	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(name_lbl)
-
-	# Title / subtitle
-	var title_lbl := Label.new()
-	title_lbl.text = CHARACTER["title"]
-	title_lbl.position = Vector2(26, 562)
-	title_lbl.size = Vector2(ART_W - 40, 22)
-	title_lbl.add_theme_font_size_override("font_size", 13)
-	title_lbl.add_theme_color_override("font_color", Color(el.r, el.g, el.b, 0.90))
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(title_lbl)
-
-	# Stars row
-	var stars_lbl := Label.new()
-	stars_lbl.text = "★".repeat(CHARACTER["rarity"])
-	stars_lbl.position = Vector2(24, 586)
-	stars_lbl.size = Vector2(200, 22)
-	stars_lbl.add_theme_font_size_override("font_size", 16)
-	stars_lbl.add_theme_color_override("font_color", C_GOLD)
-	stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(stars_lbl)
-
-	# Element badge (top-left corner)
-	var badge := Panel.new()
-	badge.size = Vector2(44, 44)
-	badge.position = Vector2(16, 16)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_theme_stylebox_override("panel", _flat(
-		Color(el.r * 0.18, el.g * 0.20, el.b * 0.28, 0.95),
-		Color(el.r, el.g, el.b, 0.6), 22, 1
-	))
-	add_child(badge)
-	var badge_lbl := Label.new()
-	badge_lbl.text = CHARACTER["element"]
-	badge_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	badge_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	badge_lbl.add_theme_font_size_override("font_size", 20)
-	badge_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_child(badge_lbl)
-
-	# Faction label under badge
-	var faction_lbl := Label.new()
-	faction_lbl.text = CHARACTER["faction"]
-	faction_lbl.position = Vector2(68, 22)
-	faction_lbl.add_theme_font_size_override("font_size", 10)
-	faction_lbl.add_theme_color_override("font_color", C_SUB)
-	faction_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(faction_lbl)
-
-# ── Right panel ───────────────────────────────────────────────────
-func _build_right_panel() -> void:
-	var el: Color = CHARACTER["element_color"]
-
-	# Panel background
-	var panel_bg := ColorRect.new()
-	panel_bg.size = Vector2(PANEL_W, 648)
-	panel_bg.position = Vector2(PANEL_X, 0)
-	panel_bg.color = Color(C_PANEL.r, C_PANEL.g, C_PANEL.b, 0.97)
-	panel_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(panel_bg)
-
-	# ── Header: name, level, back btn ────────────────────────────
-	var hdr := ColorRect.new()
-	hdr.size = Vector2(PANEL_W, HDR_H)
-	hdr.position = Vector2(PANEL_X, 0)
-	hdr.color = Color(C_PANEL2.r, C_PANEL2.g, C_PANEL2.b, 1.0)
-	hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hdr)
-
-	# Horizontal accent line under header (element color)
-	var hdr_line := ColorRect.new()
-	hdr_line.size = Vector2(PANEL_W, 2)
-	hdr_line.position = Vector2(PANEL_X, HDR_H)
-	hdr_line.color = Color(el.r, el.g, el.b, 0.55)
-	hdr_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hdr_line)
-
-	# Back button
-	var back := _make_back_btn(Vector2(PANEL_X + 10, 10), Vector2(36, 36), _go_back)
-	add_child(back)
-
-	# Character name (header)
-	var h_name := Label.new()
-	h_name.text = CHARACTER["name"]
-	h_name.position = Vector2(PANEL_X + 88, 8)
-	h_name.add_theme_font_size_override("font_size", 22)
-	h_name.add_theme_color_override("font_color", C_TEXT)
-	h_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(h_name)
-
-	# Faction small
-	var h_faction := Label.new()
-	h_faction.text = CHARACTER["faction"]
-	h_faction.position = Vector2(PANEL_X + 90, 34)
-	h_faction.add_theme_font_size_override("font_size", 10)
-	h_faction.add_theme_color_override("font_color", C_SUB)
-	h_faction.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(h_faction)
-
-	# Level pill (header right)
-	var lv_pill := Panel.new()
-	lv_pill.size = Vector2(100, 30)
-	lv_pill.position = Vector2(PANEL_X + PANEL_W - 116, 20)
-	lv_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lv_pill.add_theme_stylebox_override("panel", _flat(
-		Color(el.r * 0.15, el.g * 0.15, el.b * 0.22, 1.0),
-		Color(el.r, el.g, el.b, 0.4), 6, 1
-	))
-	add_child(lv_pill)
-	var lv_lbl := Label.new()
-	lv_lbl.text = "Lv.%d / %d" % [CHARACTER["level"], CHARACTER["max_level"]]
-	lv_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lv_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lv_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	lv_lbl.add_theme_font_size_override("font_size", 11)
-	lv_lbl.add_theme_color_override("font_color", Color(el.r, el.g, el.b, 1.0))
-	lv_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lv_pill.add_child(lv_lbl)
-
-	# ── Tab bar ───────────────────────────────────────────────────
-	var tab_labels := ["Skills", "Resonance", "Info"]
-	var tab_bar := Control.new()
-	tab_bar.size = Vector2(PANEL_W, TAB_H)
-	tab_bar.position = Vector2(PANEL_X, HDR_H + 2)
-	tab_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(tab_bar)
-
-	var tab_bg := ColorRect.new()
-	tab_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	tab_bg.color = Color(C_PANEL2.r, C_PANEL2.g, C_PANEL2.b, 0.8)
-	tab_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tab_bar.add_child(tab_bg)
-
-	for i in tab_labels.size():
-		var btn := Button.new()
-		btn.text = tab_labels[i]
-		btn.size = Vector2(PANEL_W / 3.0, TAB_H)
-		btn.position = Vector2(i * (PANEL_W / 3.0), 0)
-		btn.add_theme_font_size_override("font_size", 12)
-		for s in ["normal","hover","pressed","focus"]:
-			btn.add_theme_stylebox_override(s, _flat(Color(0,0,0,0), Color(0,0,0,0)))
-		tab_bar.add_child(btn)
-		_tab_btns.append(btn)
-		btn.pressed.connect(_switch_tab.bind(i))
-
-	# ── Tab pages ─────────────────────────────────────────────────
-	var pages_y := HDR_H + 2 + TAB_H + 2
-	var pages_h := 648 - pages_y
-
-	for _i in 3:
-		var page := Control.new()
-		page.size = Vector2(PANEL_W, pages_h)
-		page.position = Vector2(PANEL_X, pages_y)
-		page.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		page.visible = false
-		add_child(page)
-		_tab_pages.append(page)
+	for i in 3:
+		_tab_btns[i].pressed.connect(_switch_tab.bind(i))
 
 	_build_skills_page(_tab_pages[0])
 	_build_resonance_page(_tab_pages[1])
 	_build_info_page(_tab_pages[2])
-
 	_switch_tab(0)
+	_build_fade_in()
+
+
 
 # ── Tab: Skills ───────────────────────────────────────────────────
 func _build_skills_page(page: Control) -> void:

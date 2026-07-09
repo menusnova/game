@@ -115,41 +115,48 @@ const C_LOCK   := Color(0.25, 0.28, 0.38, 1.0)
 
 var _tab := 0  # 0=elements, 1=achievements
 var _tab_btns: Array[Button] = []
-var _content: ScrollContainer
 var _detail_overlay: Control
 var _discovered: Array[String] = []  # element ids unlocked
 
+@onready var _content: ScrollContainer = $ContentScroll
+@onready var _back_btn: Panel = $Header/BackBtn
+@onready var _fade: ColorRect = $FadeOverlay
+
 func _ready() -> void:
-	# discovered_elements stores symbols ("H","O","Na"...) and compound keys ("Water","Salt"...)
-	# _discovered stores element["id"] values — build the mapping here
+	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn]
+	for i in _tab_btns.size():
+		_tab_btns[i].pressed.connect(_switch_tab.bind(i))
+
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
+
 	const SYM_TO_ID := {
 		"H": "Hydrogen", "O": "Oxygen",  "Na": "Sodium",
 		"Cl": "Chlorine", "Fe": "Iron",   "C":  "Carbon",
 	}
 	_discovered = []
 	for entry in PlayerData.discovered_elements:
-		var mapped: String = SYM_TO_ID.get(entry, entry)  # compound keys pass through as-is
+		var mapped: String = SYM_TO_ID.get(entry, entry)
 		if mapped not in _discovered:
 			_discovered.append(mapped)
-	# Fallback: always show base 5 until story system implemented
 	for base in ["Hydrogen","Oxygen","Sodium","Chlorine","Iron"]:
 		if base not in _discovered:
 			_discovered.append(base)
-	_build_ui()
 
-# ════════════════════════════════════════════════════════════════
-func _build_ui() -> void:
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
-
-	_build_header()
-	_build_tabs()
-	_build_content_area()
 	_build_detail_overlay()
 	_switch_tab(0)
+	create_tween().tween_property(_fade, "color:a", 0.0, 0.30)
 
 func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
@@ -164,53 +171,6 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	sb.border_width_top    = bw
 	sb.border_width_bottom = bw
 	return sb
-
-# ── Header ────────────────────────────────────────────────────────
-func _build_header() -> void:
-	var hdr := Panel.new()
-	hdr.size = Vector2(1152, 52)
-	hdr.add_theme_stylebox_override("panel", _flat(Color(0.05, 0.07, 0.14, 1.0), C_BORDER, 0, 1))
-	add_child(hdr)
-
-	var back := _make_back_btn(Vector2(10, 7), Vector2(36, 36), _go_back)
-	hdr.add_child(back)
-
-	var title := Label.new()
-	title.text = "CODEX"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", C_TEXT)
-	title.position = Vector2(110, 14)
-	hdr.add_child(title)
-
-# ── Tab bar ───────────────────────────────────────────────────────
-func _build_tabs() -> void:
-	var bar := Panel.new()
-	bar.position = Vector2(0, 52)
-	bar.size = Vector2(1152, 44)
-	bar.add_theme_stylebox_override("panel", _flat(Color(0.055, 0.075, 0.15, 1.0), C_BORDER, 0, 1))
-	add_child(bar)
-
-	var tabs := [["⚗  ธาตุ & สูตร", 0], ["🏆  ความสำเร็จ", 1]]
-	var x := 20.0
-	for td in tabs:
-		var btn := Button.new()
-		btn.text = td[0]
-		btn.custom_minimum_size = Vector2(180, 34)
-		btn.position = Vector2(x, 5)
-		btn.add_theme_font_size_override("font_size", 13)
-		btn.add_theme_stylebox_override("focus", _flat(Color(0,0,0,0), Color(0,0,0,0)))
-		btn.pressed.connect(_switch_tab.bind(td[1]))
-		bar.add_child(btn)
-		_tab_btns.append(btn)
-		x += 190
-
-# ── Content area ──────────────────────────────────────────────────
-func _build_content_area() -> void:
-	_content = ScrollContainer.new()
-	_content.position = Vector2(0, 96)
-	_content.size = Vector2(1152, 552)
-	_content.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(_content)
 
 func _switch_tab(idx: int) -> void:
 	_tab = idx
