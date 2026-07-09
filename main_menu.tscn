@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
 [ext_resource type="Texture2D" uid="uid://d286thjevyd2i" path="res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png" id="2_fu7sn"]
 [ext_resource type="Texture2D" uid="uid://c4hscoe02b0gn" path="res://image/lock_chain_x.png" id="3_lockchain"]
-[ext_resource type="Texture2D" uid="uid://dcrystalgem001" path="res://image/crystal_gem.png" id="4_crystalgem"]
+[ext_resource type="Texture2D" uid="uid://fybvqrm46eke" path="res://image/crystal_gem.png" id="4_crystalgem"]
 [ext_resource type="Texture2D" uid="uid://2xpv5st2hhk8" path="res://image/icon_gold.png" id="5_icongold"]
 [ext_resource type="Texture2D" uid="uid://d2cr12fqf0208" path="res://image/icon_paid.png" id="6_iconpaid"]
 [ext_resource type="Texture2D" uid="uid://bcwfrjymsrppb" path="res://image/icon_energy.png" id="7_iconenergy"]

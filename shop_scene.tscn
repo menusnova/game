@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://shop_scene.gd" id="1_shop"]
 [ext_resource type="Texture2D" uid="uid://2xpv5st2hhk8" path="res://image/icon_gold.png" id="2_gold"]
-[ext_resource type="Texture2D" uid="uid://dcrystalgem001" path="res://image/crystal_gem.png" id="3_gem"]
+[ext_resource type="Texture2D" uid="uid://fybvqrm46eke" path="res://image/crystal_gem.png" id="3_gem"]
 [ext_resource type="Texture2D" uid="uid://d2cr12fqf0208" path="res://image/icon_paid.png" id="4_paid"]
 
 [sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
