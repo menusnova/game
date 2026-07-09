@@ -1,6 +1,81 @@
-[gd_scene format=3 uid="uid://profile_scene_001"]
+[gd_scene load_steps=12 format=3 uid="uid://profile_scene_001"]
 
 [ext_resource type="Script" path="res://profile_scene.gd" id="1_profile"]
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.04, 0.07, 0.16, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.55, 1.0, 0.30)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_LeftPanel"]
+bg_color = Color(0.018, 0.03, 0.09, 0.92)
+border_width_right = 1
+border_color = Color(1, 1, 1, 0.07)
+
+[sub_resource type="StyleBoxFlat" id="SB_Avatar"]
+bg_color = Color(0.25, 0.45, 0.95, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.388, 0.624, 1.0, 0.7)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
+
+[sub_resource type="StyleBoxFlat" id="SB_LevelPill"]
+bg_color = Color(0.388, 0.624, 1.0, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.388, 0.624, 1.0, 0.35)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_SigBg"]
+bg_color = Color(1, 1, 1, 0.03)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_StatBg"]
+bg_color = Color(1, 1, 1, 0.03)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_DotNormal"]
+bg_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_DotHover"]
+bg_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_DotFocus"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
 
 [node name="ProfileScene" type="Control"]
 layout_mode = 3
@@ -8,3 +83,403 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_profile")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.022, 0.028, 0.072, 1.0)
+z_index = -10
+
+[node name="BackBtn" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 1106.0
+offset_top = 10.0
+offset_right = 1142.0
+offset_bottom = 46.0
+pivot_offset = Vector2(18, 18)
+z_index = 10
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BtnLabel" type="Label" parent="BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.75, 0.88, 1.0, 0.95)
+text = "‹"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeftPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 320.0
+offset_bottom = 648.0
+mouse_filter = 2
+z_index = 3
+theme_override_styles/panel = SubResource("SB_LeftPanel")
+
+[node name="AccentStrip" type="ColorRect" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 320.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.388, 0.624, 1.0, 0.5)
+
+[node name="UIDLabel" type="Label" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 308.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.388, 0.624, 1.0, 0.5)
+text = "UID: --------"
+
+[node name="AvatarPanel" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 24.0
+offset_right = 208.0
+offset_bottom = 120.0
+theme_override_styles/panel = SubResource("SB_Avatar")
+mouse_filter = 0
+
+[node name="AvatarLabel" type="Label" parent="LeftPanel/AvatarPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 36
+text = "⚗"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameLabel" type="Label" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 132.0
+offset_right = 320.0
+offset_bottom = 160.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+text = "ผู้เล่น"
+horizontal_alignment = 1
+
+[node name="LevelPill" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 166.0
+offset_right = 205.0
+offset_bottom = 190.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LevelPill")
+
+[node name="LevelLabel" type="Label" parent="LeftPanel/LevelPill"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.87, 1.0, 1.0)
+text = "Lv. 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SigBg" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 200.0
+offset_right = 304.0
+offset_bottom = 236.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_SigBg")
+
+[node name="SigLabel" type="Label" parent="LeftPanel/SigBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+text = "..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 246.0
+offset_right = 304.0
+offset_bottom = 247.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.08)
+
+[node name="StatCell0" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 258.0
+offset_right = 106.0
+offset_bottom = 302.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "1 วัน"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "วันที่เล่น"
+horizontal_alignment = 1
+
+[node name="StatCell1" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 258.0
+offset_right = 202.0
+offset_bottom = 302.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell1"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "0"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell1"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "การต่อสู้"
+horizontal_alignment = 1
+
+[node name="StatCell2" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 258.0
+offset_right = 298.0
+offset_bottom = 302.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell2"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "0 / 120"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell2"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "ความสำเร็จ"
+horizontal_alignment = 1
+
+[node name="StatCell3" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 310.0
+offset_right = 106.0
+offset_bottom = 354.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell3"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "0"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell3"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "กาชาทั้งหมด"
+horizontal_alignment = 1
+
+[node name="StatCell4" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 310.0
+offset_right = 202.0
+offset_bottom = 354.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell4"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "2"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell4"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "ตัวละครที่มี"
+horizontal_alignment = 1
+
+[node name="StatCell5" type="Panel" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 310.0
+offset_right = 298.0
+offset_bottom = 354.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_StatBg")
+
+[node name="ValLabel" type="Label" parent="LeftPanel/StatCell5"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 90.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "1"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="LeftPanel/StatCell5"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 1, 1, 0.35)
+text = "ระดับโลก"
+horizontal_alignment = 1
+
+[node name="DotBtn" type="Button" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 278.0
+offset_top = 10.0
+offset_right = 310.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.75, 0.9, 1.0, 0.7)
+theme_override_styles/normal = SubResource("SB_DotNormal")
+theme_override_styles/hover = SubResource("SB_DotHover")
+theme_override_styles/pressed = SubResource("SB_DotNormal")
+theme_override_styles/focus = SubResource("SB_DotFocus")
+text = "⋮"
+
+[node name="NoActivity" type="Label" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 406.0
+offset_right = 304.0
+offset_bottom = 438.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.25)
+text = "ยังไม่มีกิจกรรม"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ShowcaseLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 16.0
+offset_right = 1136.0
+offset_bottom = 36.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.388, 0.624, 1.0, 0.55)
+text = "CHARACTER SHOWCASE"
+
+[node name="ShowcaseRoot" type="Control" parent="."]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 42.0
+offset_right = 1136.0
+offset_bottom = 382.0
+mouse_filter = 2
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+z_index = 100
+color = Color(0, 0, 0, 1)

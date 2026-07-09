@@ -4,21 +4,11 @@ const SC_MAIN := "res://main_menu.tscn"
 
 const W := 1152.0
 const H := 648.0
-const TOP_H  := 48.0
-const LEFT_W := 320.0
 
-# ── Static data ───────────────────────────────────────────────────
 const SHOWCASE: Array = [
 	{"name": "Lyra",  "level": 42, "rarity": 5, "element": "🔥"},
 	{"name": "Kael",  "level": 38, "rarity": 4, "element": "⚡"},
 	{"name": "Mira",  "level": 35, "rarity": 4, "element": "🧊"},
-]
-
-const ACTIVITY: Array = [
-	{"icon": "⚔",  "text": "ชนะการต่อสู้ใน Chapter 1-1",      "time": "2 ชม. ที่แล้ว"},
-	{"icon": "🎲",  "text": "สุ่มกาชา 10 ครั้ง — ได้ Seraph 5★","time": "5 ชม. ที่แล้ว"},
-	{"icon": "🧭",  "text": "ส่งทีมสำรวจ Zone B",                "time": "เมื่อวาน"},
-	{"icon": "✅",  "text": "ทำภารกิจรายวันครบ",                 "time": "เมื่อวาน"},
 ]
 
 const AVATAR_COLORS: Array = [
@@ -40,269 +30,55 @@ const STATS: Array = [
 	{"icon": "🌐", "label": "ระดับโลก",       "value": "1"},
 ]
 
-# ── Runtime refs ──────────────────────────────────────────────────
-var _name_lbl:      Label       = null
-var _level_lbl:     Label       = null
-var _sig_lbl:       Label       = null
-var _uid_lbl:       Label       = null
-var _avatar_lbl:    Label       = null
-var _avatar_panel:  Panel       = null
-var _domain_fill:   ColorRect   = null
-var _domain_bar_bg: Control     = null
-var _domain_pct:    Label       = null
-var _dropdown:      Control     = null
-var _dot_btn:       Button      = null
-var _fade:          ColorRect   = null
+@onready var _back_btn:     Panel     = $BackBtn
+@onready var _uid_lbl:      Label     = $LeftPanel/UIDLabel
+@onready var _avatar_panel: Panel     = $LeftPanel/AvatarPanel
+@onready var _avatar_lbl:   Label     = $LeftPanel/AvatarPanel/AvatarLabel
+@onready var _name_lbl:     Label     = $LeftPanel/NameLabel
+@onready var _level_lbl:    Label     = $LeftPanel/LevelPill/LevelLabel
+@onready var _sig_lbl:      Label     = $LeftPanel/SigBg/SigLabel
+@onready var _dot_btn:      Button    = $LeftPanel/DotBtn
+@onready var _showcase_root: Control  = $ShowcaseRoot
+@onready var _fade:         ColorRect = $FadeOverlay
 
-# ── Ready ─────────────────────────────────────────────────────────
+var _dropdown: Control = null
+
 func _ready() -> void:
-	_build_ui()
+	_add_stars($Background)
+	_build_showcase_cards()
+
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
+
+	_avatar_panel.gui_input.connect(_on_avatar_click)
+	_dot_btn.pressed.connect(_toggle_dropdown)
+
 	_refresh_from_player_data()
 	PlayerData.profile_changed.connect(_refresh_from_player_data)
 
-	if _fade:
-		var t := create_tween()
-		t.tween_property(_fade, "color:a", 0.0, 0.35)
+	var t := create_tween()
+	t.tween_property(_fade, "color:a", 0.0, 0.35)
 
-# ── Build full UI ─────────────────────────────────────────────────
-func _build_ui() -> void:
-	# Starfield background
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.022, 0.028, 0.072, 1.0)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bg.z_index = -10
-	add_child(bg)
-	_add_stars(bg)
-
-	# Top bar
-	_build_top_bar()
-
-	# Left panel (player card + activity)
-	_build_left_panel()
-
-	# Right area (showcase + activity)
-	_build_right_area()
-
-	# Fade overlay (on top)
-	_fade = ColorRect.new()
-	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_fade.color = Color(0, 0, 0, 1)
-	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_fade.z_index = 100
-	add_child(_fade)
-
-# ── Top bar ───────────────────────────────────────────────────────
-func _build_top_bar() -> void:
-	# Back button — top right of screen
-	var back := _make_back_btn(Vector2(W - 46, 10), Vector2(36, 36), _go_back)
-	back.z_index = 10
-	add_child(back)
-
-# ── Left panel ────────────────────────────────────────────────────
-func _build_left_panel() -> void:
-	var panel_sb := _sb(Color(0.018, 0.03, 0.09, 0.92), Color(1,1,1, 0.07), 0, 1)
-	var panel := Panel.new()
-	panel.size     = Vector2(LEFT_W, H)
-	panel.position = Vector2(0, 0)
-	panel.add_theme_stylebox_override("panel", panel_sb)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.z_index = 3
-	add_child(panel)
-
-	# Accent top strip
-	var acc_strip := ColorRect.new()
-	acc_strip.size  = Vector2(LEFT_W, 2)
-	acc_strip.color = Color(0.388, 0.624, 1.0, 0.5)
-	acc_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(acc_strip)
-
-	# ── UID top-left ──
-	_uid_lbl = Label.new()
-	_uid_lbl.add_theme_font_size_override("font_size", 10)
-	_uid_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.5))
-	_uid_lbl.size     = Vector2(LEFT_W - 16, 20)
-	_uid_lbl.position = Vector2(12, 8)
-	_uid_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(_uid_lbl)
-
-	# ── Avatar circle ──
-	var av_size := 96.0
-	var av_x    := (LEFT_W - av_size) * 0.5
-	var av_y    := 24.0
-
-	_avatar_panel = Panel.new()
-	var av_sb := StyleBoxFlat.new()
-	av_sb.bg_color = AVATAR_COLORS[0]
-	av_sb.border_color = Color(0.388, 0.624, 1.0, 0.7)
-	for s in [SIDE_LEFT,SIDE_RIGHT,SIDE_TOP,SIDE_BOTTOM]: av_sb.set_border_width(s, 2)
-	av_sb.corner_radius_top_left     = int(av_size / 2)
-	av_sb.corner_radius_top_right    = int(av_size / 2)
-	av_sb.corner_radius_bottom_right = int(av_size / 2)
-	av_sb.corner_radius_bottom_left  = int(av_size / 2)
-	_avatar_panel.add_theme_stylebox_override("panel", av_sb)
-	_avatar_panel.size     = Vector2(av_size, av_size)
-	_avatar_panel.position = Vector2(av_x, av_y)
-	_avatar_panel.gui_input.connect(_on_avatar_click)
-	panel.add_child(_avatar_panel)
-
-	_avatar_lbl = Label.new()
-	_avatar_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_avatar_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_avatar_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_avatar_lbl.add_theme_font_size_override("font_size", 36)
-	_avatar_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_avatar_panel.add_child(_avatar_lbl)
-
-	# ── Player name ──
-	_name_lbl = Label.new()
-	_name_lbl.add_theme_font_size_override("font_size", 20)
-	_name_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-	_name_lbl.size     = Vector2(LEFT_W, 28)
-	_name_lbl.position = Vector2(0, av_y + av_size + 12)
-	_name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(_name_lbl)
-
-	# ── Level pill ──
-	var lv_sb := _sb(Color(0.388, 0.624, 1, 0.18), Color(0.388, 0.624, 1, 0.35), 10, 1)
-	var lv_pill := Panel.new()
-	lv_pill.size     = Vector2(90, 24)
-	lv_pill.position = Vector2((LEFT_W - 90) * 0.5, av_y + av_size + 46)
-	lv_pill.add_theme_stylebox_override("panel", lv_sb)
-	lv_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(lv_pill)
-
-	_level_lbl = Label.new()
-	_level_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_level_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_level_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_level_lbl.add_theme_font_size_override("font_size", 12)
-	_level_lbl.add_theme_color_override("font_color", Color(0.7, 0.87, 1, 1))
-	_level_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lv_pill.add_child(_level_lbl)
-
-	# ── Signature ──
-	var sig_y := av_y + av_size + 80.0
-	var sig_bg := Panel.new()
-	sig_bg.size     = Vector2(LEFT_W - 32, 36)
-	sig_bg.position = Vector2(16, sig_y)
-	var sig_sb := _sb(Color(1,1,1, 0.03), Color(0,0,0,0), 8, 0)
-	sig_bg.add_theme_stylebox_override("panel", sig_sb)
-	sig_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(sig_bg)
-
-	_sig_lbl = Label.new()
-	_sig_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_sig_lbl.offset_left = 10; _sig_lbl.offset_right = -10
-	_sig_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_sig_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_sig_lbl.add_theme_font_size_override("font_size", 11)
-	_sig_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.5))
-	_sig_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	sig_bg.add_child(_sig_lbl)
-
-	# ── Divider ──
-	var div := ColorRect.new()
-	div.size     = Vector2(LEFT_W - 32, 1)
-	div.position = Vector2(16, sig_y + 46)
-	div.color    = Color(1,1,1, 0.08)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(div)
-
-	# ── Stats mini grid ──
-	var stats_y := sig_y + 58.0
-	var col_w   := (LEFT_W - 32) / 3.0
-	for i in STATS.size():
-		var col := i % 3
-		var row := i / 3
-		var sx  := 16.0 + col * col_w
-		var sy  := stats_y + row * 52.0
-		var stat_bg := Panel.new()
-		stat_bg.size     = Vector2(col_w - 6, 44)
-		stat_bg.position = Vector2(sx, sy)
-		var s_sb := _sb(Color(1,1,1, 0.03), Color(0,0,0,0), 8, 0)
-		stat_bg.add_theme_stylebox_override("panel", s_sb)
-		stat_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.add_child(stat_bg)
-
-		var s_val := Label.new()
-		s_val.text = str(STATS[i]["value"])
-		s_val.add_theme_font_size_override("font_size", 15)
-		s_val.add_theme_color_override("font_color", Color(1,1,1, 0.9))
-		s_val.size     = Vector2(col_w - 6, 24)
-		s_val.position = Vector2(0, 4)
-		s_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		s_val.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stat_bg.add_child(s_val)
-
-		var s_lbl := Label.new()
-		s_lbl.text = str(STATS[i]["label"])
-		s_lbl.add_theme_font_size_override("font_size", 9)
-		s_lbl.add_theme_color_override("font_color", Color(1,1,1, 0.35))
-		s_lbl.size     = Vector2(col_w - 6, 14)
-		s_lbl.position = Vector2(0, 28)
-		s_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		s_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stat_bg.add_child(s_lbl)
-
-	var dom_y := stats_y + 2 * 52.0 + 14.0
-
-	# ── ⋮ dot button (edit menu) ──
-	_dot_btn = Button.new()
-	_dot_btn.text = "⋮"
-	_dot_btn.size     = Vector2(32, 32)
-	_dot_btn.position = Vector2(LEFT_W - 42, 10)
-	_dot_btn.add_theme_font_size_override("font_size", 20)
-	_dot_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 0.7))
-	_dot_btn.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0), 8, 0))
-	_dot_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.08), Color(0,0,0,0), 8, 0))
-	_dot_btn.add_theme_stylebox_override("pressed", _sb(Color(0,0,0,0), Color(0,0,0,0), 8, 0))
-	_dot_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-	_dot_btn.pressed.connect(_toggle_dropdown)
-	panel.add_child(_dot_btn)
-
-	# ── No activity placeholder ──
-	_build_activity_in(panel, dom_y + 14)
-
-func _build_activity_in(parent: Panel, start_y: float) -> void:
-	var no_act := Label.new()
-	no_act.text = "ยังไม่มีกิจกรรม"
-	no_act.add_theme_font_size_override("font_size", 11)
-	no_act.add_theme_color_override("font_color", Color(1, 1, 1, 0.25))
-	no_act.size     = Vector2(LEFT_W - 32, 32)
-	no_act.position = Vector2(16, start_y + 16)
-	no_act.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	no_act.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	no_act.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(no_act)
-
-# ── Right area ────────────────────────────────────────────────────
-func _build_right_area() -> void:
-	var rx := LEFT_W + 16.0
-	var rw := W - rx - 16.0
-	var ry := 16.0
-
-	# "CHARACTER SHOWCASE" label
-	var sc_lbl := Label.new()
-	sc_lbl.text = "CHARACTER SHOWCASE"
-	sc_lbl.add_theme_font_size_override("font_size", 11)
-	sc_lbl.add_theme_color_override("font_color", Color(0.388, 0.624, 1, 0.55))
-	sc_lbl.size     = Vector2(rw, 20)
-	sc_lbl.position = Vector2(rx, ry)
-	sc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(sc_lbl)
-
-	# 3 showcase cards side by side
-	var card_y  := ry + 26.0
-	var card_h  := 340.0
-	var gap     := 12.0
-	var card_w  := (rw - gap * 2) / 3.0
-
+func _build_showcase_cards() -> void:
+	var rw := 800.0
+	var card_h := 340.0
+	var gap := 12.0
+	var card_w := (rw - gap * 2) / 3.0
 	for i in SHOWCASE.size():
-		var cx := rx + i * (card_w + gap)
-		add_child(_make_showcase_card(SHOWCASE[i], cx, card_y, card_w, card_h))
-
+		var cx := i * (card_w + gap)
+		var card := _make_showcase_card(SHOWCASE[i], cx, 0.0, card_w, card_h)
+		_showcase_root.add_child(card)
 
 func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: float) -> Panel:
 	var rarity: int = int(data.get("rarity", 3))
@@ -326,14 +102,12 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	sb.shadow_size  = 10
 	card.add_theme_stylebox_override("panel", sb)
 
-	# Accent top bar
 	var top_bar := ColorRect.new()
 	top_bar.size  = Vector2(cw, 3)
 	top_bar.color = Color(acc.r, acc.g, acc.b, 0.7)
 	top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(top_bar)
 
-	# Large emoji art (center glow)
 	var art := Label.new()
 	art.text = str(data.get("element", "★"))
 	art.add_theme_font_size_override("font_size", 100)
@@ -345,12 +119,10 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(art)
 
-	# Pulse
 	var tp := art.create_tween().set_loops()
 	tp.tween_property(art, "modulate:a", 0.5, 2.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	tp.tween_property(art, "modulate:a", 1.0, 2.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# Bottom dim gradient
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	dim.offset_top = -100
@@ -358,7 +130,6 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(dim)
 
-	# Stars
 	var stars := Label.new()
 	stars.text = "★".repeat(rarity)
 	stars.add_theme_font_size_override("font_size", 13)
@@ -368,7 +139,6 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	stars.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(stars)
 
-	# Element icon (top right)
 	var elem := Label.new()
 	elem.text = str(data.get("element",""))
 	elem.add_theme_font_size_override("font_size", 18)
@@ -377,7 +147,6 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	elem.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(elem)
 
-	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = str(data.get("name",""))
 	name_lbl.add_theme_font_size_override("font_size", 17)
@@ -387,7 +156,6 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
-	# Level
 	var lv := Label.new()
 	lv.text = "Lv.%d" % int(data.get("level",1))
 	lv.add_theme_font_size_override("font_size", 11)
@@ -399,7 +167,6 @@ func _make_showcase_card(data: Dictionary, cx: float, cy: float, cw: float, ch: 
 
 	return card
 
-# ── Refresh player data ───────────────────────────────────────────
 func _refresh_from_player_data() -> void:
 	var idx := clampi(PlayerData.avatar_idx, 0, AVATAR_ICONS.size() - 1)
 	if _name_lbl:   _name_lbl.text  = PlayerData.player_name
@@ -412,17 +179,6 @@ func _refresh_from_player_data() -> void:
 		if av_sb:
 			av_sb.bg_color = AVATAR_COLORS[idx]
 
-# ── Domain bar ────────────────────────────────────────────────────
-func _on_domain_changed(pct: float) -> void:
-	if not is_inside_tree(): return
-	if _domain_pct: _domain_pct.text = "%d%%" % int(pct)
-	_apply_domain_bar.call_deferred(pct)
-
-func _apply_domain_bar(pct: float) -> void:
-	if not is_instance_valid(_domain_bar_bg) or not is_instance_valid(_domain_fill): return
-	_domain_fill.size.x = _domain_bar_bg.size.x * (pct / 100.0)
-
-# ── ⋮ dropdown ────────────────────────────────────────────────────
 func _toggle_dropdown() -> void:
 	if _dropdown and is_instance_valid(_dropdown): _close_dropdown(); return
 	_open_dropdown()
@@ -445,9 +201,8 @@ func _open_dropdown() -> void:
 	var panel_h := 8.0
 	for e in ITEMS: panel_h += SEP_H if e.get("sep", false) else ITEM_H
 
-	# Drop-down position: below dot button inside left panel
-	var dot_abs_x := LEFT_W - 42.0 + 0.0   # left panel at x=0
-	var dot_abs_y := TOP_H + 10.0 + 32.0 + 4.0
+	var dot_abs_x := 278.0
+	var dot_abs_y := 10.0 + 32.0 + 4.0
 	var panel_x   := dot_abs_x + 32.0 - PANEL_W
 	var panel_y   := dot_abs_y
 
@@ -526,12 +281,10 @@ func _on_dropdown_item(action: String) -> void:
 		"avatar": _open_avatar_popup()
 		"stats":  _open_stats_modal()
 
-# ── Avatar click ──────────────────────────────────────────────────
 func _on_avatar_click(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_open_avatar_popup()
 
-# ── Avatar picker popup ───────────────────────────────────────────
 func _open_avatar_popup() -> void:
 	const PW := 400.0; const PH := 200.0
 	var dim := _make_dim(20)
@@ -573,7 +326,6 @@ func _open_avatar_popup() -> void:
 	panel.add_child(cancel)
 	add_child(dim)
 
-# ── Edit profile popup ────────────────────────────────────────────
 func _open_edit_popup() -> void:
 	const PW := 440.0; const PH := 280.0
 	var dim := _make_dim(20)
@@ -611,7 +363,6 @@ func _open_edit_popup() -> void:
 		if ev is InputEventMouseButton and ev.pressed: dim.queue_free())
 	add_child(dim)
 
-# ── Stats modal ───────────────────────────────────────────────────
 func _open_stats_modal() -> void:
 	const PW := 460.0; const PH := 420.0
 	var dim := _make_dim(20)
@@ -654,7 +405,6 @@ func _open_stats_modal() -> void:
 		if ev is InputEventMouseButton and ev.pressed: dim.queue_free())
 	add_child(dim)
 
-# ── Helpers ───────────────────────────────────────────────────────
 func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = bg; s.border_color = bdr
@@ -751,46 +501,6 @@ func _add_stars(parent: Node) -> void:
 		td.tween_interval(rng.randf_range(0, 4.0))
 		td.tween_property(dot, "modulate:a", rng.randf_range(0.05,0.3), rng.randf_range(1.2,3.5)).set_ease(Tween.EASE_IN_OUT)
 		td.tween_property(dot, "modulate:a", 1.0, rng.randf_range(1.2,3.5)).set_ease(Tween.EASE_IN_OUT)
-
-# ── Navigation ────────────────────────────────────────────────────
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2
-	btn.z_index = 20
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
-	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
-	sb.set_border_width_all(1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 12)
-	btn.add_theme_stylebox_override("panel", sb)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var lbl := Label.new()
-	lbl.text = "\u2039"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-			tw.tween_callback(callback)
-	)
-	btn.mouse_entered.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
-	)
-	btn.mouse_exited.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
-	)
-	return btn
 
 func _go_back() -> void:
 	if PlayerData.profile_changed.is_connected(_refresh_from_player_data):
