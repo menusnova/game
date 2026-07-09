@@ -176,14 +176,14 @@ layout_mode = 0
 offset_left = 0.0
 offset_top = 97.0
 offset_right = 1048.0
-offset_bottom = 177.0
+offset_bottom = 192.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_DailyBar")
 
 [node name="ContentArea" type="ScrollContainer" parent="Sheet"]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 177.0
+offset_top = 192.0
 offset_right = 1048.0
 offset_bottom = 588.0
 theme_override_styles/panel = SubResource("SB_Scroll")

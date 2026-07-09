@@ -12,19 +12,19 @@ const TAB_COLORS := {
 }
 
 const DAILY_MILESTONES := [
-	{"pts": 20, "icon": "💎", "label": "Crystal ×20"},
-	{"pts": 40, "icon": "💰", "label": "Gold ×1000"},
-	{"pts": 60, "icon": "💎", "label": "Crystal ×40"},
-	{"pts": 80, "icon": "⭐", "label": "EXP ×200"},
+	{"pts": 20, "val": 10},
+	{"pts": 40, "val": 10},
+	{"pts": 60, "val": 10},
+	{"pts": 80, "val": 20},
 ]
 const DAILY_MAX_PTS := 80
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 1, "total": 1, "go": "",          "exp": 50,  "gold": 500,  "crystal": 20},
-		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 120, "gold": 1200, "crystal": 60},
-		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 60,  "gold": 600,  "crystal": 30},
-		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 60,  "gold": 600,  "crystal": 30},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 1, "total": 1, "go": "",          "exp": 100,  "gold": 10000},
+		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 100, "gold": 10000},
+		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 100,  "gold": 10000},
+		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000},
 	],
 	Tab.WEEKLY: [
 		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "desc": "ท้าทาย Weekly Boss",        "current": 0, "total": 1,  "go": "battle",    "exp": 300, "gold": 3000, "crystal": 120},
@@ -227,25 +227,27 @@ func _build_daily_bar() -> void:
 		box.add_theme_stylebox_override("panel", sb_box)
 		_daily_bar.add_child(box)
 
-		var icon_l := Label.new()
-		icon_l.text = str(m["icon"])
-		icon_l.size = Vector2(54, 28)
-		icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		icon_l.add_theme_font_size_override("font_size", 16)
-		icon_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.add_child(icon_l)
+		var icon_tx := TextureRect.new()
+		var gem_tex: Texture2D = load("res://image/crystal_gem.png")
+		if gem_tex:
+			icon_tx.texture = gem_tex
+		icon_tx.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_tx.size = Vector2(30, 26)
+		icon_tx.position = Vector2(12, 2)
+		icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(icon_tx)
 
-		var pts_l := Label.new()
-		pts_l.text = "%d pts" % m["pts"]
-		pts_l.size = Vector2(54, 14)
-		pts_l.position = Vector2(0, 28)
-		pts_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		pts_l.add_theme_font_size_override("font_size", 8)
-		pts_l.add_theme_color_override("font_color",
-			Color(0.92, 0.79, 0.32, 0.80) if reached else Color(0.40, 0.44, 0.55, 0.60))
-		pts_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.add_child(pts_l)
+		var val_l := Label.new()
+		val_l.text = "×%d" % m["val"]
+		val_l.size = Vector2(54, 14)
+		val_l.position = Vector2(0, 28)
+		val_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		val_l.add_theme_font_size_override("font_size", 9)
+		val_l.add_theme_color_override("font_color",
+			Color(0.55, 0.92, 1.00, 0.90) if reached else Color(0.40, 0.44, 0.55, 0.60))
+		val_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(val_l)
 
 # ── List ─────────────────────────────────────────────────────────────────────
 
@@ -256,7 +258,7 @@ func _rebuild_list() -> void:
 	if _daily_bar:
 		_daily_bar.visible = (_current_tab == Tab.DAILY)
 	if _content:
-		_content.offset_top = 177.0 if _current_tab == Tab.DAILY else 97.0
+		_content.offset_top = 192.0 if _current_tab == Tab.DAILY else 97.0
 
 	var accent: Color = TAB_COLORS[_current_tab]
 	var quests := QUESTS.get(_current_tab, []) as Array
@@ -363,17 +365,18 @@ class _QuestRow extends Control:
 
 		# Reward cards
 		const REWARDS := [
-			["exp",     "⭐", Color(1.00, 0.82, 0.25)],
-			["gold",    "💰", Color(0.95, 0.72, 0.20)],
-			["crystal", "💠", Color(0.40, 0.88, 1.00)],
+			["exp",     "⭐",                        "",                          Color(1.00, 0.82, 0.25)],
+			["gold",    "",                           "res://image/icon_gold.png", Color(0.95, 0.72, 0.20)],
+			["crystal", "",                           "res://image/crystal_gem.png", Color(0.40, 0.88, 1.00)],
 		]
 		const CW := 48.0; const CH := 56.0; const CG := 6.0
 		var rx := 498.0
 		for ri in REWARDS.size():
-			var rkey  : String = REWARDS[ri][0]
-			var ricon : String = REWARDS[ri][1]
-			var rcol  : Color  = REWARDS[ri][2]
-			var rval  : int    = int(q.get(rkey, 0))
+			var rkey   : String = REWARDS[ri][0]
+			var ricon  : String = REWARDS[ri][1]
+			var rpath  : String = REWARDS[ri][2]
+			var rcol   : Color  = REWARDS[ri][3]
+			var rval   : int    = int(q.get(rkey, 0))
 			if rval <= 0: continue
 
 			var card := Panel.new()
@@ -397,14 +400,27 @@ class _QuestRow extends Control:
 			icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(icon_bg)
 
-			var icon_l := Label.new()
-			icon_l.text = ricon
-			icon_l.size = Vector2(CW, 36)
-			icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-			icon_l.add_theme_font_size_override("font_size", 18)
-			icon_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(icon_l)
+			if rpath != "":
+				var tex: Texture2D = load(rpath)
+				if tex:
+					var icon_tx := TextureRect.new()
+					icon_tx.texture     = tex
+					icon_tx.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+					icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+					icon_tx.size = Vector2(CW, 36)
+					icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					card.add_child(icon_tx)
+				else:
+					ricon = REWARDS[ri][1]
+			if rpath == "" or ricon != "":
+				var icon_l := Label.new()
+				icon_l.text = ricon
+				icon_l.size = Vector2(CW, 36)
+				icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+				icon_l.add_theme_font_size_override("font_size", 18)
+				icon_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(icon_l)
 
 			var val_s := "+%dk" % (rval / 1000) if rval >= 1000 else "+%d" % rval
 			var val_l := Label.new()
