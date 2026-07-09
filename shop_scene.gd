@@ -47,61 +47,44 @@ const OTHER_ITEMS := [
 # ── State ─────────────────────────────────────────────────────────
 var _active_cat   := "crystal_pack"
 var _cat_btns:    Array[Button] = []
-var _content_root: Control
-var _wallet_row:   HBoxContainer
-var _gold_lbl:     Label
-var _free_lbl:     Label
-var _paid_lbl:     Label
+
+@onready var _back_btn:     Panel          = $BackBtn
+@onready var _content_root: Control        = $ContentScroll/ContentRoot
+@onready var _gold_lbl:     Label          = $WalletRow/GoldPill/GoldVal
+@onready var _free_lbl:     Label          = $WalletRow/FreePill/FreeVal
+@onready var _paid_lbl:     Label          = $WalletRow/PaidPill/PaidVal
+@onready var _fade:         ColorRect      = $FadeOverlay
 
 # ══════════════════════════════════════════════════════════════════
 func _ready() -> void:
-	_build_ui()
-	if not CurrencyManager.currency_changed.is_connected(_rebuild_wallet):
-		CurrencyManager.currency_changed.connect(_rebuild_wallet)
+	# Fade in
+	var t := create_tween()
+	t.tween_property(_fade, "color:a", 0.0, 0.25)
 
-# ══════════════════════════════════════════════════════════════════
-func _build_ui() -> void:
-	# Full background
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	# Back button
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
 
-	_build_sidebar()
-	_build_topbar()
-	_build_content_area()
+	_build_sidebar_cats()
 	_switch_cat("crystal_pack")
 
-# ── Left sidebar ──────────────────────────────────────────────────
-func _build_sidebar() -> void:
-	var side := ColorRect.new()
-	side.size     = Vector2(SIDE_W, H)
-	side.position = Vector2.ZERO
-	side.color    = C_SIDE
-	side.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(side)
+	if not CurrencyManager.currency_changed.is_connected(_rebuild_wallet):
+		CurrencyManager.currency_changed.connect(_rebuild_wallet)
+	_rebuild_wallet()
 
-	# Right border line
-	var line := ColorRect.new()
-	line.size     = Vector2(1, H)
-	line.position = Vector2(SIDE_W - 1, 0)
-	line.color    = C_LINE
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(line)
-
-	# "Store" header
-	var hdr := Label.new()
-	hdr.text = "Store"
-	hdr.add_theme_font_size_override("font_size", 15)
-	hdr.add_theme_color_override("font_color", C_DIM)
-	hdr.size     = Vector2(SIDE_W - 16, 32)
-	hdr.position = Vector2(8, 12)
-	hdr.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hdr)
-
-	# Category buttons
+# ── Left sidebar category buttons (dynamic) ───────────────────────
+func _build_sidebar_cats() -> void:
 	var cat_y := 52.0
 	for cat in CATS:
 		var btn := _make_cat_btn(str(cat["label"]), str(cat["id"]))
@@ -183,42 +166,6 @@ func _restyle_cats() -> void:
 			btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
 			btn.add_theme_stylebox_override("hover",   _flat(Color(1,1,1,0.04), Color(0,0,0,0)))
 
-# ── Top bar ───────────────────────────────────────────────────────
-func _build_topbar() -> void:
-	var back := _make_back_btn(Vector2(SIDE_W + 4, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
-	add_child(back)
-
-	# Currency row — top-right (two pills: free crystal + paid crystal)
-	_wallet_row = HBoxContainer.new()
-	_wallet_row.add_theme_constant_override("separation", 6)
-	_wallet_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_wallet_row)
-	_wallet_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_wallet_row.offset_top   = 10
-	_wallet_row.offset_right = -12
-	_wallet_row.offset_left  = -420
-
-	var gold_tex := _load_png("res://image/icon_gold.png")
-	var gem_tex  := _load_png("res://image/crystal_gem.png")
-	var paid_tex := _load_png("res://image/icon_paid.png")
-	_gold_lbl = _make_curr_pill(_wallet_row, gold_tex, Color(0.95, 0.78, 0.25, 1.0))
-	_free_lbl = _make_curr_pill(_wallet_row, gem_tex,  Color(0.35, 0.85, 1.0,  1.0))
-	_paid_lbl = _make_curr_pill(_wallet_row, paid_tex, Color(0.78, 0.55, 1.0,  1.0))
-	_rebuild_wallet()
-
-# ── Content area ──────────────────────────────────────────────────
-func _build_content_area() -> void:
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(SIDE_W, TOP_H)
-	scroll.size     = Vector2(W - SIDE_W, H - TOP_H)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(scroll)
-
-	_content_root = Control.new()
-	_content_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_content_root.custom_minimum_size   = Vector2(W - SIDE_W, H - TOP_H)
-	_content_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scroll.add_child(_content_root)
 
 func _switch_cat(cat_id: String) -> void:
 	_active_cat = cat_id
@@ -470,53 +417,6 @@ func _rebuild_wallet() -> void:
 	if _free_lbl: _free_lbl.text = _fmt(CurrencyManager.free_crystal)
 	if _paid_lbl: _paid_lbl.text = _fmt(CurrencyManager.paid_crystal)
 
-# ── Helpers ───────────────────────────────────────────────────────
-func _make_curr_pill(parent: HBoxContainer, icon_tex: Texture2D, _col: Color) -> Label:
-	var pill := Panel.new()
-	var pill_sb := StyleBoxFlat.new()
-	pill_sb.bg_color = Color(0.08, 0.09, 0.14, 0.92)
-	pill_sb.border_color = Color(1, 1, 1, 0.08)
-	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]: pill_sb.set_border_width(side, 1)
-	pill_sb.corner_radius_top_left     = 8
-	pill_sb.corner_radius_top_right    = 8
-	pill_sb.corner_radius_bottom_right = 8
-	pill_sb.corner_radius_bottom_left  = 8
-	pill.add_theme_stylebox_override("panel", pill_sb)
-	pill.custom_minimum_size = Vector2(110, 30)
-	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(pill)
-
-	if icon_tex:
-		var ico := TextureRect.new()
-		ico.texture = icon_tex
-		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ico.size     = Vector2(22, 22)
-		ico.position = Vector2(5, 4)
-		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		pill.add_child(ico)
-
-	var val_lbl := Label.new()
-	val_lbl.add_theme_font_size_override("font_size", 11)
-	val_lbl.add_theme_color_override("font_color", Color(0.93, 0.96, 1.0, 1.0))
-	val_lbl.size     = Vector2(60, 30)
-	val_lbl.position = Vector2(31, 0)
-	val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pill.add_child(val_lbl)
-
-	var plus_lbl := Label.new()
-	plus_lbl.text = "+"
-	plus_lbl.add_theme_font_size_override("font_size", 14)
-	plus_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55, 0.80))
-	plus_lbl.size     = Vector2(18, 30)
-	plus_lbl.position = Vector2(92, 0)
-	plus_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	plus_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pill.add_child(plus_lbl)
-
-	return val_lbl
-
 func _load_png(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
@@ -544,45 +444,6 @@ func _fx_scale(node: Control) -> void:
 	var t := node.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	t.tween_property(node, "scale", Vector2(0.93, 0.93), 0.07)
 	t.tween_property(node, "scale", Vector2(1.0,  1.0),  0.15)
-
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2
-	btn.z_index = 20
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
-	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
-	sb.set_border_width_all(1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 12)
-	btn.add_theme_stylebox_override("panel", sb)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var lbl := Label.new()
-	lbl.text = "\u2039"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-			tw.tween_callback(callback)
-	)
-	btn.mouse_entered.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
-	)
-	btn.mouse_exited.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
-	)
-	return btn
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)
