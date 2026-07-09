@@ -158,17 +158,6 @@ theme_override_font_sizes/font_size = 12
 text = "ภารกิจรายสัปดาห์"
 alignment = 0
 
-[node name="TabEndgame" type="Button" parent="Sheet/TabStrip/TabRow"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("SB_TabBtn")
-theme_override_styles/hover = SubResource("SB_TabBtn")
-theme_override_styles/pressed = SubResource("SB_TabBtn")
-theme_override_styles/focus = SubResource("SB_Blank")
-theme_override_colors/font_color = Color(0.55, 0.60, 0.72, 0.65)
-theme_override_font_sizes/font_size = 12
-text = "Endgame"
-alignment = 0
 
 [node name="TabChallenge" type="Button" parent="Sheet/TabStrip/TabRow"]
 layout_mode = 2

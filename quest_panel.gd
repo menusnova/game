@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-enum Tab { DAILY, WEEKLY, ENDGAME, CHALLENGE }
+enum Tab { DAILY, WEEKLY, CHALLENGE }
 
 var _current_tab := Tab.DAILY
 var _is_open     := false
@@ -8,7 +8,6 @@ var _is_open     := false
 const TAB_COLORS := {
 	Tab.DAILY:     Color(0.95, 0.79, 0.32, 1.0),
 	Tab.WEEKLY:    Color(0.42, 0.72, 1.00, 1.0),
-	Tab.ENDGAME:   Color(0.80, 0.48, 1.00, 1.0),
 	Tab.CHALLENGE: Color(1.00, 0.48, 0.28, 1.0),
 }
 
@@ -33,11 +32,6 @@ const QUESTS := {
 		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "desc": "ใช้การสุ่มใน Gacha",       "current": 0, "total": 3,  "go": "gacha",     "exp": 220, "gold": 2200, "crystal": 90},
 		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "desc": "ใช้ Laboratory",           "current": 0, "total": 5,  "go": "alchemist", "exp": 200, "gold": 2000, "crystal": 80},
 		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "desc": "ผสมปฏิกิริยาธาตุ",         "current": 0, "total": 3,  "go": "battle",    "exp": 180, "gold": 1800, "crystal": 70},
-	],
-	Tab.ENDGAME: [
-		{"id": "eg_boss",   "label": "สังหาร Weekly Boss",  "desc": "ท้าทาย Boss ระดับสูงสุด",  "current": 0, "total": 1, "go": "battle", "exp": 400, "gold": 4000, "crystal": 150},
-		{"id": "eg_chaos1", "label": "Memory of Chaos I",   "desc": "ผ่าน Floor 1–3",           "current": 0, "total": 1, "go": "battle", "exp": 350, "gold": 3500, "crystal": 150},
-		{"id": "eg_chaos2", "label": "Memory of Chaos II",  "desc": "ผ่าน Floor 4–6",           "current": 0, "total": 1, "go": "battle", "exp": 350, "gold": 3500, "crystal": 150},
 	],
 	Tab.CHALLENGE: [
 		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "desc": "ชนะการต่อสู้ใดก็ได้",     "current": 0, "total": 3,  "go": "battle", "exp": 400, "gold": 4000, "crystal": 160},
@@ -76,10 +70,9 @@ func _ready() -> void:
 	_tab_btns = [
 		$Sheet/TabStrip/TabRow/TabDaily    as Button,
 		$Sheet/TabStrip/TabRow/TabWeekly   as Button,
-		$Sheet/TabStrip/TabRow/TabEndgame  as Button,
 		$Sheet/TabStrip/TabRow/TabChallenge as Button,
 	]
-	var tab_keys: Array[Tab] = [Tab.DAILY, Tab.WEEKLY, Tab.ENDGAME, Tab.CHALLENGE]
+	var tab_keys: Array[Tab] = [Tab.DAILY, Tab.WEEKLY, Tab.CHALLENGE]
 	for i in _tab_btns.size():
 		var key := tab_keys[i]
 		_tab_btns[i].pressed.connect(func(): _switch_tab(key))
@@ -126,8 +119,8 @@ func _switch_tab(tab: Tab) -> void:
 	_rebuild_list()
 
 func _update_tab_style() -> void:
-	var tab_keys: Array[Tab] = [Tab.DAILY, Tab.WEEKLY, Tab.ENDGAME, Tab.CHALLENGE]
-	var tab_names := ["ภารกิจรายวัน", "ภารกิจรายสัปดาห์", "Endgame", "Challenge"]
+	var tab_keys: Array[Tab] = [Tab.DAILY, Tab.WEEKLY, Tab.CHALLENGE]
+	var tab_names := ["ภารกิจรายวัน", "ภารกิจรายสัปดาห์", "Challenge"]
 	for i in _tab_btns.size():
 		var btn := _tab_btns[i]
 		if not btn: continue
@@ -268,14 +261,7 @@ func _rebuild_list() -> void:
 	var accent: Color = TAB_COLORS[_current_tab]
 	var quests := QUESTS.get(_current_tab, []) as Array
 	for q in quests:
-		var nav := Callable()
-		var go_key    := str(q.get("go", ""))
-		var scene_path := str(_GO_SCENES.get(go_key, ""))
-		if scene_path != "" and ResourceLoader.exists(scene_path):
-			nav = func():
-				close()
-				SceneTransition.fade_to(scene_path)
-		_list.add_child(_QuestRow.new(q, nav, accent))
+		_list.add_child(_QuestRow.new(q, Callable(), accent))
 
 # ── Quest row (HSR style) ─────────────────────────────────────────────────────
 class _QuestRow extends Control:
