@@ -9,17 +9,13 @@ func _ready() -> void:
 
 func _build_ui() -> void:
 	# Background — citystory.png เต็มจอ
-	var bg_buf := FileAccess.get_file_as_bytes("res://image/citystory.png")
-	if not bg_buf.is_empty():
-		var bg_img := Image.new()
-		if bg_img.load_png_from_buffer(bg_buf) == OK:
-			var bg := TextureRect.new()
-			bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			bg.texture = ImageTexture.create_from_image(bg_img)
-			bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			add_child(bg)
+	var bg := TextureRect.new()
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.texture = preload("res://image/citystory.png")
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(bg)
 	# Dark overlay
 	var overlay := ColorRect.new()
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

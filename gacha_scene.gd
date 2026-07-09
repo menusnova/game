@@ -644,11 +644,9 @@ func _fmt(n: int) -> String:
 	return str(n)
 
 func _load_png(path: String) -> Texture2D:
-	var buf := FileAccess.get_file_as_bytes(path)
-	if buf.is_empty(): return null
-	var img := Image.new()
-	if img.load_png_from_buffer(buf) != OK: return null
-	return ImageTexture.create_from_image(img)
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	return null
 
 # Builds a main-menu-style pill (dark bg + icon + amount label + "+")
 # Returns the Label so the caller can update the value.

@@ -85,33 +85,6 @@ func _load_icon_textures() -> void:
 					if art_bg:
 						art_bg.visible = false
 
-func _remove_white_bg(img: Image) -> void:
-	img.convert(Image.FORMAT_RGBA8)
-	for y in img.get_height():
-		for x in img.get_width():
-			var c := img.get_pixel(x, y)
-			var whiteness := minf(c.r, minf(c.g, c.b))
-			var alpha := clampf((1.0 - whiteness) / 0.45, 0.0, 1.0)
-			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
-
-func _remove_dark_bg(img: Image) -> void:
-	img.convert(Image.FORMAT_RGBA8)
-	for y in img.get_height():
-		for x in img.get_width():
-			var c := img.get_pixel(x, y)
-			var brightness := maxf(c.r, maxf(c.g, c.b))
-			var alpha := clampf(brightness / 0.35, 0.0, 1.0)
-			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
-
-func _remove_bg(img: Image) -> void:
-	img.convert(Image.FORMAT_RGBA8)
-	for y in img.get_height():
-		for x in img.get_width():
-			var c := img.get_pixel(x, y)
-			var bright := (c.r + c.g + c.b) / 3.0
-			# alpha ของ pixel ที่ "สว่างพอ" (icon) = ความเข้ม, พื้นหลังโปร่งใส
-			var alpha := clampf((bright - 0.25) / 0.45, 0.0, 1.0)
-			img.set_pixel(x, y, Color(c.r, c.g, c.b, alpha))
 
 func _fmt_n(n: int) -> String:
 	if n >= 1000000:

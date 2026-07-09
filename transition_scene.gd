@@ -25,12 +25,10 @@ func _ready() -> void:
 	if _fade: _fade.color.a = 1.0
 	_run()
 
-func _load_jpg(path: String) -> ImageTexture:
-	var buf := FileAccess.get_file_as_bytes(path)
-	if buf.is_empty(): return null
-	var img := Image.new()
-	if img.load_jpg_from_buffer(buf) != OK: return null
-	return ImageTexture.create_from_image(img)
+func _load_jpg(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	return null
 
 func _run() -> void:
 	for i in SLIDE_PATHS.size():

@@ -440,17 +440,13 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 	var reward_str: String = str(ach.get("reward", ""))
 	var reward_n: int = int(ach.get("reward_n", 0))
 	if reward_str == "crystal" and reward_n > 0:
-		var _buf := FileAccess.get_file_as_bytes("res://image/crystal_gem.png")
-		if not _buf.is_empty():
-			var _img := Image.new()
-			if _img.load_png_from_buffer(_buf) == OK:
-				var ico := TextureRect.new()
-				ico.texture = ImageTexture.create_from_image(_img)
-				ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-				ico.size = Vector2(18, 18)
-				ico.position = Vector2(900, 26)
-				row.add_child(ico)
+		var ico := TextureRect.new()
+		ico.texture = preload("res://image/crystal_gem.png")
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ico.size = Vector2(18, 18)
+		ico.position = Vector2(900, 26)
+		row.add_child(ico)
 		var rew := Label.new()
 		rew.text = "×%d" % reward_n
 		rew.position = Vector2(922, 22)
