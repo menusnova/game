@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://story_scene_001"]
+[gd_scene load_steps=17 format=3 uid="uid://story_scene_001"]
 
 [ext_resource type="Script" path="res://story_scene.gd" id="1_story"]
 [ext_resource type="Texture2D" uid="uid://cxdc2dn3uyscg" path="res://image/m3.jpg" id="2_m3"]
 [ext_resource type="Texture2D" uid="uid://cf46u4am55ywt" path="res://image/lyra_1.png" id="3_lyra1"]
+[ext_resource type="Texture2D" uid="uid://nameup_png_001" path="res://image/nameup.png" id="4_nameup"]
 
 [sub_resource type="StyleBoxFlat" id="SB_DialogueBg"]
 bg_color = Color(0.024, 0.043, 0.094, 0.93)
@@ -170,13 +171,16 @@ offset_bottom = 648.0
 theme_override_styles/panel = SubResource("SB_DialogueBg")
 mouse_filter = 0
 
-[node name="NameTag" type="Panel" parent="DialoguePanel"]
+[node name="NameTag" type="TextureRect" parent="DialoguePanel"]
 layout_mode = 0
-offset_left = 20.0
-offset_top = -34.0
-offset_right = 180.0
-offset_bottom = -6.0
-theme_override_styles/panel = SubResource("SB_NameTag")
+offset_left = 10.0
+offset_top = -40.0
+offset_right = 210.0
+offset_bottom = -4.0
+mouse_filter = 2
+texture = ExtResource("4_nameup")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SpeakerName" type="Label" parent="DialoguePanel/NameTag"]
 layout_mode = 3
@@ -187,6 +191,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = ""
 horizontal_alignment = 1
+vertical_alignment = 1
 vertical_alignment = 1
 
 [node name="DialogueText" type="RichTextLabel" parent="DialoguePanel"]
