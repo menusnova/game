@@ -27,16 +27,16 @@ const QUESTS := {
 		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000},
 	],
 	Tab.WEEKLY: [
-		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "desc": "ท้าทาย Weekly Boss",        "current": 0, "total": 1,  "go": "battle",    "exp": 300, "gold": 3000, "crystal": 120, "upgrade": 2, "bond": 5},
-		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "desc": "เข้าร่วมการต่อสู้ใดก็ได้",  "current": 0, "total": 5,  "go": "battle",    "exp": 250, "gold": 2500, "crystal": 100, "upgrade": 1, "bond": 3},
-		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "desc": "ใช้การสุ่มใน Gacha",       "current": 0, "total": 3,  "go": "gacha",     "exp": 220, "gold": 2200, "crystal": 90,  "upgrade": 1, "bond": 3},
-		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "desc": "ใช้ Laboratory",           "current": 0, "total": 5,  "go": "alchemist", "exp": 200, "gold": 2000, "crystal": 80,  "upgrade": 1, "bond": 2},
-		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "desc": "ผสมปฏิกิริยาธาตุ",         "current": 0, "total": 3,  "go": "battle",    "exp": 180, "gold": 1800, "crystal": 70,  "upgrade": 1, "bond": 2},
+		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "desc": "ท้าทาย Weekly Boss",        "current": 0, "total": 1,  "go": "battle",    "exp": 300, "gold": 3000, "crystal": 120, "upgrade": 2, "bond": 200},
+		{"id": "w_battle5", "label": "ต่อสู้ 5 ครั้งในสัปดาห์",      "desc": "เข้าร่วมการต่อสู้ใดก็ได้",  "current": 0, "total": 5,  "go": "battle",    "exp": 250, "gold": 2500, "crystal": 100, "upgrade": 1, "bond": 200},
+		{"id": "w_gacha3",  "label": "สุ่มกาชา 3 ครั้งในสัปดาห์",    "desc": "ใช้การสุ่มใน Gacha",       "current": 0, "total": 3,  "go": "gacha",     "exp": 220, "gold": 2200, "crystal": 90,  "upgrade": 1, "bond": 200},
+		{"id": "w_alch5",   "label": "ผสมสารเคมี 5 ครั้งในสัปดาห์",  "desc": "ใช้ Laboratory",           "current": 0, "total": 5,  "go": "alchemist", "exp": 200, "gold": 2000, "crystal": 80,  "upgrade": 1, "bond": 200},
+		{"id": "w_elem3",   "label": "ใช้ธาตุ 3 ชนิดในการต่อสู้",    "desc": "ผสมปฏิกิริยาธาตุ",         "current": 0, "total": 3,  "go": "battle",    "exp": 180, "gold": 1800, "crystal": 70,  "upgrade": 1, "bond": 200},
 	],
 	Tab.CHALLENGE: [
-		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "desc": "ชนะการต่อสู้ใดก็ได้",     "current": 0, "total": 3,  "go": "battle", "exp": 400, "gold": 4000, "crystal": 160, "upgrade": 3, "bond": 8},
-		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "desc": "สุ่มจนได้ตัวละคร 5 ดาว", "current": 0, "total": 1,  "go": "gacha",  "exp": 500, "gold": 5000, "crystal": 200, "upgrade": 5, "bond": 10},
-		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "desc": "ใช้ธาตุผสมกันในการต่อสู้", "current": 0, "total": 10, "go": "battle", "exp": 250, "gold": 2500, "crystal": 100, "upgrade": 2, "bond": 5},
+		{"id": "ch_win3",  "label": "ชนะ 3 ครั้งในสัปดาห์",  "desc": "ชนะการต่อสู้ใดก็ได้",     "current": 0, "total": 3,  "go": "battle", "exp": 400, "gold": 4000, "crystal": 160, "upgrade": 3, "bond": 200},
+		{"id": "ch_5star", "label": "รับตัวละคร 5★ จากกาชา", "desc": "สุ่มจนได้ตัวละคร 5 ดาว", "current": 0, "total": 1,  "go": "gacha",  "exp": 500, "gold": 5000, "crystal": 200, "upgrade": 5, "bond": 200},
+		{"id": "ch_elem",  "label": "ทำปฏิกิริยา 10 ครั้ง",   "desc": "ใช้ธาตุผสมกันในการต่อสู้", "current": 0, "total": 10, "go": "battle", "exp": 250, "gold": 2500, "crystal": 100, "upgrade": 2, "bond": 200},
 	],
 }
 
