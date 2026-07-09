@@ -134,7 +134,7 @@ layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 460.0
-offset_bottom = 370.0
+offset_bottom = 480.0
 mouse_filter = 2
 clip_contents = true
 
@@ -143,7 +143,7 @@ layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 460.0
-offset_bottom = 640.0
+offset_bottom = 760.0
 mouse_filter = 2
 texture = ExtResource("3_lyra1")
 expand_mode = 1
