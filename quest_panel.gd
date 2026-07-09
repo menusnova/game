@@ -132,7 +132,7 @@ func _update_tab_style() -> void:
 		var btn := _tab_btns[i]
 		if not btn: continue
 		var active := (tab_keys[i] == _current_tab)
-		var col    := TAB_COLORS[tab_keys[i]]
+		var col: Color = TAB_COLORS[tab_keys[i]]
 
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(col.r * 0.07, col.g * 0.07, col.b * 0.07, 0.9) if active else Color(0, 0, 0, 0)
@@ -265,7 +265,7 @@ func _rebuild_list() -> void:
 	if _content:
 		_content.offset_top = 177.0 if _current_tab == Tab.DAILY else 97.0
 
-	var accent := TAB_COLORS[_current_tab]
+	var accent: Color = TAB_COLORS[_current_tab]
 	var quests := QUESTS.get(_current_tab, []) as Array
 	for q in quests:
 		var nav := Callable()
