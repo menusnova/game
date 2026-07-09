@@ -296,27 +296,6 @@ func _build_shop_page(items: Array, shop: Dictionary) -> void:
 	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(banner_sub)
 
-	# Currency balance pill
-	var cur_sym: String = shop["cur_sym"]
-	var balance_bg := Panel.new()
-	balance_bg.size     = Vector2(130, 28)
-	balance_bg.position = Vector2(cw - 144, 14)
-	balance_bg.add_theme_stylebox_override("panel",
-		_flat(Color(cur_col.r*0.12, cur_col.g*0.12, cur_col.b*0.14, 1.0),
-			  Color(cur_col.r, cur_col.g, cur_col.b, 0.45), 6, 1))
-	balance_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(balance_bg)
-
-	var balance_lbl := Label.new()
-	balance_lbl.text = "%s  9,999" % cur_sym
-	balance_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	balance_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	balance_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	balance_lbl.add_theme_font_size_override("font_size", 11)
-	balance_lbl.add_theme_color_override("font_color", cur_col)
-	balance_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	balance_bg.add_child(balance_lbl)
-
 	# Item grid: 3 columns
 	const COLS   := 3
 	const CARD_W := 274.0
