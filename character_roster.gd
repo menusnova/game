@@ -3,85 +3,45 @@ extends Control
 const SC_MAIN   := "res://main_menu.tscn"
 const SC_DETAIL := "res://character_scene.tscn"
 
+@onready var _back_btn:   Panel         = $TopBar/BackBtn
+@onready var _count_lbl:  Label         = $TopBar/CountLabel
+@onready var _grid:       GridContainer = $ContentScroll/MarginContainer/CharacterGrid
+@onready var _fade:       ColorRect     = $FadeOverlay
+
 func _ready() -> void:
 	CharacterManager.character_unlocked.connect(_on_character_unlocked)
-	_build_ui()
+
+	# Back button
+	_back_btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := _back_btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(_back_btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(_back_btn, "scale", Vector2(1.0, 1.0), 0.22)
+			tw.tween_callback(_go_back)
+	)
+	_back_btn.mouse_entered.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+	)
+	_back_btn.mouse_exited.connect(func():
+		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
+
+	_rebuild_grid()
+
+	var t := create_tween()
+	t.tween_property(_fade, "color:a", 0.0, 0.28)
 
 func _on_character_unlocked(_char_name: String) -> void:
-	# rebuild grid when a new character is unlocked
-	for child in get_children():
+	_rebuild_grid()
+
+func _rebuild_grid() -> void:
+	for child in _grid.get_children():
 		child.queue_free()
-	_build_ui()
-
-func _build_ui() -> void:
-	# Background dim
-	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.02, 0.04, 0.10, 0.96)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
-
-	# Top bar
-	var top := HBoxContainer.new()
-	top.position = Vector2(20, 16)
-	top.size     = Vector2(1112, 36)
-	top.add_theme_constant_override("separation", 12)
-	add_child(top)
-
-	var back := _make_visible_back_btn(Vector2(0, 0), Vector2(36, 36), _go_back)
-	back.custom_minimum_size = Vector2(36, 36)
-	top.add_child(back)
-
-	var title := Label.new()
-	title.text = "ตัวละคร"
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title.add_theme_font_size_override("font_size", 16)
-	title.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
-	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	top.add_child(title)
-
-	var count_lbl := Label.new()
 	var roster := CharacterManager.get_roster()
 	var owned_count := roster.filter(func(c): return c["owned"]).size()
-	count_lbl.text = "%d / %d" % [owned_count, roster.size()]
-	count_lbl.add_theme_font_size_override("font_size", 13)
-	count_lbl.add_theme_color_override("font_color", Color(0.5, 0.75, 1, 0.7))
-	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	top.add_child(count_lbl)
-
-	# Grid scroll
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(20, 64)
-	scroll.size     = Vector2(1112, 568)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(scroll)
-
-	var mc := MarginContainer.new()
-	mc.add_theme_constant_override("margin_left",   0)
-	mc.add_theme_constant_override("margin_right",  0)
-	mc.add_theme_constant_override("margin_top",    8)
-	mc.add_theme_constant_override("margin_bottom", 16)
-	mc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var grid := GridContainer.new()
-	grid.columns = 6
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
-	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	mc.add_child(grid)
-	scroll.add_child(mc)
-
-	for data in CharacterManager.get_roster():
-		grid.add_child(_make_card(data))
-
-	# Fade in
-	var fade := ColorRect.new()
-	fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	fade.color = Color(0, 0, 0, 1)
-	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(fade)
-	var t := create_tween()
-	t.tween_property(fade, "color:a", 0.0, 0.28)
+	_count_lbl.text = "%d / %d" % [owned_count, roster.size()]
+	for data in roster:
+		_grid.add_child(_make_card(data))
 
 func _make_card(data: Dictionary) -> Control:
 	var owned: bool  = bool(data.get("owned", false))
@@ -234,48 +194,6 @@ func _make_card(data: Dictionary) -> Control:
 func _go_detail() -> void:
 	if not ResourceLoader.exists(SC_DETAIL): return
 	SceneTransition.fade_to(SC_DETAIL)
-
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2
-	btn.z_index = 20
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
-	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
-	sb.set_border_width_all(1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 12)
-	btn.add_theme_stylebox_override("panel", sb)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var lbl := Label.new()
-	lbl.text = "\u2039"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-			tw.tween_callback(callback)
-	)
-	btn.mouse_entered.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
-	)
-	btn.mouse_exited.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
-	)
-	return btn
-
-func _make_visible_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	return _make_back_btn(pos, sz, callback)
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)

@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://character_roster"]
+[gd_scene load_steps=3 format=3 uid="uid://character_roster"]
 
 [ext_resource type="Script" path="res://character_roster.gd" id="1_roster"]
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.04, 0.07, 0.16, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.55, 1.0, 0.30)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="CharacterRoster" type="Control"]
 layout_mode = 3
@@ -8,3 +20,84 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_roster")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.10, 0.96)
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 1132.0
+offset_bottom = 52.0
+theme_override_constants/separation = 12
+
+[node name="BackBtn" type="Panel" parent="TopBar"]
+custom_minimum_size = Vector2(36, 36)
+pivot_offset = Vector2(18, 18)
+z_index = 20
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BtnLabel" type="Label" parent="TopBar/BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.75, 0.88, 1.0, 0.95)
+text = "‹"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="TopBar"]
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+text = "ตัวละคร"
+vertical_alignment = 1
+
+[node name="CountLabel" type="Label" parent="TopBar"]
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5, 0.75, 1, 0.7)
+text = "0 / 0"
+vertical_alignment = 1
+
+[node name="ContentScroll" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 64.0
+offset_right = 1132.0
+offset_bottom = 632.0
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 16
+
+[node name="CharacterGrid" type="GridContainer" parent="ContentScroll/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 6
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
