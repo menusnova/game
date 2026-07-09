@@ -3,8 +3,6 @@ extends Control
 const TYPEWRITER_SPEED := 0.032
 const TYPEWRITER_FAST  := 0.006   # speed-up mode
 
-var bg_texture:   Texture2D = null
-var char_kael:    Texture2D = null
 var lyra_portraits: Array[Texture2D] = []  # [บทพูด0, บทพูด1, บทพูด2]
 
 # map ชื่อตัวละคร → side ("left" / "right")
@@ -42,50 +40,20 @@ var _auto_timer: SceneTreeTimer = null
 @onready var _btn_auto:   Button        = $CtrlBar/BtnAuto
 @onready var _btn_fast:   Button        = $CtrlBar/BtnFast
 
-func _load_png_remove_white(path: String) -> ImageTexture:
-	var buf := FileAccess.get_file_as_bytes(path)
-	if buf.is_empty(): return null
-	var img := Image.new()
-	if img.load_png_from_buffer(buf) != OK: return null
-	img.convert(Image.FORMAT_RGBA8)
-	# Check if image already has transparency (alpha channel used)
-	var has_transparency := false
-	for y in range(0, img.get_height(), 8):
-		for x in range(0, img.get_width(), 8):
-			if img.get_pixel(x, y).a < 0.99:
-				has_transparency = true
-				break
-		if has_transparency:
-			break
-	if not has_transparency:
-		for y in img.get_height():
-			for x in img.get_width():
-				var c := img.get_pixel(x, y)
-				var whiteness := minf(c.r, minf(c.g, c.b))
-				var a := clampf((1.0 - whiteness) / 0.35, 0.0, 1.0)
-				img.set_pixel(x, y, Color(c.r, c.g, c.b, a))
-	return ImageTexture.create_from_image(img)
 
 func _ready() -> void:
-	var _buf := FileAccess.get_file_as_bytes("res://image/m3.jpg")
-	if not _buf.is_empty():
-		var _img := Image.new()
-		if _img.load_jpg_from_buffer(_buf) == OK:
-			bg_texture = ImageTexture.create_from_image(_img)
 	if _bg:
-		_bg.texture = bg_texture
+		_bg.texture = preload("res://image/m3.jpg")
 		_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 
 	lyra_portraits = [
-		_load_png_remove_white("res://image/lyra_1.png"),
-		_load_png_remove_white("res://image/lyra_2.png"),
-		_load_png_remove_white("res://image/lyra_3.png"),
+		preload("res://image/lyra_1.png"),
+		preload("res://image/lyra_2.png"),
+		preload("res://image/lyra_3.png"),
 	]
 
 	if _char_l:
-		_char_l.texture = lyra_portraits[0] if lyra_portraits.size() > 0 else null
-	if _char_r:
-		_char_r.texture = char_kael
+		_char_l.texture = lyra_portraits[0]
 	if _next_btn:
 		_next_btn.pressed.connect(_on_next)
 	_btn_skip.pressed.connect(_on_skip_all)
