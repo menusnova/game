@@ -14,21 +14,7 @@ config/name="take a slice"
 run/main_scene="uid://bvtbdjlhtskvc"
 run/disable_stdout=true
 run/disable_stderr=true
-config/features=PackedStringArray("4.6", "GL Compatibility")
-
-[display]
-
-window/size/viewport_width=1152
-window/size/viewport_height=648
-window/size/resizable=true
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
-window/handheld/orientation="sensor_landscape"
-
-[input_devices]
-
-pointing/emulate_mouse_from_touch=true
-pointing/emulate_touch_from_mouse=true
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 
@@ -38,6 +24,12 @@ CharacterManager="*res://character_manager.gd"
 PlayerData="*res://player_data.gd"
 ReactionDB="*res://reaction_database.gd"
 SceneTransition="*res://scene_transition.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation="sensor_landscape"
 
 [editor_plugins]
 
@@ -49,6 +41,10 @@ folder_colors={
 "res://bar_textures/": "red",
 "res://image/": "orange"
 }
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [internationalization]
 

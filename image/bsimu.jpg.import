@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fybvqrm46eke"
-path="res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"
+uid="uid://bhxx62ri1mrim"
+path="res://.godot/imported/bsimu.jpg-b441410b1d680dde3bd786a01199be71.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://image/crystal_gem.png"
-dest_files=["res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"]
+source_file="res://image/bsimu.jpg"
+dest_files=["res://.godot/imported/bsimu.jpg-b441410b1d680dde3bd786a01199be71.ctex"]
 
 [params]
 

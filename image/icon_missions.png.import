@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fybvqrm46eke"
-path="res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"
+uid="uid://dq4pk0pce3h1i"
+path="res://.godot/imported/icon_missions.png-9fc33a0a62c97b4d3e7994599dc95a61.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://image/crystal_gem.png"
-dest_files=["res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"]
+source_file="res://image/icon_missions.png"
+dest_files=["res://.godot/imported/icon_missions.png-9fc33a0a62c97b4d3e7994599dc95a61.ctex"]
 
 [params]
 

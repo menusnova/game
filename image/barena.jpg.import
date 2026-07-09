@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fybvqrm46eke"
-path="res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"
+uid="uid://clp5h7aedo172"
+path="res://.godot/imported/barena.jpg-0534261e18f77a5bbb62cb1ad6057010.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://image/crystal_gem.png"
-dest_files=["res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"]
+source_file="res://image/barena.jpg"
+dest_files=["res://.godot/imported/barena.jpg-0534261e18f77a5bbb62cb1ad6057010.ctex"]
 
 [params]
 

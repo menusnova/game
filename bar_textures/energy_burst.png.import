@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fybvqrm46eke"
-path="res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"
+uid="uid://bggi064uvfpv"
+path="res://.godot/imported/energy_burst.png-5a398d5539de7d58966fbbc188a09a6c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://image/crystal_gem.png"
-dest_files=["res://.godot/imported/crystal_gem.png-b4183f98ca8d623574fdee4e41c5b551.ctex"]
+source_file="res://bar_textures/energy_burst.png"
+dest_files=["res://.godot/imported/energy_burst.png-5a398d5539de7d58966fbbc188a09a6c.ctex"]
 
 [params]
 
