@@ -402,10 +402,7 @@ func _on_adv_input(ev: InputEvent) -> void:
 
 func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-		if CurrencyManager.energy < 10:
-			_show_coming_soon("พลังงานไม่เพียงพอ (ต้องการ ⚡10)")
-			return
-		_goto(SC_BATTLE)
+		_show_coming_soon("โหมดต่อสู้ยังไม่เปิดให้บริการ")
 
 func _setup_banner_carousel() -> void:
 	# ซ่อน NewCharCard เดิม
