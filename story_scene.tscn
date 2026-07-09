@@ -131,19 +131,19 @@ mouse_filter = 2
 
 [node name="CharacterLeftClip" type="Control" parent="."]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 460.0
-offset_bottom = 480.0
+offset_left = 474.0
+offset_top = 7.0
+offset_right = 1124.0
+offset_bottom = 487.0
 mouse_filter = 2
 clip_contents = true
 
 [node name="CharacterLeft" type="TextureRect" parent="CharacterLeftClip"]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 460.0
-offset_bottom = 760.0
+offset_left = 1.0
+offset_top = 193.0
+offset_right = 649.0
+offset_bottom = 953.0
 mouse_filter = 2
 texture = ExtResource("3_lyra1")
 expand_mode = 1
