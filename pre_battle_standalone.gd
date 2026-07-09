@@ -28,14 +28,16 @@ var _current_stage := 0          # 0 or 1
 var _edit_open     := false
 var _enemy_expand  := false
 
-# root nodes built in _ready
+@onready var _char_display_root: Control  = $CharacterDisplayRoot
+@onready var _enemy_panel:       Control  = $EnemyPanel
+@onready var _fade:              ColorRect = $FadeOverlay
+
+# built at runtime
 var _edit_panel:   Control  = null
-var _enemy_panel:  Control  = null
 var _char_slots:   Array    = []
 var _elem_slots:   Array    = []
 var _supp_slots:   Array    = []
 var _stage_dots:   Array    = []
-var _fade:         ColorRect = null
 
 # ── helpers ──
 func _sb(col: Color, border: Color = Color(1,1,1,0), radius: int = 0) -> StyleBoxFlat:
@@ -77,40 +79,16 @@ func _btn(txt: String, sz: int, txt_col: Color, bg: StyleBoxFlat, parent: Contro
 
 # ── _ready ──
 func _ready() -> void:
-	_build_background()
-	_build_char_display()
-	_build_enemy_panel()
-	_build_bottom_bar()
+	$BottomBar/EditBtn.pressed.connect(_on_edit)
+	$BottomBar/StartBtn.pressed.connect(_on_start)
 	_build_edit_panel()
-	_build_fade()
 	_refresh_enemy_panel()
 	_refresh_team_display()
 
-	if _fade:
-		var t := create_tween()
-		t.tween_property(_fade, "color:a", 0.0, 0.35)
-
-func _build_background() -> void:
-	var bg := ColorRect.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.04, 0.06, 0.14, 1.0)
-	add_child(bg)
-	# subtle vignette gradient panel
-	var vg := Panel.new()
-	vg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0)
-	vg.add_theme_stylebox_override("panel", sb)
-	vg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(vg)
+	var t := create_tween()
+	t.tween_property(_fade, "color:a", 0.0, 0.35)
 
 # ── character display (center) ──
-var _char_display_root: Control = null
-func _build_char_display() -> void:
-	_char_display_root = Control.new()
-	_char_display_root.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_char_display_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_char_display_root)
 	# Will be populated by _refresh_team_display
 
 func _refresh_team_display() -> void:
@@ -311,23 +289,6 @@ func _toggle_enemy_expand() -> void:
 		_lbl("อ่อนแอต่อ:  " + "  /  ".join(en["weak"]), 11, Color(0.5, 0.85, 1.0, 0.9), chip, Vector2(200, 46))
 
 		ey += 94.0
-
-# ── bottom bar: edit + start buttons ──
-func _build_bottom_bar() -> void:
-	var bar := Control.new()
-	bar.position = Vector2(0, SH - 64)
-	bar.size = Vector2(SW, 64)
-	add_child(bar)
-
-	var edit_sb := _sb(Color(0.08, 0.1, 0.2, 0.88), Color(0.4, 0.6, 1.0, 0.3), 10)
-	var edit_b := _btn("✏  แก้ทีม", 13, Color(0.7, 0.85, 1.0, 0.9), edit_sb,
-		bar, Vector2(SW - 340, 10), Vector2(110, 44))
-	edit_b.pressed.connect(_on_edit)
-
-	var start_sb := _sb(Color(0.15, 0.35, 0.85, 1.0), Color(0.5, 0.7, 1.0, 0.3), 12)
-	var start_b := _btn("⚔  เริ่มต่อสู้", 15, Color.WHITE, start_sb,
-		bar, Vector2(SW - 220, 8), Vector2(210, 48))
-	start_b.pressed.connect(_on_start)
 
 # ── edit panel (slides in from left) ──
 const EDIT_W := 360.0
@@ -542,14 +503,6 @@ func _toggle_supp(supp: String) -> void:
 		var empty_idx := _selected_supp.find("")
 		if empty_idx >= 0:
 			_selected_supp[empty_idx] = supp
-
-# ── fade overlay ──
-func _build_fade() -> void:
-	_fade = ColorRect.new()
-	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_fade.color = Color(0, 0, 0, 1)
-	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_fade)
 
 # ── edit open/close ──
 func _on_edit() -> void:

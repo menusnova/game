@@ -1,6 +1,52 @@
-[gd_scene load_steps=2 format=3 uid="uid://prebattle_standalone_001"]
+[gd_scene load_steps=8 format=3 uid="uid://prebattle_standalone_001"]
 
 [ext_resource type="Script" path="res://pre_battle_standalone.gd" id="1_pbs"]
+
+[sub_resource type="StyleBoxFlat" id="SB_EditBtn"]
+bg_color = Color(0.08, 0.10, 0.20, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.6, 1.0, 0.3)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_StartBtn"]
+bg_color = Color(0.15, 0.35, 0.85, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.7, 1.0, 0.3)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_EnemyBg"]
+bg_color = Color(0.06, 0.04, 0.10, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.3, 0.3, 0.2)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="SB_BtnHover"]
+bg_color = Color(1, 1, 1, 0.06)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="PreBattleStandalone" type="Control"]
 layout_mode = 3
@@ -8,3 +54,91 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_pbs")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.04, 0.06, 0.14, 1.0)
+
+[node name="CharacterDisplayRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="EnemyPanel" type="Control" parent="."]
+layout_mode = 0
+offset_left = 872.0
+offset_top = 10.0
+offset_right = 1142.0
+offset_bottom = 210.0
+mouse_filter = 2
+
+[node name="EnemyBg" type="Panel" parent="EnemyPanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 270.0
+offset_bottom = 170.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_EnemyBg")
+
+[node name="EnemyPlaceholderLabel" type="Label" parent="EnemyPanel/EnemyBg"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 262.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.0, 0.7, 0.3, 0.8)
+text = "STAGE 1"
+
+[node name="BottomBar" type="Control" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 584.0
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+
+[node name="EditBtn" type="Button" parent="BottomBar"]
+layout_mode = 0
+offset_left = 812.0
+offset_top = 10.0
+offset_right = 922.0
+offset_bottom = 54.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 0.9)
+theme_override_styles/normal = SubResource("SB_EditBtn")
+theme_override_styles/hover = SubResource("SB_EditBtn")
+theme_override_styles/pressed = SubResource("SB_EditBtn")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "✏  แก้ทีม"
+
+[node name="StartBtn" type="Button" parent="BottomBar"]
+layout_mode = 0
+offset_left = 932.0
+offset_top = 8.0
+offset_right = 1142.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("SB_StartBtn")
+theme_override_styles/hover = SubResource("SB_StartBtn")
+theme_override_styles/pressed = SubResource("SB_StartBtn")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "⚔  เริ่มต่อสู้"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+z_index = 100
+color = Color(0, 0, 0, 1)
