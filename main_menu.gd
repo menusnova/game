@@ -46,59 +46,44 @@ func _ready() -> void:
 
 func _load_icon_textures() -> void:
 	var icons := [
-		["CurrBox1/CurrIcon1",        "res://image/icon_gold.png"],
-		["CurrBox2/CurrIcon2",        "res://image/crystal_gem.png"],
-		["CurrBox3/CurrIcon3",        "res://image/icon_paid.png"],
-		["CurrBox4/CurrIcon4",        "res://image/icon_energy.png"],
-		["MenuItem_Notice/Icon",              "res://image/icon_notice.png"],
-		["MenuItem_Missions/Icon",            "res://image/icon_missions.png"],
-		["MenuItem_Event/Icon",               "res://image/icon_event.png"],
-		["MenuItem_Pass/Icon",                "res://image/icon_pass.png"],
-		["MenuItem_Shop/Icon",                "res://image/icon_shop.png"],
-		["AdventureCard/AdventureArt",        "res://image/bstory.jpg"],
-		["SimulationCard/SimulationArt",      "res://image/bsimu.jpg"],
-		["ArenaCard/ArenaArt",                "res://image/barena.jpg"],
-		["ExpeditionCard/ExpeditionArt",      "res://image/chl.jpg"],
-		["NavBar/Nav0_Alchemist/Icon",        "res://image/icon_nav_character.png"],
-		["NavBar/Nav2_Lab/Icon",              "res://image/icon_nav_lab.png"],
-		["NavBar/Nav_Gacha/Icon",             "res://image/icon_nav_gacha.jpg"],
-		["NavBar/Nav3_Inventory/Icon",        "res://image/icon_nav_inventory.png"],
-		["NavBar/Nav4_Database/Icon",         "res://image/icon_nav_achievement.jpg"],
-		["NavBar/Nav5_Guild/Icon",            "res://image/icon_nav_guild.jpg"],
+		["CurrBox1/CurrIcon1",               preload("res://image/icon_gold.png")],
+		["CurrBox2/CurrIcon2",               preload("res://image/crystal_gem.png")],
+		["CurrBox3/CurrIcon3",               preload("res://image/icon_paid.png")],
+		["CurrBox4/CurrIcon4",               preload("res://image/icon_energy.png")],
+		["MenuItem_Notice/Icon",             preload("res://image/icon_notice.png")],
+		["MenuItem_Missions/Icon",           preload("res://image/icon_missions.png")],
+		["MenuItem_Event/Icon",              preload("res://image/icon_event.png")],
+		["MenuItem_Pass/Icon",               preload("res://image/icon_pass.png")],
+		["MenuItem_Shop/Icon",               preload("res://image/icon_shop.png")],
+		["AdventureCard/AdventureArt",       preload("res://image/bstory.jpg")],
+		["SimulationCard/SimulationArt",     preload("res://image/bsimu.jpg")],
+		["ArenaCard/ArenaArt",               preload("res://image/barena.jpg")],
+		["ExpeditionCard/ExpeditionArt",     preload("res://image/chl.jpg")],
+		["NavBar/Nav0_Alchemist/Icon",       preload("res://image/icon_nav_character.png")],
+		["NavBar/Nav2_Lab/Icon",             preload("res://image/icon_nav_lab.png")],
+		["NavBar/Nav_Gacha/Icon",            preload("res://image/icon_nav_gacha.jpg")],
+		["NavBar/Nav3_Inventory/Icon",       preload("res://image/icon_nav_inventory.png")],
+		["NavBar/Nav4_Database/Icon",        preload("res://image/icon_nav_achievement.jpg")],
+		["NavBar/Nav5_Guild/Icon",           preload("res://image/icon_nav_guild.jpg")],
 	]
 	for pair in icons:
 		var node := get_node_or_null(pair[0]) as TextureRect
 		if node:
-			var buf := FileAccess.get_file_as_bytes(pair[1])
-			if not buf.is_empty():
-				var img := Image.new()
-				var ok := false
-				if pair[1].ends_with(".jpg") or pair[1].ends_with(".jpeg"):
-					ok = img.load_jpg_from_buffer(buf) == OK
-				else:
-					ok = img.load_png_from_buffer(buf) == OK
-				if ok:
-					if pair[0].begins_with("NavBar/"):
-						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-						if pair[0].ends_with("Guild/Icon"):
-							_remove_white_bg(img)
-						elif pair[1].ends_with(".jpg") or pair[1].ends_with(".jpeg"):
-							_remove_bg(img)
-						else:
-							_remove_dark_bg(img)
-					elif pair[0].ends_with("Art"):
-						node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-						node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-						node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-						node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-						if node.get_parent() is Control:
-							(node.get_parent() as Control).clip_contents = true
-							node.get_parent().move_child(node, 0)
-							# ซ่อน ArtBg ColorRect ที่อยู่ทับบนรูป
-							var art_bg := node.get_parent().get_node_or_null("ArtBg")
-							if art_bg:
-								art_bg.visible = false
+			node.texture = pair[1]
+			if pair[0].begins_with("NavBar/"):
+				node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			elif pair[0].ends_with("Art"):
+				node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				if node.get_parent() is Control:
+					(node.get_parent() as Control).clip_contents = true
+					node.get_parent().move_child(node, 0)
+					var art_bg := node.get_parent().get_node_or_null("ArtBg")
+					if art_bg:
+						art_bg.visible = false
 					node.texture = ImageTexture.create_from_image(img)
 
 func _remove_white_bg(img: Image) -> void:
