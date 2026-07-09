@@ -1,6 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://story_scene_001"]
+[gd_scene load_steps=16 format=3 uid="uid://story_scene_001"]
 
 [ext_resource type="Script" path="res://story_scene.gd" id="1_story"]
+[ext_resource type="Texture2D" uid="uid://cxdc2dn3uyscg" path="res://image/m3.jpg" id="2_m3"]
+[ext_resource type="Texture2D" uid="uid://cf46u4am55ywt" path="res://image/lyra_1.png" id="3_lyra1"]
 
 [sub_resource type="StyleBoxFlat" id="SB_DialogueBg"]
 bg_color = Color(0.024, 0.043, 0.094, 0.93)
@@ -115,6 +117,7 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+texture = ExtResource("2_m3")
 expand_mode = 1
 stretch_mode = 5
 
@@ -142,6 +145,7 @@ offset_top = 0.0
 offset_right = 460.0
 offset_bottom = 640.0
 mouse_filter = 2
+texture = ExtResource("3_lyra1")
 expand_mode = 1
 stretch_mode = 2
 modulate = Color(1, 1, 1, 0)
