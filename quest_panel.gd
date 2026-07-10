@@ -167,7 +167,9 @@ func _build_daily_bar() -> void:
 	# Header row
 	var hdr := Label.new()
 	hdr.text = "Training Points"
-	hdr.position = Vector2(22, 10)
+	hdr.size     = Vector2(130, 24)
+	hdr.position = Vector2(22, 8)
+	hdr.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	hdr.add_theme_font_size_override("font_size", 10)
 	hdr.add_theme_color_override("font_color", Color(0.60, 0.65, 0.78, 0.70))
 	hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -175,7 +177,9 @@ func _build_daily_bar() -> void:
 
 	var pts_lbl := Label.new()
 	pts_lbl.text = "%d / %d" % [pts, DAILY_MAX_PTS]
-	pts_lbl.position = Vector2(148, 8)
+	pts_lbl.size     = Vector2(80, 24)
+	pts_lbl.position = Vector2(152, 8)
+	pts_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	pts_lbl.add_theme_font_size_override("font_size", 13)
 	pts_lbl.add_theme_color_override("font_color", Color(0.94, 0.80, 0.32, 1.0))
 	pts_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -231,18 +235,19 @@ func _build_daily_bar() -> void:
 		var gem_tex: Texture2D = load("res://image/crystal_gem.png")
 		if gem_tex:
 			icon_tx.texture = gem_tex
-		icon_tx.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE
 		icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_tx.size = Vector2(30, 26)
-		icon_tx.position = Vector2(12, 2)
+		icon_tx.size     = Vector2(54, 28)
+		icon_tx.position = Vector2(0, 2)
 		icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.add_child(icon_tx)
 
 		var val_l := Label.new()
 		val_l.text = "×%d" % m["val"]
-		val_l.size = Vector2(54, 14)
-		val_l.position = Vector2(0, 28)
+		val_l.size = Vector2(54, 12)
+		val_l.position = Vector2(0, 30)
 		val_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		val_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		val_l.add_theme_font_size_override("font_size", 9)
 		val_l.add_theme_color_override("font_color",
 			Color(0.55, 0.92, 1.00, 0.90) if reached else Color(0.40, 0.44, 0.55, 0.60))
@@ -318,8 +323,9 @@ class _QuestRow extends Control:
 		# Quest name
 		var name_lbl := Label.new()
 		name_lbl.text     = str(q.get("label", ""))
-		name_lbl.position = Vector2(70, 14)
+		name_lbl.position = Vector2(70, 16)
 		name_lbl.size     = Vector2(420, 22)
+		name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name_lbl.add_theme_font_size_override("font_size", 14)
 		name_lbl.add_theme_color_override("font_color",
 			Color(0.50, 0.56, 0.52, 0.70) if done else Color(0.96, 0.97, 1.0, 1.0))
@@ -329,8 +335,9 @@ class _QuestRow extends Control:
 		# Sub-description
 		var desc_lbl := Label.new()
 		desc_lbl.text     = str(q.get("desc", ""))
-		desc_lbl.position = Vector2(70, 36)
+		desc_lbl.position = Vector2(70, 38)
 		desc_lbl.size     = Vector2(400, 16)
+		desc_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		desc_lbl.add_theme_font_size_override("font_size", 10)
 		desc_lbl.add_theme_color_override("font_color", Color(0.55, 0.60, 0.72, 0.50))
 		desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -358,6 +365,7 @@ class _QuestRow extends Control:
 		prog_lbl.text     = "%d / %d" % [cur, total]
 		prog_lbl.position = Vector2(70, 62)
 		prog_lbl.size     = Vector2(140, 16)
+		prog_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		prog_lbl.add_theme_font_size_override("font_size", 10)
 		prog_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.32))
 		prog_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
