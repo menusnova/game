@@ -248,8 +248,12 @@ func _setup_home_character() -> void:
 	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - CH)
 	char_root.size     = Vector2(CW, CH)
 	char_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	char_root.z_index  = 3
+	char_root.z_index  = 0
 	add_child(char_root)
+	# Move before NavBar so NavBar renders on top
+	var _nb := get_node_or_null("NavBar")
+	if _nb:
+		move_child(char_root, _nb.get_index())
 
 	# Portrait image — full body
 	var portrait := TextureRect.new()
