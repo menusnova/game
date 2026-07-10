@@ -150,12 +150,6 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	stars_lbl.size = Vector2(200, 20)
 	add_child(stars_lbl)
 
-	# Faction label
-	var faction_lbl := _lbl(str(data.get("faction", "")), 10, C_SUB)
-	faction_lbl.position = Vector2(16, 68)
-	faction_lbl.size = Vector2(LEFT_W - 32, 18)
-	add_child(faction_lbl)
-
 	# Separator line between left and right
 	add_child(_crect(Vector2(LEFT_W, 0), Vector2(1, VH),
 		Color(elem_col.r, elem_col.g, elem_col.b, 0.20)))
