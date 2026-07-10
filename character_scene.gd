@@ -369,12 +369,12 @@ func _info_box(pos: Vector2, sz: Vector2, caption: String, value: String, col: C
 # ── Helper: back button ───────────────────────────────────────────────────────
 func _make_back_btn() -> Panel:
 	var btn := Panel.new()
-	btn.size        = Vector2(32, 32)
-	btn.pivot_offset = Vector2(16, 16)
+	btn.size        = Vector2(42, 45)
+	btn.pivot_offset = Vector2(21, 22)
 	btn.z_index     = 20
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	btn.add_theme_stylebox_override("panel",
-		_flat(Color(0, 0, 0, 0), Color(0.35, 0.55, 1.0, 0.30), 16, 1))
+		_flat(Color(0, 0, 0, 0), Color(0.35, 0.55, 1.0, 0.30), 12, 1))
 	var lbl := _lbl("‹", 18, Color(0.80, 0.90, 1.0, 0.92))
 	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

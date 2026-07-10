@@ -52,7 +52,7 @@ func _build_top_bar() -> void:
 	add_child(_crect(Vector2(0, 0), Vector2(VW, TOP_H), C_BAR))
 	add_child(_crect(Vector2(0, TOP_H), Vector2(VW, 1), C_LINE))
 
-	var back := _icon_btn(Vector2(10, 10), Vector2(32, 32), "‹")
+	var back := _icon_btn(Vector2(7, 4), Vector2(42, 45), "‹")
 	back.gui_input.connect(func(ev):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			SceneTransition.fade_to(SC_MAIN)
