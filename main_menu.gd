@@ -238,40 +238,48 @@ func _setup_home_character() -> void:
 		"พร้อมออกเดินทางแล้วหรือยัง?\nฉันรอนานมากแล้ว",
 	]
 
-	const CX    := 490.0   # center x of character
-	const CW    := 210.0   # character width
-	const CH    := 360.0   # character height
-	const BOT_Y := 550.0   # bottom of character (above chat bar)
+	const CX      := 490.0   # center x
+	const CW      := 240.0   # visible width
+	const VIS_H   := 420.0   # visible height (knees up)
+	const FULL_H  := 580.0   # full render height (feet extend below clip)
+	const BOT_Y   := 555.0   # bottom of visible area
 
-	var char_root := Control.new()
+	# Clip container — hides feet below VIS_H
+	var char_root := Panel.new()
 	char_root.name = "_HomeChar"
-	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - CH)
-	char_root.size     = Vector2(CW, CH)
-	char_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - VIS_H)
+	char_root.size     = Vector2(CW, VIS_H)
+	char_root.clip_contents = true
+	char_root.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	char_root.z_index  = 3
+	var blank_sb := StyleBoxFlat.new()
+	blank_sb.bg_color = Color(0, 0, 0, 0)
+	char_root.add_theme_stylebox_override("panel", blank_sb)
 	add_child(char_root)
 
-	# Shadow glow under feet
+	# Shadow glow at bottom edge of clip
 	var glow := ColorRect.new()
-	glow.size     = Vector2(CW * 0.8, 18)
-	glow.position = Vector2(CW * 0.1, CH - 14)
-	glow.color    = Color(0.25, 0.55, 1.0, 0.18)
+	glow.size     = Vector2(CW * 0.85, 22)
+	glow.position = Vector2(CW * 0.075, VIS_H - 18)
+	glow.color    = Color(0.25, 0.55, 1.0, 0.22)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.add_child(glow)
 
-	# Portrait image
+	# Portrait image — taller than clip so feet are hidden below
 	var portrait := TextureRect.new()
 	portrait.texture      = preload("res://image/lyra_1.png")
 	portrait.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	portrait.size         = Vector2(CW, FULL_H)
+	portrait.position     = Vector2(0, 0)
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.add_child(portrait)
 
-	# Idle float animation on character
+	# Idle float animation
+	var base_y := char_root.position.y
 	var float_tw := char_root.create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	float_tw.tween_property(char_root, "position:y", char_root.position.y - 8.0, 2.2)
-	float_tw.tween_property(char_root, "position:y", char_root.position.y,       2.2)
+	float_tw.tween_property(char_root, "position:y", base_y - 8.0, 2.2)
+	float_tw.tween_property(char_root, "position:y", base_y,       2.2)
 
 	# Speech bubble
 	const BW := 250.0
@@ -279,7 +287,7 @@ func _setup_home_character() -> void:
 	var bubble := Panel.new()
 	bubble.name = "_Bubble"
 	bubble.size     = Vector2(BW, BH)
-	bubble.position = Vector2(CX - BW * 0.5, BOT_Y - CH - BH - 14)
+	bubble.position = Vector2(CX - BW * 0.5, BOT_Y - VIS_H - BH - 14)
 	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bubble.z_index  = 4
 	var bsb := StyleBoxFlat.new()
