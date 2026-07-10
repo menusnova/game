@@ -103,7 +103,7 @@ var _skill_type_lbl: Label
 var _skill_desc_lbl: Label
 var _skill_val_lbl:  Label
 
-@onready var _back_btn: Panel = $RightPanel/BackBtn
+@onready var _back_btn: Panel = $BackBtn
 
 func _ready() -> void:
 	_tab_btns  = [$RightPanel/TabBar/SkillsBtn, $RightPanel/TabBar/ResonanceBtn, $RightPanel/TabBar/InfoBtn]

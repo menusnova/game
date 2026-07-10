@@ -289,18 +289,18 @@ offset_bottom = 74.0
 mouse_filter = 2
 color = Color(0.35, 0.75, 1.0, 0.55)
 
-[node name="BackBtn" type="Panel" parent="RightPanel"]
+[node name="BackBtn" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 36.0
 offset_bottom = 36.0
-pivot_offset = Vector2(18, 18)
-z_index = 10
+pivot_offset = Vector2(13, 13)
+z_index = 20
 theme_override_styles/panel = SubResource("SB_BackBtn")
 mouse_filter = 0
 
-[node name="BackIcon" type="TextureRect" parent="RightPanel/BackBtn"]
+[node name="BackIcon" type="TextureRect" parent="BackBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
