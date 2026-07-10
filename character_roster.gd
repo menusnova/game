@@ -50,10 +50,13 @@ func _ready() -> void:
 			row.append(null)
 		_squads.append(row)
 
-	# Pre-fill squad 0 with owned characters
-	var owned := CharacterManager.get_roster().filter(func(c): return c["owned"])
-	for i in mini(owned.size(), TOTAL_SLOTS):
-		_squads[0][i] = owned[i]
+	# Fill squad 0: show all known characters (owned=usable, not owned=locked)
+	var roster := CharacterManager.get_roster()
+	for i in mini(roster.size(), TOTAL_SLOTS):
+		_squads[0][i] = roster[i]
+
+	# Re-sync when gacha unlocks a character
+	CharacterManager.character_unlocked.connect(_on_character_unlocked)
 
 	_build_ui()
 
@@ -164,6 +167,14 @@ func _build_bottom_bar() -> void:
 
 # ── Grid refresh ──────────────────────────────────────────────
 
+func _on_character_unlocked(_char_name: String) -> void:
+	# Re-sync roster data so newly unlocked characters show as owned
+	var roster := CharacterManager.get_roster()
+	for s in NUM_SQUADS:
+		for i in mini(roster.size(), TOTAL_SLOTS):
+			_squads[s][i] = roster[i]
+	_refresh_squad()
+
 func _refresh_squad() -> void:
 	var squad := _squads[_cur_squad] as Array
 	for i in _grid_panels.size():
@@ -171,7 +182,11 @@ func _refresh_squad() -> void:
 		for c in slot.get_children(): c.queue_free()
 		var data: Variant = squad[i] if i < squad.size() else null
 		if data != null:
-			_fill_character(slot, data as Dictionary)
+			var owned: bool = bool((data as Dictionary).get("owned", false))
+			if owned:
+				_fill_character(slot, data as Dictionary)
+			else:
+				_fill_locked(slot, data as Dictionary)
 		else:
 			_fill_empty(slot)
 	_update_tab_style()
@@ -274,6 +289,76 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 			if ResourceLoader.exists(SC_DETAIL):
 				SceneTransition.fade_to(SC_DETAIL)
 	)
+
+func _fill_locked(slot: Panel, data: Dictionary) -> void:
+	var rarity: int    = int(data.get("rarity", 3))
+	var name_s: String = str(data.get("name", ""))
+	var elem_s: String = str(data.get("element", ""))
+	var elem_col: Color = data.get("element_color", Color(0.4, 0.4, 0.6)) as Color
+
+	var r_col: Color
+	match rarity:
+		5: r_col = Color(1.00, 0.80, 0.20)
+		4: r_col = Color(0.72, 0.50, 1.00)
+		_: r_col = Color(0.35, 0.65, 1.00)
+
+	# Dim card background
+	slot.add_theme_stylebox_override("panel",
+		_flat(Color(elem_col.r * 0.05, elem_col.g * 0.05, elem_col.b * 0.09, 1.0),
+			Color(r_col.r * 0.4, r_col.g * 0.4, r_col.b * 0.4, 0.25), 8, 1))
+
+	# Portrait (desaturated via modulate)
+	var portrait_h := CARD_H - 46.0
+	var ppath: String = PORTRAITS.get(name_s, "")
+	if ppath != "" and ResourceLoader.exists(ppath):
+		var tex: Texture2D = load(ppath)
+		if tex:
+			var img := TextureRect.new()
+			img.texture      = tex
+			img.size         = Vector2(CARD_W, portrait_h + 12)
+			img.position     = Vector2(0, 0)
+			img.expand_mode  = TextureRect.EXPAND_IGNORE
+			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			img.modulate     = Color(0.35, 0.35, 0.40, 0.70)
+			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			slot.add_child(img)
+
+	# Rarity bar dim
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
+		Color(r_col.r * 0.35, r_col.g * 0.35, r_col.b * 0.35, 0.40)))
+
+	# Dark overlay
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
+		Color(0.01, 0.01, 0.05, 0.55)))
+
+	# Lock icon (center)
+	var lock := _lbl("🔒", 28, Color(1, 1, 1, 0.55))
+	lock.size     = Vector2(CARD_W, CARD_H - 60)
+	lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lock.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	slot.add_child(lock)
+
+	# "Gacha" label under lock
+	var gacha_l := _lbl("Gacha", 10, Color(r_col.r, r_col.g, r_col.b, 0.55))
+	gacha_l.size     = Vector2(CARD_W, 20)
+	gacha_l.position = Vector2(0, CARD_H / 2.0 + 6)
+	gacha_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	gacha_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	slot.add_child(gacha_l)
+
+	# Name (bottom)
+	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
+		Color(0.01, 0.01, 0.04, 0.75)))
+	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r * 0.5, r_col.g * 0.5, r_col.b * 0.5, 0.55))
+	stars.size     = Vector2(CARD_W - 8, 16)
+	stars.position = Vector2(4, CARD_H - 43)
+	slot.add_child(stars)
+	var nm := _lbl(name_s, 11, Color(0.55, 0.58, 0.65, 0.70))
+	nm.size     = Vector2(CARD_W, 22)
+	nm.position = Vector2(0, CARD_H - 24)
+	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nm.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	slot.add_child(nm)
 
 func _fill_empty(slot: Panel) -> void:
 	slot.add_theme_stylebox_override("panel",
