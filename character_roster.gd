@@ -131,25 +131,12 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 			Color(r_col.r, r_col.g, r_col.b, 0.40), 8, 1))
 
 	var portrait_h := CARD_H - 46.0
-	var ppath: String = PORTRAITS.get(name_s, "")
-	if ppath != "" and ResourceLoader.exists(ppath):
-		var tex: Texture2D = load(ppath)
-		if tex:
-			var img := TextureRect.new()
-			img.texture      = tex
-			img.size         = Vector2(CARD_W, portrait_h * 1.6)
-			img.position     = Vector2(0, -portrait_h * 0.25)
-			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			slot.add_child(img)
-	else:
-		slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h),
-			Color(elem_col.r * 0.15, elem_col.g * 0.15, elem_col.b * 0.25, 1.0)))
-		var el := _lbl(elem_s, 48, Color(1, 1, 1, 0.85))
-		el.size = Vector2(CARD_W, portrait_h)
-		el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h),
+		Color(elem_col.r * 0.15, elem_col.g * 0.15, elem_col.b * 0.25, 1.0)))
+	var el := _lbl(elem_s, 48, Color(1, 1, 1, 0.85))
+	el.size = Vector2(CARD_W, portrait_h)
+	el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		slot.add_child(el)
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
