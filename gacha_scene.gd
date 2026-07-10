@@ -436,16 +436,11 @@ func _build_info_card() -> void:
 	pity4_row.add_child(_new_pity4_lbl)
 	cy += 22
 
-	# Bottom action buttons (Exchange / View Details)
+	# Bottom action button (View Details)
 	var btn_y := ih - 52.0
-	var ex_btn := _ghost_btn("แลกเปลี่ยน", 12)
-	ex_btn.size     = Vector2((iw - pad * 2 - 8) * 0.5, 38)
-	ex_btn.position = Vector2(pad, btn_y)
-	card.add_child(ex_btn)
-
 	var det_btn := _ghost_btn("ดูรายละเอียด", 12)
-	det_btn.size     = Vector2((iw - pad * 2 - 8) * 0.5, 38)
-	det_btn.position = Vector2(pad + (iw - pad * 2 - 8) * 0.5 + 8, btn_y)
+	det_btn.size     = Vector2(iw - pad * 2, 38)
+	det_btn.position = Vector2(pad, btn_y)
 	card.add_child(det_btn)
 
 # ── Top bar ──────────────────────────────────────────────────────
@@ -505,9 +500,8 @@ func _build_bottom_bar() -> void:
 	var btn_h := 46.0
 	var btn_y := (BOT_H - btn_h) * 0.5
 
-	# Left action buttons: แลกเปลี่ยน | ดูรายละเอียด | ประวัติ
+	# Left action buttons: ดูรายละเอียด | ประวัติ
 	var left_btns := [
-		{"label": "แลกเปลี่ยน",    "w": 150.0},
 		{"label": "ดูรายละเอียด", "w": 150.0},
 		{"label": "ประวัติ",        "w": 130.0},
 	]
