@@ -168,16 +168,10 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 	panel_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(panel_bg)
 
-	# Back button
+	# Back button (far right)
 	var back := _make_back_btn()
-	back.position = Vector2(RIGHT_X + 14, 14)
+	back.position = Vector2(RIGHT_X + RIGHT_W - 46, 14)
 	add_child(back)
-
-	# Character name
-	var hdr_name := _lbl(char_name, 20, C_TEXT)
-	hdr_name.position = Vector2(RIGHT_X + 56, 16)
-	hdr_name.size = Vector2(RIGHT_W - 70, 26)
-	add_child(hdr_name)
 
 	# Level box + "+" button
 	var level: int     = int(data.get("level", 1))
