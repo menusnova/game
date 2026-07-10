@@ -78,9 +78,9 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 		sym.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		add_child(sym)
 
-	# Gradient overlay (bottom 320px, 5 layers)
+	# Gradient overlay — starts at stat box top (VH-130), 5 layers
 	for i in 5:
-		var layer_h := 64.0
+		var layer_h := 26.0
 		var alpha := 0.10 + i * 0.14
 		var ly := VH - layer_h * (5 - i)
 		add_child(_crect(Vector2(0, ly), Vector2(LEFT_W, layer_h + 1),
