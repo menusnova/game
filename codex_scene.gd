@@ -559,16 +559,25 @@ func _open_element_detail(elem: Dictionary) -> void:
 	real_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(real_title)
 
+	# Clip wrapper so autowrap text can't bleed into sections below
+	var desc_clip := Panel.new()
+	desc_clip.position = Vector2(20, 128)
+	desc_clip.size = Vector2(IW, 116)
+	desc_clip.clip_contents = true
+	desc_clip.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0)))
+	desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(desc_clip)
+
 	var real_desc := Label.new()
 	real_desc.text = elem["real_desc"]
-	real_desc.position = Vector2(20, 128)
+	real_desc.position = Vector2(0, 0)
 	real_desc.size = Vector2(IW, 116)
 	real_desc.add_theme_font_size_override("font_size", 11)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
 	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	real_desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	real_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(real_desc)
+	desc_clip.add_child(real_desc)
 
 	# Divider 2
 	var div2 := ColorRect.new()
@@ -588,15 +597,23 @@ func _open_element_detail(elem: Dictionary) -> void:
 	how_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(how_title)
 
+	var how_clip := Panel.new()
+	how_clip.position = Vector2(20, 276)
+	how_clip.size = Vector2(IW, 20)
+	how_clip.clip_contents = true
+	how_clip.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0)))
+	how_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(how_clip)
+
 	var how := Label.new()
 	how.text = elem["how_to_get"]
-	how.position = Vector2(20, 276)
+	how.position = Vector2(0, 0)
 	how.size = Vector2(IW, 20)
 	how.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	how.add_theme_font_size_override("font_size", 11)
 	how.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
 	how.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(how)
+	how_clip.add_child(how)
 
 	# Divider 3
 	var div3 := ColorRect.new()
