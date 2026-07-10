@@ -137,8 +137,8 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		if tex:
 			var img := TextureRect.new()
 			img.texture      = tex
-			img.size         = Vector2(CARD_W, portrait_h + 12)
-			img.position     = Vector2(0, 0)
+			img.size         = Vector2(CARD_W, portrait_h * 1.6)
+			img.position     = Vector2(0, -portrait_h * 0.25)
 			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
