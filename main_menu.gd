@@ -239,9 +239,9 @@ func _setup_home_character() -> void:
 	]
 
 	const CX    := 490.0   # center x
-	const CW    := 320.0   # character width
-	const CH    := 480.0   # character height
-	const BOT_Y := 608.0   # bottom of character (above chat bar)
+	const CW    := 520.0   # character width
+	const CH    := 720.0   # character height
+	const BOT_Y := 640.0   # bottom of character
 
 	var char_root := Control.new()
 	char_root.name = "_HomeChar"
@@ -250,14 +250,6 @@ func _setup_home_character() -> void:
 	char_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.z_index  = 3
 	add_child(char_root)
-
-	# Shadow glow under feet
-	var glow := ColorRect.new()
-	glow.size     = Vector2(CW * 0.85, 22)
-	glow.position = Vector2(CW * 0.075, CH - 14)
-	glow.color    = Color(0.25, 0.55, 1.0, 0.22)
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	char_root.add_child(glow)
 
 	# Portrait image — full body
 	var portrait := TextureRect.new()
