@@ -4,16 +4,15 @@ const SC_MAIN   := "res://main_menu.tscn"
 const SC_DETAIL := "res://character_scene.tscn"
 
 # ── Layout ────────────────────────────────────────────────────
-const COLS    := 6
-const ROWS    := 2
-const CARD_W  := 162.0
-const CARD_H  := 234.0
-const GAP_X   := 10.0
-const GAP_Y   := 10.0
-const TOP_H   := 52.0
-const BOT_H   := 54.0
-const VW      := 1152.0
-const VH      := 648.0
+const COLS   := 6
+const ROWS   := 2
+const CARD_W := 162.0
+const CARD_H := 234.0
+const GAP_X  := 10.0
+const GAP_Y  := 10.0
+const TOP_H  := 52.0
+const VW     := 1152.0
+const VH     := 648.0
 
 # ── Colors ────────────────────────────────────────────────────
 const C_BG    := Color(0.030, 0.032, 0.068, 1.0)
@@ -30,40 +29,13 @@ const PORTRAITS := {
 	"Seraph":    "res://image/lyra_3.png",
 }
 
-const SQUAD_LABELS  := ["1st Squad", "2nd Squad", "3rd Squad", "4th Squad"]
-const NUM_SQUADS    := 4
-const TOTAL_SLOTS   := COLS * ROWS  # 12
-
-# _squads[squad_idx] = Array of TOTAL_SLOTS (Dictionary or null)
-var _squads: Array = []
-var _cur_squad: int = 0
-
-var _grid_panels: Array  = []
-var _tab_btns: Array[Button] = []
+var _grid_panels: Array = []
 @onready var _fade: ColorRect = $FadeOverlay
 
 func _ready() -> void:
-	# Init squad data
-	for _i in NUM_SQUADS:
-		var row: Array = []
-		for _j in TOTAL_SLOTS:
-			row.append(null)
-		_squads.append(row)
-
-	# Fill squad 0: show all known characters (owned=usable, not owned=locked)
-	var roster := CharacterManager.get_roster()
-	for i in mini(roster.size(), TOTAL_SLOTS):
-		_squads[0][i] = roster[i]
-
-	# Re-sync when gacha unlocks a character
-	CharacterManager.character_unlocked.connect(_on_character_unlocked)
-
 	_build_ui()
-
 	var t := create_tween()
 	t.tween_property(_fade, "color:a", 0.0, 0.28)
-
-# ── UI build ──────────────────────────────────────────────────
 
 func _build_ui() -> void:
 	var bg := ColorRect.new()
@@ -74,14 +46,12 @@ func _build_ui() -> void:
 
 	_build_top_bar()
 	_build_grid()
-	_build_bottom_bar()
-	_refresh_squad()
+	_fill_grid()
 
 func _build_top_bar() -> void:
 	add_child(_crect(Vector2(0, 0), Vector2(VW, TOP_H), C_BAR))
 	add_child(_crect(Vector2(0, TOP_H), Vector2(VW, 1), C_LINE))
 
-	# Back button
 	var back := _icon_btn(Vector2(10, 10), Vector2(32, 32), "‹")
 	back.gui_input.connect(func(ev):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
@@ -89,33 +59,18 @@ func _build_top_bar() -> void:
 	)
 	add_child(back)
 
-	# Title
-	var title := _lbl("Squad Formation", 16, C_TEXT)
+	var title := _lbl("Characters", 16, C_TEXT)
 	title.position = Vector2(54, 0)
 	title.size = Vector2(260, TOP_H)
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	add_child(title)
 
-	# Quick Select button
-	var qs := _action_btn("  Quick Select", Color(0.35, 0.65, 1.0), Vector2(140, 32))
-	qs.position = Vector2(970, 10)
-	add_child(qs)
-
-	# Clear (✕) button
-	var clr := _icon_btn(Vector2(1122, 10), Vector2(32, 32), "✕")
-	clr.gui_input.connect(func(ev):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			for i in TOTAL_SLOTS: _squads[_cur_squad][i] = null
-			_refresh_squad()
-	)
-	add_child(clr)
-
 func _build_grid() -> void:
-	var area_h := VH - TOP_H - BOT_H
+	var area_h := VH - TOP_H
 	var grid_w := COLS * CARD_W + (COLS - 1) * GAP_X
 	var grid_h := ROWS * CARD_H + (ROWS - 1) * GAP_Y
-	var ox     := (VW - grid_w) / 2.0
-	var oy     := TOP_H + (area_h - grid_h) / 2.0
+	var ox := (VW - grid_w) / 2.0
+	var oy := TOP_H + (area_h - grid_h) / 2.0
 
 	_grid_panels = []
 	for row in ROWS:
@@ -130,57 +85,11 @@ func _build_grid() -> void:
 			_grid_panels.append(slot)
 			add_child(slot)
 
-func _build_bottom_bar() -> void:
-	add_child(_crect(Vector2(0, VH - BOT_H - 1), Vector2(VW, 1), C_LINE))
-	add_child(_crect(Vector2(0, VH - BOT_H), Vector2(VW, BOT_H), C_BAR))
-
-	var tab_w := 160.0
-	_tab_btns = []
-	for i in NUM_SQUADS:
-		var btn := Button.new()
-		btn.text     = SQUAD_LABELS[i]
-		btn.size     = Vector2(tab_w, BOT_H)
-		btn.position = Vector2(i * tab_w, VH - BOT_H)
-		btn.focus_mode = Control.FOCUS_NONE
-		btn.add_theme_font_size_override("font_size", 13)
-		var blank := _flat(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0)
-		for s in ["normal", "hover", "pressed"]:
-			btn.add_theme_stylebox_override(s, blank)
-		btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-		btn.pressed.connect(_switch_squad.bind(i))
-		_tab_btns.append(btn)
-		add_child(btn)
-
-	# Mission Start button
-	var ms_w := 180.0
-	var ms := Button.new()
-	ms.text     = "MISSION START"
-	ms.size     = Vector2(ms_w, BOT_H)
-	ms.position = Vector2(VW - ms_w, VH - BOT_H)
-	ms.focus_mode = Control.FOCUS_NONE
-	ms.add_theme_font_size_override("font_size", 13)
-	ms.add_theme_color_override("font_color", Color(1.0, 0.95, 0.88, 1.0))
-	var ms_sb := _flat(Color(0.78, 0.22, 0.06, 1.0), Color(0, 0, 0, 0), 0, 0)
-	for s in ["normal", "hover", "pressed", "focus"]:
-		ms.add_theme_stylebox_override(s, ms_sb)
-	add_child(ms)
-
-# ── Grid refresh ──────────────────────────────────────────────
-
-func _on_character_unlocked(_char_name: String) -> void:
-	# Re-sync roster data so newly unlocked characters show as owned
+func _fill_grid() -> void:
 	var roster := CharacterManager.get_roster()
-	for s in NUM_SQUADS:
-		for i in mini(roster.size(), TOTAL_SLOTS):
-			_squads[s][i] = roster[i]
-	_refresh_squad()
-
-func _refresh_squad() -> void:
-	var squad := _squads[_cur_squad] as Array
 	for i in _grid_panels.size():
 		var slot := _grid_panels[i] as Panel
-		for c in slot.get_children(): c.queue_free()
-		var data: Variant = squad[i] if i < squad.size() else null
+		var data: Variant = roster[i] if i < roster.size() else null
 		if data != null:
 			var owned: bool = bool((data as Dictionary).get("owned", false))
 			if owned:
@@ -189,12 +98,11 @@ func _refresh_squad() -> void:
 				_fill_locked(slot, data as Dictionary)
 		else:
 			_fill_empty(slot)
-	_update_tab_style()
 
 func _fill_character(slot: Panel, data: Dictionary) -> void:
-	var rarity: int    = int(data.get("rarity", 3))
-	var name_s: String = str(data.get("name", ""))
-	var elem_s: String = str(data.get("element", ""))
+	var rarity: int     = int(data.get("rarity", 3))
+	var name_s: String  = str(data.get("name", ""))
+	var elem_s: String  = str(data.get("element", ""))
 	var elem_col: Color = data.get("element_color", Color(0.4, 0.4, 0.6)) as Color
 
 	var r_col: Color
@@ -203,12 +111,10 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		4: r_col = Color(0.72, 0.50, 1.00)
 		_: r_col = Color(0.35, 0.65, 1.00)
 
-	# Card background
 	slot.add_theme_stylebox_override("panel",
 		_flat(Color(elem_col.r * 0.10, elem_col.g * 0.10, elem_col.b * 0.18, 1.0),
 			Color(r_col.r, r_col.g, r_col.b, 0.40), 8, 1))
 
-	# Portrait image
 	var portrait_h := CARD_H - 46.0
 	var ppath: String = PORTRAITS.get(name_s, "")
 	if ppath != "" and ResourceLoader.exists(ppath):
@@ -231,17 +137,14 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		slot.add_child(el)
 
-	# Rarity bar (top)
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r, r_col.g, r_col.b, 0.75)))
 
-	# Stars (top-left)
 	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r, r_col.g, r_col.b, 0.90))
 	stars.size     = Vector2(CARD_W - 28, 16)
 	stars.position = Vector2(4, 5)
 	slot.add_child(stars)
 
-	# Element badge (top-right)
 	var el_dot := Panel.new()
 	el_dot.size     = Vector2(22, 22)
 	el_dot.position = Vector2(CARD_W - 25, 3)
@@ -257,11 +160,11 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	el_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(el_l)
 
-	# Bottom dark strip
 	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
 		Color(0.01, 0.01, 0.04, 0.82)))
 
-	# Level badge
+	var char_data := CharacterManager.get_character_data(name_s)
+	var lv_str := "Lv %d" % int(char_data.get("level", 1)) if not char_data.is_empty() else "Lv 1"
 	var lv_bg := Panel.new()
 	lv_bg.size     = Vector2(52, 20)
 	lv_bg.position = Vector2(5, CARD_H - 43)
@@ -269,14 +172,13 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	lv_bg.add_theme_stylebox_override("panel",
 		_flat(Color(0, 0, 0, 0.55), Color(1, 1, 1, 0.10), 4, 1))
 	slot.add_child(lv_bg)
-	var lv := _lbl("Lv 42", 9, Color(0.88, 0.92, 1.0, 0.95))
+	var lv := _lbl(lv_str, 9, Color(0.88, 0.92, 1.0, 0.95))
 	lv.size     = Vector2(52, 20)
 	lv.position = Vector2(5, CARD_H - 43)
 	lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lv.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(lv)
 
-	# Name
 	var nm := _lbl(name_s, 11, C_TEXT)
 	nm.size     = Vector2(CARD_W, 22)
 	nm.position = Vector2(0, CARD_H - 24)
@@ -286,14 +188,14 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 
 	slot.gui_input.connect(func(ev):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			CharacterManager.selected_character = name_s
 			if ResourceLoader.exists(SC_DETAIL):
 				SceneTransition.fade_to(SC_DETAIL)
 	)
 
 func _fill_locked(slot: Panel, data: Dictionary) -> void:
-	var rarity: int    = int(data.get("rarity", 3))
-	var name_s: String = str(data.get("name", ""))
-	var elem_s: String = str(data.get("element", ""))
+	var rarity: int     = int(data.get("rarity", 3))
+	var name_s: String  = str(data.get("name", ""))
 	var elem_col: Color = data.get("element_color", Color(0.4, 0.4, 0.6)) as Color
 
 	var r_col: Color
@@ -302,12 +204,10 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 		4: r_col = Color(0.72, 0.50, 1.00)
 		_: r_col = Color(0.35, 0.65, 1.00)
 
-	# Dim card background
 	slot.add_theme_stylebox_override("panel",
 		_flat(Color(elem_col.r * 0.05, elem_col.g * 0.05, elem_col.b * 0.09, 1.0),
 			Color(r_col.r * 0.4, r_col.g * 0.4, r_col.b * 0.4, 0.25), 8, 1))
 
-	# Portrait (desaturated via modulate)
 	var portrait_h := CARD_H - 46.0
 	var ppath: String = PORTRAITS.get(name_s, "")
 	if ppath != "" and ResourceLoader.exists(ppath):
@@ -323,22 +223,17 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			slot.add_child(img)
 
-	# Rarity bar dim
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r * 0.35, r_col.g * 0.35, r_col.b * 0.35, 0.40)))
-
-	# Dark overlay
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
 		Color(0.01, 0.01, 0.05, 0.55)))
 
-	# Lock icon (center)
 	var lock := _lbl("🔒", 28, Color(1, 1, 1, 0.55))
 	lock.size     = Vector2(CARD_W, CARD_H - 60)
 	lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lock.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(lock)
 
-	# "Gacha" label under lock
 	var gacha_l := _lbl("Gacha", 10, Color(r_col.r, r_col.g, r_col.b, 0.55))
 	gacha_l.size     = Vector2(CARD_W, 20)
 	gacha_l.position = Vector2(0, CARD_H / 2.0 + 6)
@@ -346,7 +241,6 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	gacha_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(gacha_l)
 
-	# Name (bottom)
 	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
 		Color(0.01, 0.01, 0.04, 0.75)))
 	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r * 0.5, r_col.g * 0.5, r_col.b * 0.5, 0.55))
@@ -368,23 +262,6 @@ func _fill_empty(slot: Panel) -> void:
 	plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	plus.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(plus)
-
-# ── Tab switching ─────────────────────────────────────────────
-
-func _switch_squad(idx: int) -> void:
-	_cur_squad = idx
-	_refresh_squad()
-
-func _update_tab_style() -> void:
-	for i in _tab_btns.size():
-		var active := (i == _cur_squad)
-		_tab_btns[i].add_theme_color_override("font_color",
-			Color(0.45, 0.75, 1.0, 1.0) if active else C_DIM)
-		for c in _tab_btns[i].get_children():
-			if c is ColorRect: c.queue_free()
-		if active:
-			var line := _crect(Vector2(0, 0), Vector2(160, 2), Color(0.45, 0.75, 1.0, 0.80))
-			_tab_btns[i].add_child(line)
 
 # ── Helpers ───────────────────────────────────────────────────
 
@@ -424,17 +301,4 @@ func _icon_btn(pos: Vector2, sz: Vector2, icon: String) -> Panel:
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	btn.add_child(l)
-	return btn
-
-func _action_btn(text: String, col: Color, sz: Vector2) -> Button:
-	var btn := Button.new()
-	btn.text = text; btn.size = sz
-	btn.focus_mode = Control.FOCUS_NONE
-	btn.add_theme_font_size_override("font_size", 11)
-	btn.add_theme_color_override("font_color", col)
-	var sb := _flat(Color(col.r * 0.18, col.g * 0.18, col.b * 0.30, 0.92),
-		Color(col.r, col.g, col.b, 0.50), 6, 1)
-	for s in ["normal", "hover", "pressed"]:
-		btn.add_theme_stylebox_override(s, sb)
-	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	return btn
