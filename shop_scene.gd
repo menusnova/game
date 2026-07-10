@@ -345,20 +345,19 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		cost_text = str(int(item.get("cost", 0)))
 
 	var cur_icon_path := str(shop.get("cur_icon", ""))
-	const BADGE_H := 22.0
-	const BADGE_W := 100.0
-	var badge_x := (pw - BADGE_W) * 0.5
-	var badge_y := IMG_H + 28.0
+	const BADGE_H := 24.0
+	const BADGE_PAD := 8.0
+	var badge_y := IMG_H + 26.0
 
 	var badge := Panel.new()
-	badge.size     = Vector2(BADGE_W, BADGE_H)
-	badge.position = Vector2(badge_x, badge_y)
+	badge.size     = Vector2(pw - BADGE_PAD * 2, BADGE_H)
+	badge.position = Vector2(BADGE_PAD, badge_y)
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_sb := StyleBoxFlat.new()
 	badge_sb.bg_color          = Color(0.10, 0.35, 0.90, 0.90)
 	badge_sb.border_color      = Color(0.40, 0.65, 1.0, 0.70)
 	badge_sb.set_border_width_all(1)
-	badge_sb.set_corner_radius_all(11)
+	badge_sb.set_corner_radius_all(8)
 	badge.add_theme_stylebox_override("panel", badge_sb)
 	card.add_child(badge)
 
