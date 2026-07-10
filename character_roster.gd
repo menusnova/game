@@ -38,9 +38,11 @@ func _ready() -> void:
 	t.tween_property(_fade, "color:a", 0.0, 0.28)
 
 func _build_ui() -> void:
-	var bg := ColorRect.new()
+	var bg := TextureRect.new()
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = C_BG
+	bg.texture = load("res://image/labbg.jpg")
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 
