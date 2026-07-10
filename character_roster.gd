@@ -60,7 +60,10 @@ func _build_top_bar() -> void:
 	back.pivot_offset = Vector2(21, 22)
 	back.mouse_filter = Control.MOUSE_FILTER_STOP
 	var back_sb := StyleBoxFlat.new()
-	back_sb.bg_color = Color(0, 0, 0, 0)
+	back_sb.bg_color = Color(0.0, 0.05, 0.15, 0.55)
+	back_sb.border_color = Color(0.45, 0.72, 1.0, 0.90)
+	back_sb.set_border_width_all(2)
+	back_sb.set_corner_radius_all(22)
 	back.add_theme_stylebox_override("panel", back_sb)
 	var back_icon := TextureRect.new()
 	back_icon.texture      = preload("res://image/back.png")

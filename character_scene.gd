@@ -338,7 +338,10 @@ func _make_back_btn() -> Panel:
 	btn.z_index     = 20
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0)
+	sb.bg_color = Color(0.0, 0.05, 0.15, 0.55)
+	sb.border_color = Color(0.45, 0.72, 1.0, 0.90)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(22)
 	btn.add_theme_stylebox_override("panel", sb)
 	var icon := TextureRect.new()
 	icon.texture      = preload("res://image/back.png")
