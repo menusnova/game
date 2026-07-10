@@ -145,11 +145,20 @@ func _ready() -> void:
 		"H": "Hydrogen", "O": "Oxygen",  "Na": "Sodium",
 		"Cl": "Chlorine", "Fe": "Iron",   "C":  "Carbon",
 	}
+	# Map lab compound keys → codex element ids
+	const COMPOUND_TO_ELEM := {
+		"water": "Water", "salt": "Salt", "rust": "Rust",
+	}
 	_discovered = []
 	for entry in PlayerData.discovered_elements:
 		var mapped: String = SYM_TO_ID.get(entry, entry)
 		if mapped not in _discovered:
 			_discovered.append(mapped)
+	# Unlock compound-elements when discovered in lab
+	for comp_key in PlayerData.discovered_compounds:
+		var elem_id: String = COMPOUND_TO_ELEM.get(comp_key, "")
+		if elem_id != "" and elem_id not in _discovered:
+			_discovered.append(elem_id)
 	for base in ["Hydrogen","Oxygen","Sodium","Chlorine","Iron"]:
 		if base not in _discovered:
 			_discovered.append(base)
