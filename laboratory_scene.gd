@@ -713,26 +713,21 @@ func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
 
 func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
 	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2
+	btn.position = pos
 	btn.z_index = 20
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.04, 0.07, 0.16, 0.92)
-	sb.border_color = Color(0.35, 0.55, 1.0, 0.30)
-	sb.set_border_width_all(1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 12)
+	sb.bg_color = Color(0, 0, 0, 0)
 	btn.add_theme_stylebox_override("panel", sb)
+	btn.size        = Vector2(42, 45)
+	btn.pivot_offset = Vector2(21, 22)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var lbl := Label.new()
-	lbl.text = "\u2039"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 22)
-	lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.95))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
+	var icon := TextureRect.new()
+	icon.texture      = preload("res://image/back.png")
+	icon.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(icon)
 	btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
