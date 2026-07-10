@@ -133,6 +133,20 @@ theme_override_styles/pressed = SubResource("SB_TabBlank")
 theme_override_styles/focus = SubResource("SB_Blank")
 text = "🏆  ความสำเร็จ"
 
+[node name="CompoundsBtn" type="Button" parent="TabBar"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 5.0
+offset_right = 620.0
+offset_bottom = 39.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.70, 0.90, 0.8)
+theme_override_styles/normal = SubResource("SB_TabBlank")
+theme_override_styles/hover = SubResource("SB_BtnHover")
+theme_override_styles/pressed = SubResource("SB_TabBlank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "📦  สารประกอบ"
+
 [node name="ContentScroll" type="ScrollContainer" parent="."]
 layout_mode = 0
 offset_left = 0.0

@@ -113,8 +113,11 @@ const C_GOLD   := Color(1.00, 0.82, 0.25, 1.0)
 const C_DONE   := Color(0.30, 0.85, 0.55, 1.0)
 const C_LOCK   := Color(0.25, 0.28, 0.38, 1.0)
 
-var _tab := 0  # 0=elements, 1=achievements
+var _tab := 0  # 0=elements, 1=achievements, 2=compounds
 var _tab_btns: Array[Button] = []
+
+# Compound keys already shown in elements tab — skip in compounds tab
+const ELEM_COMPOUND_KEYS := ["water", "salt", "rust"]
 var _detail_overlay: Control
 var _discovered: Array[String] = []  # element ids unlocked
 
@@ -123,7 +126,7 @@ var _discovered: Array[String] = []  # element ids unlocked
 @onready var _fade: ColorRect = $FadeOverlay
 
 func _ready() -> void:
-	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn]
+	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn, $TabBar/CompoundsBtn]
 	for i in _tab_btns.size():
 		_tab_btns[i].pressed.connect(_switch_tab.bind(i))
 
@@ -199,8 +202,10 @@ func _switch_tab(idx: int) -> void:
 
 	if idx == 0:
 		_build_element_tab()
-	else:
+	elif idx == 1:
 		_build_achievement_tab()
+	else:
+		_build_compound_tab()
 
 # ════════════════════════════════════════════════════════════════
 #  TAB 0 — Elements
@@ -460,6 +465,118 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 	row.add_child(div)
 
 	return row
+
+# ════════════════════════════════════════════════════════════════
+#  TAB 2 — Compounds (from ReactionDB, skip ones already in Elements tab)
+# ════════════════════════════════════════════════════════════════
+func _build_compound_tab() -> void:
+	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
+	var keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
+	var found_count := keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
+
+	var vbox := VBoxContainer.new()
+	vbox.custom_minimum_size = Vector2(1152, 0)
+	vbox.add_theme_constant_override("separation", 0)
+	_content.add_child(vbox)
+
+	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, keys.size()]))
+
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var grid_wrap := MarginContainer.new()
+	grid_wrap.add_theme_constant_override("margin_left", 20)
+	grid_wrap.add_theme_constant_override("margin_right", 20)
+	grid_wrap.add_theme_constant_override("margin_top", 12)
+	grid_wrap.add_theme_constant_override("margin_bottom", 20)
+	grid_wrap.add_child(grid)
+	vbox.add_child(grid_wrap)
+
+	for key in keys:
+		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
+		var is_found: bool = key in PlayerData.discovered_compounds
+		grid.add_child(_make_compound_card(compound, is_found))
+
+func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
+	var card := Panel.new()
+	card.custom_minimum_size = Vector2(260, 130)
+	card.clip_contents = true
+
+	if is_found:
+		card.add_theme_stylebox_override("panel", _flat(
+			Color(0.05, 0.10, 0.22, 0.92), Color(0.35, 0.60, 1, 0.35), 10, 1))
+
+		var fml := Label.new()
+		fml.text = str(compound.get("formula", ""))
+		fml.position = Vector2(8, 14)
+		fml.size = Vector2(56, 32)
+		fml.add_theme_font_size_override("font_size", 22)
+		fml.add_theme_color_override("font_color", Color(0.48, 0.84, 1, 0.92))
+		fml.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(fml)
+
+		var nm := Label.new()
+		nm.text = str(compound.get("name", ""))
+		nm.position = Vector2(68, 10)
+		nm.size = Vector2(182, 20)
+		nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		nm.add_theme_font_size_override("font_size", 14)
+		nm.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.90))
+		nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(nm)
+
+		var tp := Label.new()
+		tp.text = str(compound.get("type", ""))
+		tp.position = Vector2(68, 32)
+		tp.size = Vector2(182, 16)
+		tp.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		tp.add_theme_font_size_override("font_size", 9)
+		tp.add_theme_color_override("font_color", Color(0.55, 0.75, 1, 0.55))
+		tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(tp)
+
+		var div := ColorRect.new()
+		div.color = Color(0.3, 0.55, 1, 0.15)
+		div.size = Vector2(240, 1)
+		div.position = Vector2(10, 56)
+		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(div)
+
+		var desc := Label.new()
+		desc.text = str(compound.get("description", ""))
+		desc.position = Vector2(10, 62)
+		desc.size = Vector2(240, 58)
+		desc.add_theme_font_size_override("font_size", 9)
+		desc.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9, 0.70))
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(desc)
+	else:
+		card.add_theme_stylebox_override("panel", _flat(
+			Color(0.04, 0.06, 0.12, 0.72), Color(0.20, 0.28, 0.48, 0.15), 10, 1))
+
+		var q := Label.new()
+		q.text = "?"
+		q.size = Vector2(260, 80)
+		q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		q.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		q.add_theme_font_size_override("font_size", 32)
+		q.add_theme_color_override("font_color", Color(0.4, 0.45, 0.6, 0.5))
+		card.add_child(q)
+
+		var locked_lbl := Label.new()
+		locked_lbl.text = "ยังไม่ค้นพบ"
+		locked_lbl.size = Vector2(260, 30)
+		locked_lbl.position = Vector2(0, 88)
+		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		locked_lbl.add_theme_font_size_override("font_size", 11)
+		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
+		card.add_child(locked_lbl)
+
+	return card
 
 # ── Element detail overlay ────────────────────────────────────────
 func _build_detail_overlay() -> void:

@@ -241,19 +241,27 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
 		Color(0.01, 0.01, 0.05, 0.55)))
 
+	# Center lock + label group in portrait area (portrait_h = CARD_H - 46)
+	const PORTRAIT_H := CARD_H - 46.0
+	const LOCK_SZ    := 64.0
+	const LABEL_H    := 18.0
+	const GAP        := 6.0
+	const GROUP_H    := LOCK_SZ + GAP + LABEL_H
+	var gy := (PORTRAIT_H - GROUP_H) * 0.5
+
 	var lock := TextureRect.new()
 	lock.texture      = preload("res://image/lock_chain_x.png")
 	lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	lock.size         = Vector2(64, 64)
-	lock.position     = Vector2((CARD_W - 64) * 0.5, (CARD_H - 60 - 64) * 0.5)
+	lock.size         = Vector2(LOCK_SZ, LOCK_SZ)
+	lock.position     = Vector2((CARD_W - LOCK_SZ) * 0.5, gy)
 	lock.modulate     = Color(1, 1, 1, 0.85)
 	lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(lock)
 
 	var gacha_l := _lbl("Gacha", 10, Color(r_col.r, r_col.g, r_col.b, 0.55))
-	gacha_l.size     = Vector2(CARD_W, 20)
-	gacha_l.position = Vector2(0, CARD_H / 2.0 + 6)
+	gacha_l.size     = Vector2(CARD_W, LABEL_H)
+	gacha_l.position = Vector2(0, gy + LOCK_SZ + GAP)
 	gacha_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	gacha_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(gacha_l)
