@@ -235,68 +235,86 @@ func _make_element_card(elem: Dictionary) -> Control:
 	card.clip_contents = true
 
 	if discovered:
-		# Symbol badge
-		var badge := Label.new()
-		badge.text = elem["symbol"]
-		badge.position = Vector2(10, 8)
-		badge.add_theme_font_size_override("font_size", 28)
-		badge.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.9))
-		card.add_child(badge)
-
-		# Atomic number
+		# Atomic number — top-left small
 		if elem["number"] > 0:
 			var num := Label.new()
 			num.text = str(elem["number"])
-			num.position = Vector2(14, 50)
+			num.position = Vector2(8, 6)
+			num.size = Vector2(30, 14)
 			num.add_theme_font_size_override("font_size", 9)
-			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.5))
+			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
 			card.add_child(num)
 
-		# Name
+		# Symbol — top-left large (like lab tile)
+		var badge := Label.new()
+		badge.text = elem["symbol"]
+		badge.position = Vector2(8, 18)
+		badge.size = Vector2(56, 36)
+		badge.add_theme_font_size_override("font_size", 26)
+		badge.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.95))
+		card.add_child(badge)
+
+		# Thai name — right of symbol
 		var name_lbl := Label.new()
 		name_lbl.text = elem["name_th"]
-		name_lbl.position = Vector2(72, 10)
-		name_lbl.add_theme_font_size_override("font_size", 15)
+		name_lbl.position = Vector2(68, 10)
+		name_lbl.size = Vector2(182, 20)
+		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_lbl.add_theme_font_size_override("font_size", 14)
 		name_lbl.add_theme_color_override("font_color", C_TEXT)
 		card.add_child(name_lbl)
 
-		# English name + type
+		# English name · type
 		var sub := Label.new()
 		sub.text = "%s  ·  %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(72, 30)
-		sub.add_theme_font_size_override("font_size", 10)
+		sub.position = Vector2(68, 32)
+		sub.size = Vector2(182, 16)
+		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		sub.add_theme_font_size_override("font_size", 9)
 		sub.add_theme_color_override("font_color", C_SUB)
 		card.add_child(sub)
 
-		# Short desc
+		# Divider
+		var div := ColorRect.new()
+		div.color = Color(col.r, col.g, col.b, 0.15)
+		div.size = Vector2(240, 1)
+		div.position = Vector2(10, 56)
+		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(div)
+
+		# Short desc — bottom area, clipped + wrapped
 		var desc := Label.new()
-		desc.text = elem["real_desc"].substr(0, 80) + "..."
-		desc.position = Vector2(10, 68)
-		desc.size = Vector2(240, 50)
+		desc.text = elem["real_desc"]
+		desc.position = Vector2(10, 62)
+		desc.size = Vector2(240, 58)
 		desc.add_theme_font_size_override("font_size", 9)
-		desc.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9, 0.75))
+		desc.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9, 0.70))
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		card.add_child(desc)
 
-		# Tap for detail
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed:
 				_open_element_detail(elem)
 		)
 	else:
-		# Locked
+		# Locked — style same as lab tile
 		var q := Label.new()
 		q.text = "?"
-		q.position = Vector2(10, 8)
-		q.add_theme_font_size_override("font_size", 36)
-		q.add_theme_color_override("font_color", Color(0.4, 0.45, 0.6, 0.6))
+		q.size = Vector2(260, 80)
+		q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		q.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		q.add_theme_font_size_override("font_size", 32)
+		q.add_theme_color_override("font_color", Color(0.4, 0.45, 0.6, 0.5))
 		card.add_child(q)
 
 		var locked_lbl := Label.new()
 		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.position = Vector2(72, 45)
-		locked_lbl.add_theme_font_size_override("font_size", 12)
-		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.7))
+		locked_lbl.size = Vector2(260, 30)
+		locked_lbl.position = Vector2(0, 88)
+		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		locked_lbl.add_theme_font_size_override("font_size", 11)
+		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
 		card.add_child(locked_lbl)
 
 	return card
