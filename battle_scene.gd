@@ -270,7 +270,7 @@ func _build_topbar() -> void:
 	_stage_lbl = _mk_label("Stage 1", 12, C_SUB, bar, Vector2(14, 11))
 	_turn_lbl  = _mk_label("เทิร์นของคุณ", 13, C_GOLD, bar, Vector2(426, 11), Vector2(300, 18), true)
 
-	var back := _make_back_btn(Vector2(1104, 4), Vector2(36, 36), func():
+	var back := _make_back_btn(Vector2(1104, 4), Vector2(42, 45), func():
 		if _battle_over or _player_turn: _go_back()
 	)
 	bar.add_child(back)

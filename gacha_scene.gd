@@ -432,7 +432,7 @@ func _build_top_bar() -> void:
 	add_child(bar)
 
 	# Back button — top-left
-	var back_btn := _make_visible_back_btn(Vector2(8, (TOP_H - 36) * 0.5), Vector2(36, 36), _go_back)
+	var back_btn := _make_visible_back_btn(Vector2(8, (TOP_H - 45) * 0.5), Vector2(42, 45), _go_back)
 	bar.add_child(back_btn)
 
 
