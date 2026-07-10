@@ -241,10 +241,14 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
 		Color(0.01, 0.01, 0.05, 0.55)))
 
-	var lock := _lbl("🔒", 28, Color(1, 1, 1, 0.55))
-	lock.size     = Vector2(CARD_W, CARD_H - 60)
-	lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	var lock := TextureRect.new()
+	lock.texture      = preload("res://image/lock_chain_x.png")
+	lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	lock.size         = Vector2(64, 64)
+	lock.position     = Vector2((CARD_W - 64) * 0.5, (CARD_H - 60 - 64) * 0.5)
+	lock.modulate     = Color(1, 1, 1, 0.85)
+	lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(lock)
 
 	var gacha_l := _lbl("Gacha", 10, Color(r_col.r, r_col.g, r_col.b, 0.55))

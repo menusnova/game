@@ -96,12 +96,14 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 	tile.add_child(name_lbl)
 
 	if not is_unlocked:
-		var lock := Label.new()
-		lock.text = "🔒"
+		var lock := TextureRect.new()
+		lock.texture      = preload("res://image/lock_chain_x.png")
+		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		lock.size         = Vector2(32, 32)
 		lock.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-		lock.offset_left = -13; lock.offset_right = 13; lock.offset_top = -11; lock.offset_bottom = 11
-		lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lock.add_theme_font_size_override("font_size", 11)
+		lock.offset_left = -16; lock.offset_right = 16; lock.offset_top = -16; lock.offset_bottom = 16
+		lock.modulate     = Color(1, 1, 1, 0.85)
 		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		tile.add_child(lock)
 
