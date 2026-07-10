@@ -150,7 +150,7 @@ func _build_hsr_ui() -> void:
 	_add_stars(bg)
 
 	# ── Art area (center-right) — character illustration ──
-	var art_x := THUMB_W + INFO_W + 16.0
+	var art_x := INFO_W + 16.0
 	var art_w := W - art_x
 	var art_h := H - TOP_H - BOT_H
 	var d_active: Dictionary = WARP_TYPES[_active_warp]
@@ -177,9 +177,6 @@ func _build_hsr_ui() -> void:
 		art_rect.z_index      = 0
 		add_child(art_rect)
 
-
-	# ── Left thumbnail strip ──
-	_build_thumb_strip()
 
 	# ── Info card ──
 	_build_info_card()
@@ -226,7 +223,7 @@ func _build_info_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	var ix := THUMB_W + 12.0
+	var ix := 12.0
 	var iy := TOP_H + 16.0
 	var iw := INFO_W
 	var ih := H - TOP_H - BOT_H - 32.0
@@ -505,7 +502,7 @@ func _build_bottom_bar() -> void:
 		{"label": "ดูรายละเอียด", "w": 150.0},
 		{"label": "ประวัติ",        "w": 130.0},
 	]
-	var lx := THUMB_W + INFO_W + 24.0
+	var lx := INFO_W + 24.0
 	for lb in left_btns:
 		var b := _ghost_btn(str(lb["label"]), 12)
 		b.size     = Vector2(float(lb["w"]), btn_h)
@@ -609,7 +606,7 @@ func _on_warp_tab(idx: int) -> void:
 	var old_art := get_node_or_null("_ArtRect")
 	if old_art: old_art.queue_free()
 	var d_new: Dictionary = WARP_TYPES[_active_warp]
-	var art_x := THUMB_W + INFO_W + 16.0
+	var art_x := INFO_W + 16.0
 	var art_tex2: Texture2D = _load_png(str(d_new.get("art_img", "")))
 	if art_tex2:
 		var art_rect2 := TextureRect.new()
