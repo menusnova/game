@@ -38,26 +38,6 @@ const SHOPS := [
 		"accent":   Color(0.70, 0.50, 1.00, 1.0),
 	},
 	{
-		"id":       "honor_store",
-		"label":    "Honor Store",
-		"icon":     "🎖️",
-		"currency": "Honor Point",
-		"cur_sym":  "HP",
-		"cur_col":  Color(1.00, 0.70, 0.25, 1.0),
-		"desc":     "ใช้ Honor Point จาก PVP และ Achievement",
-		"accent":   Color(1.00, 0.75, 0.30, 1.0),
-	},
-	{
-		"id":       "event_exchange",
-		"label":    "Event Exchange",
-		"icon":     "🎪",
-		"currency": "Event Token",
-		"cur_sym":  "ET",
-		"cur_col":  Color(0.30, 1.00, 0.65, 1.0),
-		"desc":     "ใช้ Event Token จาก Event พิเศษ",
-		"accent":   Color(0.25, 0.90, 0.60, 1.0),
-	},
-	{
 		"id":       "premium",
 		"label":    "Premium Store",
 		"icon":     "💎",
@@ -71,21 +51,10 @@ const SHOPS := [
 
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
-	# วัตถุดิบ synthesis
-	{"name": "Iron Ore",         "sub": "วัตถุดิบ ×10",    "cost": 100,  "icon": "🪨", "tag": "material"},
-	{"name": "Carbon Dust",      "sub": "วัตถุดิบ ×10",    "cost": 80,   "icon": "⬛", "tag": "material"},
-	{"name": "Hydrogen Gas",     "sub": "วัตถุดิบ ×10",    "cost": 60,   "icon": "💨", "tag": "material"},
-	{"name": "Reaction Catalyst","sub": "เพิ่มอัตรา synthesis","cost": 150, "icon": "⚗", "tag": "material"},
-	{"name": "Compound Base",    "sub": "สารประกอบ ×5",    "cost": 300,  "icon": "🧪", "tag": "material"},
-	# EXP material
-	{"name": "EXP Card S",       "sub": "EXP +500",         "cost": 50,   "icon": "📘", "tag": "exp"},
-	{"name": "EXP Card M",       "sub": "EXP +2000",        "cost": 200,  "icon": "📗", "tag": "exp"},
-	{"name": "EXP Card L",       "sub": "EXP +10000",       "cost": 800,  "icon": "📕", "tag": "exp"},
-	# อาหาร / ฟื้นฟู
-	{"name": "HP Potion S",      "sub": "ฟื้นฟู HP +30",   "cost": 30,   "icon": "🍶", "tag": "recovery"},
-	{"name": "HP Potion M",      "sub": "ฟื้นฟู HP +120",  "cost": 120,  "icon": "🍾", "tag": "recovery"},
-	{"name": "Elixir Fragment",  "sub": "ฟื้นฟู AP +2",    "cost": 80,   "icon": "✨", "tag": "recovery"},
-	{"name": "Battle Ration",    "sub": "บัฟ ATK +10% 3 รอบ","cost": 200, "icon": "🍱", "tag": "recovery"},
+	{"name": "Iron Ore",          "sub": "วัตถุดิบ ×10",         "cost": 100, "icon": "🪨", "tag": "material"},
+	{"name": "Reaction Catalyst", "sub": "เพิ่มอัตรา synthesis", "cost": 150, "icon": "⚗",  "tag": "material"},
+	{"name": "EXP Card M",        "sub": "EXP +2000",             "cost": 200, "icon": "📗", "tag": "exp"},
+	{"name": "HP Potion S",       "sub": "ฟื้นฟู HP +30",        "cost": 30,  "icon": "🍶", "tag": "recovery"},
 ]
 
 const SYNTHESIS_ITEMS := [
@@ -93,33 +62,11 @@ const SYNTHESIS_ITEMS := [
 	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1600, "icon": "💎", "tag": "gacha",  "badge": "Best"},
 	{"name": "Aether Pulse",     "sub": "พลังงาน Farm ×1",  "cost": 40,   "icon": "⚡", "tag": "energy"},
 	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "icon": "🔋", "tag": "energy", "badge": "Save"},
-	{"name": "Card Selector",    "sub": "เลือกการ์ดตัวละคร", "cost": 3200, "icon": "🃏", "tag": "selector"},
-	{"name": "Lens Selector",    "sub": "เลือก Light Lens",  "cost": 1600, "icon": "🔭", "tag": "selector"},
-]
-
-const HONOR_ITEMS := [
-	{"name": "Signature Card",   "sub": "การ์ด Signature ตัวละคร", "cost": 600, "icon": "🌟", "tag": "exclusive"},
-	{"name": "Prismatic Ore",    "sub": "วัตถุดิบหายาก ×3",         "cost": 120, "icon": "🪩", "tag": "material"},
-	{"name": "Honor Catalyst",   "sub": "วัตถุดิบหายาก ×5",         "cost": 200, "icon": "🔮", "tag": "material"},
-	{"name": "Title: Alchemist", "sub": "Exclusive Title",           "cost": 800, "icon": "📜", "tag": "cosmetic"},
-	{"name": "Honor Frame",      "sub": "กรอบ Avatar พิเศษ",        "cost": 500, "icon": "🖼️", "tag": "cosmetic"},
-	{"name": "Medal of Chemia",  "sub": "เครื่องหมายเกียรติยศ",      "cost": 300, "icon": "🏅", "tag": "cosmetic"},
-]
-
-const EVENT_ITEMS := [
-	{"name": "Event Skin",       "sub": "Skin Limited",            "cost": 800, "icon": "👗", "tag": "skin",   "badge": "Limited"},
-	{"name": "Event Card",       "sub": "การ์ด Event Exclusive",   "cost": 400, "icon": "🎴", "tag": "card",   "badge": "Limited"},
-	{"name": "Event Emblem",     "sub": "Decoration พิเศษ",        "cost": 200, "icon": "🎗️", "tag": "deco"},
-	{"name": "Event Material",   "sub": "วัสดุ Event Bundle ×10",  "cost": 100, "icon": "🎁", "tag": "material"},
-	{"name": "Prism Dye",        "sub": "เปลี่ยนสี Avatar",        "cost": 150, "icon": "🎨", "tag": "cosmetic"},
 ]
 
 const PREMIUM_ITEMS := [
-	{"name": "Aether Shard ×10","sub": "ครบชุด + Bonus ×10",      "price": "฿169", "icon": "💎", "tag": "shard",   "badge": "Best"},
-	{"name": "Aether Pulse ×60","sub": "พลังงาน Farm 60 วัน",     "price": "฿59",  "icon": "🔋", "tag": "energy"},
-	{"name": "Monthly Pass",    "sub": "รับรางวัลพิเศษ 30 วัน",  "price": "฿59",  "icon": "📅", "tag": "pass",    "badge": "Popular"},
-	{"name": "Starter Pack",    "sub": "ชุดสตาร์ท ซื้อได้ครั้งเดียว","price": "฿99","icon": "🎒", "tag": "pack",   "badge": "New"},
-	{"name": "Premium Skin",    "sub": "Skin Exclusive สุดพิเศษ",  "price": "฿399", "icon": "✨", "tag": "skin",    "badge": "Exclusive"},
+	{"name": "Monthly Pass",  "sub": "รับรางวัลพิเศษ 30 วัน",       "price": "฿59", "icon": "📅", "tag": "pass", "badge": "Popular", "coming_soon": true},
+	{"name": "Starter Pack",  "sub": "ชุดสตาร์ท ซื้อได้ครั้งเดียว", "price": "฿99", "icon": "🎒", "tag": "pack", "badge": "New",     "coming_soon": true},
 ]
 
 # ── State ─────────────────────────────────────────────────────────
@@ -261,11 +208,9 @@ func _switch_shop(shop_id: String) -> void:
 	_restyle_sidebar()
 	for c in _content_root.get_children(): c.queue_free()
 	match shop_id:
-		"void_market":    _build_shop_page(VOID_MARKET_ITEMS, SHOPS[0])
-		"synthesis":      _build_shop_page(SYNTHESIS_ITEMS,   SHOPS[1])
-		"honor_store":    _build_shop_page(HONOR_ITEMS,        SHOPS[2])
-		"event_exchange": _build_shop_page(EVENT_ITEMS,        SHOPS[3])
-		"premium":        _build_premium_page()
+		"void_market": _build_shop_page(VOID_MARKET_ITEMS, SHOPS[0])
+		"synthesis":   _build_shop_page(SYNTHESIS_ITEMS,   SHOPS[1])
+		"premium":     _build_premium_page()
 
 # ── Generic item grid page ────────────────────────────────────────
 func _build_shop_page(items: Array, shop: Dictionary) -> void:
@@ -398,22 +343,30 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	else:
 		cost_text = "%d %s" % [int(item.get("cost", 0)), str(shop["cur_sym"])]
 
+	var coming_soon := bool(item.get("coming_soon", false))
+
 	var buy_btn := Panel.new()
 	buy_btn.size     = Vector2(pw - 106, 26)
 	buy_btn.position = Vector2(98, ph - 36)
-	buy_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	buy_btn.add_theme_stylebox_override("panel",
-		_flat(Color(accent.r*0.22, accent.g*0.22, accent.b*0.28, 1.0),
-			  Color(accent.r, accent.g, accent.b, 0.60), 6, 1))
+	buy_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE if coming_soon else Control.MOUSE_FILTER_STOP
+	if coming_soon:
+		buy_btn.add_theme_stylebox_override("panel",
+			_flat(Color(0.12, 0.12, 0.18, 1.0), Color(0.4, 0.4, 0.5, 0.30), 6, 1))
+	else:
+		buy_btn.add_theme_stylebox_override("panel",
+			_flat(Color(accent.r*0.22, accent.g*0.22, accent.b*0.28, 1.0),
+				  Color(accent.r, accent.g, accent.b, 0.60), 6, 1))
 	card.add_child(buy_btn)
 
 	var buy_lbl := Label.new()
-	buy_lbl.text = cost_text
+	buy_lbl.text = "Coming Soon" if coming_soon else cost_text
 	buy_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	buy_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	buy_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	buy_lbl.add_theme_font_size_override("font_size", 11)
-	buy_lbl.add_theme_color_override("font_color", cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0))
+	buy_lbl.add_theme_color_override("font_color",
+		Color(0.50, 0.52, 0.60, 0.70) if coming_soon
+		else (cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0)))
 	buy_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	buy_btn.add_child(buy_lbl)
 
@@ -426,7 +379,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 
 # ── Premium page (special layout) ────────────────────────────────
 func _build_premium_page() -> void:
-	var shop: Dictionary = SHOPS[4]
+	var shop: Dictionary = SHOPS[2]
 	var accent: Color = shop["accent"]
 	var cw := W - SIDE_W
 
