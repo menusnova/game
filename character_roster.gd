@@ -52,7 +52,21 @@ func _build_top_bar() -> void:
 	add_child(_crect(Vector2(0, 0), Vector2(VW, TOP_H), C_BAR))
 	add_child(_crect(Vector2(0, TOP_H), Vector2(VW, 1), C_LINE))
 
-	var back := _icon_btn(Vector2(7, 4), Vector2(42, 45), "‹")
+	var back := Panel.new()
+	back.position    = Vector2(7, 4)
+	back.size        = Vector2(42, 45)
+	back.pivot_offset = Vector2(21, 22)
+	back.mouse_filter = Control.MOUSE_FILTER_STOP
+	var back_sb := StyleBoxFlat.new()
+	back_sb.bg_color = Color(0, 0, 0, 0)
+	back.add_theme_stylebox_override("panel", back_sb)
+	var back_icon := TextureRect.new()
+	back_icon.texture      = preload("res://image/back.png")
+	back_icon.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	back_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	back_icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	back_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	back.add_child(back_icon)
 	back.gui_input.connect(func(ev):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			SceneTransition.fade_to(SC_MAIN)

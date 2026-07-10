@@ -373,13 +373,16 @@ func _make_back_btn() -> Panel:
 	btn.pivot_offset = Vector2(21, 22)
 	btn.z_index     = 20
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	btn.add_theme_stylebox_override("panel",
-		_flat(Color(0, 0, 0, 0), Color(0.35, 0.55, 1.0, 0.30), 12, 1))
-	var lbl := _lbl("‹", 18, Color(0.80, 0.90, 1.0, 0.92))
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn.add_child(lbl)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0)
+	btn.add_theme_stylebox_override("panel", sb)
+	var icon := TextureRect.new()
+	icon.texture      = preload("res://image/back.png")
+	icon.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(icon)
 	btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
