@@ -41,10 +41,12 @@ const WARP_TYPES := [
 		"tag":    "LIMITED",
 		"icon":   "✦",
 		"accent": Color(0.35, 0.75, 1.0),
-		"banner_title": "Lyra · นักเล่นแร่แรงสูง",
-		"banner_sub":   "5★  Rate Up  •  LIMITED",
+		"banner_title": "Character Event Warp",
+		"banner_sub":   "LIMITED",
 		"art_icon":     "🔥",
 		"art_col":      Color(1.0, 0.40, 0.15),
+		"art_img":      "res://image/lyra_1.png",
+		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
 			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
@@ -57,10 +59,12 @@ const WARP_TYPES := [
 		"tag":    "LIMITED",
 		"icon":   "📖",
 		"accent": Color(1.0, 0.78, 0.22),
-		"banner_title": "Arcane Formula",
-		"banner_sub":   "4★  Erudition Path  •  LC",
+		"banner_title": "Light Cone Event Warp",
+		"banner_sub":   "LIMITED",
 		"art_icon":     "📖",
 		"art_col":      Color(1.0, 0.80, 0.25),
+		"art_img":      "res://image/lyra_2.png",
+		"feat_imgs":    ["res://image/lyra_2.png", "res://image/lyra_1.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
 			"ทุก 10 ครั้งรับประกันได้ไพ่ช่วย 4★ ขึ้นไป",
@@ -73,10 +77,12 @@ const WARP_TYPES := [
 		"tag":    "PERMANENT",
 		"icon":   "⋆",
 		"accent": Color(0.60, 0.65, 1.0),
-		"banner_title": "Stellar Vault",
-		"banner_sub":   "Standard 5★ Pool",
+		"banner_title": "Standard Warp",
+		"banner_sub":   "Permanent",
 		"art_icon":     "⋆",
 		"art_col":      Color(0.60, 0.65, 1.0),
+		"art_img":      "res://image/lyra_3.png",
+		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
 		"duration":     "ถาวร",
 		"desc_lines": [
 			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
@@ -143,15 +149,33 @@ func _build_hsr_ui() -> void:
 	add_child(bg)
 	_add_stars(bg)
 
-	# ── Art placeholder area (center-right) ──
+	# ── Art area (center-right) — character illustration ──
 	var art_x := THUMB_W + INFO_W + 16.0
-	var art_rect := ColorRect.new()
-	art_rect.size     = Vector2(W - art_x, H - TOP_H - BOT_H)
-	art_rect.position = Vector2(art_x, TOP_H)
-	art_rect.color    = Color(0, 0, 0, 0)
-	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_rect.z_index  = 0
-	add_child(art_rect)
+	var art_w := W - art_x
+	var art_h := H - TOP_H - BOT_H
+	var d_active: Dictionary = WARP_TYPES[_active_warp]
+	var art_img_path: String = str(d_active.get("art_img", ""))
+	var art_tex: Texture2D = _load_png(art_img_path)
+	if art_tex:
+		var art_rect := TextureRect.new()
+		art_rect.name         = "_ArtRect"
+		art_rect.texture      = art_tex
+		art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art_rect.size         = Vector2(art_w, art_h)
+		art_rect.position     = Vector2(art_x, TOP_H)
+		art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art_rect.z_index      = 0
+		add_child(art_rect)
+	else:
+		var art_rect := ColorRect.new()
+		art_rect.name         = "_ArtRect"
+		art_rect.size         = Vector2(art_w, art_h)
+		art_rect.position     = Vector2(art_x, TOP_H)
+		art_rect.color        = Color(0, 0, 0, 0)
+		art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art_rect.z_index      = 0
+		add_child(art_rect)
 
 
 	# ── Left thumbnail strip ──
@@ -207,9 +231,9 @@ func _build_info_card() -> void:
 	var iw := INFO_W
 	var ih := H - TOP_H - BOT_H - 32.0
 
-	var card_sb := _sb(Color(0.96, 0.97, 1.0, 0.11), Color(1.0, 1.0, 1.0, 0.16), 14, 1)
-	card_sb.shadow_color = Color(0, 0, 0, 0.40)
-	card_sb.shadow_size  = 12
+	var card_sb := _sb(Color(0.93, 0.94, 0.97, 0.96), Color(0.75, 0.80, 0.95, 0.40), 14, 1)
+	card_sb.shadow_color = Color(0, 0, 0, 0.45)
+	card_sb.shadow_size  = 14
 
 	var card := Panel.new()
 	card.name     = "_InfoCard"
@@ -224,113 +248,118 @@ func _build_info_card() -> void:
 	var pad := 16.0
 	var cy  := pad
 
-	# Tag chip "Character Event Warp"
-	var tag_sb := _sb(Color(acc.r * 0.15, acc.g * 0.2, acc.b * 0.45, 0.9),
-		Color(acc.r, acc.g, acc.b, 0.6), 4, 1)
+	# Tag chip
+	var tag_sb := _sb(Color(acc.r * 0.18, acc.g * 0.25, acc.b * 0.55, 0.92),
+		Color(acc.r, acc.g, acc.b, 0.50), 4, 1)
 	var tag := Panel.new()
-	tag.size     = Vector2(iw - pad * 2, 24)
+	tag.size     = Vector2(140, 22)
 	tag.position = Vector2(pad, cy)
 	tag.add_theme_stylebox_override("panel", tag_sb)
 	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(tag)
 	var tag_lbl := Label.new()
-	tag_lbl.text = str(d["label"]).replace("\n", " ")
-	tag_lbl.add_theme_font_size_override("font_size", 11)
-	tag_lbl.add_theme_color_override("font_color", Color(acc.r + 0.2, acc.g + 0.1, acc.b, 1.0))
+	tag_lbl.text = str(d.get("banner_sub", ""))
+	tag_lbl.add_theme_font_size_override("font_size", 10)
+	tag_lbl.add_theme_color_override("font_color", Color(acc.r + 0.15, acc.g + 0.10, acc.b, 1.0))
 	tag_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tag_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tag.add_child(tag_lbl)
-	cy += 32
+	cy += 30
 
-	# Banner title
+	# Banner title (large, dark text on white card)
 	var title := Label.new()
 	title.text = str(d["banner_title"])
-	title.add_theme_font_size_override("font_size", 22)
-	title.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.97))
-	title.size     = Vector2(iw - pad * 2, 30)
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", Color(0.10, 0.12, 0.22, 0.95))
+	title.size     = Vector2(iw - pad * 2, 40)
 	title.position = Vector2(pad, cy)
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(title)
-	cy += 36
+	cy += 46
 
-	# Timer row
-	var timer_row := HBoxContainer.new()
-	timer_row.position = Vector2(pad, cy)
-	timer_row.add_theme_constant_override("separation", 4)
-	timer_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(timer_row)
-	var timer_ico := Label.new()
-	timer_ico.text = "⏱"
-	timer_ico.add_theme_font_size_override("font_size", 13)
-	timer_ico.add_theme_color_override("font_color", Color(1.0, 0.6, 0.2, 0.9))
-	timer_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	timer_row.add_child(timer_ico)
-	var timer_lbl := Label.new()
-	timer_lbl.text = str(d.get("duration", "ถาวร"))
-	timer_lbl.add_theme_font_size_override("font_size", 13)
-	timer_lbl.add_theme_color_override("font_color", Color(1.0, 0.6, 0.2, 1.0))
-	timer_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	timer_row.add_child(timer_lbl)
+	# Duration
+	var dur_lbl := Label.new()
+	dur_lbl.text = str(d.get("duration", "ถาวร"))
+	dur_lbl.add_theme_font_size_override("font_size", 12)
+	dur_lbl.add_theme_color_override("font_color", Color(0.30, 0.35, 0.50, 0.80))
+	dur_lbl.size     = Vector2(iw - pad * 2, 20)
+	dur_lbl.position = Vector2(pad, cy)
+	dur_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(dur_lbl)
 	cy += 28
-
-	# Description lines
-	for desc_line in d.get("desc_lines", []) as Array:
-		var dl := Label.new()
-		dl.text = str(desc_line)
-		dl.add_theme_font_size_override("font_size", 11)
-		dl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.95, 0.75))
-		dl.size     = Vector2(iw - pad * 2, 32)
-		dl.position = Vector2(pad, cy)
-		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(dl)
-		cy += 36
 
 	# Separator
 	var sep := ColorRect.new()
 	sep.size     = Vector2(iw - pad * 2, 1)
 	sep.position = Vector2(pad, cy)
-	sep.color    = Color(1, 1, 1, 0.10)
+	sep.color    = Color(0.18, 0.22, 0.40, 0.18)
 	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(sep)
-	cy += 10
+	cy += 12
 
-	# Featured header
-	var feat_hdr := Label.new()
-	feat_hdr.text = "ตัวละครเด่น"
-	feat_hdr.add_theme_font_size_override("font_size", 11)
-	feat_hdr.add_theme_color_override("font_color", Color(0.7, 0.8, 1.0, 0.6))
-	feat_hdr.size     = Vector2(iw - pad * 2, 18)
-	feat_hdr.position = Vector2(pad, cy)
-	feat_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(feat_hdr)
-	cy += 22
+	# Description lines (dark text)
+	for desc_line in d.get("desc_lines", []) as Array:
+		var dl := Label.new()
+		dl.text = str(desc_line)
+		dl.add_theme_font_size_override("font_size", 11)
+		dl.add_theme_color_override("font_color", Color(0.22, 0.28, 0.45, 0.85))
+		dl.size     = Vector2(iw - pad * 2, 32)
+		dl.position = Vector2(pad, cy)
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(dl)
+		cy += 34
 
-	# Featured character portrait slots (3 slots)
-	var feat_w  := 72.0
-	var feat_h  := 90.0
-	var feat_gap := 8.0
-	for fi in 3:
-		var feat_sb2 := _sb(Color(0.08, 0.10, 0.20, 0.80), Color(1,1,1, 0.12), 8, 1)
+	cy += 4
+
+	# Featured thumbnails (fan-out card style at bottom)
+	var feat_imgs: Array = d.get("feat_imgs", []) as Array
+	var feat_w   := 90.0
+	var feat_h   := 118.0
+	var fan_y    := ih - 60.0 - feat_h   # anchor above bottom buttons
+	var fan_start_x := pad
+	var rotations := [-6.0, 0.0, 6.0]
+	var offsets_y  := [8.0, 0.0, 8.0]
+	for fi in mini(feat_imgs.size(), 3):
+		var feat_sb2 := _sb(Color(0.08, 0.10, 0.20, 0.90), Color(1,1,1, 0.18), 8, 1)
 		var feat_slot := Panel.new()
-		feat_slot.size     = Vector2(feat_w, feat_h)
-		feat_slot.position = Vector2(pad + fi * (feat_w + feat_gap), cy)
+		feat_slot.size         = Vector2(feat_w, feat_h)
+		feat_slot.position     = Vector2(fan_start_x + fi * 28.0, fan_y + offsets_y[fi])
+		feat_slot.rotation_degrees = rotations[fi]
 		feat_slot.add_theme_stylebox_override("panel", feat_sb2)
 		feat_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(feat_slot)
-		# placeholder icon
-		var fi_lbl := Label.new()
-		fi_lbl.text = str(d["art_icon"])
-		fi_lbl.add_theme_font_size_override("font_size", 28)
-		fi_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.25))
-		fi_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		fi_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		fi_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		fi_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		feat_slot.add_child(fi_lbl)
-	cy += feat_h + 8
+		var fi_tex: Texture2D = _load_png(str(feat_imgs[fi]))
+		if fi_tex:
+			var fi_img := TextureRect.new()
+			fi_img.texture      = fi_tex
+			fi_img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			fi_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			fi_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			fi_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			feat_slot.add_child(fi_img)
+		else:
+			var fi_lbl := Label.new()
+			fi_lbl.text = str(d["art_icon"])
+			fi_lbl.add_theme_font_size_override("font_size", 24)
+			fi_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.40))
+			fi_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			fi_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			fi_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+			fi_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			feat_slot.add_child(fi_lbl)
+	# "etc." label below thumbnails
+	if not feat_imgs.is_empty():
+		var etc_lbl := Label.new()
+		etc_lbl.text = "★★★★★"
+		etc_lbl.add_theme_font_size_override("font_size", 10)
+		etc_lbl.add_theme_color_override("font_color", Color(0.80, 0.60, 0.20, 0.85))
+		etc_lbl.position = Vector2(pad, fan_y + feat_h + 4)
+		etc_lbl.size     = Vector2(feat_w * 3 + 56 + pad, 16)
+		etc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(etc_lbl)
 
 	# Pity section
 	var sep2 := ColorRect.new()
@@ -431,12 +460,21 @@ func _build_top_bar() -> void:
 	bar.z_index  = 6
 	add_child(bar)
 
-	# Back button — top-left
-	var back_btn := _make_visible_back_btn(Vector2(8, (TOP_H - 45) * 0.5), Vector2(42, 45), _go_back)
-	bar.add_child(back_btn)
+	# Back/close button — top-right (X style like reference)
+	var close_btn := Button.new()
+	close_btn.text = "✕"
+	close_btn.size     = Vector2(40, 40)
+	close_btn.position = Vector2(W - 48, (TOP_H - 40) * 0.5)
+	close_btn.add_theme_font_size_override("font_size", 16)
+	close_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.65))
+	close_btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.06), Color(1,1,1,0.12), 8, 1))
+	close_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.12), Color(1,1,1,0.22), 8, 1))
+	close_btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.06), Color(1,1,1,0.12), 8, 1))
+	close_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	close_btn.pressed.connect(_go_back)
+	bar.add_child(close_btn)
 
-
-	# Currency row (top-right): free crystal pill + paid crystal pill + close
+	# Currency row (top-right, left of close button)
 	var curr_row := HBoxContainer.new()
 	curr_row.add_theme_constant_override("separation", 6)
 	curr_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -445,17 +483,12 @@ func _build_top_bar() -> void:
 	var gem_tex  := _load_png("res://image/crystal_gem.png")
 	var paid_tex := _load_png("res://image/icon_paid.png")
 
-	# Free crystal pill
-	_new_gem_lbl = _make_curr_pill(curr_row, gem_tex,  Color(0.35, 0.85, 1.0, 1.0))
-
-	# Paid crystal pill
+	_new_gem_lbl  = _make_curr_pill(curr_row, gem_tex,  Color(0.35, 0.85, 1.0, 1.0))
 	_paid_gem_lbl = _make_curr_pill(curr_row, paid_tex, Color(0.78, 0.55, 1.0, 1.0))
 
-
-	# Position currency row at far right
 	curr_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	curr_row.offset_right = -8
-	curr_row.offset_left  = -340
+	curr_row.offset_right = -56
+	curr_row.offset_left  = -296
 
 # ── Bottom bar (Warp ×1 and Warp ×10 buttons) ───────────────────
 func _build_bottom_bar() -> void:
@@ -469,22 +502,35 @@ func _build_bottom_bar() -> void:
 	bar.z_index  = 6
 	add_child(bar)
 
-	# Two warp buttons on the right side (left btn wider, stretches toward right)
-	var btn_h  := 50.0
-	var btn_y  := (BOT_H - btn_h) * 0.5
-	var btn_w2 := 220.0   # Warp ×10
-	var btn_w1 := 256.0   # Warp ×1 — wider, extends toward right
+	var btn_h := 46.0
+	var btn_y := (BOT_H - btn_h) * 0.5
+
+	# Left action buttons: แลกเปลี่ยน | ดูรายละเอียด | ประวัติ
+	var left_btns := [
+		{"label": "แลกเปลี่ยน",    "w": 150.0},
+		{"label": "ดูรายละเอียด", "w": 150.0},
+		{"label": "ประวัติ",        "w": 130.0},
+	]
+	var lx := THUMB_W + INFO_W + 24.0
+	for lb in left_btns:
+		var b := _ghost_btn(str(lb["label"]), 12)
+		b.size     = Vector2(float(lb["w"]), btn_h)
+		b.position = Vector2(lx, btn_y)
+		bar.add_child(b)
+		lx += float(lb["w"]) + 8.0
+
+	# Right warp buttons
+	var btn_w2 := 200.0
+	var btn_w1 := 200.0
 	var bx2    := W - btn_w2 - 16.0
 	var bx1    := bx2 - btn_w1 - 10.0
 
-	# Warp ×1 — gem icon + count + label
 	_new_pull1 = _warp_btn(1)
 	_new_pull1.size     = Vector2(btn_w1, btn_h)
 	_new_pull1.position = Vector2(bx1, btn_y)
 	_new_pull1.pressed.connect(func(): _do_pull(1))
 	bar.add_child(_new_pull1)
 
-	# Warp ×10
 	_new_pull10 = _warp_btn(10)
 	_new_pull10.size     = Vector2(btn_w2, btn_h)
 	_new_pull10.position = Vector2(bx2, btn_y)
@@ -549,6 +595,23 @@ func _on_warp_tab(idx: int) -> void:
 	_new_pity_bar = null
 	_new_pity4_lbl = null
 	_new_pity4_bar = null
+	# Rebuild art area for new warp
+	var old_art := get_node_or_null("_ArtRect")
+	if old_art: old_art.queue_free()
+	var d_new: Dictionary = WARP_TYPES[_active_warp]
+	var art_x := THUMB_W + INFO_W + 16.0
+	var art_tex2: Texture2D = _load_png(str(d_new.get("art_img", "")))
+	if art_tex2:
+		var art_rect2 := TextureRect.new()
+		art_rect2.name         = "_ArtRect"
+		art_rect2.texture      = art_tex2
+		art_rect2.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		art_rect2.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art_rect2.size         = Vector2(W - art_x, H - TOP_H - BOT_H)
+		art_rect2.position     = Vector2(art_x, TOP_H)
+		art_rect2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art_rect2.z_index      = 0
+		add_child(art_rect2)
 	_build_info_card()
 	# Restyle and reposition all tab buttons
 	var strip := get_node_or_null("_ThumbStrip")
