@@ -381,8 +381,14 @@ class _QuestRow extends Control:
 			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00), "Upgrade"],
 			["bond",    "",   "res://image/icon_bond.png",    Color(0.85, 0.55, 1.00), "Bond Pt"],
 		]
-		const CW := 48.0; const CH := 68.0; const CG := 6.0
-		var rx := 498.0
+		const CW := 56.0; const CH := 68.0; const CG := 5.0
+		# Count visible rewards to right-align the block toward the button area
+		var visible_count := 0
+		for ri in REWARDS.size():
+			if int(q.get(REWARDS[ri][0], 0)) > 0:
+				visible_count += 1
+		var block_w := visible_count * (CW + CG) - CG
+		var rx := 840.0 - block_w - 8.0  # right-align to just left of button
 		for ri in REWARDS.size():
 			var rkey      : String = REWARDS[ri][0]
 			var rfallback : String = REWARDS[ri][1]
@@ -393,9 +399,10 @@ class _QuestRow extends Control:
 			if rval <= 0: continue
 
 			var card := Panel.new()
-			card.size     = Vector2(CW, CH)
-			card.position = Vector2(rx, 11)
-			card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.size          = Vector2(CW, CH)
+			card.position      = Vector2(rx, 11)
+			card.clip_contents = true
+			card.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 			var sb_card := StyleBoxFlat.new()
 			sb_card.bg_color    = Color(rcol.r * 0.08, rcol.g * 0.08, rcol.b * 0.13, 0.95)
 			sb_card.border_color = Color(rcol.r, rcol.g, rcol.b, 0.28)
@@ -412,7 +419,7 @@ class _QuestRow extends Control:
 				icon_tx.texture      = tex
 				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon_tx.size         = Vector2(CW, 34)
+				icon_tx.size         = Vector2(CW, 36)
 				icon_tx.position     = Vector2(0, 2)
 				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(icon_tx)
@@ -430,18 +437,19 @@ class _QuestRow extends Control:
 			var val_l := Label.new()
 			val_l.text     = val_s
 			val_l.size     = Vector2(CW, 16)
-			val_l.position = Vector2(0, 37)
-			val_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			val_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-			val_l.add_theme_font_size_override("font_size", 10)
+			val_l.position = Vector2(0, 39)
+			val_l.horizontal_alignment   = HORIZONTAL_ALIGNMENT_CENTER
+			val_l.vertical_alignment     = VERTICAL_ALIGNMENT_CENTER
+			val_l.text_overrun_behavior  = TextServer.OVERRUN_TRIM_ELLIPSIS
+			val_l.add_theme_font_size_override("font_size", 11)
 			val_l.add_theme_color_override("font_color", Color(rcol.r + 0.08, rcol.g, rcol.b, 0.95))
 			val_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(val_l)
 
 			var name_l := Label.new()
 			name_l.text     = rlabel
-			name_l.size     = Vector2(CW, 14)
-			name_l.position = Vector2(0, 53)
+			name_l.size     = Vector2(CW, 13)
+			name_l.position = Vector2(0, 55)
 			name_l.horizontal_alignment    = HORIZONTAL_ALIGNMENT_CENTER
 			name_l.vertical_alignment      = VERTICAL_ALIGNMENT_CENTER
 			name_l.text_overrun_behavior   = TextServer.OVERRUN_TRIM_ELLIPSIS

@@ -59,8 +59,8 @@ const VOID_MARKET_ITEMS := [
 ]
 
 const SYNTHESIS_ITEMS := [
-	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 160,  "img": "res://image/crystal_gem.png",  "tag": "gacha"},
-	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1600, "img": "res://image/crystal_gem.png",  "tag": "gacha",  "badge": "Best"},
+	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 160,  "img": "res://image/icon_upgrade.png",  "tag": "gacha"},
+	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1600, "img": "res://image/icon_upgrade.png",  "tag": "gacha",  "badge": "Best"},
 	{"name": "Aether Pulse",     "sub": "พลังงาน Farm ×1",  "cost": 40,   "img": "res://image/icon_energy.png",  "tag": "energy"},
 	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "img": "res://image/icon_energy.png",  "tag": "energy", "badge": "Save"},
 ]
