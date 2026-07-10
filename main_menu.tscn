@@ -524,6 +524,9 @@ mouse_filter = 2
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuItem_Missions" type="Control" parent="." unique_id=1648236542]
 anchors_preset = 0
@@ -646,6 +649,9 @@ mouse_filter = 2
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuItem_Pass" type="Control" parent="." unique_id=504243076]
 anchors_preset = 0
@@ -706,6 +712,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
@@ -910,6 +919,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
@@ -1185,6 +1197,9 @@ mouse_filter = 2
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
@@ -1288,6 +1303,9 @@ mouse_filter = 2
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
@@ -1359,6 +1377,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
@@ -1596,6 +1617,9 @@ mouse_filter = 2
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Nav4_Database" type="Control" parent="NavBar" unique_id=483944133]
 anchors_preset = 0
@@ -1675,6 +1699,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("3_lockchain")
 expand_mode = 1
 stretch_mode = 5
