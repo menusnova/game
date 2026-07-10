@@ -126,7 +126,7 @@ var _discovered: Array[String] = []  # element ids unlocked
 @onready var _fade: ColorRect = $FadeOverlay
 
 func _ready() -> void:
-	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn, $TabBar/CompoundsBtn]
+	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn]
 	for i in _tab_btns.size():
 		_tab_btns[i].pressed.connect(_switch_tab.bind(i))
 
@@ -204,8 +204,6 @@ func _switch_tab(idx: int) -> void:
 		_build_element_tab()
 	elif idx == 1:
 		_build_achievement_tab()
-	else:
-		_build_compound_tab()
 
 # ════════════════════════════════════════════════════════════════
 #  TAB 0 — Elements
@@ -216,11 +214,10 @@ func _build_element_tab() -> void:
 	vbox.add_theme_constant_override("separation", 0)
 	_content.add_child(vbox)
 
-	# Section label
+	# ── Elements section ──
 	var sec := _section_label("ธาตุที่ค้นพบ  (%d/%d)" % [_discovered.size(), ELEMENTS.size()])
 	vbox.add_child(sec)
 
-	# Grid
 	var grid := GridContainer.new()
 	grid.columns = 4
 	grid.add_theme_constant_override("h_separation", 20)
@@ -236,6 +233,31 @@ func _build_element_tab() -> void:
 
 	for elem in ELEMENTS:
 		grid.add_child(_make_element_card(elem))
+
+	# ── Compounds section ──
+	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
+	var comp_keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
+	var found_count := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
+
+	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, comp_keys.size()]))
+
+	var cgrid := GridContainer.new()
+	cgrid.columns = 4
+	cgrid.add_theme_constant_override("h_separation", 20)
+	cgrid.add_theme_constant_override("v_separation", 20)
+	cgrid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var cgrid_wrap := MarginContainer.new()
+	cgrid_wrap.add_theme_constant_override("margin_left", 28)
+	cgrid_wrap.add_theme_constant_override("margin_right", 28)
+	cgrid_wrap.add_theme_constant_override("margin_top", 16)
+	cgrid_wrap.add_theme_constant_override("margin_bottom", 24)
+	cgrid_wrap.add_child(cgrid)
+	vbox.add_child(cgrid_wrap)
+
+	for key in comp_keys:
+		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
+		var is_found: bool = key in PlayerData.discovered_compounds
+		cgrid.add_child(_make_compound_card(compound, is_found))
 
 func _make_element_card(elem: Dictionary) -> Control:
 	var discovered: bool = elem["id"] in _discovered
@@ -466,38 +488,6 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 
 	return row
 
-# ════════════════════════════════════════════════════════════════
-#  TAB 2 — Compounds (from ReactionDB, skip ones already in Elements tab)
-# ════════════════════════════════════════════════════════════════
-func _build_compound_tab() -> void:
-	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
-	var keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
-	var found_count := keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
-
-	var vbox := VBoxContainer.new()
-	vbox.custom_minimum_size = Vector2(1152, 0)
-	vbox.add_theme_constant_override("separation", 0)
-	_content.add_child(vbox)
-
-	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, keys.size()]))
-
-	var grid := GridContainer.new()
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 20)
-	grid.add_theme_constant_override("v_separation", 20)
-	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var grid_wrap := MarginContainer.new()
-	grid_wrap.add_theme_constant_override("margin_left", 28)
-	grid_wrap.add_theme_constant_override("margin_right", 28)
-	grid_wrap.add_theme_constant_override("margin_top", 16)
-	grid_wrap.add_theme_constant_override("margin_bottom", 24)
-	grid_wrap.add_child(grid)
-	vbox.add_child(grid_wrap)
-
-	for key in keys:
-		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
-		var is_found: bool = key in PlayerData.discovered_compounds
-		grid.add_child(_make_compound_card(compound, is_found))
 
 func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 	var card := Panel.new()
