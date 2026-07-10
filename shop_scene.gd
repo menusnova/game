@@ -337,36 +337,54 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
-	# ── Price row: currency icon + number ───────────────────────────
+	# ── Price badge (pill shape, blue, centered) ────────────────────
 	var cost_text: String
 	if is_premium:
 		cost_text = str(item.get("price", "฿?"))
 	else:
 		cost_text = str(int(item.get("cost", 0)))
 
-	var price_y := IMG_H + 32.0
 	var cur_icon_path := str(shop.get("cur_icon", ""))
+	const BADGE_H := 22.0
+	const BADGE_W := 100.0
+	var badge_x := (pw - BADGE_W) * 0.5
+	var badge_y := IMG_H + 28.0
 
-	# Currency icon (16×16)
+	var badge := Panel.new()
+	badge.size     = Vector2(BADGE_W, BADGE_H)
+	badge.position = Vector2(badge_x, badge_y)
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var badge_sb := StyleBoxFlat.new()
+	badge_sb.bg_color          = Color(0.10, 0.35, 0.90, 0.90)
+	badge_sb.border_color      = Color(0.40, 0.65, 1.0, 0.70)
+	badge_sb.set_border_width_all(1)
+	badge_sb.set_corner_radius_all(11)
+	badge.add_theme_stylebox_override("panel", badge_sb)
+	card.add_child(badge)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_child(row)
+
 	if cur_icon_path != "":
 		var ci := TextureRect.new()
 		ci.texture      = load(cur_icon_path)
 		ci.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ci.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ci.size         = Vector2(16, 16)
-		ci.position     = Vector2(8, price_y + 1)
+		ci.custom_minimum_size = Vector2(14, 14)
+		ci.size         = Vector2(14, 14)
 		ci.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(ci)
+		row.add_child(ci)
 
 	var price_lbl := Label.new()
 	price_lbl.text = cost_text
-	price_lbl.position = Vector2(28, price_y)
-	price_lbl.size     = Vector2(pw - 36, 18)
-	price_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	price_lbl.add_theme_font_size_override("font_size", 13)
-	price_lbl.add_theme_color_override("font_color", cur_col)
+	price_lbl.add_theme_font_size_override("font_size", 12)
+	price_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(price_lbl)
+	row.add_child(price_lbl)
 
 	# Hover / click
 	card.gui_input.connect(func(ev: InputEvent):
