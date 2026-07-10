@@ -322,10 +322,11 @@ class _QuestRow extends Control:
 
 		# Quest name
 		var name_lbl := Label.new()
-		name_lbl.text     = str(q.get("label", ""))
-		name_lbl.position = Vector2(70, 16)
-		name_lbl.size     = Vector2(420, 22)
-		name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		name_lbl.text          = str(q.get("label", ""))
+		name_lbl.position      = Vector2(70, 16)
+		name_lbl.size          = Vector2(410, 22)
+		name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		name_lbl.add_theme_font_size_override("font_size", 14)
 		name_lbl.add_theme_color_override("font_color",
 			Color(0.50, 0.56, 0.52, 0.70) if done else Color(0.96, 0.97, 1.0, 1.0))
@@ -334,10 +335,11 @@ class _QuestRow extends Control:
 
 		# Sub-description
 		var desc_lbl := Label.new()
-		desc_lbl.text     = str(q.get("desc", ""))
-		desc_lbl.position = Vector2(70, 38)
-		desc_lbl.size     = Vector2(400, 16)
-		desc_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		desc_lbl.text          = str(q.get("desc", ""))
+		desc_lbl.position      = Vector2(70, 38)
+		desc_lbl.size          = Vector2(410, 16)
+		desc_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		desc_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		desc_lbl.add_theme_font_size_override("font_size", 10)
 		desc_lbl.add_theme_color_override("font_color", Color(0.55, 0.60, 0.72, 0.50))
 		desc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -440,8 +442,9 @@ class _QuestRow extends Control:
 			name_l.text     = rlabel
 			name_l.size     = Vector2(CW, 14)
 			name_l.position = Vector2(0, 53)
-			name_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			name_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+			name_l.horizontal_alignment    = HORIZONTAL_ALIGNMENT_CENTER
+			name_l.vertical_alignment      = VERTICAL_ALIGNMENT_CENTER
+			name_l.text_overrun_behavior   = TextServer.OVERRUN_TRIM_ELLIPSIS
 			name_l.add_theme_font_size_override("font_size", 8)
 			name_l.add_theme_color_override("font_color", Color(rcol.r, rcol.g, rcol.b, 0.60))
 			name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
