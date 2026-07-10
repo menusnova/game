@@ -102,19 +102,17 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	badge.add_child(badge_lbl)
 
-	# Stats table (ATK / HP / DEF) — bottom-left overlay
-	var stat_y := VH - 178.0
+	# Stats table (ATK / HP / DEF) — single row left to right
+	var stat_y := VH - 130.0
 	var stat_keys := ["atk", "hp", "def"]
 	var stat_labels := ["ATK", "HP", "DEF"]
+	var stat_box_w := (LEFT_W - 28.0) / 3.0
 	for i in stat_keys.size():
-		var col_x := 0.0 if i % 2 == 0 else LEFT_W / 2.0
-		var row_y := stat_y + int(i / 2) * 46.0
-		if i == 2:  # DEF centered on second row
-			col_x = (LEFT_W - 110.0) / 2.0
+		var col_x := 10.0 + i * (stat_box_w + 4.0)
 
 		var sb := Panel.new()
-		sb.size     = Vector2(110, 40)
-		sb.position = Vector2(col_x + 10, row_y)
+		sb.size     = Vector2(stat_box_w, 40)
+		sb.position = Vector2(col_x, stat_y)
 		sb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		sb.add_theme_stylebox_override("panel",
 			_flat(Color(0, 0, 0, 0.45), Color(elem_col.r, elem_col.g, elem_col.b, 0.20), 6, 1))
@@ -122,13 +120,13 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 
 		var key_lbl := _lbl(stat_labels[i], 9, Color(elem_col.r, elem_col.g, elem_col.b, 0.80))
 		key_lbl.position = Vector2(8, 3)
-		key_lbl.size = Vector2(94, 14)
+		key_lbl.size = Vector2(stat_box_w - 14, 14)
 		sb.add_child(key_lbl)
 
 		var val_str := str(int(data.get(stat_keys[i], 0)))
 		var val_lbl := _lbl(val_str, 14, C_TEXT)
 		val_lbl.position = Vector2(8, 18)
-		val_lbl.size = Vector2(94, 20)
+		val_lbl.size = Vector2(stat_box_w - 14, 20)
 		val_lbl.add_theme_color_override("font_color", C_TEXT)
 		sb.add_child(val_lbl)
 
