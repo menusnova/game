@@ -562,7 +562,7 @@ func _open_element_detail(elem: Dictionary) -> void:
 	var real_desc := Label.new()
 	real_desc.text = elem["real_desc"]
 	real_desc.position = Vector2(20, 128)
-	real_desc.size = Vector2(IW, 84)
+	real_desc.size = Vector2(IW, 116)
 	real_desc.add_theme_font_size_override("font_size", 11)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
 	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -574,14 +574,14 @@ func _open_element_detail(elem: Dictionary) -> void:
 	var div2 := ColorRect.new()
 	div2.color = Color(col.r, col.g, col.b, 0.12)
 	div2.size = Vector2(IW, 1)
-	div2.position = Vector2(20, 218)
+	div2.position = Vector2(20, 250)
 	div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(div2)
 
 	# How to get
 	var how_title := Label.new()
 	how_title.text = "วิธีได้รับ"
-	how_title.position = Vector2(20, 226)
+	how_title.position = Vector2(20, 258)
 	how_title.size = Vector2(IW, 16)
 	how_title.add_theme_font_size_override("font_size", 11)
 	how_title.add_theme_color_override("font_color", C_GOLD)
@@ -590,7 +590,7 @@ func _open_element_detail(elem: Dictionary) -> void:
 
 	var how := Label.new()
 	how.text = elem["how_to_get"]
-	how.position = Vector2(20, 244)
+	how.position = Vector2(20, 276)
 	how.size = Vector2(IW, 20)
 	how.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	how.add_theme_font_size_override("font_size", 11)
@@ -602,21 +602,21 @@ func _open_element_detail(elem: Dictionary) -> void:
 	var div3 := ColorRect.new()
 	div3.color = Color(col.r, col.g, col.b, 0.12)
 	div3.size = Vector2(IW, 1)
-	div3.position = Vector2(20, 270)
+	div3.position = Vector2(20, 302)
 	div3.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(div3)
 
 	# Recipes / effects
 	var rec_title := Label.new()
 	rec_title.text = "ใช้ทำ / ผลในเกม"
-	rec_title.position = Vector2(20, 278)
+	rec_title.position = Vector2(20, 310)
 	rec_title.size = Vector2(IW, 16)
 	rec_title.add_theme_font_size_override("font_size", 11)
 	rec_title.add_theme_color_override("font_color", C_GOLD)
 	rec_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(rec_title)
 
-	var ry := 296.0
+	var ry := 328.0
 	for r in elem["recipes"]:
 		var rl := Label.new()
 		rl.text = "• " + r
