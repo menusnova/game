@@ -791,7 +791,10 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
 	btn.position = pos
 	btn.z_index = 20
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0)
+	sb.bg_color = Color(0.0, 0.05, 0.15, 0.55)
+	sb.border_color = Color(0.45, 0.72, 1.0, 0.90)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(22)
 	btn.add_theme_stylebox_override("panel", sb)
 	btn.size        = Vector2(42, 45)
 	btn.pivot_offset = Vector2(21, 22)
