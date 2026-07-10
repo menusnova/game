@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://dlab0scene001"]
+[gd_scene load_steps=10 format=3 uid="uid://dlab0scene001"]
 
 [ext_resource type="Script" path="res://laboratory_scene.gd" id="1_lab"]
 
 [ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
+
+[ext_resource type="Texture2D" path="res://image/labbg.jpg" id="EXT_LABBG"]
 
 [sub_resource type="StyleBoxFlat" id="SB_TopBar"]
 bg_color = Color(0.03, 0.06, 0.14, 0.97)
@@ -65,13 +67,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_lab")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.02, 0.04, 0.10, 1.0)
+texture = ExtResource("EXT_LABBG")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="TopBar" type="Panel" parent="."]
 layout_mode = 0
