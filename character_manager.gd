@@ -18,10 +18,19 @@ const CHAR_DATA: Dictionary = {
 		"bond": 12,
 		"dialogue": "วันนี้อากาศดีนะ... เหมาะกับการทดลอง",
 		"skills": [
-			{"name": "Element Burst", "type": "Attack", "img": "res://image/lyra_1.png"},
-			{"name": "Chain Strike",  "type": "Attack", "img": "res://image/lyra_2.png"},
-			{"name": "Alchemic Aura", "type": "Buff",   "img": "res://image/lyra_3.png"},
+			{"name": "Alchemical Strike", "type": "Basic ATK", "img": "res://image/lyra_1.png",
+			 "desc": "โจมตีศัตรู 1 เป้าหมายด้วยพลังธาตุ สร้างความเสียหาย 20 DMG และชาร์จ Ultimate +15"},
+			{"name": "Barrier Compound",  "type": "Defend",    "img": "res://image/lyra_2.png",
+			 "desc": "สร้างเกราะป้องกันให้ตัวเอง ลดความเสียหายที่ได้รับ 30% เป็นเวลา 1 รอบ"},
+			{"name": "Chain Reaction",    "type": "Skill",     "img": "res://image/lyra_3.png",
+			 "desc": "ปล่อยพลังธาตุโจมตีศัตรู 40 DMG ลดการโจมตีของศัตรู 20% เป็นเวลา 1 รอบ"},
+			{"name": "Element Burst",     "type": "Ultimate",  "img": "res://image/lyra_1.png",
+			 "desc": "ปลดปล่อยพลังธาตุทั้งหมดพร้อมกัน สร้างความเสียหาย 60 DMG วางพิษและเผาไหม้ศัตรู"},
 		],
+		"passive": {
+			"name": "Reaction Master",
+			"desc": "เมื่อสังเคราะห์สารประกอบสำเร็จ Ultimate Gauge ชาร์จ +10 และพิษ/เผาไหม้ +15%",
+		},
 	},
 	"Lyra": {
 		"title": "Flame Walker",
@@ -32,10 +41,19 @@ const CHAR_DATA: Dictionary = {
 		"bond": 0,
 		"dialogue": "ไฟไม่โกหก มันแสดงทุกอย่าง",
 		"skills": [
-			{"name": "Flame Slash",  "type": "Attack",  "img": "res://image/lyra_2.png"},
-			{"name": "Inferno",      "type": "Attack",  "img": "res://image/lyra_1.png"},
-			{"name": "Ember Field",  "type": "Buff",    "img": "res://image/lyra_3.png"},
+			{"name": "Flame Strike",  "type": "Basic ATK", "img": "res://image/lyra_2.png",
+			 "desc": "โจมตีศัตรู 1 เป้าหมายด้วยเปลวไฟ สร้างความเสียหาย 24 DMG"},
+			{"name": "Heat Shield",   "type": "Defend",    "img": "res://image/lyra_1.png",
+			 "desc": "ห่อหุ้มร่างด้วยเปลวไฟ สะท้อนความเสียหาย 10 DMG ต่อการโจมตีทุกครั้งใน 1 รอบ"},
+			{"name": "Inferno",       "type": "Skill",     "img": "res://image/lyra_3.png",
+			 "desc": "ปล่อยพลังไฟโจมตีศัตรู 1 เป้าหมาย 45 DMG และสุ่มเผาไหม้ 3 รอบ"},
+			{"name": "Ember Field",   "type": "Ultimate",  "img": "res://image/lyra_2.png",
+			 "desc": "สร้างสนามไฟล้อมรอบศัตรูทุกตัว 55 DMG ต่อรอบ เป็นเวลา 2 รอบ"},
 		],
+		"passive": {
+			"name": "Wildfire",
+			"desc": "เมื่อศัตรูมีสถานะเผาไหม้ ทุกการโจมตีของ Lyra สร้างความเสียหายเพิ่มขึ้น 20%",
+		},
 	},
 	"Seraph": {
 		"title": "Light Weaver",
@@ -46,10 +64,19 @@ const CHAR_DATA: Dictionary = {
 		"bond": 0,
 		"dialogue": "แสงสว่างจะนำทางพวกเรา",
 		"skills": [
-			{"name": "Star Pulse",  "type": "Attack",  "img": "res://image/lyra_3.png"},
-			{"name": "Holy Guard",  "type": "Support", "img": "res://image/lyra_1.png"},
-			{"name": "Divine Veil", "type": "Buff",    "img": "res://image/lyra_2.png"},
+			{"name": "Star Pulse",   "type": "Basic ATK", "img": "res://image/lyra_3.png",
+			 "desc": "ยิงพลังแสงสว่างใส่ศัตรู 1 เป้าหมาย สร้างความเสียหาย 16 DMG"},
+			{"name": "Holy Guard",   "type": "Defend",    "img": "res://image/lyra_1.png",
+			 "desc": "สร้างเกราะแสงศักดิ์สิทธิ์ให้พันธมิตรทุกคน ลดความเสียหาย 25% เป็นเวลา 1 รอบ"},
+			{"name": "Starfall",     "type": "Skill",     "img": "res://image/lyra_2.png",
+			 "desc": "เรียกแสงดาวโจมตีศัตรูทุกตัว 28 DMG และชะลอความเร็ว 1 รอบ"},
+			{"name": "Divine Veil",  "type": "Ultimate",  "img": "res://image/lyra_3.png",
+			 "desc": "ปกคลุมพันธมิตรด้วยม่านแสงศักดิ์สิทธิ์ ฟื้นฟู HP 40 และกันความเสียหาย 1 ครั้ง"},
 		],
+		"passive": {
+			"name": "Celestial Grace",
+			"desc": "เมื่อ Seraph ใช้ Defend หรือ Ultimate HP ของพันธมิตรทุกคนฟื้นฟูเพิ่มขึ้น 10% และ MDEF +15%",
+		},
 	},
 }
 

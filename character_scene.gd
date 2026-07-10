@@ -183,10 +183,11 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	add_child(_crect(Vector2(LEFT_W, 0), Vector2(1, VH),
 		Color(elem_col.r, elem_col.g, elem_col.b, 0.20)))
 
-# ── Right panel: level/insight + skills + buttons ─────────────────────────────
+# ── Right panel: level/insight + skills + passive + buttons ──────────────────
 func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	var elem_col: Color = base.get("element_color", Color(0.35, 0.75, 1.0)) as Color
 	var skills: Array   = data.get("skills", [])
+	var passive: Dictionary = data.get("passive", {})
 
 	# Panel bg
 	var panel_bg := ColorRect.new()
@@ -201,147 +202,184 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 	back.position = Vector2(RIGHT_X + 14, 14)
 	add_child(back)
 
-	# Character name in right panel header area
+	# Character name
 	var hdr_name := _lbl(char_name, 20, C_TEXT)
 	hdr_name.position = Vector2(RIGHT_X + 56, 16)
 	hdr_name.size = Vector2(RIGHT_W - 70, 26)
 	add_child(hdr_name)
 
-	# Level box
+	# Level box + "+" button
 	var level: int     = int(data.get("level", 1))
 	var level_max: int = int(data.get("level_max", 30))
-	var lv_box := _info_box(
-		Vector2(RIGHT_X + 14, 52),
-		Vector2(148, 44),
-		"LEVEL",
-		"%d / %d" % [level, level_max],
-		elem_col
-	)
+	var lv_box := _info_box(Vector2(RIGHT_X + 14, 52), Vector2(148, 44),
+		"LEVEL", "%d / %d" % [level, level_max], elem_col)
 	add_child(lv_box)
+	var lv_plus := _plus_btn(Vector2(RIGHT_X + 166, 60), elem_col)
+	add_child(lv_plus)
 
-	# Insight box
+	# Insight box + "+" button
 	var insight: int = int(data.get("insight", 0))
-	var ins_box := _info_box(
-		Vector2(RIGHT_X + 170, 52),
-		Vector2(120, 44),
-		"INSIGHT",
-		"Phase %d" % insight,
-		elem_col
-	)
+	var ins_box := _info_box(Vector2(RIGHT_X + 204, 52), Vector2(130, 44),
+		"INSIGHT", "Phase %d" % insight, elem_col)
 	add_child(ins_box)
+	var ins_plus := _plus_btn(Vector2(RIGHT_X + 338, 60), elem_col)
+	add_child(ins_plus)
 
-	# Bond box
-	var bond: int = int(data.get("bond", 0))
-	var bond_box := _info_box(
-		Vector2(RIGHT_X + 298, 52),
-		Vector2(120, 44),
-		"BOND",
-		"♥  %d" % bond,
-		Color(1.0, 0.55, 0.65)
-	)
-	add_child(bond_box)
+	# "Search the Poems" button row
+	var poems_btn := _action_btn("Search the Poems", Color(0.75, 0.75, 0.75), Vector2(178, 28))
+	poems_btn.position = Vector2(RIGHT_X + 14, 104)
+	add_child(poems_btn)
+
+	# Resonance triangle icons (△ △△ △△△)
+	var tri_lbl := _lbl("△   △△   △△△", 11, Color(elem_col.r, elem_col.g, elem_col.b, 0.55))
+	tri_lbl.position = Vector2(RIGHT_X + 200, 105)
+	tri_lbl.size = Vector2(200, 24)
+	add_child(tri_lbl)
 
 	# Divider
-	add_child(_crect(Vector2(RIGHT_X + 14, 104), Vector2(RIGHT_W - 28, 1), C_LINE))
+	add_child(_crect(Vector2(RIGHT_X + 14, 140), Vector2(RIGHT_W - 28, 1), C_LINE))
 
-	# Skill cards (3 cards stacked vertically)
-	var card_y := 114.0
-	var card_h := 106.0
-	var card_gap := 8.0
+	# Skill rows (4 skills stacked)
+	const SKILL_ICONS := {"Basic ATK": "⚔", "Defend": "🛡", "Skill": "✦", "Ultimate": "💥"}
+	var sk_y := 148.0
+	var sk_h := 62.0
+	var sk_gap := 6.0
 	for i in skills.size():
 		var sk: Dictionary = skills[i]
-		_build_skill_card(Vector2(RIGHT_X + 14, card_y), Vector2(RIGHT_W - 28, card_h), sk, elem_col, i)
-		card_y += card_h + card_gap
+		_build_skill_row(Vector2(RIGHT_X + 14, sk_y), Vector2(RIGHT_W - 28, sk_h), sk, elem_col, SKILL_ICONS)
+		sk_y += sk_h + sk_gap
 
-	# Dialogue text
+	# Passive section
+	if not passive.is_empty():
+		add_child(_crect(Vector2(RIGHT_X + 14, sk_y + 4), Vector2(RIGHT_W - 28, 1), C_LINE))
+		var passive_sk := {
+			"name": passive.get("name", "Passive"),
+			"type": "Passive",
+			"img":  "",
+			"desc": passive.get("desc", ""),
+		}
+		_build_skill_row(Vector2(RIGHT_X + 14, sk_y + 12), Vector2(RIGHT_W - 28, sk_h), passive_sk, elem_col, {"Passive": "🔮"})
+		sk_y += sk_h + 20
+
+	# Dialogue quote
 	var dialogue: String = str(data.get("dialogue", ""))
 	if dialogue != "":
-		var dq := _lbl("\"  " + dialogue + "  \"", 11, Color(0.78, 0.88, 1.0, 0.65))
-		dq.position = Vector2(RIGHT_X + 14, card_y + 8)
-		dq.size = Vector2(RIGHT_W - 28, 32)
+		var dq := _lbl("\"  " + dialogue + "  \"", 10, Color(0.72, 0.82, 1.0, 0.55))
+		dq.position = Vector2(RIGHT_X + 14, sk_y + 14)
+		dq.size = Vector2(RIGHT_W - 28, 24)
 		dq.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		add_child(dq)
 
 	# Bottom buttons: Portray + Resonate
-	var btn_y := VH - 56.0
-	var portray_btn := _action_btn("Portray", elem_col, Vector2(RIGHT_W / 2.0 - 22, 42))
+	var btn_y := VH - 58.0
+	var portray_btn := _action_btn("Portray", elem_col, Vector2(RIGHT_W / 2.0 - 22, 44))
 	portray_btn.position = Vector2(RIGHT_X + 14, btn_y)
 	add_child(portray_btn)
 
-	var resonate_btn := _action_btn("Resonate", Color(0.80, 0.60, 1.0), Vector2(RIGHT_W / 2.0 - 22, 42))
+	var resonate_btn := _action_btn("Resonate", Color(0.75, 0.55, 1.0), Vector2(RIGHT_W / 2.0 - 22, 44))
 	resonate_btn.position = Vector2(RIGHT_X + RIGHT_W / 2.0 + 8, btn_y)
 	add_child(resonate_btn)
 
-func _build_skill_card(pos: Vector2, sz: Vector2, sk: Dictionary, elem_col: Color, idx: int) -> void:
+func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, elem_col: Color, icon_map: Dictionary) -> void:
 	var card := Panel.new()
-	card.position    = pos
-	card.size        = sz
+	card.position     = pos
+	card.size         = sz
 	card.clip_contents = true
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var sk_type: String = str(sk.get("type", ""))
+	var type_col: Color = _skill_type_color(sk_type)
 	card.add_theme_stylebox_override("panel",
-		_flat(Color(0.030 + idx * 0.005, 0.035 + idx * 0.005, 0.075, 0.98),
-			Color(elem_col.r, elem_col.g, elem_col.b, 0.18), 8, 1))
+		_flat(Color(type_col.r * 0.06, type_col.g * 0.06, type_col.b * 0.10, 0.95),
+			Color(type_col.r, type_col.g, type_col.b, 0.15), 6, 1))
 	add_child(card)
 
-	# Skill image (left square)
-	var img_sz := sz.y - 12
+	# Left icon column
+	var icon_w := sz.y - 8
 	var img_ppath: String = str(sk.get("img", ""))
 	if img_ppath != "" and ResourceLoader.exists(img_ppath):
 		var tex: Texture2D = load(img_ppath)
 		if tex:
 			var img := TextureRect.new()
 			img.texture      = tex
-			img.size         = Vector2(img_sz, img_sz)
-			img.position     = Vector2(6, 6)
+			img.size         = Vector2(icon_w, icon_w)
+			img.position     = Vector2(4, 4)
 			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(img)
 	else:
-		var fallback := ColorRect.new()
-		fallback.size     = Vector2(img_sz, img_sz)
-		fallback.position = Vector2(6, 6)
-		fallback.color    = Color(elem_col.r * 0.20, elem_col.g * 0.20, elem_col.b * 0.35, 1.0)
-		fallback.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(fallback)
+		# Emoji fallback
+		var em_bg := ColorRect.new()
+		em_bg.size     = Vector2(icon_w, icon_w)
+		em_bg.position = Vector2(4, 4)
+		em_bg.color    = Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95)
+		em_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(em_bg)
+		var em := _lbl(icon_map.get(sk_type, "✦"), 22, Color(type_col.r, type_col.g, type_col.b, 0.90))
+		em.size = Vector2(icon_w, icon_w)
+		em.position = Vector2(4, 4)
+		em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		em.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		card.add_child(em)
 
-	# Skill type tag
-	var sk_type: String = str(sk.get("type", ""))
-	var type_col: Color
-	match sk_type:
-		"Attack":  type_col = Color(1.0, 0.45, 0.45, 0.90)
-		"Support": type_col = Color(0.45, 1.0, 0.65, 0.90)
-		"Buff":    type_col = Color(0.55, 0.75, 1.00, 0.90)
-		_:         type_col = Color(0.80, 0.80, 0.80, 0.80)
-
+	# Type tag (small pill)
+	var tag_w := 62.0
 	var type_tag := Panel.new()
-	type_tag.size     = Vector2(56, 18)
-	type_tag.position = Vector2(img_sz + 14, 8)
+	type_tag.size     = Vector2(tag_w, 16)
+	type_tag.position = Vector2(icon_w + 10, 5)
 	type_tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	type_tag.add_theme_stylebox_override("panel",
-		_flat(Color(type_col.r * 0.20, type_col.g * 0.20, type_col.b * 0.20, 0.90),
-			Color(type_col.r, type_col.g, type_col.b, 0.45), 4, 1))
+		_flat(Color(type_col.r * 0.18, type_col.g * 0.18, type_col.b * 0.22, 0.95),
+			Color(type_col.r, type_col.g, type_col.b, 0.40), 4, 1))
 	card.add_child(type_tag)
-	var type_lbl := _lbl(sk_type, 9, type_col)
+	var type_lbl := _lbl(sk_type, 8, Color(type_col.r + 0.05, type_col.g + 0.05, type_col.b + 0.05, 1.0))
 	type_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	type_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	type_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	type_tag.add_child(type_lbl)
 
 	# Skill name
-	var name_lbl := _lbl(str(sk.get("name", "")), 15, C_TEXT)
-	name_lbl.position = Vector2(img_sz + 14, 30)
-	name_lbl.size = Vector2(sz.x - img_sz - 28, 22)
+	var name_lbl := _lbl(str(sk.get("name", "")), 13, C_TEXT)
+	name_lbl.position = Vector2(icon_w + 10, 23)
+	name_lbl.size = Vector2(sz.x - icon_w - 18, 18)
 	card.add_child(name_lbl)
 
-	# Skill number (bottom right of card)
-	var num_lbl := _lbl("0%d" % (idx + 1), 11, Color(elem_col.r, elem_col.g, elem_col.b, 0.50))
-	num_lbl.position = Vector2(sz.x - 32, sz.y - 22)
-	num_lbl.size = Vector2(28, 18)
-	num_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	card.add_child(num_lbl)
+	# Description (small, wrapping)
+	var desc: String = str(sk.get("desc", ""))
+	if desc != "":
+		var desc_lbl := _lbl(desc, 9, Color(0.72, 0.82, 0.95, 0.70))
+		desc_lbl.position = Vector2(icon_w + 10, 42)
+		desc_lbl.size = Vector2(sz.x - icon_w - 18, sz.y - 44)
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		card.add_child(desc_lbl)
 
-# ── Helper: info box (Level / Insight / Bond) ─────────────────────────────────
+# ── Helper: "+" button ────────────────────────────────────────────────────────
+func _plus_btn(pos: Vector2, col: Color) -> Panel:
+	var btn := Panel.new()
+	btn.size     = Vector2(28, 28)
+	btn.position = pos
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	btn.add_theme_stylebox_override("panel",
+		_flat(Color(col.r * 0.20, col.g * 0.20, col.b * 0.30, 0.95),
+			Color(col.r, col.g, col.b, 0.55), 6, 1))
+	var lbl := _lbl("+", 16, Color(col.r + 0.1, col.g + 0.1, col.b + 0.1, 1.0))
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	btn.add_child(lbl)
+	return btn
+
+func _skill_type_color(sk_type: String) -> Color:
+	match sk_type:
+		"Basic ATK": return Color(0.55, 0.85, 1.00)
+		"Defend":    return Color(0.45, 0.90, 0.65)
+		"Skill":     return Color(0.80, 0.55, 1.00)
+		"Ultimate":  return Color(1.00, 0.72, 0.28)
+		"Passive":   return Color(0.65, 0.80, 0.55)
+		_:           return Color(0.70, 0.75, 0.85)
+
+# ── Helper: info box (Level / Insight) ────────────────────────────────────────
 func _info_box(pos: Vector2, sz: Vector2, caption: String, value: String, col: Color) -> Panel:
 	var box := Panel.new()
 	box.position    = pos
