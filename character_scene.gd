@@ -137,16 +137,16 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	name_lbl.size = Vector2(LEFT_W - 28, 34)
 	add_child(name_lbl)
 
+	# Stars — right of name, same row
+	var stars_lbl := _lbl("★".repeat(rarity), 20, r_col)
+	stars_lbl.position = Vector2(16, name_y + 32)
+	stars_lbl.size = Vector2(LEFT_W - 28, 26)
+	add_child(stars_lbl)
+
 	var title_lbl := _lbl(str(data.get("title", "")), 11, Color(elem_col.r, elem_col.g, elem_col.b, 0.90))
-	title_lbl.position = Vector2(16, name_y + 36)
+	title_lbl.position = Vector2(16, name_y + 58)
 	title_lbl.size = Vector2(LEFT_W - 28, 18)
 	add_child(title_lbl)
-
-	# Stars
-	var stars_lbl := _lbl("★".repeat(rarity), 13, r_col)
-	stars_lbl.position = Vector2(16, name_y - 22)
-	stars_lbl.size = Vector2(200, 20)
-	add_child(stars_lbl)
 
 	# Separator line between left and right
 	add_child(_crect(Vector2(LEFT_W, 0), Vector2(1, VH),
