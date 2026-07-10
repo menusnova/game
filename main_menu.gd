@@ -241,7 +241,7 @@ func _setup_home_character() -> void:
 	const CX    := 490.0   # center x
 	const CW    := 520.0   # character width
 	const CH    := 720.0   # character height
-	const BOT_Y := 640.0   # bottom of character
+	const BOT_Y := 860.0   # bottom of character (knees visible)
 
 	var char_root := Control.new()
 	char_root.name = "_HomeChar"
