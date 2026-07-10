@@ -89,8 +89,12 @@ func _fill_grid() -> void:
 	var roster := CharacterManager.get_roster()
 	for i in _grid_panels.size():
 		var slot := _grid_panels[i] as Panel
-		if i < roster.size() and bool((roster[i] as Dictionary).get("owned", false)):
-			_fill_character(slot, roster[i] as Dictionary)
+		if i < roster.size():
+			var data := roster[i] as Dictionary
+			if bool(data.get("owned", false)):
+				_fill_character(slot, data)
+			else:
+				_fill_locked(slot, data)
 		else:
 			slot.visible = false
 
