@@ -278,7 +278,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	var img_bg := ColorRect.new()
 	img_bg.size     = Vector2(pw, IMG_H)
 	img_bg.position = Vector2(0, 0)
-	img_bg.color    = Color(accent.r*0.10, accent.g*0.10, accent.b*0.16, 1.0)
+	img_bg.color    = Color(0, 0, 0, 0)
 	img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(img_bg)
 
