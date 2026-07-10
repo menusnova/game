@@ -239,9 +239,9 @@ func _setup_home_character() -> void:
 	]
 
 	const CX    := 490.0   # center x
-	const CW    := 240.0   # character width
-	const CH    := 380.0   # character height
-	const BOT_Y := 542.0   # bottom of character (above chat bar)
+	const CW    := 320.0   # character width
+	const CH    := 480.0   # character height
+	const BOT_Y := 608.0   # bottom of character (above chat bar)
 
 	var char_root := Control.new()
 	char_root.name = "_HomeChar"
