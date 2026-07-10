@@ -223,14 +223,14 @@ func _build_element_tab() -> void:
 	# Grid
 	var grid := GridContainer.new()
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
+	grid.add_theme_constant_override("h_separation", 20)
+	grid.add_theme_constant_override("v_separation", 20)
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var grid_wrap := MarginContainer.new()
-	grid_wrap.add_theme_constant_override("margin_left", 20)
-	grid_wrap.add_theme_constant_override("margin_right", 20)
-	grid_wrap.add_theme_constant_override("margin_top", 12)
-	grid_wrap.add_theme_constant_override("margin_bottom", 20)
+	grid_wrap.add_theme_constant_override("margin_left", 28)
+	grid_wrap.add_theme_constant_override("margin_right", 28)
+	grid_wrap.add_theme_constant_override("margin_top", 16)
+	grid_wrap.add_theme_constant_override("margin_bottom", 24)
 	grid_wrap.add_child(grid)
 	vbox.add_child(grid_wrap)
 
@@ -483,14 +483,14 @@ func _build_compound_tab() -> void:
 
 	var grid := GridContainer.new()
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
+	grid.add_theme_constant_override("h_separation", 20)
+	grid.add_theme_constant_override("v_separation", 20)
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var grid_wrap := MarginContainer.new()
-	grid_wrap.add_theme_constant_override("margin_left", 20)
-	grid_wrap.add_theme_constant_override("margin_right", 20)
-	grid_wrap.add_theme_constant_override("margin_top", 12)
-	grid_wrap.add_theme_constant_override("margin_bottom", 20)
+	grid_wrap.add_theme_constant_override("margin_left", 28)
+	grid_wrap.add_theme_constant_override("margin_right", 28)
+	grid_wrap.add_theme_constant_override("margin_top", 16)
+	grid_wrap.add_theme_constant_override("margin_bottom", 24)
 	grid_wrap.add_child(grid)
 	vbox.add_child(grid_wrap)
 
