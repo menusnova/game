@@ -231,7 +231,10 @@ func _build_element_tab() -> void:
 	grid_wrap.add_child(grid)
 	vbox.add_child(grid_wrap)
 
-	for elem in ELEMENTS:
+	# discovered first, undiscovered last
+	var elem_found := ELEMENTS.filter(func(e): return e["id"] in _discovered)
+	var elem_hidden := ELEMENTS.filter(func(e): return e["id"] not in _discovered)
+	for elem in elem_found + elem_hidden:
 		grid.add_child(_make_element_card(elem))
 
 	# ── Compounds section ──
@@ -254,7 +257,9 @@ func _build_element_tab() -> void:
 	cgrid_wrap.add_child(cgrid)
 	vbox.add_child(cgrid_wrap)
 
-	for key in comp_keys:
+	var comp_found := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds)
+	var comp_hidden := comp_keys.filter(func(k): return k not in PlayerData.discovered_compounds)
+	for key in comp_found + comp_hidden:
 		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
 		var is_found: bool = key in PlayerData.discovered_compounds
 		cgrid.add_child(_make_compound_card(compound, is_found))
