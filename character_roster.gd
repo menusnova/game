@@ -179,7 +179,7 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		Color(0.01, 0.01, 0.04, 0.82)))
 
 	var char_data := CharacterManager.get_character_data(name_s)
-	var lv_str := "Lv %d" % int(char_data.get("level", 1)) if not char_data.is_empty() else "Lv 1"
+	var lv_str := "Lv %d" % int(char_data.get("level", 0)) if not char_data.is_empty() else "Lv 0"
 	var lv_bg := Panel.new()
 	lv_bg.size     = Vector2(52, 20)
 	lv_bg.position = Vector2(5, CARD_H - 43)
