@@ -419,14 +419,14 @@ class _QuestRow extends Control:
 				icon_tx.texture      = tex
 				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon_tx.size         = Vector2(CW, 36)
+				icon_tx.size         = Vector2(CW, 32)
 				icon_tx.position     = Vector2(0, 2)
 				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(icon_tx)
 			else:
 				var icon_l := Label.new()
 				icon_l.text = rfallback
-				icon_l.size = Vector2(CW, 36)
+				icon_l.size = Vector2(CW, 32)
 				icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 				icon_l.add_theme_font_size_override("font_size", 18)
@@ -436,12 +436,12 @@ class _QuestRow extends Control:
 			var val_s := "+%dk" % (rval / 1000) if rval >= 1000 else "+%d" % rval
 			var val_l := Label.new()
 			val_l.text     = val_s
-			val_l.size     = Vector2(CW, 16)
-			val_l.position = Vector2(0, 39)
+			val_l.size     = Vector2(CW, 15)
+			val_l.position = Vector2(0, 35)
 			val_l.horizontal_alignment   = HORIZONTAL_ALIGNMENT_CENTER
 			val_l.vertical_alignment     = VERTICAL_ALIGNMENT_CENTER
 			val_l.text_overrun_behavior  = TextServer.OVERRUN_TRIM_ELLIPSIS
-			val_l.add_theme_font_size_override("font_size", 11)
+			val_l.add_theme_font_size_override("font_size", 9)
 			val_l.add_theme_color_override("font_color", Color(rcol.r + 0.08, rcol.g, rcol.b, 0.95))
 			val_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(val_l)
@@ -449,11 +449,11 @@ class _QuestRow extends Control:
 			var name_l := Label.new()
 			name_l.text     = rlabel
 			name_l.size     = Vector2(CW, 13)
-			name_l.position = Vector2(0, 55)
+			name_l.position = Vector2(0, 51)
 			name_l.horizontal_alignment    = HORIZONTAL_ALIGNMENT_CENTER
 			name_l.vertical_alignment      = VERTICAL_ALIGNMENT_CENTER
 			name_l.text_overrun_behavior   = TextServer.OVERRUN_TRIM_ELLIPSIS
-			name_l.add_theme_font_size_override("font_size", 8)
+			name_l.add_theme_font_size_override("font_size", 7)
 			name_l.add_theme_color_override("font_color", Color(rcol.r, rcol.g, rcol.b, 0.60))
 			name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(name_l)
