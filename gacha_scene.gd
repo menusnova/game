@@ -544,7 +544,7 @@ func _warp_btn(count: int) -> Button:
 	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# Card icon (left side)
+	# Card icon (left side) — additive blend removes black background
 	var card_tex := _load_png("res://image/gacha_card.jpg")
 	if card_tex:
 		var card_ico := TextureRect.new()
@@ -555,6 +555,9 @@ func _warp_btn(count: int) -> Button:
 		card_ico.size = Vector2(36, 44)
 		card_ico.position = Vector2(10, 4)
 		card_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		card_ico.material = mat
 		btn.add_child(card_ico)
 
 	# Gem icon + cost (top area)
@@ -564,7 +567,7 @@ func _warp_btn(count: int) -> Button:
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(top_row)
 
-	var gem_tex := _load_png("res://image/icon_paid.png")
+	var gem_tex := _load_png("res://image/crystal_gem.png")
 	if gem_tex:
 		var ico := TextureRect.new()
 		ico.texture = gem_tex
