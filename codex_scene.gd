@@ -215,7 +215,9 @@ func _build_element_tab() -> void:
 	_content.add_child(vbox)
 
 	# ── Elements section ──
-	var sec := _section_label("ธาตุที่ค้นพบ  (%d/%d)" % [_discovered.size(), ELEMENTS.size()])
+	var elem_total := ELEMENTS.filter(func(e): return e["type"] != "Compound").size()
+	var elem_disc_count := ELEMENTS.filter(func(e): return e["id"] in _discovered and e["type"] != "Compound").size()
+	var sec := _section_label("ธาตุที่ค้นพบ  (%d/%d)" % [elem_disc_count, elem_total])
 	vbox.add_child(sec)
 
 	var grid := GridContainer.new()
@@ -231,18 +233,19 @@ func _build_element_tab() -> void:
 	grid_wrap.add_child(grid)
 	vbox.add_child(grid_wrap)
 
-	# discovered first, undiscovered last
+	# show only discovered elements here
 	var elem_found := ELEMENTS.filter(func(e): return e["id"] in _discovered)
 	var elem_hidden := ELEMENTS.filter(func(e): return e["id"] not in _discovered)
-	for elem in elem_found + elem_hidden:
+	for elem in elem_found:
 		grid.add_child(_make_element_card(elem))
 
-	# ── Compounds section ──
+	# ── Compounds + undiscovered elements section ──
 	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
 	var comp_keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
 	var found_count := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
+	var total_undiscov := comp_keys.size() + elem_hidden.size()
 
-	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, comp_keys.size()]))
+	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, total_undiscov]))
 
 	var cgrid := GridContainer.new()
 	cgrid.columns = 4
@@ -263,6 +266,9 @@ func _build_element_tab() -> void:
 		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
 		var is_found: bool = key in PlayerData.discovered_compounds
 		cgrid.add_child(_make_compound_card(compound, is_found))
+	# undiscovered elements go here too
+	for elem in elem_hidden:
+		cgrid.add_child(_make_element_card(elem))
 
 func _make_element_card(elem: Dictionary) -> Control:
 	var discovered: bool = elem["id"] in _discovered
