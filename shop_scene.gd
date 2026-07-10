@@ -51,9 +51,8 @@ const SHOPS := [
 
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
-	{"name": "Iron Ore",    "sub": "วัตถุดิบ ×10",  "cost": 100, "icon": "🪨", "tag": "material"},
-	{"name": "EXP Card M", "sub": "EXP +2000",       "cost": 200, "icon": "📗", "tag": "exp"},
-	{"name": "HP Potion S", "sub": "ฟื้นฟู HP +30", "cost": 30,  "icon": "🍶", "tag": "recovery"},
+	{"name": "Iron Ore",    "sub": "วัตถุดิบ ×10", "cost": 100, "icon": "🪨", "tag": "material"},
+	{"name": "EXP Card M", "sub": "EXP +2000",      "cost": 200, "icon": "📗", "tag": "exp"},
 ]
 
 const SYNTHESIS_ITEMS := [
