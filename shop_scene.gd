@@ -51,10 +51,9 @@ const SHOPS := [
 
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
-	{"name": "Iron Ore",          "sub": "วัตถุดิบ ×10",         "cost": 100, "icon": "🪨", "tag": "material"},
-	{"name": "Reaction Catalyst", "sub": "เพิ่มอัตรา synthesis", "cost": 150, "icon": "⚗",  "tag": "material"},
-	{"name": "EXP Card M",        "sub": "EXP +2000",             "cost": 200, "icon": "📗", "tag": "exp"},
-	{"name": "HP Potion S",       "sub": "ฟื้นฟู HP +30",        "cost": 30,  "icon": "🍶", "tag": "recovery"},
+	{"name": "Iron Ore",    "sub": "วัตถุดิบ ×10",  "cost": 100, "icon": "🪨", "tag": "material"},
+	{"name": "EXP Card M", "sub": "EXP +2000",       "cost": 200, "icon": "📗", "tag": "exp"},
+	{"name": "HP Potion S", "sub": "ฟื้นฟู HP +30", "cost": 30,  "icon": "🍶", "tag": "recovery"},
 ]
 
 const SYNTHESIS_ITEMS := [
@@ -64,10 +63,7 @@ const SYNTHESIS_ITEMS := [
 	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "icon": "🔋", "tag": "energy", "badge": "Save"},
 ]
 
-const PREMIUM_ITEMS := [
-	{"name": "Monthly Pass",  "sub": "รับรางวัลพิเศษ 30 วัน",       "price": "฿59", "icon": "📅", "tag": "pass", "badge": "Popular", "coming_soon": true},
-	{"name": "Starter Pack",  "sub": "ชุดสตาร์ท ซื้อได้ครั้งเดียว", "price": "฿99", "icon": "🎒", "tag": "pack", "badge": "New",     "coming_soon": true},
-]
+const PREMIUM_ITEMS := []
 
 # ── State ─────────────────────────────────────────────────────────
 var _active_shop := "void_market"
