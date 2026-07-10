@@ -238,39 +238,33 @@ func _setup_home_character() -> void:
 		"พร้อมออกเดินทางแล้วหรือยัง?\nฉันรอนานมากแล้ว",
 	]
 
-	const CX      := 490.0   # center x
-	const CW      := 240.0   # visible width
-	const VIS_H   := 420.0   # visible height (knees up)
-	const FULL_H  := 580.0   # full render height (feet extend below clip)
-	const BOT_Y   := 555.0   # bottom of visible area
+	const CX    := 490.0   # center x
+	const CW    := 240.0   # character width
+	const CH    := 460.0   # character height (full portrait)
+	const BOT_Y := 555.0   # bottom of character
 
-	# Clip container — hides feet below VIS_H
-	var char_root := Panel.new()
+	var char_root := Control.new()
 	char_root.name = "_HomeChar"
-	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - VIS_H)
-	char_root.size     = Vector2(CW, VIS_H)
-	char_root.clip_contents = true
-	char_root.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - CH)
+	char_root.size     = Vector2(CW, CH)
+	char_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.z_index  = 3
-	var blank_sb := StyleBoxFlat.new()
-	blank_sb.bg_color = Color(0, 0, 0, 0)
-	char_root.add_theme_stylebox_override("panel", blank_sb)
 	add_child(char_root)
 
-	# Shadow glow at bottom edge of clip
+	# Shadow glow under feet
 	var glow := ColorRect.new()
 	glow.size     = Vector2(CW * 0.85, 22)
-	glow.position = Vector2(CW * 0.075, VIS_H - 18)
+	glow.position = Vector2(CW * 0.075, CH - 14)
 	glow.color    = Color(0.25, 0.55, 1.0, 0.22)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.add_child(glow)
 
-	# Portrait image — taller than clip so feet are hidden below
+	# Portrait image — full body
 	var portrait := TextureRect.new()
 	portrait.texture      = preload("res://image/lyra_1.png")
 	portrait.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	portrait.size         = Vector2(CW, FULL_H)
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.size         = Vector2(CW, CH)
 	portrait.position     = Vector2(0, 0)
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	char_root.add_child(portrait)
@@ -287,7 +281,7 @@ func _setup_home_character() -> void:
 	var bubble := Panel.new()
 	bubble.name = "_Bubble"
 	bubble.size     = Vector2(BW, BH)
-	bubble.position = Vector2(CX - BW * 0.5, BOT_Y - VIS_H - BH - 14)
+	bubble.position = Vector2(CX - BW * 0.5, BOT_Y - CH - BH - 14)
 	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bubble.z_index  = 4
 	var bsb := StyleBoxFlat.new()

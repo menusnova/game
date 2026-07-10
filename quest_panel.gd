@@ -232,7 +232,7 @@ func _build_daily_bar() -> void:
 		_daily_bar.add_child(box)
 
 		var icon_tx := TextureRect.new()
-		var gem_tex: Texture2D = load("res://image/crystal_gem.png")
+		var gem_tex: Texture2D = preload("res://image/crystal_gem.png")
 		if gem_tex:
 			icon_tx.texture = gem_tex
 		icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
