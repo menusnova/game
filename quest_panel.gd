@@ -400,9 +400,10 @@ class _QuestRow extends Control:
 			if tex:
 				var icon_tx := TextureRect.new()
 				icon_tx.texture      = tex
-				icon_tx.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE
 				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon_tx.size         = Vector2(CW, 36)
+				icon_tx.size         = Vector2(CW, 34)
+				icon_tx.position     = Vector2(0, 2)
 				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(icon_tx)
 			else:
