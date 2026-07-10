@@ -71,24 +71,6 @@ const WARP_TYPES := [
 			"ไพ่หลักในแบนเนอร์นี้มีอัตราได้รับสูงขึ้น",
 		],
 	},
-	{
-		"id":     "std",
-		"label":  "Standard\nWarp",
-		"tag":    "PERMANENT",
-		"icon":   "⋆",
-		"accent": Color(0.60, 0.65, 1.0),
-		"banner_title": "Standard Warp",
-		"banner_sub":   "Permanent",
-		"art_icon":     "⋆",
-		"art_col":      Color(0.60, 0.65, 1.0),
-		"art_img":      "res://image/lyra_3.png",
-		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
-		"duration":     "ถาวร",
-		"desc_lines": [
-			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
-			"รวมตัวละครและไพ่ช่วยทุกประเภทในระบบ",
-		],
-	},
 ]
 
 var _pity   := 0
@@ -177,6 +159,9 @@ func _build_hsr_ui() -> void:
 		art_rect.z_index      = 0
 		add_child(art_rect)
 
+
+	# ── Thumb strip (left warp selector) ──
+	_build_thumb_strip()
 
 	# ── Info card ──
 	_build_info_card()
