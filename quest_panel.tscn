@@ -16,7 +16,6 @@ corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="SB_TopBar"]
 bg_color = Color(0.038, 0.040, 0.072, 1.0)
-border_width_bottom = 1
 border_color = Color(1, 1, 1, 0.06)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
