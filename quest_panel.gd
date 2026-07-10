@@ -420,18 +420,20 @@ class _QuestRow extends Control:
 			var val_l := Label.new()
 			val_l.text     = val_s
 			val_l.size     = Vector2(CW, 16)
-			val_l.position = Vector2(0, 36)
+			val_l.position = Vector2(0, 37)
 			val_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			val_l.add_theme_font_size_override("font_size", 9)
+			val_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+			val_l.add_theme_font_size_override("font_size", 10)
 			val_l.add_theme_color_override("font_color", Color(rcol.r + 0.08, rcol.g, rcol.b, 0.95))
 			val_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(val_l)
 
 			var name_l := Label.new()
 			name_l.text     = rlabel
-			name_l.size     = Vector2(CW, 16)
-			name_l.position = Vector2(0, 52)
+			name_l.size     = Vector2(CW, 14)
+			name_l.position = Vector2(0, 53)
 			name_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			name_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 			name_l.add_theme_font_size_override("font_size", 8)
 			name_l.add_theme_color_override("font_color", Color(rcol.r, rcol.g, rcol.b, 0.60))
 			name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
