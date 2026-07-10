@@ -190,17 +190,6 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 	var ins_plus := _plus_btn(Vector2(RIGHT_X + 338, 60), elem_col)
 	add_child(ins_plus)
 
-	# "Search the Poems" button row
-	var poems_btn := _action_btn("Search the Poems", Color(0.75, 0.75, 0.75), Vector2(178, 28))
-	poems_btn.position = Vector2(RIGHT_X + 14, 104)
-	add_child(poems_btn)
-
-	# Resonance triangle icons (△ △△ △△△)
-	var tri_lbl := _lbl("△   △△   △△△", 11, Color(elem_col.r, elem_col.g, elem_col.b, 0.55))
-	tri_lbl.position = Vector2(RIGHT_X + 200, 105)
-	tri_lbl.size = Vector2(200, 24)
-	add_child(tri_lbl)
-
 	# Divider
 	add_child(_crect(Vector2(RIGHT_X + 14, 140), Vector2(RIGHT_W - 28, 1), C_LINE))
 
@@ -235,15 +224,6 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 		dq.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		add_child(dq)
 
-	# Bottom buttons: Portray + Resonate
-	var btn_y := VH - 58.0
-	var portray_btn := _action_btn("Portray", elem_col, Vector2(RIGHT_W / 2.0 - 22, 44))
-	portray_btn.position = Vector2(RIGHT_X + 14, btn_y)
-	add_child(portray_btn)
-
-	var resonate_btn := _action_btn("Resonate", Color(0.75, 0.55, 1.0), Vector2(RIGHT_W / 2.0 - 22, 44))
-	resonate_btn.position = Vector2(RIGHT_X + RIGHT_W / 2.0 + 8, btn_y)
-	add_child(resonate_btn)
 
 func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, elem_col: Color, icon_map: Dictionary) -> void:
 	var card := Panel.new()
