@@ -271,7 +271,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	card.clip_contents = true
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.add_theme_stylebox_override("panel",
-		_flat(Color(0.08, 0.08, 0.15, 1.0), Color(accent.r, accent.g, accent.b, 0.30), 8, 1))
+		_flat(Color(accent.r*0.12, accent.g*0.12, accent.b*0.18, 1.0), Color(accent.r, accent.g, accent.b, 0.55), 8, 1))
 
 	# ── Image area (top ~60% of card) ───────────────────────────────
 	const IMG_H := 140.0
