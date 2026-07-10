@@ -485,9 +485,11 @@ func _open_element_detail(elem: Dictionary) -> void:
 			c.queue_free()
 
 	var col: Color = elem["color"]
+	const CW := 480.0; const CH := 420.0
 	var card := Panel.new()
-	card.size = Vector2(480, 380)
-	card.position = Vector2(336, 134)
+	card.size = Vector2(CW, CH)
+	card.position = Vector2((1152 - CW) * 0.5, (648 - CH) * 0.5)
+	card.clip_contents = true
 	card.add_theme_stylebox_override("panel", _flat(
 		Color(0.06, 0.08, 0.16, 1.0),
 		Color(col.r, col.g, col.b, 0.7), 12, 2
@@ -495,99 +497,143 @@ func _open_element_detail(elem: Dictionary) -> void:
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	_detail_overlay.add_child(card)
 
+	const IW := 440.0  # inner width
+
 	# Symbol large
 	var sym := Label.new()
 	sym.text = elem["symbol"]
-	sym.position = Vector2(20, 16)
-	sym.add_theme_font_size_override("font_size", 52)
+	sym.position = Vector2(20, 14)
+	sym.size = Vector2(100, 64)
+	sym.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	sym.add_theme_font_size_override("font_size", 48)
 	sym.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.85))
+	sym.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(sym)
 
 	if elem["number"] > 0:
 		var num := Label.new()
 		num.text = "No. %d" % elem["number"]
-		num.position = Vector2(24, 76)
+		num.position = Vector2(24, 78)
+		num.size = Vector2(80, 14)
 		num.add_theme_font_size_override("font_size", 10)
 		num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.5))
+		num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(num)
 
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = elem["name_th"]
-	name_lbl.position = Vector2(130, 18)
+	name_lbl.position = Vector2(130, 16)
+	name_lbl.size = Vector2(IW - 110, 30)
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 22)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
 	var eng := Label.new()
 	eng.text = elem["name_en"] + "  ·  " + elem["type"]
-	eng.position = Vector2(130, 46)
+	eng.position = Vector2(130, 48)
+	eng.size = Vector2(IW - 110, 20)
+	eng.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	eng.add_theme_font_size_override("font_size", 12)
 	eng.add_theme_color_override("font_color", C_SUB)
+	eng.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(eng)
 
 	# Divider
 	var div := ColorRect.new()
 	div.color = Color(col.r, col.g, col.b, 0.2)
-	div.size = Vector2(440, 1)
+	div.size = Vector2(IW, 1)
 	div.position = Vector2(20, 100)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(div)
 
 	# Real-world desc
 	var real_title := Label.new()
 	real_title.text = "ข้อมูลจริง"
-	real_title.position = Vector2(20, 112)
+	real_title.position = Vector2(20, 110)
+	real_title.size = Vector2(IW, 16)
 	real_title.add_theme_font_size_override("font_size", 11)
 	real_title.add_theme_color_override("font_color", C_GOLD)
+	real_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(real_title)
 
 	var real_desc := Label.new()
 	real_desc.text = elem["real_desc"]
-	real_desc.position = Vector2(20, 130)
-	real_desc.size = Vector2(440, 80)
+	real_desc.position = Vector2(20, 128)
+	real_desc.size = Vector2(IW, 84)
 	real_desc.add_theme_font_size_override("font_size", 11)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
 	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	real_desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	real_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(real_desc)
+
+	# Divider 2
+	var div2 := ColorRect.new()
+	div2.color = Color(col.r, col.g, col.b, 0.12)
+	div2.size = Vector2(IW, 1)
+	div2.position = Vector2(20, 218)
+	div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(div2)
 
 	# How to get
 	var how_title := Label.new()
 	how_title.text = "วิธีได้รับ"
-	how_title.position = Vector2(20, 222)
+	how_title.position = Vector2(20, 226)
+	how_title.size = Vector2(IW, 16)
 	how_title.add_theme_font_size_override("font_size", 11)
 	how_title.add_theme_color_override("font_color", C_GOLD)
+	how_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(how_title)
 
 	var how := Label.new()
 	how.text = elem["how_to_get"]
-	how.position = Vector2(20, 240)
+	how.position = Vector2(20, 244)
+	how.size = Vector2(IW, 20)
+	how.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	how.add_theme_font_size_override("font_size", 11)
 	how.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
+	how.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(how)
+
+	# Divider 3
+	var div3 := ColorRect.new()
+	div3.color = Color(col.r, col.g, col.b, 0.12)
+	div3.size = Vector2(IW, 1)
+	div3.position = Vector2(20, 270)
+	div3.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(div3)
 
 	# Recipes / effects
 	var rec_title := Label.new()
 	rec_title.text = "ใช้ทำ / ผลในเกม"
-	rec_title.position = Vector2(20, 268)
+	rec_title.position = Vector2(20, 278)
+	rec_title.size = Vector2(IW, 16)
 	rec_title.add_theme_font_size_override("font_size", 11)
 	rec_title.add_theme_color_override("font_color", C_GOLD)
+	rec_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(rec_title)
 
-	var ry := 286.0
+	var ry := 296.0
 	for r in elem["recipes"]:
 		var rl := Label.new()
 		rl.text = "• " + r
 		rl.position = Vector2(20, ry)
+		rl.size = Vector2(IW, 18)
+		rl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		rl.add_theme_font_size_override("font_size", 11)
 		rl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
+		rl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(rl)
-		ry += 18
+		ry += 20
 
 	# Close button
 	var close_btn := Button.new()
 	close_btn.text = "✕"
 	close_btn.size = Vector2(32, 32)
-	close_btn.position = Vector2(436, 10)
+	close_btn.position = Vector2(CW - 44, 10)
 	close_btn.add_theme_font_size_override("font_size", 14)
 	close_btn.add_theme_color_override("font_color", C_SUB)
 	close_btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
