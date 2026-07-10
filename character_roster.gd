@@ -218,7 +218,7 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 			img.texture      = tex
 			img.size         = Vector2(CARD_W, portrait_h + 12)
 			img.position     = Vector2(0, 0)
-			img.expand_mode  = TextureRect.EXPAND_IGNORE
+			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			slot.add_child(img)
@@ -317,7 +317,7 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 			img.texture      = tex
 			img.size         = Vector2(CARD_W, portrait_h + 12)
 			img.position     = Vector2(0, 0)
-			img.expand_mode  = TextureRect.EXPAND_IGNORE
+			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			img.modulate     = Color(0.35, 0.35, 0.40, 0.70)
 			img.mouse_filter = Control.MOUSE_FILTER_IGNORE

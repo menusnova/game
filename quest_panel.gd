@@ -235,7 +235,7 @@ func _build_daily_bar() -> void:
 		var gem_tex: Texture2D = load("res://image/crystal_gem.png")
 		if gem_tex:
 			icon_tx.texture = gem_tex
-		icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE
+		icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_tx.size     = Vector2(54, 28)
 		icon_tx.position = Vector2(0, 2)
@@ -408,7 +408,7 @@ class _QuestRow extends Control:
 			if tex:
 				var icon_tx := TextureRect.new()
 				icon_tx.texture      = tex
-				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE
+				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 				icon_tx.size         = Vector2(CW, 34)
 				icon_tx.position     = Vector2(0, 2)
