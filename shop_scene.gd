@@ -24,6 +24,7 @@ const SHOPS := [
 		"currency": "Aether Credit",
 		"cur_sym":  "AC",
 		"cur_col":  Color(1.00, 0.82, 0.28, 1.0),
+		"cur_icon": "res://image/icon_gold.png",
 		"desc":     "ใช้ Aether Credit แลกวัตถุดิบและของใช้ทั่วไป",
 		"accent":   Color(0.42, 0.72, 1.00, 1.0),
 	},
@@ -34,6 +35,7 @@ const SHOPS := [
 		"currency": "Void Crystal",
 		"cur_sym":  "VC",
 		"cur_col":  Color(0.55, 0.40, 1.00, 1.0),
+		"cur_icon": "res://image/crystal_gem.png",
 		"desc":     "ใช้ Void Crystal แลก Aether Shard และพลังงาน",
 		"accent":   Color(0.70, 0.50, 1.00, 1.0),
 	},
@@ -240,13 +242,13 @@ func _build_shop_page(items: Array, shop: Dictionary) -> void:
 	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(banner_sub)
 
-	# Item grid: 3 columns
-	const COLS   := 3
-	const CARD_W := 274.0
-	const CARD_H := 120.0
-	const PAD_X  := 14.0
-	const PAD_Y  := 12.0
-	const START_X := 20.0
+	# Item grid: 4 columns, portrait cards
+	const COLS    := 4
+	const CARD_W  := 212.0
+	const CARD_H  := 230.0
+	const PAD_X   := 10.0
+	const PAD_Y   := 10.0
+	const START_X := 16.0
 	const START_Y := 68.0
 
 	for i in items.size():
@@ -258,140 +260,112 @@ func _build_shop_page(items: Array, shop: Dictionary) -> void:
 		_content_root.add_child(_make_item_card(item, px, py, CARD_W, CARD_H, shop))
 
 func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: float, shop: Dictionary) -> Panel:
-	var accent: Color = shop["accent"]
+	var accent: Color  = shop["accent"]
 	var cur_col: Color = shop["cur_col"]
-	var is_premium := str(shop["id"]) == "premium"
+	var is_premium     := str(shop["id"]) == "premium"
 
 	var card := Panel.new()
 	card.position = Vector2(px, py)
 	card.size     = Vector2(pw, ph)
+	card.clip_contents = true
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.add_theme_stylebox_override("panel",
-		_flat(Color(0.10, 0.10, 0.18, 0.97),
-			  Color(accent.r, accent.g, accent.b, 0.22), 8, 1))
+		_flat(Color(0.08, 0.08, 0.15, 1.0), Color(accent.r, accent.g, accent.b, 0.30), 8, 1))
 
-	# Icon + price stacked on left column
-	var icon_size := 64.0
-	var icon_x    := 14.0
-	var icon_y    := 12.0
-
-	var icon_bg := Panel.new()
-	icon_bg.size     = Vector2(icon_size, icon_size)
-	icon_bg.position = Vector2(icon_x, icon_y)
-	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon_bg.add_theme_stylebox_override("panel",
-		_flat(Color(accent.r*0.15, accent.g*0.15, accent.b*0.20, 1.0),
-			  Color(accent.r, accent.g, accent.b, 0.35), 10, 1))
-	card.add_child(icon_bg)
+	# ── Image area (top ~60% of card) ───────────────────────────────
+	const IMG_H := 140.0
+	var img_bg := ColorRect.new()
+	img_bg.size     = Vector2(pw, IMG_H)
+	img_bg.position = Vector2(0, 0)
+	img_bg.color    = Color(accent.r*0.10, accent.g*0.10, accent.b*0.16, 1.0)
+	img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(img_bg)
 
 	if item.has("img"):
-		var icon_tex := TextureRect.new()
-		icon_tex.texture      = load(str(item["img"]))
-		icon_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		icon_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		icon_bg.add_child(icon_tex)
+		var img_tex := TextureRect.new()
+		img_tex.texture      = load(str(item["img"]))
+		img_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		img_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		img_tex.size         = Vector2(pw, IMG_H)
+		img_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(img_tex)
 	else:
 		var icon_lbl := Label.new()
 		icon_lbl.text = str(item.get("icon", "📦"))
-		icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_lbl.size = Vector2(pw, IMG_H)
 		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.add_theme_font_size_override("font_size", 30)
+		icon_lbl.add_theme_font_size_override("font_size", 52)
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		icon_bg.add_child(icon_lbl)
+		card.add_child(icon_lbl)
 
-	# Price label under icon (left column)
-	var cost_text: String
-	if is_premium:
-		cost_text = str(item.get("price", "฿?"))
-	else:
-		cost_text = "%d %s" % [int(item.get("cost", 0)), str(shop["cur_sym"])]
+	# Badge top-right
+	if item.has("badge"):
+		var badge_col := Color(1.0, 0.60, 0.20, 1.0)
+		if item["badge"] == "Best":      badge_col = Color(0.30, 0.90, 0.55, 1.0)
+		if item["badge"] == "Save":      badge_col = Color(0.40, 0.85, 1.00, 1.0)
+		if item["badge"] == "Limited":   badge_col = Color(0.95, 0.35, 0.45, 1.0)
+		if item["badge"] == "Popular":   badge_col = Color(0.50, 0.80, 1.00, 1.0)
+		if item["badge"] == "Exclusive": badge_col = Color(0.85, 0.55, 1.00, 1.0)
+		var badge := Panel.new()
+		badge.size     = Vector2(48, 18)
+		badge.position = Vector2(pw - 52, 4)
+		badge.add_theme_stylebox_override("panel",
+			_flat(Color(badge_col.r*0.22, badge_col.g*0.22, badge_col.b*0.28, 0.95),
+				  Color(badge_col.r, badge_col.g, badge_col.b, 0.80), 4, 1))
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(badge)
+		var bl := Label.new()
+		bl.text = str(item["badge"])
+		bl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		bl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		bl.add_theme_font_size_override("font_size", 9)
+		bl.add_theme_color_override("font_color", badge_col)
+		bl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		badge.add_child(bl)
 
-	var price_lbl := Label.new()
-	price_lbl.text = cost_text
-	price_lbl.size = Vector2(icon_size, 20)
-	price_lbl.position = Vector2(icon_x, icon_y + icon_size + 4)
-	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	price_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	price_lbl.add_theme_font_size_override("font_size", 11)
-	price_lbl.add_theme_color_override("font_color", cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0))
-	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(price_lbl)
-
-	# Text block — right of icon
-	var tx := icon_x + icon_size + 12.0
-	var tw := pw - tx - 10.0
-
-	# Name
+	# ── Name ────────────────────────────────────────────────────────
 	var name_lbl := Label.new()
 	name_lbl.text = str(item["name"])
-	name_lbl.position = Vector2(tx, 14)
-	name_lbl.size     = Vector2(tw, 22)
+	name_lbl.position = Vector2(8, IMG_H + 6)
+	name_lbl.size     = Vector2(pw - 16, 22)
 	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	name_lbl.add_theme_font_size_override("font_size", 14)
+	name_lbl.add_theme_font_size_override("font_size", 13)
 	name_lbl.add_theme_color_override("font_color", C_TXT)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
-	# Sub / desc
-	var sub_lbl := Label.new()
-	sub_lbl.text = str(item.get("sub", ""))
-	sub_lbl.position = Vector2(tx, 40)
-	sub_lbl.size     = Vector2(tw, 18)
-	sub_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	sub_lbl.add_theme_font_size_override("font_size", 11)
-	sub_lbl.add_theme_color_override("font_color", C_DIM)
-	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(sub_lbl)
+	# ── Price row: currency icon + number ───────────────────────────
+	var cost_text: String
+	if is_premium:
+		cost_text = str(item.get("price", "฿?"))
+	else:
+		cost_text = str(int(item.get("cost", 0)))
 
-	# Badge
-	if item.has("badge"):
-		var badge_col := Color(1.0, 0.60, 0.20, 1.0)
-		if item["badge"] == "Best":      badge_col = Color(0.30, 0.90, 0.55, 1.0)
-		if item["badge"] == "Limited":   badge_col = Color(0.95, 0.35, 0.45, 1.0)
-		if item["badge"] == "Popular":   badge_col = Color(0.50, 0.80, 1.00, 1.0)
-		if item["badge"] == "Exclusive": badge_col = Color(0.85, 0.55, 1.00, 1.0)
-		if item["badge"] == "Save":      badge_col = Color(0.40, 0.85, 1.00, 1.0)
-		var badge := Panel.new()
-		badge.size     = Vector2(52, 16)
-		badge.position = Vector2(tx, 64)
-		badge.add_theme_stylebox_override("panel",
-			_flat(Color(badge_col.r*0.18, badge_col.g*0.18, badge_col.b*0.22, 1.0),
-				  Color(badge_col.r, badge_col.g, badge_col.b, 0.70), 4, 1))
-		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(badge)
+	var price_y := IMG_H + 32.0
+	var cur_icon_path := str(shop.get("cur_icon", ""))
 
-		var badge_lbl := Label.new()
-		badge_lbl.text = str(item["badge"])
-		badge_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		badge_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		badge_lbl.add_theme_font_size_override("font_size", 9)
-		badge_lbl.add_theme_color_override("font_color", badge_col)
-		badge_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		badge.add_child(badge_lbl)
+	# Currency icon (16×16)
+	if cur_icon_path != "":
+		var ci := TextureRect.new()
+		ci.texture      = load(cur_icon_path)
+		ci.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ci.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ci.size         = Vector2(16, 16)
+		ci.position     = Vector2(8, price_y + 1)
+		ci.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(ci)
 
-	# Buy button — right side bottom
-	var buy_btn := Panel.new()
-	buy_btn.size     = Vector2(tw, 26)
-	buy_btn.position = Vector2(tx, ph - 34)
-	buy_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	buy_btn.add_theme_stylebox_override("panel",
-		_flat(Color(accent.r*0.22, accent.g*0.22, accent.b*0.28, 1.0),
-			  Color(accent.r, accent.g, accent.b, 0.60), 6, 1))
-	card.add_child(buy_btn)
-
-	var buy_lbl := Label.new()
-	buy_lbl.text = "ซื้อ"
-	buy_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	buy_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	buy_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	buy_lbl.add_theme_font_size_override("font_size", 12)
-	buy_lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0, 1.0))
-	buy_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	buy_btn.add_child(buy_lbl)
+	var price_lbl := Label.new()
+	price_lbl.text = cost_text
+	price_lbl.position = Vector2(28, price_y)
+	price_lbl.size     = Vector2(pw - 36, 18)
+	price_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	price_lbl.add_theme_font_size_override("font_size", 13)
+	price_lbl.add_theme_color_override("font_color", cur_col)
+	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(price_lbl)
 
 	# Hover / click
 	card.gui_input.connect(func(ev: InputEvent):
