@@ -54,7 +54,6 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	var elem_col: Color = base.get("element_color", Color(0.35, 0.75, 1.0)) as Color
 	var rarity: int     = int(base.get("rarity", 5))
 	var r_col: Color    = _rarity_color(rarity)
-	var roles: Array    = data.get("roles", [])
 
 	# Portrait
 	var ppath: String = PORTRAITS.get(char_name, "")
@@ -103,16 +102,14 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	badge.add_child(badge_lbl)
 
-	# Stats table (ATK / HP / RDEF / MDEF / CRIT) — bottom-left overlay
-	var stat_y := VH - 220.0
-	var stat_keys := ["atk", "hp", "rdef", "mdef", "crit"]
-	var stat_labels := ["ATK", "HP", "R.DEF", "M.DEF", "CRIT"]
-	var col0 := 0.0
-	var col1 := LEFT_W / 2.0
+	# Stats table (ATK / HP / DEF) — bottom-left overlay
+	var stat_y := VH - 178.0
+	var stat_keys := ["atk", "hp", "def"]
+	var stat_labels := ["ATK", "HP", "DEF"]
 	for i in stat_keys.size():
-		var col_x := col0 if i % 2 == 0 else col1
+		var col_x := 0.0 if i % 2 == 0 else LEFT_W / 2.0
 		var row_y := stat_y + int(i / 2) * 46.0
-		if i == 4:  # CRIT centered on last row
+		if i == 2:  # DEF centered on second row
 			col_x = (LEFT_W - 110.0) / 2.0
 
 		var sb := Panel.new()
@@ -152,26 +149,6 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 	stars_lbl.position = Vector2(16, name_y - 22)
 	stars_lbl.size = Vector2(200, 20)
 	add_child(stars_lbl)
-
-	# Role tags
-	var tag_x := 14.0
-	var tag_y := name_y - 44.0
-	for role in roles:
-		var tag := Panel.new()
-		var tw := 52.0
-		tag.size     = Vector2(tw, 20)
-		tag.position = Vector2(tag_x, tag_y)
-		tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		tag.add_theme_stylebox_override("panel",
-			_flat(Color(elem_col.r * 0.20, elem_col.g * 0.20, elem_col.b * 0.35, 0.90),
-				Color(elem_col.r, elem_col.g, elem_col.b, 0.35), 4, 1))
-		add_child(tag)
-		var tl := _lbl(str(role), 9, Color(elem_col.r + 0.1, elem_col.g + 0.1, elem_col.b + 0.1, 0.95))
-		tl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		tl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		tl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		tag.add_child(tl)
-		tag_x += tw + 6
 
 	# Faction label
 	var faction_lbl := _lbl(str(data.get("faction", "")), 10, C_SUB)
