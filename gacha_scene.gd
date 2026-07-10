@@ -550,10 +550,23 @@ func _warp_btn(count: int) -> Button:
 	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
+	# Card icon (left side)
+	var card_tex := _load_png("res://image/gacha_card.jpg")
+	if card_tex:
+		var card_ico := TextureRect.new()
+		card_ico.texture = card_tex
+		card_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		card_ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		card_ico.custom_minimum_size = Vector2(36, 44)
+		card_ico.size = Vector2(36, 44)
+		card_ico.position = Vector2(10, 4)
+		card_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(card_ico)
+
 	# Gem icon + cost (top area)
 	var top_row := HBoxContainer.new()
 	top_row.add_theme_constant_override("separation", 4)
-	top_row.position = Vector2(12, 6)
+	top_row.position = Vector2(54, 6)
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(top_row)
 
@@ -563,8 +576,8 @@ func _warp_btn(count: int) -> Button:
 		ico.texture = gem_tex
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ico.custom_minimum_size = Vector2(18, 18)
-		ico.size = Vector2(18, 18)
+		ico.custom_minimum_size = Vector2(16, 16)
+		ico.size = Vector2(16, 16)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		top_row.add_child(ico)
 	var cost_lbl := Label.new()
@@ -579,7 +592,7 @@ func _warp_btn(count: int) -> Button:
 	warp_lbl.text = "สุ่ม  ×%d" % count
 	warp_lbl.add_theme_font_size_override("font_size", 15)
 	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	warp_lbl.position = Vector2(12, 26)
+	warp_lbl.position = Vector2(54, 26)
 	warp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(warp_lbl)
 	return btn
