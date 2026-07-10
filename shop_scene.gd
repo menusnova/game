@@ -113,12 +113,12 @@ func _build_sidebar() -> void:
 		btn.position = Vector2(0, y)
 		add_child(btn)
 		_cat_btns.append(btn)
-		y += 106.0
+		y += 140.0
 
 func _make_shop_btn(shop: Dictionary) -> Button:
 	var accent: Color = shop["accent"]
 	var btn := Button.new()
-	btn.size = Vector2(SIDE_W, 102)
+	btn.size = Vector2(SIDE_W, 136)
 	btn.clip_contents = false
 	btn.focus_mode = Control.FOCUS_NONE
 	for st in ["normal","hover","pressed","focus"]:
@@ -127,11 +127,11 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 
 	# Icon circle
 	var icon_bg := Panel.new()
-	icon_bg.size     = Vector2(48, 48)
-	icon_bg.position = Vector2(16, 26)
+	icon_bg.size     = Vector2(56, 56)
+	icon_bg.position = Vector2(16, 40)
 	icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon_bg.add_theme_stylebox_override("panel",
-		_flat(Color(accent.r,accent.g,accent.b,0.12), Color(accent.r,accent.g,accent.b,0.3), 24, 1))
+		_flat(Color(accent.r,accent.g,accent.b,0.12), Color(accent.r,accent.g,accent.b,0.3), 28, 1))
 	btn.add_child(icon_bg)
 
 	var icon_lbl := Label.new()
@@ -139,7 +139,7 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.add_theme_font_size_override("font_size", 22)
+	icon_lbl.add_theme_font_size_override("font_size", 26)
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon_bg.add_child(icon_lbl)
 
@@ -148,8 +148,8 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 	name_lbl.text = str(shop["label"])
 	name_lbl.add_theme_font_size_override("font_size", 12)
 	name_lbl.add_theme_color_override("font_color", C_DIM)
-	name_lbl.size     = Vector2(SIDE_W - 76, 22)
-	name_lbl.position = Vector2(72, 28)
+	name_lbl.size     = Vector2(SIDE_W - 84, 22)
+	name_lbl.position = Vector2(80, 42)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(name_lbl)
 
@@ -158,15 +158,15 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 	cur_lbl.text = str(shop["cur_sym"])
 	cur_lbl.add_theme_font_size_override("font_size", 10)
 	cur_lbl.add_theme_color_override("font_color", shop["cur_col"])
-	cur_lbl.size     = Vector2(SIDE_W - 76, 16)
-	cur_lbl.position = Vector2(72, 52)
+	cur_lbl.size     = Vector2(SIDE_W - 84, 16)
+	cur_lbl.position = Vector2(80, 66)
 	cur_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(cur_lbl)
 
 	# Divider
 	var div := ColorRect.new()
 	div.size = Vector2(SIDE_W - 24, 1)
-	div.position = Vector2(12, 101)
+	div.position = Vector2(12, 135)
 	div.color = C_LINE
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(div)
@@ -174,8 +174,8 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 	# Active bar
 	var act_bar := ColorRect.new()
 	act_bar.name = "ActiveBar"
-	act_bar.size     = Vector2(3, 60)
-	act_bar.position = Vector2(0, 20)
+	act_bar.size     = Vector2(3, 80)
+	act_bar.position = Vector2(0, 26)
 	act_bar.color    = accent
 	act_bar.visible  = false
 	act_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
