@@ -259,34 +259,20 @@ func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, elem_col: Color
 			Color(type_col.r, type_col.g, type_col.b, 0.15), 6, 1))
 	add_child(card)
 
-	# Left icon column
+	# Left icon column — type emoji only
 	var icon_w := sz.y - 8
-	var img_ppath: String = str(sk.get("img", ""))
-	if img_ppath != "" and ResourceLoader.exists(img_ppath):
-		var tex: Texture2D = load(img_ppath)
-		if tex:
-			var img := TextureRect.new()
-			img.texture      = tex
-			img.size         = Vector2(icon_w, icon_w)
-			img.position     = Vector2(4, 4)
-			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(img)
-	else:
-		# Emoji fallback
-		var em_bg := ColorRect.new()
-		em_bg.size     = Vector2(icon_w, icon_w)
-		em_bg.position = Vector2(4, 4)
-		em_bg.color    = Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95)
-		em_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(em_bg)
-		var em := _lbl(icon_map.get(sk_type, "✦"), 22, Color(type_col.r, type_col.g, type_col.b, 0.90))
-		em.size = Vector2(icon_w, icon_w)
-		em.position = Vector2(4, 4)
-		em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		em.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		card.add_child(em)
+	var em_bg := ColorRect.new()
+	em_bg.size     = Vector2(icon_w, icon_w)
+	em_bg.position = Vector2(4, 4)
+	em_bg.color    = Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95)
+	em_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(em_bg)
+	var em := _lbl(icon_map.get(sk_type, "✦"), 22, Color(type_col.r, type_col.g, type_col.b, 0.90))
+	em.size = Vector2(icon_w, icon_w)
+	em.position = Vector2(4, 4)
+	em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	em.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	card.add_child(em)
 
 	# Type tag (small pill)
 	var tag_w := 62.0
