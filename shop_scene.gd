@@ -46,6 +46,7 @@ const SHOPS := [
 		"currency": "Void Crystal X",
 		"cur_sym":  "VCX",
 		"cur_col":  Color(0.40, 0.85, 1.00, 1.0),
+		"cur_icon": "res://image/icon_paid.png",
 		"desc":     "ใช้ Void Crystal X (เติมเงินเท่านั้น)",
 		"accent":   Color(0.35, 0.78, 1.00, 1.0),
 	},
