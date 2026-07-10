@@ -13,11 +13,8 @@ var _slot_b_lbl:   Label       = null
 var _mix_btn:      Button      = null
 var _result_panel: Panel       = null
 
-@onready var _progress_lbl: Label        = $TopBar/ProgressLbl
-@onready var _progress_bar: ProgressBar  = $TopBar/ProgressBar
 @onready var _elem_grid:    GridContainer = $LeftPanel/ElemScroll/ElemGrid
 @onready var _back_btn:     Panel        = $TopBar/BackBtn
-@onready var _archive_btn:  Button       = $TopBar/ArchiveBtn
 @onready var _right_panel:  Panel        = $RightPanel
 @onready var _fade:         ColorRect    = $FadeOverlay
 
@@ -36,7 +33,7 @@ func _ready() -> void:
 	_back_btn.mouse_exited.connect(func():
 		_back_btn.create_tween().set_ease(Tween.EASE_OUT).tween_property(_back_btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 	)
-	_archive_btn.pressed.connect(_open_archive)
+
 	_result_panel = _right_panel
 
 	_add_stars()
@@ -553,13 +550,8 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		r_vals.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(r_vals)
 
-# ── Progress ──────────────────────────────────────────────────────
 func _refresh_progress() -> void:
-	var count := PlayerData.discovered_compounds.size()
-	if _progress_lbl:
-		_progress_lbl.text = "%d / %d" % [count, TOTAL_COMPOUNDS]
-	if _progress_bar:
-		_progress_bar.value = count
+	pass
 
 # ── Archive modal ─────────────────────────────────────────────────
 func _open_archive() -> void:
