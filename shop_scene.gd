@@ -270,10 +270,10 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		_flat(Color(0.10, 0.10, 0.18, 0.97),
 			  Color(accent.r, accent.g, accent.b, 0.22), 8, 1))
 
-	# Icon background circle — vertically centered in card
-	var icon_size := 72.0
+	# Icon + price stacked on left column
+	var icon_size := 64.0
 	var icon_x    := 14.0
-	var icon_y    := (ph - icon_size) * 0.5
+	var icon_y    := 12.0
 
 	var icon_bg := Panel.new()
 	icon_bg.size     = Vector2(icon_size, icon_size)
@@ -302,6 +302,24 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		icon_bg.add_child(icon_lbl)
 
+	# Price label under icon (left column)
+	var cost_text: String
+	if is_premium:
+		cost_text = str(item.get("price", "฿?"))
+	else:
+		cost_text = "%d %s" % [int(item.get("cost", 0)), str(shop["cur_sym"])]
+
+	var price_lbl := Label.new()
+	price_lbl.text = cost_text
+	price_lbl.size = Vector2(icon_size, 20)
+	price_lbl.position = Vector2(icon_x, icon_y + icon_size + 4)
+	price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	price_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	price_lbl.add_theme_font_size_override("font_size", 11)
+	price_lbl.add_theme_color_override("font_color", cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0))
+	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(price_lbl)
+
 	# Text block — right of icon
 	var tx := icon_x + icon_size + 12.0
 	var tw := pw - tx - 10.0
@@ -311,6 +329,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	name_lbl.text = str(item["name"])
 	name_lbl.position = Vector2(tx, 14)
 	name_lbl.size     = Vector2(tw, 22)
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.add_theme_color_override("font_color", C_TXT)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -319,15 +338,15 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	# Sub / desc
 	var sub_lbl := Label.new()
 	sub_lbl.text = str(item.get("sub", ""))
-	sub_lbl.position = Vector2(tx, 38)
+	sub_lbl.position = Vector2(tx, 40)
 	sub_lbl.size     = Vector2(tw, 18)
+	sub_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	sub_lbl.add_theme_font_size_override("font_size", 11)
 	sub_lbl.add_theme_color_override("font_color", C_DIM)
 	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(sub_lbl)
 
-	# Badge (Limited, Best, etc.)
-	var badge_bottom_y := 58.0
+	# Badge
 	if item.has("badge"):
 		var badge_col := Color(1.0, 0.60, 0.20, 1.0)
 		if item["badge"] == "Best":      badge_col = Color(0.30, 0.90, 0.55, 1.0)
@@ -337,7 +356,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		if item["badge"] == "Save":      badge_col = Color(0.40, 0.85, 1.00, 1.0)
 		var badge := Panel.new()
 		badge.size     = Vector2(52, 16)
-		badge.position = Vector2(tx, 58)
+		badge.position = Vector2(tx, 64)
 		badge.add_theme_stylebox_override("panel",
 			_flat(Color(badge_col.r*0.18, badge_col.g*0.18, badge_col.b*0.22, 1.0),
 				  Color(badge_col.r, badge_col.g, badge_col.b, 0.70), 4, 1))
@@ -353,15 +372,8 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		badge_lbl.add_theme_color_override("font_color", badge_col)
 		badge_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		badge.add_child(badge_lbl)
-		badge_bottom_y = 78.0
 
-	# Cost / price button
-	var cost_text: String
-	if is_premium:
-		cost_text = str(item.get("price", "฿?"))
-	else:
-		cost_text = "%d %s" % [int(item.get("cost", 0)), str(shop["cur_sym"])]
-
+	# Buy button — right side bottom
 	var buy_btn := Panel.new()
 	buy_btn.size     = Vector2(tw, 26)
 	buy_btn.position = Vector2(tx, ph - 34)
@@ -372,12 +384,12 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	card.add_child(buy_btn)
 
 	var buy_lbl := Label.new()
-	buy_lbl.text = cost_text
+	buy_lbl.text = "ซื้อ"
 	buy_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	buy_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	buy_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	buy_lbl.add_theme_font_size_override("font_size", 12)
-	buy_lbl.add_theme_color_override("font_color", cur_col if not is_premium else Color(0.95, 0.95, 1.0, 1.0))
+	buy_lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0, 1.0))
 	buy_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	buy_btn.add_child(buy_lbl)
 
