@@ -46,36 +46,50 @@ const QUOTES : Array[String] = [
 ]
 
 # ── State ──────────────────────────────────────────────────────────────────
-var progress    : float = 0.0
-var dot_count   : int   = 0
-var done        : bool  = false
-var can_press   : bool  = false
-var shader_time : float = 0.0
-var pulse_time  : float = 0.0
-var bar_alpha   : float = 1.0
-var sparks      : Array = []
+var progress        : float = 0.0
+var dot_count       : int   = 0
+var done            : bool  = false
+var can_press       : bool  = false
+var loading_started : bool  = false
+var shader_time     : float = 0.0
+var pulse_time      : float = 0.0
+var bar_alpha       : float = 1.0
+var sparks          : Array = []
 
 # ──────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	bar_mat = bar_fill_rect.material as ShaderMaterial
 
+	# Hide bar elements until player presses to start
 	plasma_ring.modulate.a   = 0.0
 	glow_core.modulate.a     = 0.0
-	quote_label.visible      = false
-	press_label.visible      = false
+	bar_fill_rect.modulate.a = 0.0
+	bar_layer.modulate.a     = 0.0
+	msg_label.modulate.a     = 0.0
+	pct_label.modulate.a     = 0.0
 	msg_label.text           = MESSAGES[0]
 	pct_label.text           = "◇ 0% ◇"
-	particles_trail.emitting = true
-	particles_spark.emitting = true
+	particles_trail.emitting = false
+	particles_spark.emitting = false
 	_move_particles(BAR_X)
+
+	quote_label.visible      = false
+	quote_label.text         = QUOTES[randi() % QUOTES.size()]
 
 	for i in range(MAX_SPARKS):
 		sparks.append(_new_spark(randf()))
 
 	bar_layer.draw.connect(_draw_bar.bind(bar_layer))
 
-	fade.color = Color(0, 0, 0, 0)  # SceneTransition handles the fade-in
-	dot_timer.start()
+	fade.color = Color(0, 0, 0, 0)
+
+	# Show press label immediately
+	press_label.visible    = true
+	press_label.modulate.a = 0.0
+	var t := create_tween().set_loops()
+	t.tween_property(press_label, "modulate:a", 1.0, 0.55)
+	t.tween_property(press_label, "modulate:a", 0.1, 0.55)
+	can_press = true
 
 
 func _process(delta: float) -> void:
@@ -93,7 +107,7 @@ func _process(delta: float) -> void:
 		bar_mat.set_shader_parameter("pulse_val", pulse)
 		bar_mat.set_shader_parameter("time_val",  shader_time)
 
-	if done:
+	if done or not loading_started:
 		return
 
 	progress = minf(progress + delta / LOAD_DURATION, 1.0)
@@ -213,17 +227,16 @@ func _finish() -> void:
 	)
 	await get_tree().create_timer(0.7).timeout
 
-	quote_label.text       = QUOTES[randi() % QUOTES.size()]
 	quote_label.visible    = true
 	quote_label.modulate.a = 0.0
-	press_label.visible    = true
-	press_label.modulate.a = 0.0
 
 	var t2 := create_tween()
 	t2.tween_property(quote_label, "modulate:a", 1.0, 0.9)
 	await t2.finished
 	await get_tree().create_timer(0.5).timeout
 
+	press_label.visible    = true
+	press_label.modulate.a = 0.0
 	var t3 := create_tween().set_loops()
 	t3.tween_property(press_label, "modulate:a", 1.0, 0.55)
 	t3.tween_property(press_label, "modulate:a", 0.1, 0.55)
@@ -239,7 +252,26 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.pressed:                    pressed = true
 	if pressed:
 		can_press = false
-		_go()
+		_start_loading()
+
+
+func _start_loading() -> void:
+	# Hide press label
+	press_label.visible = false
+
+	# Wait 1.5 seconds
+	await get_tree().create_timer(1.5).timeout
+
+	# Fade in bar elements
+	var t := create_tween().set_parallel()
+	t.tween_property(bar_fill_rect, "modulate:a", 1.0, 0.4)
+	t.tween_property(bar_layer,     "modulate:a", 1.0, 0.4)
+	t.tween_property(msg_label,     "modulate:a", 1.0, 0.4)
+	t.tween_property(pct_label,     "modulate:a", 1.0, 0.4)
+	particles_trail.emitting = true
+	particles_spark.emitting = true
+	dot_timer.start()
+	loading_started = true
 
 
 func _go() -> void:
