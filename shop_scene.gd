@@ -55,7 +55,7 @@ const SHOPS := [
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
 	{"name": "Iron Ore",    "sub": "วัตถุดิบ ×10", "cost": 100, "icon": "🪨",                                 "tag": "material"},
-	{"name": "EXP Card M", "sub": "EXP +2000",      "cost": 200, "img": "res://image/icon_exp.png",            "tag": "exp"},
+	{"name": "EXP Card M", "sub": "EXP +2000",      "cost": 200, "img": "res://image/icon_upgrade.png",        "tag": "exp"},
 ]
 
 const SYNTHESIS_ITEMS := [
