@@ -289,6 +289,9 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		img_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		img_tex.size         = Vector2(pw, IMG_H)
 		img_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		img_tex.material = mat
 		card.add_child(img_tex)
 	else:
 		var icon_lbl := Label.new()
@@ -299,32 +302,6 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		icon_lbl.add_theme_font_size_override("font_size", 52)
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(icon_lbl)
-
-	# Badge top-right
-	if item.has("badge"):
-		var badge_col := Color(1.0, 0.60, 0.20, 1.0)
-		if item["badge"] == "Best":      badge_col = Color(0.30, 0.90, 0.55, 1.0)
-		if item["badge"] == "Save":      badge_col = Color(0.40, 0.85, 1.00, 1.0)
-		if item["badge"] == "Limited":   badge_col = Color(0.95, 0.35, 0.45, 1.0)
-		if item["badge"] == "Popular":   badge_col = Color(0.50, 0.80, 1.00, 1.0)
-		if item["badge"] == "Exclusive": badge_col = Color(0.85, 0.55, 1.00, 1.0)
-		var badge := Panel.new()
-		badge.size     = Vector2(48, 18)
-		badge.position = Vector2(pw - 52, 4)
-		badge.add_theme_stylebox_override("panel",
-			_flat(Color(badge_col.r*0.22, badge_col.g*0.22, badge_col.b*0.28, 0.95),
-				  Color(badge_col.r, badge_col.g, badge_col.b, 0.80), 4, 1))
-		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(badge)
-		var bl := Label.new()
-		bl.text = str(item["badge"])
-		bl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		bl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		bl.add_theme_font_size_override("font_size", 9)
-		bl.add_theme_color_override("font_color", badge_col)
-		bl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		badge.add_child(bl)
 
 	# ── Name ────────────────────────────────────────────────────────
 	var name_lbl := Label.new()
