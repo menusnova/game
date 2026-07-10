@@ -228,6 +228,115 @@ func _setup_quest_panel() -> void:
 	_quest_panel = preload("res://quest_panel.tscn").instantiate()
 	add_child(_quest_panel)
 	_setup_chat_coming_soon()
+	_setup_home_character()
+
+# ── Home character + speech bubble ───────────────────────────────
+func _setup_home_character() -> void:
+	const DIALOGUES := [
+		"วันนี้อากาศดีนะ...\nเหมาะกับการทดลองมาก",
+		"⚗  สูตรใหม่สำเร็จแล้ว!\nลองดูด้วยกันไหม?",
+		"พร้อมออกเดินทางแล้วหรือยัง?\nฉันรอนานมากแล้ว",
+	]
+
+	const CX    := 490.0   # center x of character
+	const CW    := 210.0   # character width
+	const CH    := 360.0   # character height
+	const BOT_Y := 550.0   # bottom of character (above chat bar)
+
+	var char_root := Control.new()
+	char_root.name = "_HomeChar"
+	char_root.position = Vector2(CX - CW * 0.5, BOT_Y - CH)
+	char_root.size     = Vector2(CW, CH)
+	char_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	char_root.z_index  = 3
+	add_child(char_root)
+
+	# Shadow glow under feet
+	var glow := ColorRect.new()
+	glow.size     = Vector2(CW * 0.8, 18)
+	glow.position = Vector2(CW * 0.1, CH - 14)
+	glow.color    = Color(0.25, 0.55, 1.0, 0.18)
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	char_root.add_child(glow)
+
+	# Portrait image
+	var portrait := TextureRect.new()
+	portrait.texture      = preload("res://image/lyra_1.png")
+	portrait.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	char_root.add_child(portrait)
+
+	# Idle float animation on character
+	var float_tw := char_root.create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	float_tw.tween_property(char_root, "position:y", char_root.position.y - 8.0, 2.2)
+	float_tw.tween_property(char_root, "position:y", char_root.position.y,       2.2)
+
+	# Speech bubble
+	const BW := 250.0
+	const BH := 66.0
+	var bubble := Panel.new()
+	bubble.name = "_Bubble"
+	bubble.size     = Vector2(BW, BH)
+	bubble.position = Vector2(CX - BW * 0.5, BOT_Y - CH - BH - 14)
+	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bubble.z_index  = 4
+	var bsb := StyleBoxFlat.new()
+	bsb.bg_color    = Color(0.04, 0.07, 0.18, 0.92)
+	bsb.border_color = Color(0.35, 0.75, 1.0, 0.55)
+	bsb.set_border_width(SIDE_LEFT,   1)
+	bsb.set_border_width(SIDE_TOP,    1)
+	bsb.set_border_width(SIDE_RIGHT,  1)
+	bsb.set_border_width(SIDE_BOTTOM, 1)
+	bsb.corner_radius_top_left     = 12
+	bsb.corner_radius_top_right    = 12
+	bsb.corner_radius_bottom_right = 12
+	bsb.corner_radius_bottom_left  = 12
+	bubble.add_theme_stylebox_override("panel", bsb)
+	add_child(bubble)
+
+	# Tail triangle (▼ label trick)
+	var tail := Label.new()
+	tail.text = "▼"
+	tail.add_theme_font_size_override("font_size", 12)
+	tail.add_theme_color_override("font_color", Color(0.35, 0.75, 1.0, 0.55))
+	tail.size     = Vector2(20, 14)
+	tail.position = Vector2(BW * 0.5 - 10, BH - 2)
+	tail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bubble.add_child(tail)
+
+	# Text label inside bubble
+	var dlg_lbl := Label.new()
+	dlg_lbl.name = "_DlgLbl"
+	dlg_lbl.text = DIALOGUES[0]
+	dlg_lbl.add_theme_font_size_override("font_size", 12)
+	dlg_lbl.add_theme_color_override("font_color", Color(0.88, 0.94, 1.0, 1.0))
+	dlg_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dlg_lbl.offset_left = 14; dlg_lbl.offset_right = -14
+	dlg_lbl.offset_top  = 6;  dlg_lbl.offset_bottom = -6
+	dlg_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	dlg_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	dlg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	dlg_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	bubble.add_child(dlg_lbl)
+
+	# Cycle dialogue every 4 s with fade
+	var dlg_idx := 0
+	var cycle := create_tween().set_loops()
+	cycle.tween_interval(4.0)
+	cycle.tween_callback(func():
+		if not is_instance_valid(dlg_lbl) or not is_instance_valid(bubble): return
+		dlg_idx = (dlg_idx + 1) % DIALOGUES.size()
+		var fade := dlg_lbl.create_tween()
+		fade.tween_property(dlg_lbl, "modulate:a", 0.0, 0.25)
+		fade.tween_callback(func():
+			if is_instance_valid(dlg_lbl):
+				dlg_lbl.text = DIALOGUES[dlg_idx]
+		)
+		fade.tween_property(dlg_lbl, "modulate:a", 1.0, 0.35)
+	)
 
 func _setup_chat_coming_soon() -> void:
 	var mail: Control = get_node_or_null("BtnMail") as Control
