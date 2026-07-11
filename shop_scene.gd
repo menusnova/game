@@ -20,7 +20,7 @@ const SHOPS := [
 	{
 		"id":       "void_market",
 		"label":    "Void Market",
-		"icon":     "res://image/0ef05712-8898-4c56-9557-a58c058e02db.png",
+		"icon":     "res://image/void_market.jpg",
 		"currency": "Aether Credit",
 		"cur_sym":  "AC",
 		"cur_col":  Color(1.00, 0.82, 0.28, 1.0),
@@ -31,7 +31,7 @@ const SHOPS := [
 	{
 		"id":       "synthesis",
 		"label":    "Synthesis Exchange",
-		"icon":     "res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png",
+		"icon":     "res://image/synthesis_exchange.jpg",
 		"currency": "Void Crystal",
 		"cur_sym":  "VC",
 		"cur_col":  Color(0.55, 0.40, 1.00, 1.0),
@@ -62,7 +62,7 @@ const VOID_MARKET_ITEMS := [
 const SYNTHESIS_ITEMS := [
 	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 150,  "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "tier": 2},
 	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1500, "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "tier": 3},
-	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "img": "res://image/icon_energy.png", "tag": "energy", "tier": 4},
+	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 40,   "img": "res://image/icon_energy.png", "tag": "energy", "tier": 4},
 ]
 
 const PREMIUM_ITEMS := []
@@ -144,6 +144,9 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		icon_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		icon_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon_mat := CanvasItemMaterial.new()
+		icon_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		icon_tex.material = icon_mat
 		icon_bg.add_child(icon_tex)
 	else:
 		var icon_lbl := Label.new()
