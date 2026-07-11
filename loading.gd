@@ -13,7 +13,6 @@ extends Control
 @onready var press_label    : Label          = $PressLabel
 @onready var fade           : ColorRect      = $Fade
 @onready var dot_timer      : Timer          = $DotTimer
-@onready var logo           : TextureRect    = $Logo
 
 var bar_mat : ShaderMaterial
 
@@ -75,10 +74,6 @@ func _ready() -> void:
 	press_label.visible      = false
 	quote_label.visible      = false
 	quote_label.text         = QUOTES[randi() % QUOTES.size()]
-
-	# Logo fully visible
-	logo.visible    = true
-	logo.modulate.a = 1.0
 
 	_move_particles(BAR_X)
 
@@ -261,11 +256,9 @@ func _start_loading() -> void:
 	# Show logo for 1.5 seconds
 	await get_tree().create_timer(1.5).timeout
 
-	# Fade out logo, fade in loading bar
+	# Fade in loading bar
 	var t := create_tween().set_parallel()
-	t.tween_property(logo,          "modulate:a", 0.0, 0.4)
 	t.tween_property(bar_fill_rect, "modulate:a", 1.0, 0.4)
-	t.tween_callback(func(): logo.visible = false).set_delay(0.4)
 	t.tween_property(bar_layer,     "modulate:a", 1.0, 0.4)
 	t.tween_property(msg_label,     "modulate:a", 1.0, 0.4)
 	t.tween_property(pct_label,     "modulate:a", 1.0, 0.4)
