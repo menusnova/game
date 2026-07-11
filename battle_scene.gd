@@ -1150,9 +1150,16 @@ func _on_ultimate() -> void:
 			var ea: String = parts[0]; var eb: String = parts[1]
 			if ea in _deck or ea in _discard:
 				_hand.append(ea)
-				if ea in _deck: _deck.erase(ea) else: _discard.erase(ea)
-				_hand.append(eb if (eb in _deck or eb in _discard) else ea)
-				if eb in _deck: _deck.erase(eb) elif eb in _discard: _discard.erase(eb)
+				if ea in _deck:
+					_deck.erase(ea)
+				else:
+					_discard.erase(ea)
+				var draw_b := eb if (eb in _deck or eb in _discard) else ea
+				_hand.append(draw_b)
+				if eb in _deck:
+					_deck.erase(eb)
+				elif eb in _discard:
+					_discard.erase(eb)
 				pair_drawn = 2
 				tried = [ea, eb]
 				break
