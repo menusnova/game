@@ -140,7 +140,7 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	el.size = Vector2(CARD_W, portrait_h)
 	el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		slot.add_child(el)
+	slot.add_child(el)
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r, r_col.g, r_col.b, 0.75)))
