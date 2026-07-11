@@ -66,9 +66,21 @@ func _ready() -> void:
 
 func _refresh_ctrl_buttons() -> void:
 	if _btn_auto:
-		_btn_auto.text = "⏸ Auto" if _auto_play else "▶ Auto"
+		_btn_auto.text = "Auto"
 		_btn_auto.add_theme_color_override("font_color",
-			Color(0.25, 1.0, 0.55, 1.0) if _auto_play else Color(0.4, 1.0, 0.6, 0.85))
+			Color(0.25, 1.0, 0.55, 1.0) if _auto_play else Color(0.55, 0.65, 0.75, 0.75))
+		var sb := StyleBoxFlat.new()
+		sb.corner_radius_top_left = 6; sb.corner_radius_top_right = 6
+		sb.corner_radius_bottom_right = 6; sb.corner_radius_bottom_left = 6
+		sb.set_border_width_all(1)
+		if _auto_play:
+			sb.bg_color     = Color(0.04, 0.18, 0.08, 0.92)
+			sb.border_color = Color(0.25, 1.0, 0.55, 0.85)
+		else:
+			sb.bg_color     = Color(0.03, 0.05, 0.12, 0.78)
+			sb.border_color = Color(0.35, 0.45, 0.60, 0.25)
+		_btn_auto.add_theme_stylebox_override("normal",  sb)
+		_btn_auto.add_theme_stylebox_override("pressed", sb)
 
 func _on_skip_all() -> void:
 	_typing = false
