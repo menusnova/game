@@ -54,8 +54,9 @@ const SHOPS := [
 
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
-	{"name": "Iron Ore",    "sub": "วัตถุดิบ ×10", "cost": 100, "icon": "🪨",                                 "tag": "material"},
-	{"name": "EXP Card M", "sub": "EXP +2000",      "cost": 200, "img": "res://image/icon_upgrade.png",        "tag": "exp"},
+	{"name": "Iron Ore",       "sub": "วัตถุดิบ ×10",   "cost": 100, "img": "res://image/iron_ore.jpg",      "tag": "material"},
+	{"name": "Void Fragment",  "sub": "ชิ้นส่วน Void",  "cost": 150, "img": "res://image/void_fragment.jpg", "tag": "material"},
+	{"name": "EXP Card M",    "sub": "EXP +2000",       "cost": 200, "img": "res://image/icon_upgrade.png",  "tag": "exp"},
 ]
 
 const SYNTHESIS_ITEMS := [
@@ -340,7 +341,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	badge.position = Vector2(BADGE_PAD, badge_y)
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_sb := StyleBoxFlat.new()
-	badge_sb.bg_color          = Color(0.10, 0.35, 0.90, 0.90)
+	badge_sb.bg_color          = Color(1.0, 1.0, 1.0, 0.15)
 	badge_sb.border_color      = Color(1.0, 1.0, 1.0, 0.80)
 	badge_sb.set_border_width_all(1)
 	badge_sb.set_corner_radius_all(8)
