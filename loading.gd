@@ -71,7 +71,7 @@ func _ready() -> void:
 	pct_label.text           = "◇ 0% ◇"
 	particles_trail.emitting = false
 	particles_spark.emitting = false
-	press_label.visible      = false
+	press_label.visible      = true
 	quote_label.visible      = false
 	quote_label.text         = QUOTES[randi() % QUOTES.size()]
 
@@ -84,7 +84,7 @@ func _ready() -> void:
 
 	fade.color = Color(0, 0, 0, 0)
 	can_press = true
-	_start_loading()
+	# รอให้ผู้เล่นกดก่อน — ไม่ auto start
 
 
 func _process(delta: float) -> void:
@@ -250,6 +250,7 @@ func _input(event: InputEvent) -> void:
 
 func _start_loading() -> void:
 	loading_started = true   # set ก่อน await กันการ trigger ซ้ำ
+	press_label.visible = false
 	await get_tree().create_timer(0.2).timeout
 
 	# Fade in loading bar
