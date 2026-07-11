@@ -54,15 +54,15 @@ const SHOPS := [
 
 # ── Item data ─────────────────────────────────────────────────────
 const VOID_MARKET_ITEMS := [
-	{"name": "Iron Ore",       "sub": "วัตถุดิบ ×10",   "cost": 100, "img": "res://image/iron_ore.jpg",      "tag": "material"},
-	{"name": "Void Fragment",  "sub": "ชิ้นส่วน Void",  "cost": 150, "img": "res://image/void_fragment.jpg", "tag": "material"},
-	{"name": "EXP Card M",    "sub": "EXP +2000",       "cost": 200, "img": "res://image/icon_upgrade.png",  "tag": "exp"},
+	{"name": "Iron Ore",       "sub": "วัตถุดิบ ×10",   "cost": 100,  "img": "res://image/iron_ore.jpg",      "tag": "material", "tier": 1},
+	{"name": "Void Fragment",  "sub": "ชิ้นส่วน Void",  "cost": 150,  "img": "res://image/void_fragment.jpg", "tag": "material", "tier": 2},
+	{"name": "EXP Card M",    "sub": "EXP +2000",       "cost": 200,  "img": "res://image/icon_upgrade.png",  "tag": "exp",      "tier": 2},
 ]
 
 const SYNTHESIS_ITEMS := [
-	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 150,  "img": "res://image/gacha_card.jpg",  "tag": "gacha"},
-	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1500, "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "badge": "Best"},
-	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "img": "res://image/icon_energy.png",  "tag": "energy"},
+	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 150,  "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "tier": 2},
+	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1500, "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "tier": 3},
+	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "img": "res://image/icon_energy.png", "tag": "energy", "tier": 4},
 ]
 
 const PREMIUM_ITEMS := []
@@ -293,6 +293,18 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		img_tex.material = mat
 		card.add_child(img_tex)
+
+	if item.has("tier"):
+		var frame_tex := TextureRect.new()
+		frame_tex.texture      = load("res://image/g%d.jpg" % int(item["tier"]))
+		frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		frame_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		frame_tex.size         = Vector2(pw, IMG_H)
+		frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var frame_mat := CanvasItemMaterial.new()
+		frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		frame_tex.material = frame_mat
+		card.add_child(frame_tex)
 	else:
 		var icon_lbl := Label.new()
 		icon_lbl.text = str(item.get("icon", "📦"))
