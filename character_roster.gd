@@ -88,7 +88,7 @@ func _build_grid() -> void:
 	var area_h := VH - TOP_H
 	var grid_w := COLS * CARD_W + (COLS - 1) * GAP_X
 	var grid_h := ROWS * CARD_H + (ROWS - 1) * GAP_Y
-	var ox := (VW - grid_w) / 2.0
+	var ox := (VW - grid_w) / 2.0 + 40.0
 	var oy := TOP_H + (area_h - grid_h) / 2.0
 
 	_grid_panels = []
