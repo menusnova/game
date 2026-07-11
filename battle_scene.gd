@@ -1146,7 +1146,7 @@ func _on_ultimate() -> void:
 	var pair_drawn := 0
 	var tried: Array[String] = []
 	for recipe_key in RECIPES.keys():
-		var parts := recipe_key.split("+")
+		var parts: PackedStringArray = (recipe_key as String).split("+")
 		if parts.size() == 2 and pair_drawn == 0:
 			var ea: String = parts[0]; var eb: String = parts[1]
 			if ea in _deck or ea in _discard:
