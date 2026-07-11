@@ -1,7 +1,6 @@
 extends Control
 
 const TYPEWRITER_SPEED := 0.032
-const TYPEWRITER_FAST  := 0.006   # speed-up mode
 
 var lyra_portraits: Array[Texture2D] = []  # [บทพูด0, บทพูด1, บทพูด2]
 
@@ -25,7 +24,6 @@ var _current    := 0
 var _typing     := false
 var _full_text  := ""
 var _auto_play  := false   # auto-advance after each line finishes
-var _fast_mode  := false   # typewriter speed-up
 var _auto_timer: SceneTreeTimer = null
 
 @onready var _bg:         TextureRect   = $Background
@@ -38,7 +36,6 @@ var _auto_timer: SceneTreeTimer = null
 @onready var _fade:       ColorRect     = $FadeOverlay
 @onready var _btn_skip:   Button        = $CtrlBar/BtnSkip
 @onready var _btn_auto:   Button        = $CtrlBar/BtnAuto
-var _btn_fast: Button = null
 
 
 func _ready() -> void:
@@ -72,21 +69,13 @@ func _refresh_ctrl_buttons() -> void:
 		_btn_auto.text = "⏸ Auto" if _auto_play else "▶ Auto"
 		_btn_auto.add_theme_color_override("font_color",
 			Color(0.25, 1.0, 0.55, 1.0) if _auto_play else Color(0.4, 1.0, 0.6, 0.85))
-	if _btn_fast:
-		_btn_fast.text = "⏩⏩ Fast" if _fast_mode else "⏩ เร่ง"
-		_btn_fast.add_theme_color_override("font_color",
-			Color(1.0, 0.95, 0.2, 1.0) if _fast_mode else Color(1.0, 0.78, 0.2, 0.85))
 
 func _on_skip_all() -> void:
 	_typing = false
 	_auto_play = false
-	_fast_mode = false
 	_current = LINES.size()
 	_finish()
 
-func _on_toggle_fast() -> void:
-	_fast_mode = not _fast_mode
-	_refresh_ctrl_buttons()
 
 func _on_toggle_auto() -> void:
 	_auto_play = not _auto_play
@@ -128,7 +117,7 @@ func _typewrite(text: String) -> void:
 		if not _typing:
 			break
 		_text.text = text.substr(0, i)
-		var spd := TYPEWRITER_FAST if _fast_mode else TYPEWRITER_SPEED
+		var spd := TYPEWRITER_SPEED
 		await get_tree().create_timer(spd).timeout
 	_text.text = text
 	_typing = false
