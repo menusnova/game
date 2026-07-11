@@ -238,7 +238,7 @@ func _setup_home_character() -> void:
 		"พร้อมออกเดินทางแล้วหรือยัง?\nฉันรอนานมากแล้ว",
 	]
 
-	const CX    := 490.0   # center x
+	const CX    := 580.0   # center x
 	const CW    := 520.0   # character width
 	const CH    := 720.0   # character height
 	const BOT_Y := 860.0   # bottom of character (knees visible)
