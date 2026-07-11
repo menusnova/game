@@ -92,6 +92,18 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile.add_child(name_lbl)
 
+	# Card frame overlay
+	var ftex := TextureRect.new()
+	ftex.texture      = preload("res://image/g1.jpg")
+	ftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	ftex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	ftex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fmat := CanvasItemMaterial.new()
+	fmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	ftex.material = fmat
+	tile.add_child(ftex)
+
 	if not is_unlocked:
 		var lock := TextureRect.new()
 		lock.texture      = preload("res://image/lock_chain_x.png")

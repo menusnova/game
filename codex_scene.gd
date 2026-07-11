@@ -940,6 +940,17 @@ func _open_achievement_detail(ach: Dictionary) -> void:
 			etype.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			mini.add_child(etype)
 
+			var mframe := TextureRect.new()
+			mframe.texture      = load("res://image/g1.jpg")
+			mframe.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			mframe.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			mframe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			mframe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var mfmat := CanvasItemMaterial.new()
+			mfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+			mframe.material = mfmat
+			mini.add_child(mframe)
+
 	# Close button
 	var close_btn := Button.new()
 	close_btn.text = "✕"
