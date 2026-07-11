@@ -1133,7 +1133,7 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	card.add_child(stars)
 
 	# 6) Name at bottom
-	var display_name := ELEM_NAME.get(char_name, char_name) if rarity == 3 else char_name
+	var display_name: String = str(ELEM_NAME.get(char_name, char_name)) if rarity == 3 else char_name
 	var nm := _lbl(display_name, 8, Color(0.92, 0.94, 1.0, 1.0))
 	nm.size     = Vector2(CW, 18)
 	nm.position = Vector2(0, CH - 20)
