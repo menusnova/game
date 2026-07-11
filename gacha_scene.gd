@@ -133,17 +133,6 @@ func _build_hsr_ui() -> void:
 	add_child(bg)
 	_add_stars(bg)
 
-	else:
-		var art_rect := ColorRect.new()
-		art_rect.name         = "_ArtRect"
-		art_rect.size         = Vector2(art_w, art_h)
-		art_rect.position     = Vector2(art_x, TOP_H)
-		art_rect.color        = Color(0, 0, 0, 0)
-		art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		art_rect.z_index      = 0
-		add_child(art_rect)
-
-
 	# ── Thumb strip (left warp selector) ──
 	_build_thumb_strip()
 
