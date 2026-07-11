@@ -375,6 +375,16 @@ func _build_top_bar() -> void:
 	bar.z_index  = 6
 	add_child(bar)
 
+	var title_lbl := Label.new()
+	title_lbl.text = "Gacha"
+	title_lbl.position = Vector2(16, 0)
+	title_lbl.size = Vector2(200, TOP_H)
+	title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_lbl.add_theme_font_size_override("font_size", 16)
+	title_lbl.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0, 1.0))
+	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(title_lbl)
+
 	# Back/close button — top-right (X style like reference)
 	var close_btn := Button.new()
 	close_btn.text = "✕"
