@@ -13,6 +13,7 @@ extends Control
 @onready var press_label    : Label          = $PressLabel
 @onready var fade           : ColorRect      = $Fade
 @onready var dot_timer      : Timer          = $DotTimer
+@onready var logo           : TextureRect    = $Logo
 
 var bar_mat : ShaderMaterial
 
@@ -60,7 +61,7 @@ var sparks          : Array = []
 func _ready() -> void:
 	bar_mat = bar_fill_rect.material as ShaderMaterial
 
-	# Hide bar elements until player presses to start
+	# Hide all bar/text elements — show only Background + Logo
 	plasma_ring.modulate.a   = 0.0
 	glow_core.modulate.a     = 0.0
 	bar_fill_rect.modulate.a = 0.0
@@ -71,10 +72,14 @@ func _ready() -> void:
 	pct_label.text           = "◇ 0% ◇"
 	particles_trail.emitting = false
 	particles_spark.emitting = false
-	_move_particles(BAR_X)
-
+	press_label.visible      = false
 	quote_label.visible      = false
 	quote_label.text         = QUOTES[randi() % QUOTES.size()]
+
+	# Logo fully visible
+	logo.modulate.a = 1.0
+
+	_move_particles(BAR_X)
 
 	for i in range(MAX_SPARKS):
 		sparks.append(_new_spark(randf()))
@@ -82,13 +87,6 @@ func _ready() -> void:
 	bar_layer.draw.connect(_draw_bar.bind(bar_layer))
 
 	fade.color = Color(0, 0, 0, 0)
-
-	# Show press label immediately
-	press_label.visible    = true
-	press_label.modulate.a = 0.0
-	var t := create_tween().set_loops()
-	t.tween_property(press_label, "modulate:a", 1.0, 0.55)
-	t.tween_property(press_label, "modulate:a", 0.1, 0.55)
 	can_press = true
 
 
@@ -256,14 +254,12 @@ func _input(event: InputEvent) -> void:
 
 
 func _start_loading() -> void:
-	# Hide press label
-	press_label.visible = false
-
-	# Wait 1.5 seconds
+	# Show logo for 1.5 seconds
 	await get_tree().create_timer(1.5).timeout
 
-	# Fade in bar elements
+	# Fade out logo, fade in loading bar
 	var t := create_tween().set_parallel()
+	t.tween_property(logo,          "modulate:a", 0.0, 0.4)
 	t.tween_property(bar_fill_rect, "modulate:a", 1.0, 0.4)
 	t.tween_property(bar_layer,     "modulate:a", 1.0, 0.4)
 	t.tween_property(msg_label,     "modulate:a", 1.0, 0.4)
