@@ -271,7 +271,7 @@ func _rebuild_list() -> void:
 	for q in quests:
 		var go_key: String = str(q.get("go", ""))
 		var nav := Callable()
-		if go_key != "" and _GO_SCENES.has(go_key):
+		if _current_tab == Tab.DAILY and go_key != "" and _GO_SCENES.has(go_key):
 			var sc: String = _GO_SCENES[go_key]
 			nav = func(): SceneTransition.fade_to(sc)
 		var qid: String = str(q.get("id", ""))
