@@ -44,7 +44,7 @@ const RECIPES := {
 # ── Character ─────────────────────────────────────────────
 const CHARACTER := {
 	"name":         "Lyra",
-	"max_hp":       100,
+	"max_hp":       1000,
 	"passive":      "Reaction Master",
 	"skill_name":   "Chain Reaction",
 	"skill_ap":     2,
@@ -91,6 +91,7 @@ var _selected_elem: String = ""
 var _msg_lbl:          Label
 var _turn_lbl:         Label
 var _ap_lbl:           Label
+var _ap_orbs:          Array = []
 var _gauge_bar:        ColorRect
 var _gauge_lbl:        Label
 var _player_hp_bar:    ColorRect
@@ -414,23 +415,19 @@ func _build_player_hud() -> void:
 	ap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pp.add_child(ap_row)
 
-	# AP sub-label
-	var ap_sub := Label.new()
-	ap_sub.text = "AP"
-	ap_sub.position = Vector2(4, 4)
-	ap_sub.add_theme_font_size_override("font_size", 10)
-	ap_sub.add_theme_color_override("font_color", C_SUB)
-	ap_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ap_row.add_child(ap_sub)
-
-	# Dots — start from left, bigger font
-	_ap_lbl = Label.new()
-	_ap_lbl.position = Vector2(4, 18)
-	_ap_lbl.size     = Vector2(280, 34)
-	_ap_lbl.add_theme_font_size_override("font_size", 30)
-	_ap_lbl.add_theme_color_override("font_color", C_AP)
-	_ap_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ap_row.add_child(_ap_lbl)
+	# AP orbs — individual Panel circles (filled = big glow, used = small hollow ring)
+	const ORB_SZ  := 22.0
+	const ORB_GAP := 10.0
+	_ap_orbs = []
+	for i in MAX_AP:
+		var orb := Panel.new()
+		orb.size = Vector2(ORB_SZ, ORB_SZ)
+		orb.position = Vector2(4.0 + i * (ORB_SZ + ORB_GAP), 14.0)
+		orb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ap_row.add_child(orb)
+		_ap_orbs.append(orb)
+	# keep _ap_lbl alive (hidden) so other code refs don't crash
+	_ap_lbl = Label.new(); _ap_lbl.visible = false; ap_row.add_child(_ap_lbl)
 
 	# hidden refs for _refresh_ui (still needed)
 	_deck_lbl    = Label.new(); _deck_lbl.visible    = false; pp.add_child(_deck_lbl)
@@ -1489,10 +1486,28 @@ func _refresh_ui() -> void:
 	if _stage_lbl:   _stage_lbl.text = "Stage %d" % _current_stage
 	if _turn_lbl:    _turn_lbl.text  = "เทิร์นของคุณ" if _player_turn else "เทิร์นศัตรู"
 
-	# AP dots: ● filled, ○ empty
-	if _ap_lbl:
-		var dots := "●".repeat(_ap) + "○".repeat(MAX_AP - _ap)
-		_ap_lbl.text = dots
+	# AP orbs: filled = large glow circle, used = small hollow ring
+	for i in _ap_orbs.size():
+		var orb := _ap_orbs[i] as Panel
+		var sb := StyleBoxFlat.new()
+		if i < _ap:
+			sb.bg_color    = C_AP
+			sb.border_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.0)
+			sb.set_border_width_all(0)
+			sb.set_corner_radius_all(11)
+			sb.shadow_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.70)
+			sb.shadow_size  = 8
+			orb.size        = Vector2(22, 22)
+			orb.position.y  = 14.0
+		else:
+			sb.bg_color    = Color(C_AP.r * 0.04, C_AP.g * 0.04, C_AP.b * 0.10, 0.6)
+			sb.border_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.35)
+			sb.set_border_width_all(2)
+			sb.set_corner_radius_all(8)
+			sb.shadow_size  = 0
+			orb.size        = Vector2(16, 16)
+			orb.position.y  = 17.0
+		orb.add_theme_stylebox_override("panel", sb)
 
 	# Ultimate gauge circle (fills from bottom)
 	var ult_ratio := _ult_gauge / float(MAX_GAUGE)
@@ -1509,7 +1524,7 @@ func _refresh_ui() -> void:
 	# Player HP
 	var max_hp: float = float(CHARACTER["max_hp"])
 	if _player_hp_bar: _player_hp_bar.size.x = 288.0 * (maxi(0, _player_hp) / max_hp)
-	if _player_hp_lbl: _player_hp_lbl.text = "HP %d/%d" % [maxi(0,_player_hp), int(max_hp)]
+	if _player_hp_lbl: _player_hp_lbl.text = "%d" % maxi(0, _player_hp)
 	if _shield_lbl:    _shield_lbl.text = "🛡 %d" % _player_shield if _player_shield > 0 else ""
 
 	# Enemy
