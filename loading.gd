@@ -77,6 +77,7 @@ func _ready() -> void:
 	quote_label.text         = QUOTES[randi() % QUOTES.size()]
 
 	# Logo fully visible
+	logo.visible    = true
 	logo.modulate.a = 1.0
 
 	_move_particles(BAR_X)
@@ -264,6 +265,7 @@ func _start_loading() -> void:
 	var t := create_tween().set_parallel()
 	t.tween_property(logo,          "modulate:a", 0.0, 0.4)
 	t.tween_property(bar_fill_rect, "modulate:a", 1.0, 0.4)
+	t.tween_callback(func(): logo.visible = false).set_delay(0.4)
 	t.tween_property(bar_layer,     "modulate:a", 1.0, 0.4)
 	t.tween_property(msg_label,     "modulate:a", 1.0, 0.4)
 	t.tween_property(pct_label,     "modulate:a", 1.0, 0.4)
