@@ -388,97 +388,88 @@ class _QuestRow extends Control:
 		prog_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(prog_lbl)
 
-		# Reward cards
+		# Reward pills — compact horizontal: [icon] ×N
 		const REWARDS := [
-			["exp",     "⭐", "res://image/icon_exp.png",     Color(1.00, 0.82, 0.25), "EXP"],
-			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20), "Gold"],
-			["tp",      "",   "res://image/TP.jpg",           Color(0.40, 0.90, 0.65), "TP"],
-			["crystal", "",   "res://image/crystal_gem.png",  Color(0.40, 0.88, 1.00), "Crystal"],
-			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00), "Upgrade"],
-			["bond",    "",   "res://image/icon_bond.png",    Color(0.85, 0.55, 1.00), "Bond Pt"],
+			["exp",     "⭐", "res://image/icon_exp.png",     Color(1.00, 0.82, 0.25)],
+			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20)],
+			["tp",      "",   "res://image/TP.jpg",           Color(0.40, 0.90, 0.65)],
+			["crystal", "",   "res://image/crystal_gem.png",  Color(0.40, 0.88, 1.00)],
+			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00)],
+			["bond",    "",   "res://image/icon_bond.png",    Color(0.85, 0.55, 1.00)],
 		]
-		const CW := 56.0; const CH := 68.0; const CG := 5.0
-		# Count visible rewards to right-align the block toward the button area
-		var visible_count := 0
+		const PILL_H  := 26.0
+		const PILL_G  := 5.0
+		const ICON_SZ := 20.0
+		# Measure total width to right-align block
+		var visible_vals: Array = []
 		for ri in REWARDS.size():
-			if int(q.get(REWARDS[ri][0], 0)) > 0:
-				visible_count += 1
-		var block_w := visible_count * (CW + CG) - CG
-		var rx := 840.0 - block_w - 8.0  # right-align to just left of button
-		for ri in REWARDS.size():
-			var rkey      : String = REWARDS[ri][0]
-			var rfallback : String = REWARDS[ri][1]
-			var rpath     : String = REWARDS[ri][2]
-			var rcol      : Color  = REWARDS[ri][3]
-			var rlabel    : String = REWARDS[ri][4]
-			var rval      : int    = int(q.get(rkey, 0))
-			if rval <= 0: continue
+			var rv: int = int(q.get(REWARDS[ri][0], 0))
+			if rv <= 0: continue
+			var vs := "×%dk" % (rv / 1000) if rv >= 1000 else "×%d" % rv
+			visible_vals.append([ri, vs])
+		# Estimate pill widths (icon + gap + text ~50 wide minimum)
+		var pill_w := 62.0
+		var total_pill_w := visible_vals.size() * (pill_w + PILL_G) - PILL_G
+		var px := 840.0 - total_pill_w - 8.0
+		var py := (90.0 - PILL_H) * 0.5
+		for entry in visible_vals:
+			var ri : int    = entry[0]
+			var vs : String = entry[1]
+			var rpath: String = REWARDS[ri][2]
+			var rcol : Color  = REWARDS[ri][3]
+			var rfallback: String = REWARDS[ri][1]
 
-			var card := Panel.new()
-			card.size          = Vector2(CW, CH)
-			card.position      = Vector2(rx, 11)
-			card.clip_contents = true
-			card.mouse_filter  = Control.MOUSE_FILTER_IGNORE
-			var sb_card := StyleBoxFlat.new()
-			sb_card.bg_color    = Color(rcol.r * 0.08, rcol.g * 0.08, rcol.b * 0.13, 0.95)
-			sb_card.border_color = Color(rcol.r, rcol.g, rcol.b, 0.28)
-			sb_card.border_width_left  = 1; sb_card.border_width_right  = 1
-			sb_card.border_width_top   = 1; sb_card.border_width_bottom = 1
-			sb_card.corner_radius_top_left     = 5; sb_card.corner_radius_top_right    = 5
-			sb_card.corner_radius_bottom_right = 5; sb_card.corner_radius_bottom_left  = 5
-			card.add_theme_stylebox_override("panel", sb_card)
-			add_child(card)
+			var pill := Panel.new()
+			pill.size     = Vector2(pill_w, PILL_H)
+			pill.position = Vector2(px, py)
+			pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var sb_p := StyleBoxFlat.new()
+			sb_p.bg_color    = Color(rcol.r * 0.10, rcol.g * 0.10, rcol.b * 0.16, 0.92)
+			sb_p.border_color = Color(rcol.r, rcol.g, rcol.b, 0.30)
+			sb_p.border_width_left  = 1; sb_p.border_width_right  = 1
+			sb_p.border_width_top   = 1; sb_p.border_width_bottom = 1
+			sb_p.corner_radius_top_left     = 6; sb_p.corner_radius_top_right    = 6
+			sb_p.corner_radius_bottom_right = 6; sb_p.corner_radius_bottom_left  = 6
+			pill.add_theme_stylebox_override("panel", sb_p)
+			add_child(pill)
 
-			var tex: Texture2D = load(rpath)
+			var tex: Texture2D = load(rpath) if rpath != "" else null
 			if tex:
-				var icon_tx := TextureRect.new()
-				icon_tx.texture      = tex
-				icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-				icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon_tx.size         = Vector2(CW, 32)
-				icon_tx.position     = Vector2(0, 2)
-				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				var ico := TextureRect.new()
+				ico.texture      = tex
+				ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+				ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				ico.size         = Vector2(ICON_SZ, ICON_SZ)
+				ico.position     = Vector2(3, (PILL_H - ICON_SZ) * 0.5)
+				ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				if rpath.ends_with(".jpg"):
 					var mat := CanvasItemMaterial.new()
 					mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-					icon_tx.material = mat
-				card.add_child(icon_tx)
+					ico.material = mat
+				pill.add_child(ico)
 			else:
-				var icon_l := Label.new()
-				icon_l.text = rfallback
-				icon_l.size = Vector2(CW, 32)
-				icon_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-				icon_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-				icon_l.add_theme_font_size_override("font_size", 18)
-				icon_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				card.add_child(icon_l)
+				var ico_l := Label.new()
+				ico_l.text = rfallback
+				ico_l.size = Vector2(ICON_SZ, PILL_H)
+				ico_l.position = Vector2(3, 0)
+				ico_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				ico_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+				ico_l.add_theme_font_size_override("font_size", 11)
+				ico_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				pill.add_child(ico_l)
 
-			var val_s := "+%dk" % (rval / 1000) if rval >= 1000 else "+%d" % rval
-			var val_l := Label.new()
-			val_l.text     = val_s
-			val_l.size     = Vector2(CW, 15)
-			val_l.position = Vector2(0, 35)
-			val_l.horizontal_alignment   = HORIZONTAL_ALIGNMENT_CENTER
-			val_l.vertical_alignment     = VERTICAL_ALIGNMENT_CENTER
-			val_l.text_overrun_behavior  = TextServer.OVERRUN_TRIM_ELLIPSIS
-			val_l.add_theme_font_size_override("font_size", 9)
-			val_l.add_theme_color_override("font_color", Color(rcol.r + 0.08, rcol.g, rcol.b, 0.95))
-			val_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(val_l)
+			var cnt_l := Label.new()
+			cnt_l.text     = vs
+			cnt_l.size     = Vector2(pill_w - ICON_SZ - 6, PILL_H)
+			cnt_l.position = Vector2(ICON_SZ + 4, 0)
+			cnt_l.vertical_alignment    = VERTICAL_ALIGNMENT_CENTER
+			cnt_l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			cnt_l.add_theme_font_size_override("font_size", 10)
+			cnt_l.add_theme_color_override("font_color", Color(rcol.r + 0.08, rcol.g, rcol.b, 1.0))
+			cnt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			pill.add_child(cnt_l)
 
-			var name_l := Label.new()
-			name_l.text     = rlabel
-			name_l.size     = Vector2(CW, 13)
-			name_l.position = Vector2(0, 51)
-			name_l.horizontal_alignment    = HORIZONTAL_ALIGNMENT_CENTER
-			name_l.vertical_alignment      = VERTICAL_ALIGNMENT_CENTER
-			name_l.text_overrun_behavior   = TextServer.OVERRUN_TRIM_ELLIPSIS
-			name_l.add_theme_font_size_override("font_size", 7)
-			name_l.add_theme_color_override("font_color", Color(rcol.r, rcol.g, rcol.b, 0.60))
-			name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(name_l)
-
-			rx += CW + CG
+			px += pill_w + PILL_G
 
 		# Claim / Go button
 		if done:
