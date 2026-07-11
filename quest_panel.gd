@@ -21,7 +21,7 @@ const DAILY_MAX_PTS := 80
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 1, "total": 1, "go": "",          "exp": 100,  "gold": 10000},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 0, "total": 1, "go": "",          "exp": 100,  "gold": 10000},
 		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 100, "gold": 10000},
 		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 100,  "gold": 10000},
 		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000},
@@ -218,16 +218,16 @@ func _build_daily_bar() -> void:
 
 		# Reward box below bar
 		var box := Panel.new()
-		box.size     = Vector2(54, 42)
-		box.position = Vector2(mx - 27, BY + 10)
+		box.size     = Vector2(54, 54)
+		box.position = Vector2(mx - 27, BY + 8)
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var sb_box := StyleBoxFlat.new()
 		sb_box.bg_color    = Color(0.14, 0.11, 0.05, 0.95) if reached else Color(0.06, 0.06, 0.10, 0.90)
 		sb_box.border_color = Color(0.92, 0.79, 0.32, 0.55) if reached else Color(0.28, 0.30, 0.42, 0.35)
 		sb_box.border_width_left  = 1; sb_box.border_width_right  = 1
 		sb_box.border_width_top   = 1; sb_box.border_width_bottom = 1
-		sb_box.corner_radius_top_left     = 4; sb_box.corner_radius_top_right    = 4
-		sb_box.corner_radius_bottom_right = 4; sb_box.corner_radius_bottom_left  = 4
+		sb_box.corner_radius_top_left     = 27; sb_box.corner_radius_top_right    = 27
+		sb_box.corner_radius_bottom_right = 27; sb_box.corner_radius_bottom_left  = 27
 		box.add_theme_stylebox_override("panel", sb_box)
 		_daily_bar.add_child(box)
 
@@ -237,15 +237,15 @@ func _build_daily_bar() -> void:
 			icon_tx.texture = gem_tex
 		icon_tx.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		icon_tx.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_tx.size     = Vector2(54, 28)
-		icon_tx.position = Vector2(0, 2)
+		icon_tx.size     = Vector2(54, 32)
+		icon_tx.position = Vector2(0, 4)
 		icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.add_child(icon_tx)
 
 		var val_l := Label.new()
 		val_l.text = "×%d" % m["val"]
-		val_l.size = Vector2(54, 12)
-		val_l.position = Vector2(0, 30)
+		val_l.size = Vector2(54, 14)
+		val_l.position = Vector2(0, 36)
 		val_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		val_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		val_l.add_theme_font_size_override("font_size", 9)
@@ -268,7 +268,12 @@ func _rebuild_list() -> void:
 	var accent: Color = TAB_COLORS[_current_tab]
 	var quests := QUESTS.get(_current_tab, []) as Array
 	for q in quests:
-		_list.add_child(_QuestRow.new(q, Callable(), accent))
+		var go_key: String = str(q.get("go", ""))
+		var nav := Callable()
+		if go_key != "" and _GO_SCENES.has(go_key):
+			var sc: String = _GO_SCENES[go_key]
+			nav = func(): SceneTransition.fade_to(sc)
+		_list.add_child(_QuestRow.new(q, nav, accent))
 
 # ── Quest row (HSR style) ─────────────────────────────────────────────────────
 class _QuestRow extends Control:
