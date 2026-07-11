@@ -143,14 +143,14 @@ func _refresh_slot(panel: Panel, lbl: Label, symbol: String) -> void:
 		lbl.text = "?"
 		lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.18))
 		panel.add_theme_stylebox_override("panel",
-			_sb(Color(0.05, 0.08, 0.18, 0.6), Color(0.3, 0.5, 1, 0.2), 16, 1))
+			_sb(Color(0.05, 0.08, 0.18, 0.6), Color(0.3, 0.5, 1, 0.2), 10, 1))
 	else:
 		lbl.text = symbol
 		var elem := _get_elem(symbol)
 		var col: Color = elem.get("color", Color(0.5, 0.7, 1)) if not elem.is_empty() else Color(0.5, 0.7, 1)
 		lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
 		panel.add_theme_stylebox_override("panel",
-			_sb(col.darkened(0.52), col * Color(1, 1, 1, 0.55), 16, 2))
+			_sb(col.darkened(0.52), col * Color(1, 1, 1, 0.55), 10, 2))
 
 func _get_elem(symbol: String) -> Dictionary:
 	for e in ReactionDB.ELEMENTS:
@@ -160,25 +160,27 @@ func _get_elem(symbol: String) -> Dictionary:
 
 # ── Center panel — reaction chamber ──────────────────────────────
 func _build_center_panel() -> void:
-	const CX := 240.0; const CY := 62.0; const CW := 380.0
+	const CX    := 240.0
+	const CY    := 52.0
+	const CW    := 380.0
+	const SW    := 110.0   # card width
+	const SH    := 154.0   # card height (portrait 5:7 ratio)
+	const GAP   := 28.0
+	const SLOT_A_X := CX + (CW - SW * 2.0 - GAP) * 0.5
+	const SLOT_B_X := SLOT_A_X + SW + GAP
+	const SLOTS_Y  := CY + 56.0
 
 	var title := Label.new()
 	title.text = "Reaction Chamber"
 	title.position = Vector2(CX, CY + 14)
-	title.size = Vector2(CW, 22)
+	title.size = Vector2(CW, 20)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 13)
-	title.add_theme_color_override("font_color", Color(0.5, 0.85, 1, 0.45))
+	title.add_theme_font_size_override("font_size", 12)
+	title.add_theme_color_override("font_color", Color(0.5, 0.85, 1, 0.40))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(title)
 
-	const SLOT_S := 100.0
-	const SLOTS_Y := CY + 70.0
-	const GAP    := 24.0
-	const SLOT_A_X := CX + (CW - SLOT_S * 2.0 - GAP) * 0.5
-	const SLOT_B_X := SLOT_A_X + SLOT_S + GAP
-
-	_slot_a_panel = _make_slot_panel()
+	_slot_a_panel = _make_slot_panel(SW, SH)
 	_slot_a_panel.position = Vector2(SLOT_A_X, SLOTS_Y)
 	_slot_a_lbl = _slot_a_panel.get_child(0) as Label
 	_slot_a_panel.gui_input.connect(func(ev: InputEvent):
@@ -188,15 +190,15 @@ func _build_center_panel() -> void:
 
 	var plus := Label.new()
 	plus.text = "+"
-	plus.position = Vector2(SLOT_A_X + SLOT_S + 2, SLOTS_Y + SLOT_S * 0.5 - 14)
+	plus.position = Vector2(SLOT_A_X + SW + 2, SLOTS_Y + SH * 0.5 - 14)
 	plus.size = Vector2(GAP, 28)
 	plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	plus.add_theme_font_size_override("font_size", 18)
+	plus.add_theme_font_size_override("font_size", 20)
 	plus.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.45))
 	plus.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(plus)
 
-	_slot_b_panel = _make_slot_panel()
+	_slot_b_panel = _make_slot_panel(SW, SH)
 	_slot_b_panel.position = Vector2(SLOT_B_X, SLOTS_Y)
 	_slot_b_lbl = _slot_b_panel.get_child(0) as Label
 	_slot_b_panel.gui_input.connect(func(ev: InputEvent):
@@ -206,17 +208,17 @@ func _build_center_panel() -> void:
 
 	var arrow := Label.new()
 	arrow.text = "↓"
-	arrow.position = Vector2(CX + CW * 0.5 - 12, SLOTS_Y + SLOT_S + 8)
-	arrow.size = Vector2(24, 24)
+	arrow.position = Vector2(CX + CW * 0.5 - 12, SLOTS_Y + SH + 6)
+	arrow.size = Vector2(24, 22)
 	arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	arrow.add_theme_font_size_override("font_size", 20)
-	arrow.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.3))
+	arrow.add_theme_font_size_override("font_size", 18)
+	arrow.add_theme_color_override("font_color", Color(0.6, 0.8, 1, 0.30))
 	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(arrow)
 
 	_mix_btn = Button.new()
 	_mix_btn.text = "Mix"
-	_mix_btn.position = Vector2(CX + (CW - 140) * 0.5, SLOTS_Y + SLOT_S + 38)
+	_mix_btn.position = Vector2(CX + (CW - 140) * 0.5, SLOTS_Y + SH + 34)
 	_mix_btn.size = Vector2(140, 44)
 	_mix_btn.disabled = true
 	_mix_btn.add_theme_font_size_override("font_size", 15)
@@ -235,27 +237,26 @@ func _build_center_panel() -> void:
 
 	var hint := Label.new()
 	hint.text = "คลิก Element เพื่อใส่สล็อต • คลิกสล็อตเพื่อล้าง"
-	hint.position = Vector2(CX, CY + 578 - 30)
-	hint.size = Vector2(CW, 24)
+	hint.position = Vector2(CX, SLOTS_Y + SH + 86)
+	hint.size = Vector2(CW, 20)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_font_size_override("font_size", 10)
-	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.2))
+	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.18))
 	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(hint)
 
-func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0.5, 1, 0.2)) -> Panel:
-	const S := 100.0
+func _make_slot_panel(sw: float = 110.0, sh: float = 154.0, bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0.5, 1, 0.2)) -> Panel:
 	var panel := Panel.new()
-	panel.size = Vector2(S, S)
+	panel.size = Vector2(sw, sh)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.add_theme_stylebox_override("panel", _sb(bg, border, 16, 1))
+	panel.add_theme_stylebox_override("panel", _sb(bg, border, 10, 1))
 
 	var lbl := Label.new()
 	lbl.text = "?"
 	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 36)
+	lbl.add_theme_font_size_override("font_size", 40)
 	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.18))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(lbl)
@@ -265,7 +266,7 @@ func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0
 	sftex.texture      = preload("res://image/g1.jpg")
 	sftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	sftex.stretch_mode = TextureRect.STRETCH_SCALE
-	sftex.size         = Vector2(S + 4, S + 4)
+	sftex.size         = Vector2(sw + 4, sh + 4)
 	sftex.position     = Vector2(-2, -2)
 	sftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var sfmat := CanvasItemMaterial.new()
