@@ -213,21 +213,6 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 		_flat(Color(elem_col.r * 0.05, elem_col.g * 0.05, elem_col.b * 0.09, 1.0),
 			Color(r_col.r * 0.4, r_col.g * 0.4, r_col.b * 0.4, 0.25), 8, 1))
 
-	var portrait_h := CARD_H - 46.0
-	var ppath: String = PORTRAITS.get(name_s, "")
-	if ppath != "" and ResourceLoader.exists(ppath):
-		var tex: Texture2D = load(ppath)
-		if tex:
-			var img := TextureRect.new()
-			img.texture      = tex
-			img.size         = Vector2(CARD_W, portrait_h + 12)
-			img.position     = Vector2(0, 0)
-			img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			img.modulate     = Color(0.35, 0.35, 0.40, 0.70)
-			img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			slot.add_child(img)
-
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r * 0.35, r_col.g * 0.35, r_col.b * 0.35, 0.40)))
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
