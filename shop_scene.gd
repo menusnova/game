@@ -59,9 +59,9 @@ const VOID_MARKET_ITEMS := [
 ]
 
 const SYNTHESIS_ITEMS := [
-	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 160,  "img": "res://image/gacha_card.jpg",  "tag": "gacha"},
-	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1600, "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "badge": "Best"},
-	{"name": "Aether Pulse",     "sub": "พลังงาน Farm ×1",  "cost": 40,   "img": "res://image/icon_energy.png",  "tag": "energy"},
+	{"name": "Aether Shard",     "sub": "สุ่ม Gacha ×1",    "cost": 150,  "img": "res://image/gacha_card.jpg",  "tag": "gacha"},
+	{"name": "Aether Shard ×10", "sub": "สุ่ม Gacha ×10",   "cost": 1500, "img": "res://image/gacha_card.jpg",  "tag": "gacha",  "badge": "Best"},
+	{"name": "Aether Pulse",     "sub": "พลังงาน Farm ×1",  "cost": 60,   "img": "res://image/icon_energy.png",  "tag": "energy"},
 	{"name": "Aether Pulse ×60", "sub": "พลังงาน Farm ×60", "cost": 2400, "img": "res://image/icon_energy.png",  "tag": "energy", "badge": "Save"},
 ]
 
@@ -353,16 +353,6 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge.add_child(row)
-
-	if cur_icon_path != "":
-		var ci := TextureRect.new()
-		ci.texture      = load(cur_icon_path)
-		ci.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ci.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ci.custom_minimum_size = Vector2(14, 14)
-		ci.size         = Vector2(14, 14)
-		ci.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row.add_child(ci)
 
 	var price_lbl := Label.new()
 	price_lbl.text = cost_text
