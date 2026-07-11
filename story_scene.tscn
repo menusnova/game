@@ -242,24 +242,9 @@ theme_override_font_sizes/font_size = 11
 text = "▶ Auto"
 z_index = 10
 
-[node name="BtnFast" type="Button" parent="CtrlBar"]
-layout_mode = 0
-offset_left = 78.0
-offset_top = 0.0
-offset_right = 150.0
-offset_bottom = 28.0
-theme_override_styles/normal = SubResource("SB_FastN")
-theme_override_styles/hover = SubResource("SB_FastH")
-theme_override_styles/pressed = SubResource("SB_FastN")
-theme_override_styles/focus = SubResource("SB_Focus")
-theme_override_colors/font_color = Color(1.0, 0.78, 0.2, 0.85)
-theme_override_font_sizes/font_size = 11
-text = "⏩ เร่ง"
-z_index = 10
-
 [node name="BtnSkip" type="Button" parent="CtrlBar"]
 layout_mode = 0
-offset_left = 156.0
+offset_left = 78.0
 offset_top = 0.0
 offset_right = 236.0
 offset_bottom = 28.0

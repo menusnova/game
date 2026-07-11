@@ -38,7 +38,7 @@ var _auto_timer: SceneTreeTimer = null
 @onready var _fade:       ColorRect     = $FadeOverlay
 @onready var _btn_skip:   Button        = $CtrlBar/BtnSkip
 @onready var _btn_auto:   Button        = $CtrlBar/BtnAuto
-@onready var _btn_fast:   Button        = $CtrlBar/BtnFast
+var _btn_fast: Button = null
 
 
 func _ready() -> void:
@@ -57,7 +57,6 @@ func _ready() -> void:
 	if _next_btn:
 		_next_btn.pressed.connect(_on_next)
 	_btn_skip.pressed.connect(_on_skip_all)
-	_btn_fast.pressed.connect(_on_toggle_fast)
 	_btn_auto.pressed.connect(_on_toggle_auto)
 	_refresh_ctrl_buttons()
 	# fade in
