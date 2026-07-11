@@ -55,6 +55,7 @@ const _GO_SCENES := {
 @onready var _sub_title: Label          = $Sheet/TopBar/SubTitle
 
 var _tab_btns: Array[Button] = []
+var _claimed_daily: Array[String] = []  # quest ids that have been claimed
 
 func _ready() -> void:
 	if _sheet:
@@ -154,7 +155,7 @@ func _update_tab_style() -> void:
 func _calc_daily_pts() -> int:
 	var pts := 0
 	for q in QUESTS[Tab.DAILY]:
-		if int(q.get("current", 0)) >= int(q.get("total", 1)):
+		if str(q.get("id", "")) in _claimed_daily:
 			pts += 20
 	return pts
 
@@ -273,11 +274,20 @@ func _rebuild_list() -> void:
 		if go_key != "" and _GO_SCENES.has(go_key):
 			var sc: String = _GO_SCENES[go_key]
 			nav = func(): SceneTransition.fade_to(sc)
-		_list.add_child(_QuestRow.new(q, nav, accent))
+		var qid: String = str(q.get("id", ""))
+		var claimed: bool = qid in _claimed_daily
+		var claim_cb := Callable()
+		if _current_tab == Tab.DAILY:
+			claim_cb = func():
+				if qid not in _claimed_daily:
+					_claimed_daily.append(qid)
+				_build_daily_bar()
+				_rebuild_list()
+		_list.add_child(_QuestRow.new(q, nav, accent, claimed, claim_cb))
 
 # ── Quest row (HSR style) ─────────────────────────────────────────────────────
 class _QuestRow extends Control:
-	func _init(q: Dictionary, nav: Callable, accent: Color) -> void:
+	func _init(q: Dictionary, nav: Callable, accent: Color, claimed: bool = false, claim_cb: Callable = Callable()) -> void:
 		custom_minimum_size = Vector2(0, 90)
 		size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
@@ -469,8 +479,12 @@ class _QuestRow extends Control:
 		if done:
 			var btn := Button.new()
 			var sb_btn := StyleBoxFlat.new()
-			sb_btn.bg_color    = Color(0.50, 0.37, 0.06, 1.0)
-			sb_btn.border_color = Color(0.92, 0.79, 0.32, 0.60)
+			if claimed:
+				sb_btn.bg_color    = Color(0.10, 0.12, 0.16, 0.80)
+				sb_btn.border_color = Color(0.35, 0.38, 0.48, 0.40)
+			else:
+				sb_btn.bg_color    = Color(0.50, 0.37, 0.06, 1.0)
+				sb_btn.border_color = Color(0.92, 0.79, 0.32, 0.60)
 			sb_btn.border_width_left  = 1; sb_btn.border_width_right  = 1
 			sb_btn.border_width_top   = 1; sb_btn.border_width_bottom = 1
 			sb_btn.corner_radius_top_left     = 6; sb_btn.corner_radius_top_right    = 6
@@ -479,11 +493,15 @@ class _QuestRow extends Control:
 			btn.add_theme_stylebox_override("hover",   sb_btn)
 			btn.add_theme_stylebox_override("pressed", sb_btn)
 			btn.add_theme_stylebox_override("focus",   StyleBoxEmpty.new())
-			btn.add_theme_color_override("font_color", Color(1.0, 0.90, 0.50, 1.0))
+			btn.add_theme_color_override("font_color",
+				Color(0.45, 0.48, 0.55, 0.60) if claimed else Color(1.0, 0.90, 0.50, 1.0))
 			btn.add_theme_font_size_override("font_size", 12)
-			btn.text     = "รับรางวัล"
+			btn.text     = "รับแล้ว" if claimed else "รับรางวัล"
+			btn.disabled = claimed
 			btn.size     = Vector2(92, 34)
 			btn.position = Vector2(848, 28)
+			if not claimed and claim_cb.is_valid():
+				btn.pressed.connect(claim_cb)
 			add_child(btn)
 		elif nav.is_valid():
 			var btn := Button.new()
