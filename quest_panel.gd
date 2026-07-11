@@ -21,7 +21,7 @@ const DAILY_MAX_PTS := 80
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 0, "total": 1, "go": "",          "exp": 100,  "gold": 10000, "tp": 20},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 1, "total": 1, "go": "",          "exp": 100,  "gold": 10000, "tp": 20},
 		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 100, "gold": 10000, "tp": 20},
 		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 100,  "gold": 10000, "tp": 20},
 		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000, "tp": 20},
