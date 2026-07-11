@@ -22,6 +22,11 @@ const POOL_3: Array[String] = [
 	"K", "Cu", "Zn", "P", "Si",
 ]
 
+const PORTRAITS: Dictionary = {
+	"Alchemist": "res://image/lyra_1.png",
+	"Lyra":      "res://image/lyra_2.png",
+}
+
 const CARD_TYPE: Dictionary = {
 	"Lyra": "CHARACTER", "Seraph": "CHARACTER",
 	"Kael": "CHARACTER", "Mira": "CHARACTER", "Voss": "CHARACTER",
