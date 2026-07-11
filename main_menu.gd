@@ -234,7 +234,7 @@ func _setup_quest_panel() -> void:
 func _setup_home_character() -> void:
 	const DIALOGUES := [
 		"วันนี้อากาศดีนะ...\nเหมาะกับการทดลองมาก",
-		"⚗  สูตรใหม่สำเร็จแล้ว!\nลองดูด้วยกันไหม?",
+		"สูตรใหม่สำเร็จแล้ว!\nลองดูด้วยกันไหม?",
 		"พร้อมออกเดินทางแล้วหรือยัง?\nฉันรอนานมากแล้ว",
 	]
 
@@ -320,18 +320,20 @@ func _setup_home_character() -> void:
 	dlg_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	bubble.add_child(dlg_lbl)
 
-	# Cycle dialogue every 4 s with fade
+	# Cycle dialogue every 12 s with fade (random)
 	var dlg_idx := 0
 	var cycle := create_tween().set_loops()
-	cycle.tween_interval(4.0)
+	cycle.tween_interval(12.0)
 	cycle.tween_callback(func():
 		if not is_instance_valid(dlg_lbl) or not is_instance_valid(bubble): return
-		dlg_idx = (dlg_idx + 1) % DIALOGUES.size()
+		var next := randi() % DIALOGUES.size()
+		if next == dlg_idx: next = (next + 1) % DIALOGUES.size()
+		dlg_idx = next
 		var fade := dlg_lbl.create_tween()
 		fade.tween_property(dlg_lbl, "modulate:a", 0.0, 0.25)
 		fade.tween_callback(func():
 			if is_instance_valid(dlg_lbl):
-				dlg_lbl.text = DIALOGUES[dlg_idx]
+				dlg_lbl.text = DIALOGUES[dlg_idx]  # dlg_idx already updated above
 		)
 		fade.tween_property(dlg_lbl, "modulate:a", 1.0, 0.35)
 	)
