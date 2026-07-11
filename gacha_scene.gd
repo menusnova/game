@@ -280,52 +280,6 @@ func _build_info_card() -> void:
 
 	cy += 4
 
-	# Featured thumbnails (fan-out card style at bottom)
-	var feat_imgs: Array = d.get("feat_imgs", []) as Array
-	var feat_w   := 90.0
-	var feat_h   := 118.0
-	var fan_y    := ih - 60.0 - feat_h   # anchor above bottom buttons
-	var fan_start_x := pad
-	var rotations := [-6.0, 0.0, 6.0]
-	var offsets_y  := [8.0, 0.0, 8.0]
-	for fi in mini(feat_imgs.size(), 3):
-		var feat_sb2 := _sb(Color(0.08, 0.10, 0.20, 0.90), Color(1,1,1, 0.18), 8, 1)
-		var feat_slot := Panel.new()
-		feat_slot.size         = Vector2(feat_w, feat_h)
-		feat_slot.position     = Vector2(fan_start_x + fi * 28.0, fan_y + offsets_y[fi])
-		feat_slot.rotation_degrees = rotations[fi]
-		feat_slot.add_theme_stylebox_override("panel", feat_sb2)
-		feat_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(feat_slot)
-		var fi_tex: Texture2D = _load_png(str(feat_imgs[fi]))
-		if fi_tex:
-			var fi_img := TextureRect.new()
-			fi_img.texture      = fi_tex
-			fi_img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			fi_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			fi_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			fi_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			feat_slot.add_child(fi_img)
-		else:
-			var fi_lbl := Label.new()
-			fi_lbl.text = str(d["art_icon"])
-			fi_lbl.add_theme_font_size_override("font_size", 24)
-			fi_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.40))
-			fi_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			fi_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			fi_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-			fi_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			feat_slot.add_child(fi_lbl)
-	# "etc." label below thumbnails
-	if not feat_imgs.is_empty():
-		var etc_lbl := Label.new()
-		etc_lbl.text = "★★★★★"
-		etc_lbl.add_theme_font_size_override("font_size", 10)
-		etc_lbl.add_theme_color_override("font_color", Color(0.80, 0.60, 0.20, 0.85))
-		etc_lbl.position = Vector2(pad, fan_y + feat_h + 4)
-		etc_lbl.size     = Vector2(feat_w * 3 + 56 + pad, 16)
-		etc_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(etc_lbl)
 
 	# Pity section
 	var sep2 := ColorRect.new()
