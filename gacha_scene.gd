@@ -121,10 +121,9 @@ const W          := 1152.0
 const H          := 648.0
 const TOP_H      := 52.0    # top bar height
 const BOT_H      := 72.0    # bottom bar height
-const THUMB_W    := 96.0    # left tab button area width
-const INFO_W     := 310.0   # info card width
-# Selector card size (defaults; overridden in _build_selector_strip)
-const SEL_CW     := 60.0
+const THUMB_W    := 175.0   # left selector strip width
+const INFO_W     := 300.0   # info card width
+const SEL_CW     := 160.0   # selector card width
 const SEL_CH     := 76.0
 
 func _build_hsr_ui() -> void:
@@ -138,6 +137,9 @@ func _build_hsr_ui() -> void:
 	bg.z_index = -10
 	add_child(bg)
 	_add_stars(bg)
+
+	# ── Left selector strip ──
+	_build_selector_strip()
 
 	# ── Art image (behind info card) ──
 	_rebuild_art()
@@ -155,16 +157,15 @@ func _build_hsr_ui() -> void:
 		_result_ov.z_index = 50
 		move_child(_result_ov, get_child_count() - 1)
 
-# ── Left tab buttons (no background strip — just 2 portrait cards stacked) ───
+# ── Left selector strip ──────────────────────────────────────────
 func _build_selector_strip() -> void:
-	const BTN_W := 88.0
-	const BTN_H := 118.0
-	const GAP   := 8.0
-	var total_h := WARP_TYPES.size() * (BTN_H + GAP) - GAP
-	var start_y := TOP_H + (H - TOP_H - BOT_H - total_h) * 0.5
+	const GAP := 8.0
+	var avail_h := H - TOP_H - BOT_H - GAP * (WARP_TYPES.size() - 1) - 16.0
+	var btn_h   := avail_h / WARP_TYPES.size()
+	var start_y := TOP_H + 8.0
 	for i in WARP_TYPES.size():
-		var card := _make_selector_card(WARP_TYPES[i], i == _active_warp, i, BTN_W, BTN_H)
-		card.position = Vector2(4, start_y + i * (BTN_H + GAP))
+		var card := _make_selector_card(WARP_TYPES[i], i == _active_warp, i, SEL_CW, btn_h)
+		card.position = Vector2(8, start_y + i * (btn_h + GAP))
 		card.z_index  = 5
 		add_child(card)
 		_warp_btns.append(card)
@@ -260,8 +261,8 @@ func _rebuild_art() -> void:
 	art_rect.texture      = art_tex
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art_rect.size         = Vector2(W, art_h)
-	art_rect.position     = Vector2(0, art_y)
+	art_rect.size         = Vector2(W - THUMB_W, art_h)
+	art_rect.position     = Vector2(THUMB_W, art_y)
 	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art_rect.z_index      = 0
 	add_child(art_rect)
@@ -271,7 +272,7 @@ func _build_info_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	var ix := 12.0
+	var ix := THUMB_W + 8.0
 	var iy := TOP_H + 8.0
 	var iw := INFO_W
 	var ih := H - TOP_H - BOT_H - 16.0
@@ -514,7 +515,7 @@ func _build_bottom_bar() -> void:
 		{"label": "ดูรายละเอียด", "w": 150.0},
 		{"label": "ประวัติ",        "w": 130.0},
 	]
-	var lx := THUMB_W + INFO_W + 16.0
+	var lx := THUMB_W + 8.0
 	for lb in left_btns:
 		var b := _ghost_btn(str(lb["label"]), 12)
 		b.size     = Vector2(float(lb["w"]), btn_h)
