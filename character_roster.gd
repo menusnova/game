@@ -136,34 +136,31 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	var portrait_h := CARD_H - 46.0
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h),
 		Color(elem_col.r * 0.15, elem_col.g * 0.15, elem_col.b * 0.25, 1.0)))
-	var el := _lbl(elem_s, 48, Color(1, 1, 1, 0.85))
-	el.size = Vector2(CARD_W, portrait_h)
-	el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	slot.add_child(el)
+
+	var portrait_path: String = PORTRAITS.get(name_s, "")
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		var ptex := TextureRect.new()
+		ptex.texture      = load(portrait_path)
+		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ptex.size         = Vector2(CARD_W, portrait_h)
+		ptex.position     = Vector2(0, 0)
+		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(ptex)
+	else:
+		var el := _lbl(elem_s, 48, Color(1, 1, 1, 0.85))
+		el.size = Vector2(CARD_W, portrait_h)
+		el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		slot.add_child(el)
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r, r_col.g, r_col.b, 0.75)))
 
 	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r, r_col.g, r_col.b, 0.90))
-	stars.size     = Vector2(CARD_W - 28, 16)
+	stars.size     = Vector2(CARD_W - 8, 16)
 	stars.position = Vector2(4, 5)
 	slot.add_child(stars)
-
-	var el_dot := Panel.new()
-	el_dot.size     = Vector2(22, 22)
-	el_dot.position = Vector2(CARD_W - 25, 3)
-	el_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	el_dot.add_theme_stylebox_override("panel",
-		_flat(Color(elem_col.r * 0.35, elem_col.g * 0.35, elem_col.b * 0.55, 0.88),
-			Color(elem_col.r, elem_col.g, elem_col.b, 0.40), 11, 1))
-	slot.add_child(el_dot)
-	var el_l := _lbl(elem_s, 11, Color(1, 1, 1, 0.9))
-	el_l.size     = Vector2(22, 22)
-	el_l.position = Vector2(CARD_W - 25, 3)
-	el_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	el_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	slot.add_child(el_l)
 
 	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
 		Color(0.01, 0.01, 0.04, 0.82)))

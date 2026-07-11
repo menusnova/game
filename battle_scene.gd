@@ -904,8 +904,9 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var frame_tex := TextureRect.new()
 	frame_tex.texture      = load("res://image/g%d.jpg" % frame_tier)
 	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	frame_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	frame_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame_tex.stretch_mode = TextureRect.STRETCH_SCALE
+	frame_tex.size     = Vector2(CARD_W, CARD_H)
+	frame_tex.position = Vector2(0, 0)
 	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var frame_mat := CanvasItemMaterial.new()
 	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD

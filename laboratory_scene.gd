@@ -74,8 +74,9 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 	var ftex := TextureRect.new()
 	ftex.texture      = preload("res://image/g1.jpg")
 	ftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	ftex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	ftex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ftex.stretch_mode = TextureRect.STRETCH_SCALE
+	ftex.size         = Vector2(TW, TH)
+	ftex.position     = Vector2(0, 0)
 	ftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fmat := CanvasItemMaterial.new()
 	fmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
