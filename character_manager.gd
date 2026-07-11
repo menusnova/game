@@ -4,7 +4,6 @@ extends Node
 const ALL_CHARACTERS: Array[Dictionary] = [
 	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
 	{"name": "Lyra",      "element": "🔥", "rarity": 5, "element_color": Color(1.0,  0.45, 0.2),   "owned": true},
-	{"name": "Seraph",    "element": "✦",  "rarity": 5, "element_color": Color(1.0,  0.78, 0.2),   "owned": false},
 ]
 
 # Extended stat/lore data per character
@@ -53,29 +52,6 @@ const CHAR_DATA: Dictionary = {
 		"passive": {
 			"name": "Wildfire",
 			"desc": "เมื่อศัตรูมีสถานะเผาไหม้ ทุกการโจมตีของ Lyra สร้างความเสียหายเพิ่มขึ้น 20%",
-		},
-	},
-	"Seraph": {
-		"title": "Light Weaver",
-		"faction": "Celestial Order",
-		"roles": ["Support", "Control"],
-		"level": 0, "level_max": 30, "insight": 0,
-		"atk": 188, "hp": 1820, "rdef": 155, "mdef": 168, "crit": 142, "def": 161,
-		"bond": 0,
-		"dialogue": "แสงสว่างจะนำทางพวกเรา",
-		"skills": [
-			{"name": "Star Pulse",   "type": "Basic ATK", "img": "res://image/lyra_3.png",
-			 "desc": "ยิงพลังแสงสว่างใส่ศัตรู 1 เป้าหมาย สร้างความเสียหาย 16 DMG"},
-			{"name": "Holy Guard",   "type": "Defend",    "img": "res://image/lyra_1.png",
-			 "desc": "สร้างเกราะแสงศักดิ์สิทธิ์ให้พันธมิตรทุกคน ลดความเสียหาย 25% เป็นเวลา 1 รอบ"},
-			{"name": "Starfall",     "type": "Skill",     "img": "res://image/lyra_2.png",
-			 "desc": "เรียกแสงดาวโจมตีศัตรูทุกตัว 28 DMG และชะลอความเร็ว 1 รอบ"},
-			{"name": "Divine Veil",  "type": "Ultimate",  "img": "res://image/lyra_3.png",
-			 "desc": "ปกคลุมพันธมิตรด้วยม่านแสงศักดิ์สิทธิ์ ฟื้นฟู HP 40 และกันความเสียหาย 1 ครั้ง"},
-		],
-		"passive": {
-			"name": "Celestial Grace",
-			"desc": "เมื่อ Seraph ใช้ Defend หรือ Ultimate HP ของพันธมิตรทุกคนฟื้นฟูเพิ่มขึ้น 10% และ MDEF +15%",
 		},
 	},
 }

@@ -26,7 +26,7 @@ const C_LINE  := Color(1.0,   1.0,   1.0,   0.06)
 const PORTRAITS := {
 	"Alchemist": "res://image/lyra_1.png",
 	"Lyra":      "res://image/lyra_2.png",
-	"Seraph":    "res://image/lyra_3.png",
+
 }
 
 var _grid_panels: Array = []

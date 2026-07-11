@@ -5,7 +5,6 @@ const SC_ROSTER := "res://character_roster.tscn"
 const PORTRAITS := {
 	"Alchemist": "res://image/lyra_1.png",
 	"Lyra":      "res://image/lyra_2.png",
-	"Seraph":    "res://image/lyra_3.png",
 }
 
 const VW      := 1152.0
