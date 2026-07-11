@@ -39,7 +39,7 @@ func _ready() -> void:
 	_setup_cards_fx()
 	_setup_quest_panel()
 	_setup_navbar()
-	_setup_banner_carousel()
+	_setup_event_banner()
 	_refresh_hud()
 	if not CurrencyManager.currency_changed.is_connected(_refresh_hud):
 		CurrencyManager.currency_changed.connect(_refresh_hud)
@@ -513,171 +513,22 @@ func _on_arena_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 		_show_coming_soon("โหมดต่อสู้ยังไม่เปิดให้บริการ")
 
-func _setup_banner_carousel() -> void:
-	# ซ่อน NewCharCard เดิม
-	var old: Control = get_node_or_null("NewCharCard") as Control
-	if old: old.visible = false
 
-	# พื้นที่แสดง: x=924 y=52 w=221 h=76
-	const BX    := 924.0
-	const BY    := 52.0
-	const BW    := 221.0
-	const BH    := 76.0
-
-	const BANNERS := [
-		{
-			"tag":   "CHARACTER",
-			"tag_color": Color(0.90, 0.35, 1.0),
-			"title": "ALCHEMIST",
-			"sub":   "5★  Element Burst",
-			"accent": Color(0.35, 0.75, 1.0),
-			"icon":  "⚗",
-		},
-		{
-			"tag":   "LIGHT CONE",
-			"tag_color": Color(1.0, 0.72, 0.15),
-			"title": "ARCANE FORMULA",
-			"sub":   "4★  Erudition Path",
-			"accent": Color(1.0, 0.80, 0.25),
-			"icon":  "📖",
-		},
-		{
-			"image": "res://image/evenbanner.jpg",
-			"locked": true,
-			"accent": Color(1.0, 0.85, 0.30),
-		},
-	]
-
-	# Clip container — hides overflow when sliding
-	var clip := Control.new()
-	clip.position = Vector2(BX, BY)
-	clip.size     = Vector2(BW, BH)
-	clip.clip_contents = true
-	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	clip.z_index  = 5
-	add_child(clip)
-
-	# Track container — slides horizontally
-	var track := Control.new()
-	track.position = Vector2(0, 0)
-	track.size     = Vector2(BW * BANNERS.size(), BH)
-	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	clip.add_child(track)
-
-	var banner_nodes: Array[Control] = []
-
-	for i in BANNERS.size():
-		var d: Dictionary = BANNERS[i]
-		var acc: Color = d["accent"]
-
-		var card := Panel.new()
-		card.position = Vector2(-i * BW, 0)
-		card.size     = Vector2(BW, BH)
-		card.clip_contents = true
-		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.04, 0.05, 0.14, 0.97)
-		sb.border_color = Color(acc.r, acc.g, acc.b, 0.4)
-		sb.border_width_left = 1; sb.border_width_right = 1
-		sb.border_width_top = 1; sb.border_width_bottom = 1
-		sb.corner_radius_top_left = 8; sb.corner_radius_top_right = 8
-		sb.corner_radius_bottom_right = 8; sb.corner_radius_bottom_left = 8
-		card.add_theme_stylebox_override("panel", sb)
-		track.add_child(card)
-		banner_nodes.append(card)
-
-		if d.has("image"):
-			# Image-based banner
-			var img_tex := TextureRect.new()
-			img_tex.texture     = load(str(d["image"]))
-			img_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			img_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			img_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			img_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(img_tex)
-			if bool(d.get("locked", false)):
-				var lock_dim := ColorRect.new()
-				lock_dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-				lock_dim.color = Color(0, 0, 0, 0.45)
-				lock_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				card.add_child(lock_dim)
-				var lock_lbl := Label.new()
-				lock_lbl.text = "🔒"
-				lock_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-				lock_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-				lock_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_TOP
-				lock_lbl.add_theme_font_size_override("font_size", 14)
-				lock_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				card.add_child(lock_lbl)
-			continue
-
-		# Accent left bar
-		var bar := ColorRect.new()
-		bar.size = Vector2(3, BH)
-		bar.color = Color(acc.r, acc.g, acc.b, 0.85)
-		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(bar)
-
-		# Title
-		var title_lbl := Label.new()
-		title_lbl.text = str(d["title"])
-		title_lbl.position = Vector2(10, 24)
-		title_lbl.size = Vector2(140, 26)
-		title_lbl.add_theme_font_size_override("font_size", 18)
-		title_lbl.add_theme_color_override("font_color", Color(acc.r + 0.1, acc.g + 0.05, acc.b, 1.0))
-		title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(title_lbl)
-
-		# Sub
-		var sub_lbl := Label.new()
-		sub_lbl.text = str(d["sub"])
-		sub_lbl.position = Vector2(10, 52)
-		sub_lbl.size = Vector2(150, 14)
-		sub_lbl.add_theme_font_size_override("font_size", 9)
-		sub_lbl.add_theme_color_override("font_color", Color(0.65, 0.80, 1.0, 0.75))
-		sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(sub_lbl)
-
-		# Icon (right side)
-		var icon_lbl := Label.new()
-		icon_lbl.text = str(d["icon"])
-		icon_lbl.position = Vector2(BW - 56, 8)
-		icon_lbl.size = Vector2(48, BH - 16)
-		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.add_theme_font_size_override("font_size", 28)
-		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.55))
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(icon_lbl)
-
-	# Dot indicators
-	var dot_row := Control.new()
-	dot_row.position = Vector2(BX + 8, BY + BH - 10)
-	dot_row.size     = Vector2(40, 6)
-	dot_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(dot_row)
-	var dot_nodes: Array[ColorRect] = []
-	for i in BANNERS.size():
-		var dot := ColorRect.new()
-		dot.size = Vector2(7, 4)
-		dot.position = Vector2(i * 10, 0)
-		dot.color = Color(1, 1, 1, 0.9) if i == 0 else Color(1, 1, 1, 0.22)
-		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		dot_row.add_child(dot)
-		dot_nodes.append(dot)
-
-	# Auto-scroll loop every 3s → slide right → wrap
-	var loop_tween := create_tween().set_loops()
-	loop_tween.tween_interval(3.0)
-	loop_tween.tween_callback(func():
-		if not is_instance_valid(track): return
-		_banner_idx = (_banner_idx + 1) % BANNERS.size()
-		var target_x := _banner_idx * BW
-		var slide := track.create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
-		slide.tween_property(track, "position:x", target_x, 0.45)
-		for j in dot_nodes.size():
-			dot_nodes[j].color = Color(1,1,1, 0.9 if j == _banner_idx else 0.22)
-	)
+func _setup_event_banner() -> void:
+	var banner: Control = get_node_or_null("EventBanner")
+	if banner == null:
+		return
+	# Hide all existing children (text, art, dots, overlay)
+	for c in banner.get_children():
+		c.visible = false
+	# Swap in evenbanner.jpg as full-cover image
+	var img := TextureRect.new()
+	img.texture      = load("res://image/evenbanner.jpg")
+	img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner.add_child(img)
 
 func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เปิดให้บริการ") -> void:
 	# ถ้ามี toast อยู่แล้ว ไม่ซ้อน
