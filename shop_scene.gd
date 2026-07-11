@@ -354,6 +354,15 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge.add_child(row)
 
+	if cur_icon_path != "":
+		var cur_ico := TextureRect.new()
+		cur_ico.texture      = load(cur_icon_path)
+		cur_ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		cur_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		cur_ico.custom_minimum_size = Vector2(16, 16)
+		cur_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(cur_ico)
+
 	var price_lbl := Label.new()
 	price_lbl.text = cost_text
 	price_lbl.add_theme_font_size_override("font_size", 12)
