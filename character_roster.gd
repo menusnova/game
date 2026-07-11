@@ -236,13 +236,6 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(lock)
 
-	var gacha_l := _lbl("Gacha", 10, Color(r_col.r, r_col.g, r_col.b, 0.55))
-	gacha_l.size     = Vector2(CARD_W, LABEL_H)
-	gacha_l.position = Vector2(0, gy + LOCK_SZ + GAP)
-	gacha_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	gacha_l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	slot.add_child(gacha_l)
-
 	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
 		Color(0.01, 0.01, 0.04, 0.75)))
 	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r * 0.5, r_col.g * 0.5, r_col.b * 0.5, 0.55))
