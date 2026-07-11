@@ -250,7 +250,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.pressed:                    pressed = true
 	if pressed:
 		can_press = false
-		_start_loading()
+		if done:
+			_go()
+		else:
+			_start_loading()
 
 
 func _start_loading() -> void:
