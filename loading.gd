@@ -83,8 +83,8 @@ func _ready() -> void:
 	bar_layer.draw.connect(_draw_bar.bind(bar_layer))
 
 	fade.color = Color(0, 0, 0, 0)
-	can_press = true
-	# รอให้ผู้เล่นกดก่อน — ไม่ auto start
+	can_press = false   # ยังกดไม่ได้จนกว่าโหลดเสร็จ
+	_start_loading()   # auto start หลัง 0.2 วิ
 
 
 func _process(delta: float) -> void:
@@ -214,7 +214,6 @@ func _finish() -> void:
 	t1.tween_property(msg_label,   "modulate:a", 0.0, 0.5)
 	t1.tween_property(pct_label,   "modulate:a", 0.0, 0.5)
 
-	# Fade out bar via shader alpha
 	var bar_tween := create_tween()
 	bar_tween.tween_method(
 		func(v: float) -> void: bar_alpha = v,
@@ -222,15 +221,18 @@ func _finish() -> void:
 	)
 	await get_tree().create_timer(0.7).timeout
 
+	# แสดง quote และ press_label — รอให้ผู้เล่นกด
 	quote_label.visible    = true
 	quote_label.modulate.a = 0.0
+	press_label.visible    = true
+	press_label.modulate.a = 0.0
 
-	var t2 := create_tween()
+	var t2 := create_tween().set_parallel()
 	t2.tween_property(quote_label, "modulate:a", 1.0, 0.9)
+	t2.tween_property(press_label, "modulate:a", 1.0, 0.9)
 	await t2.finished
-	await get_tree().create_timer(0.5).timeout
 
-	_go()
+	can_press = true   # เปิดให้กดได้หลังโหลดเสร็จแล้วเท่านั้น
 
 
 func _input(event: InputEvent) -> void:
@@ -242,10 +244,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.pressed:                    pressed = true
 	if pressed:
 		can_press = false
-		if done:
-			_go()
-		elif not loading_started:
-			_start_loading()
+		_go()
 
 
 func _start_loading() -> void:
