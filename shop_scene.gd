@@ -304,17 +304,28 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		card.add_child(icon_lbl)
 
 	# ── Name ────────────────────────────────────────────────────────
+	# center name + badge in the space below image (ph - IMG_H)
+	const NAME_H  := 22.0
+	const BADGE_H := 24.0
+	const BADGE_PAD := 8.0
+	const INNER_GAP := 4.0
+	var bottom_h := ph - IMG_H
+	var block_h  := NAME_H + INNER_GAP + BADGE_H
+	var block_y  := IMG_H + (bottom_h - block_h) * 0.5
+
 	var name_lbl := Label.new()
 	name_lbl.text = str(item["name"])
-	name_lbl.position = Vector2(8, IMG_H + 6)
-	name_lbl.size     = Vector2(pw - 16, 22)
+	name_lbl.position = Vector2(8, block_y)
+	name_lbl.size     = Vector2(pw - 16, NAME_H)
 	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 13)
 	name_lbl.add_theme_color_override("font_color", C_TXT)
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(name_lbl)
 
-	# ── Price badge (pill shape, blue, centered) ────────────────────
+	# ── Price badge ──────────────────────────────────────────────────
 	var cost_text: String
 	if is_premium:
 		cost_text = str(item.get("price", "฿?"))
@@ -322,9 +333,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		cost_text = str(int(item.get("cost", 0)))
 
 	var cur_icon_path := str(shop.get("cur_icon", ""))
-	const BADGE_H := 24.0
-	const BADGE_PAD := 8.0
-	var badge_y := IMG_H + 26.0
+	var badge_y := block_y + NAME_H + INNER_GAP
 
 	var badge := Panel.new()
 	badge.size     = Vector2(pw - BADGE_PAD * 2, BADGE_H)
@@ -332,7 +341,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var badge_sb := StyleBoxFlat.new()
 	badge_sb.bg_color          = Color(0.10, 0.35, 0.90, 0.90)
-	badge_sb.border_color      = Color(0.40, 0.65, 1.0, 0.70)
+	badge_sb.border_color      = Color(1.0, 1.0, 1.0, 0.80)
 	badge_sb.set_border_width_all(1)
 	badge_sb.set_corner_radius_all(8)
 	badge.add_theme_stylebox_override("panel", badge_sb)
@@ -358,7 +367,7 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 	var price_lbl := Label.new()
 	price_lbl.text = cost_text
 	price_lbl.add_theme_font_size_override("font_size", 12)
-	price_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	price_lbl.add_theme_color_override("font_color", Color(1.0, 0.82, 0.25, 1.0))
 	price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(price_lbl)
 
