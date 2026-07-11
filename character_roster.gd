@@ -129,13 +129,11 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		4: r_col = Color(0.72, 0.50, 1.00)
 		_: r_col = Color(0.35, 0.65, 1.00)
 
-	slot.add_theme_stylebox_override("panel",
-		_flat(Color(elem_col.r * 0.10, elem_col.g * 0.10, elem_col.b * 0.18, 1.0),
-			Color(r_col.r, r_col.g, r_col.b, 0.40), 8, 1))
+	slot.add_theme_stylebox_override("panel", _blue_glow_sb())
 
 	var portrait_h := CARD_H - 46.0
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h),
-		Color(elem_col.r * 0.15, elem_col.g * 0.15, elem_col.b * 0.25, 1.0)))
+		Color(0.03, 0.06, 0.18, 1.0)))
 
 	var portrait_path: String = PORTRAITS.get(name_s, "")
 	if portrait_path != "" and ResourceLoader.exists(portrait_path):
@@ -206,9 +204,7 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 		4: r_col = Color(0.72, 0.50, 1.00)
 		_: r_col = Color(0.35, 0.65, 1.00)
 
-	slot.add_theme_stylebox_override("panel",
-		_flat(Color(elem_col.r * 0.05, elem_col.g * 0.05, elem_col.b * 0.09, 1.0),
-			Color(r_col.r * 0.4, r_col.g * 0.4, r_col.b * 0.4, 0.25), 8, 1))
+	slot.add_theme_stylebox_override("panel", _blue_glow_sb(0.5))
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r * 0.35, r_col.g * 0.35, r_col.b * 0.35, 0.40)))
@@ -265,6 +261,16 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	sb.corner_radius_bottom_right = r; sb.corner_radius_bottom_left  = r
 	sb.border_width_left = bw; sb.border_width_right  = bw
 	sb.border_width_top  = bw; sb.border_width_bottom = bw
+	return sb
+
+func _blue_glow_sb(alpha: float = 1.0) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.02, 0.06, 0.18, alpha)
+	sb.border_color = Color(0.25, 0.60, 1.0, 0.70 * alpha)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(8)
+	sb.shadow_color = Color(0.20, 0.55, 1.0, 0.45 * alpha)
+	sb.shadow_size = 6
 	return sb
 
 func _crect(pos: Vector2, sz: Vector2, col: Color) -> ColorRect:
