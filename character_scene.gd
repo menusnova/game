@@ -86,21 +86,6 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 			Color(C_BG.r, C_BG.g, C_BG.b, alpha)))
 
 	# Element badge top-left
-	var elem_s: String = str(base.get("element", "⚗"))
-	var badge := Panel.new()
-	badge.size     = Vector2(46, 46)
-	badge.position = Vector2(14, 14)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_theme_stylebox_override("panel",
-		_flat(Color(elem_col.r * 0.30, elem_col.g * 0.30, elem_col.b * 0.50, 0.92),
-			Color(elem_col.r, elem_col.g, elem_col.b, 0.50), 23, 1))
-	add_child(badge)
-	var badge_lbl := _lbl(elem_s, 20, Color(1, 1, 1, 0.95))
-	badge_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	badge_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	badge_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	badge.add_child(badge_lbl)
-
 	# Stats table (ATK / HP / DEF) — single row left to right
 	var stat_y := VH - 130.0
 	var stat_keys := ["atk", "hp", "def"]
