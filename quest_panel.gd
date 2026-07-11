@@ -220,7 +220,7 @@ func _build_daily_bar() -> void:
 		# Reward box below bar
 		var box := Panel.new()
 		box.size     = Vector2(54, 54)
-		box.position = Vector2(mx - 27, BY + 8)
+		box.position = Vector2(mx - 27, BY + 7)
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var sb_box := StyleBoxFlat.new()
 		sb_box.bg_color    = Color(0.14, 0.11, 0.05, 0.95) if reached else Color(0.06, 0.06, 0.10, 0.90)
