@@ -84,6 +84,7 @@ func _ready() -> void:
 
 	fade.color = Color(0, 0, 0, 0)
 	can_press = true
+	_start_loading()
 
 
 func _process(delta: float) -> void:
@@ -229,12 +230,7 @@ func _finish() -> void:
 	await t2.finished
 	await get_tree().create_timer(0.5).timeout
 
-	press_label.visible    = true
-	press_label.modulate.a = 0.0
-	var t3 := create_tween().set_loops()
-	t3.tween_property(press_label, "modulate:a", 1.0, 0.55)
-	t3.tween_property(press_label, "modulate:a", 0.1, 0.55)
-	can_press = true
+	_go()
 
 
 func _input(event: InputEvent) -> void:
