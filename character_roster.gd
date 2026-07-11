@@ -132,17 +132,19 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	slot.add_theme_stylebox_override("panel", _blue_glow_sb())
 
 	var portrait_h := CARD_H - 46.0
-	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h),
-		Color(0.03, 0.06, 0.18, 1.0)))
 
+	# 1) Portrait background
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h), Color(0.03, 0.06, 0.18, 1.0)))
+
+	# 2) Portrait image
 	var portrait_path: String = PORTRAITS.get(name_s, "")
 	if portrait_path != "" and ResourceLoader.exists(portrait_path):
 		var ptex := TextureRect.new()
 		ptex.texture      = load(portrait_path)
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		ptex.size         = Vector2(CARD_W, portrait_h + 30)
-		ptex.position     = Vector2(0, 30)
+		ptex.size         = Vector2(CARD_W, portrait_h + 20)
+		ptex.position     = Vector2(0, 20)
 		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(ptex)
 	else:
@@ -152,25 +154,26 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		slot.add_child(el)
 
-	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
-		Color(r_col.r, r_col.g, r_col.b, 0.75)))
+	# 3) Bottom info overlay (above portrait)
+	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46), Color(0.01, 0.01, 0.04, 0.88)))
 
+	# 4) Rarity stripe at very top (above portrait)
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3), Color(r_col.r, r_col.g, r_col.b, 0.75)))
+
+	# 5) Stars
 	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r, r_col.g, r_col.b, 0.90))
 	stars.size     = Vector2(CARD_W - 8, 16)
 	stars.position = Vector2(4, 5)
 	slot.add_child(stars)
 
-	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46),
-		Color(0.01, 0.01, 0.04, 0.82)))
-
+	# 6) Level badge
 	var char_data := CharacterManager.get_character_data(name_s)
 	var lv_str := "Lv %d" % int(char_data.get("level", 0)) if not char_data.is_empty() else "Lv 0"
 	var lv_bg := Panel.new()
 	lv_bg.size     = Vector2(52, 20)
 	lv_bg.position = Vector2(5, CARD_H - 43)
 	lv_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lv_bg.add_theme_stylebox_override("panel",
-		_flat(Color(0, 0, 0, 0.55), Color(1, 1, 1, 0.10), 4, 1))
+	lv_bg.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0.55), Color(1, 1, 1, 0.10), 4, 1))
 	slot.add_child(lv_bg)
 	var lv := _lbl(lv_str, 9, Color(0.88, 0.92, 1.0, 0.95))
 	lv.size     = Vector2(52, 20)
@@ -179,6 +182,7 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	lv.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(lv)
 
+	# 7) Name
 	var nm := _lbl(name_s, 11, C_TEXT)
 	nm.size     = Vector2(CARD_W, 22)
 	nm.position = Vector2(0, CARD_H - 24)
