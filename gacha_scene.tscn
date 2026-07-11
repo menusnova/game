@@ -1,8 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://gacha_scene"]
+[gd_scene load_steps=13 format=3 uid="uid://gacha_scene"]
 
 [ext_resource type="Script" path="res://gacha_scene.gd" id="1_script"]
 
 [ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
+
+[ext_resource type="Texture2D" path="res://image/lyra_1.png" id="EXT_LYRA1_PNG"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bannerpanel"]
 bg_color = Color(0.031, 0.055, 0.118, 1)
@@ -123,7 +125,7 @@ offset_right = 720.0
 offset_bottom = 360.0
 expand_mode = 1
 stretch_mode = 5
-texture = preload("res://image/lyra_1.png")
+texture = ExtResource("EXT_LYRA1_PNG")
 
 [node name="BannerTitle" type="Label" parent="BannerCard"]
 layout_mode = 0

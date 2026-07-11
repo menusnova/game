@@ -70,13 +70,13 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 			_sb(Color(0.1, 0.1, 0.15, 0.6), Color(0.3, 0.3, 0.4, 0.18), 8, 1))
 		tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# Card frame overlay — added first so text renders on top
+	# Card frame overlay — slightly oversized so it covers rounded corners
 	var ftex := TextureRect.new()
 	ftex.texture      = preload("res://image/g1.jpg")
 	ftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	ftex.stretch_mode = TextureRect.STRETCH_SCALE
-	ftex.size         = Vector2(TW, TH)
-	ftex.position     = Vector2(0, 0)
+	ftex.size         = Vector2(TW + 4, TH + 4)
+	ftex.position     = Vector2(-2, -2)
 	ftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fmat := CanvasItemMaterial.new()
 	fmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
@@ -250,6 +250,19 @@ func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel", _sb(bg, border, 16, 1))
 
+	# Card frame overlay first — text renders on top
+	var sftex := TextureRect.new()
+	sftex.texture      = preload("res://image/g1.jpg")
+	sftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	sftex.stretch_mode = TextureRect.STRETCH_SCALE
+	sftex.size         = Vector2(S + 4, S + 4)
+	sftex.position     = Vector2(-2, -2)
+	sftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sfmat := CanvasItemMaterial.new()
+	sfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	sftex.material = sfmat
+	panel.add_child(sftex)
+
 	var lbl := Label.new()
 	lbl.text = "?"
 	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -265,16 +278,6 @@ func _show_placeholder() -> void:
 	if not _result_panel: return
 	for ch in _result_panel.get_children(): ch.queue_free()
 	const W := 512.0
-
-	var icon := Label.new()
-	icon.text = "⚗"
-	icon.position = Vector2(0, 140)
-	icon.size = Vector2(W, 80)
-	icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon.add_theme_font_size_override("font_size", 52)
-	icon.add_theme_color_override("font_color", Color(0.5, 0.75, 1, 0.08))
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(icon)
 
 	var hint := Label.new()
 	hint.text = "เลือก 2 ธาตุแล้วกด Mix\nเพื่อดูผลลัพธ์"
