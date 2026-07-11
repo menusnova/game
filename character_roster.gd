@@ -88,7 +88,7 @@ func _build_grid() -> void:
 	var area_h := VH - TOP_H
 	var grid_w := COLS * CARD_W + (COLS - 1) * GAP_X
 	var grid_h := ROWS * CARD_H + (ROWS - 1) * GAP_Y
-	var ox := (VW - grid_w) / 2.0 + 40.0
+	var ox := (VW - grid_w) / 2.0
 	var oy := TOP_H + (area_h - grid_h) / 2.0
 
 	_grid_panels = []
@@ -154,38 +154,39 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		el.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		slot.add_child(el)
 
-	# 3) Bottom info overlay (above portrait)
-	slot.add_child(_crect(Vector2(0, CARD_H - 46), Vector2(CARD_W, 46), Color(0.01, 0.01, 0.04, 0.88)))
+	# 3) Bottom info overlay (above portrait) — taller to fit stars + name
+	slot.add_child(_crect(Vector2(0, CARD_H - 56), Vector2(CARD_W, 56), Color(0.01, 0.01, 0.04, 0.88)))
 
-	# 4) Rarity stripe at very top (above portrait)
+	# 4) Rarity stripe at very top
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3), Color(r_col.r, r_col.g, r_col.b, 0.75)))
 
-	# 5) Stars
-	var stars := _lbl("★".repeat(rarity), 9, Color(r_col.r, r_col.g, r_col.b, 0.90))
-	stars.size     = Vector2(CARD_W - 8, 16)
-	stars.position = Vector2(4, 5)
-	slot.add_child(stars)
-
-	# 6) Level badge
+	# 5) Level badge (top-left of bottom bar)
 	var char_data := CharacterManager.get_character_data(name_s)
 	var lv_str := "Lv %d" % int(char_data.get("level", 0)) if not char_data.is_empty() else "Lv 0"
 	var lv_bg := Panel.new()
 	lv_bg.size     = Vector2(52, 20)
-	lv_bg.position = Vector2(5, CARD_H - 43)
+	lv_bg.position = Vector2(5, CARD_H - 53)
 	lv_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lv_bg.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0.55), Color(1, 1, 1, 0.10), 4, 1))
 	slot.add_child(lv_bg)
 	var lv := _lbl(lv_str, 9, Color(0.88, 0.92, 1.0, 0.95))
 	lv.size     = Vector2(52, 20)
-	lv.position = Vector2(5, CARD_H - 43)
+	lv.position = Vector2(5, CARD_H - 53)
 	lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lv.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(lv)
 
-	# 7) Name
+	# 6) Stars — centered above name
+	var stars := _lbl("★".repeat(rarity), 11, Color(r_col.r, r_col.g, r_col.b, 0.95))
+	stars.size     = Vector2(CARD_W, 18)
+	stars.position = Vector2(0, CARD_H - 34)
+	stars.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	slot.add_child(stars)
+
+	# 7) Name — bottom center
 	var nm := _lbl(name_s, 11, C_TEXT)
-	nm.size     = Vector2(CARD_W, 22)
-	nm.position = Vector2(0, CARD_H - 24)
+	nm.size     = Vector2(CARD_W, 20)
+	nm.position = Vector2(0, CARD_H - 18)
 	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	nm.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(nm)
