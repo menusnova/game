@@ -451,64 +451,44 @@ func _build_bottom_bar() -> void:
 	bar.add_child(_new_pull10)
 
 func _warp_btn(count: int) -> Button:
-	var cost := PULL_COST_1 * count
-	var cost_str := "%d" % cost if count == 1 else "1,500"
 	var btn := Button.new()
-	# Build layout inside button manually via sub-labels
-	var sb_n := _sb(Color(0.14, 0.22, 0.55, 1.0), Color(0.35, 0.55, 1.0, 0.5), 10, 1)
-	var sb_h := _sb(Color(0.20, 0.30, 0.68, 1.0), Color(0.45, 0.65, 1.0, 0.7), 10, 1)
-	btn.add_theme_stylebox_override("normal",  sb_n)
-	btn.add_theme_stylebox_override("hover",   sb_h)
-	btn.add_theme_stylebox_override("pressed", sb_n)
+	var sb_empty := StyleBoxFlat.new()
+	sb_empty.bg_color = Color(0, 0, 0, 0)
+	btn.add_theme_stylebox_override("normal",  sb_empty)
+	btn.add_theme_stylebox_override("hover",   sb_empty)
+	btn.add_theme_stylebox_override("pressed", sb_empty)
 	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	btn.clip_contents = true
 
-	# Card icon (left side) — additive blend removes black background
-	var card_tex := _load_png("res://image/gacha_card.jpg")
-	if card_tex:
-		var card_ico := TextureRect.new()
-		card_ico.texture = card_tex
-		card_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		card_ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		card_ico.custom_minimum_size = Vector2(36, 44)
-		card_ico.size = Vector2(36, 44)
-		card_ico.position = Vector2(10, 4)
-		card_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# btgacha.jpg as full background (additive so black is transparent)
+	var bg_tex := _load_png("res://image/btgacha.jpg")
+	if bg_tex:
+		var bg_rect := TextureRect.new()
+		bg_rect.texture = bg_tex
+		bg_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		bg_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var mat := CanvasItemMaterial.new()
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		card_ico.material = mat
-		btn.add_child(card_ico)
+		bg_rect.material = mat
+		btn.add_child(bg_rect)
+	else:
+		# Fallback if image not yet imported
+		var sb_n := _sb(Color(0.14, 0.22, 0.55, 1.0), Color(0.35, 0.55, 1.0, 0.5), 10, 1)
+		btn.add_theme_stylebox_override("normal",  sb_n)
+		btn.add_theme_stylebox_override("hover",   _sb(Color(0.20, 0.30, 0.68, 1.0), Color(0.45, 0.65, 1.0, 0.7), 10, 1))
+		btn.add_theme_stylebox_override("pressed", sb_n)
 
-	# Gem icon + cost (top area)
-	var top_row := HBoxContainer.new()
-	top_row.add_theme_constant_override("separation", 4)
-	top_row.position = Vector2(54, 6)
-	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(top_row)
-
-	var gem_tex := _load_png("res://image/crystal_gem.png")
-	if gem_tex:
-		var ico := TextureRect.new()
-		ico.texture = gem_tex
-		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ico.custom_minimum_size = Vector2(16, 16)
-		ico.size = Vector2(16, 16)
-		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		top_row.add_child(ico)
-	var cost_lbl := Label.new()
-	cost_lbl.text = "×%s" % cost_str
-	cost_lbl.add_theme_font_size_override("font_size", 13)
-	cost_lbl.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0, 1.0))
-	cost_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top_row.add_child(cost_lbl)
-
-	# Warp label (bottom)
+	# Label centered: "สุ่ม ×1" / "สุ่ม ×10"
 	var warp_lbl := Label.new()
 	warp_lbl.text = "สุ่ม  ×%d" % count
-	warp_lbl.add_theme_font_size_override("font_size", 15)
+	warp_lbl.add_theme_font_size_override("font_size", 16)
 	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	warp_lbl.position = Vector2(54, 26)
+	warp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	warp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	warp_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	warp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(warp_lbl)
 	return btn
@@ -760,6 +740,101 @@ func _refresh_ui() -> void:
 
 # ── Pull logic ────────────────────────────────────────────────────
 func _do_pull(count: int) -> void:
+	if _revealing: return
+	_show_confirm_dialog(count)
+
+func _show_confirm_dialog(count: int) -> void:
+	if get_node_or_null("_ConfirmDialog") != null: return
+	var cost: int = PULL_COST_10 if count == 10 else PULL_COST_1 * count
+	var cost_str := "1,500" if count == 10 else str(cost)
+
+	# Dim overlay
+	var dim := ColorRect.new()
+	dim.name = "_ConfirmDialog"
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.65)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 80
+	add_child(dim)
+
+	# Dialog box
+	var box := Panel.new()
+	var bw := 420.0; var bh := 200.0
+	box.size = Vector2(bw, bh)
+	box.position = Vector2((W - bw) * 0.5, (H - bh) * 0.5)
+	var box_sb := StyleBoxFlat.new()
+	box_sb.bg_color = Color(0.06, 0.08, 0.18, 0.97)
+	box_sb.border_color = Color(0.35, 0.65, 1.0, 0.6)
+	box_sb.set_border_width_all(1)
+	box_sb.set_corner_radius_all(14)
+	box_sb.shadow_color = Color(0.2, 0.5, 1.0, 0.4)
+	box_sb.shadow_size = 14
+	box.add_theme_stylebox_override("panel", box_sb)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.add_child(box)
+
+	# Title
+	var title := Label.new()
+	title.text = "ยืนยันการสุ่ม"
+	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0, 1.0))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.size = Vector2(bw, 36)
+	title.position = Vector2(0, 20)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(title)
+
+	# Description
+	var desc := Label.new()
+	desc.text = "ใช้ %s 💎 เพื่อสุ่ม %d ครั้ง\nและรับ %d เม็ดสุ่ม (การ์ดข้อมูลบุคคล)" % [cost_str, count, count]
+	desc.add_theme_font_size_override("font_size", 13)
+	desc.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0, 0.90))
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.size = Vector2(bw - 40, 60)
+	desc.position = Vector2(20, 62)
+	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(desc)
+
+	# Buttons row
+	var btn_y := bh - 56.0
+	var btn_w := 140.0
+
+	var cancel_btn := Button.new()
+	cancel_btn.text = "ยกเลิก"
+	cancel_btn.size = Vector2(btn_w, 38)
+	cancel_btn.position = Vector2((bw * 0.5) - btn_w - 8, btn_y)
+	cancel_btn.add_theme_font_size_override("font_size", 13)
+	cancel_btn.add_theme_color_override("font_color", Color(0.75, 0.82, 1.0, 0.80))
+	cancel_btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.05), Color(1,1,1,0.12), 10, 1))
+	cancel_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.10), Color(1,1,1,0.20), 10, 1))
+	cancel_btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.05), Color(1,1,1,0.12), 10, 1))
+	cancel_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	cancel_btn.pressed.connect(func(): dim.queue_free())
+	box.add_child(cancel_btn)
+
+	var confirm_btn := Button.new()
+	confirm_btn.text = "ยืนยัน (%s 💎)" % cost_str
+	confirm_btn.size = Vector2(btn_w, 38)
+	confirm_btn.position = Vector2((bw * 0.5) + 8, btn_y)
+	confirm_btn.add_theme_font_size_override("font_size", 13)
+	confirm_btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	confirm_btn.add_theme_stylebox_override("normal",  _sb(Color(0.15, 0.35, 0.80, 1.0), Color(0.40, 0.65, 1.0, 0.7), 10, 1))
+	confirm_btn.add_theme_stylebox_override("hover",   _sb(Color(0.20, 0.42, 0.90, 1.0), Color(0.50, 0.75, 1.0, 0.9), 10, 1))
+	confirm_btn.add_theme_stylebox_override("pressed", _sb(Color(0.15, 0.35, 0.80, 1.0), Color(0.40, 0.65, 1.0, 0.7), 10, 1))
+	confirm_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	confirm_btn.pressed.connect(func():
+		dim.queue_free()
+		_execute_pull(count)
+	)
+	box.add_child(confirm_btn)
+
+	# Fade in
+	dim.modulate.a = 0.0
+	var t := dim.create_tween()
+	t.tween_property(dim, "modulate:a", 1.0, 0.18)
+
+func _execute_pull(count: int) -> void:
 	if _revealing: return
 	var cost: int = PULL_COST_10 if count == 10 else PULL_COST_1 * count
 	if not CurrencyManager.spend_gems(cost): return
