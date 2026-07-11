@@ -157,7 +157,7 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 
 	# Level Up button
 	var lvup := Panel.new()
-	lvup.size     = Vector2(RIGHT_W - 28, 44)
+	lvup.size     = Vector2(RIGHT_W - 80, 44)
 	lvup.position = Vector2(RIGHT_X + 14, 52)
 	lvup.mouse_filter = Control.MOUSE_FILTER_STOP
 	var lvup_sb := StyleBoxFlat.new()
