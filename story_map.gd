@@ -76,12 +76,11 @@ func _show_toast(msg: String) -> void:
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	toast.add_child(lbl)
 	toast.size = Vector2(320, 44)
-	toast.position = Vector2((1152 - 320) * 0.5, 540)
+	toast.position = Vector2((1152 - 320) * 0.5, (648 - 44) * 0.5)
 	toast.modulate.a = 0.0
 	add_child(toast)
-	var t := create_tween().set_parallel(true)
+	var t := create_tween()
 	t.tween_property(toast, "modulate:a", 1.0, 0.18)
-	t.tween_property(toast, "position:y", 524.0, 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	await t.finished
 	await get_tree().create_timer(1.6).timeout
 	if not is_instance_valid(self): return
