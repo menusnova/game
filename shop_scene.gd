@@ -148,22 +148,12 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = str(shop["label"])
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", 10)
 	name_lbl.add_theme_color_override("font_color", C_DIM)
 	name_lbl.size     = Vector2(SIDE_W - 84, 22)
-	name_lbl.position = Vector2(80, 42)
+	name_lbl.position = Vector2(76, 50)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(name_lbl)
-
-	# Currency label
-	var cur_lbl := Label.new()
-	cur_lbl.text = str(shop["cur_sym"])
-	cur_lbl.add_theme_font_size_override("font_size", 10)
-	cur_lbl.add_theme_color_override("font_color", shop["cur_col"])
-	cur_lbl.size     = Vector2(SIDE_W - 84, 16)
-	cur_lbl.position = Vector2(80, 66)
-	cur_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(cur_lbl)
 
 	# Divider
 	var div := ColorRect.new()
