@@ -566,7 +566,7 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 	var tw: int = 320
 	var th: int = 44
 	toast.size     = Vector2(tw, th)
-	toast.position = Vector2(60, 524)
+	toast.position = Vector2((1152 - tw) / 2.0, (648 - th) / 2.0)
 	toast.modulate = Color(1, 1, 1, 0.0)
 	add_child(toast)
 
