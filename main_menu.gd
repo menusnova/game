@@ -566,13 +566,12 @@ func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เ
 	var tw: int = 320
 	var th: int = 44
 	toast.size     = Vector2(tw, th)
-	toast.position = Vector2(60, 560)
+	toast.position = Vector2(60, 524)
 	toast.modulate = Color(1, 1, 1, 0.0)
 	add_child(toast)
 
-	var t := create_tween().set_parallel(true)
-	t.tween_property(toast, "modulate:a",   1.0,               0.18)
-	t.tween_property(toast, "position:y",   524.0,             0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	var t := create_tween()
+	t.tween_property(toast, "modulate:a", 1.0, 0.18)
 	await t.finished
 	if not is_instance_valid(toast): return
 
