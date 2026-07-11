@@ -89,7 +89,7 @@ var _new_pity4_bar:  ProgressBar = null
 var _new_pull1:      Button      = null
 var _new_pull10:     Button      = null
 var _info_card_node: Panel       = null
-var _warp_btns:      Array[Button] = []
+var _warp_btns:      Array[Control] = []
 
 @onready var _result_ov:  Control       = $ResultOverlay
 @onready var _result_con: HBoxContainer = $ResultOverlay/ResultContainer
@@ -112,15 +112,15 @@ func _ready() -> void:
 	_refresh_ui()
 
 # ── Layout constants ──────────────────────────────────────────────
-const W       := 1152.0
-const H       := 648.0
-const TOP_H   := 52.0    # top bar height
-const BOT_H   := 72.0    # bottom bar height
-const THUMB_W := 68.0    # left thumbnail strip width
-const INFO_W  := 310.0   # info card width
-const TAB_H       := 80.0    # active warp tab height
-const TAB_H_INACT := 22.0    # collapsed inactive tab height
-const TAB_GAP     := 16.0
+const W          := 1152.0
+const H          := 648.0
+const TOP_H      := 52.0    # top bar height
+const BOT_H      := 72.0    # bottom bar height
+const SELECTOR_H := 92.0    # top banner selector strip height
+const INFO_W     := 310.0   # info card width
+# Selector card size
+const SEL_CW     := 60.0
+const SEL_CH     := 76.0
 
 func _build_hsr_ui() -> void:
 	# Background image
@@ -134,8 +134,11 @@ func _build_hsr_ui() -> void:
 	add_child(bg)
 	_add_stars(bg)
 
-	# ── Thumb strip (left warp selector) ──
-	_build_thumb_strip()
+	# ── Art image (behind info card) ──
+	_rebuild_art()
+
+	# ── Top selector strip ──
+	_build_selector_strip()
 
 	# ── Info card ──
 	_build_info_card()
@@ -150,32 +153,138 @@ func _build_hsr_ui() -> void:
 		_result_ov.z_index = 50
 		move_child(_result_ov, get_child_count() - 1)
 
-# ── Thumbnail strip (far-left, warp type selector) ──────────────
-func _build_thumb_strip() -> void:
-	var strip_sb := _sb(Color(0.03, 0.04, 0.12, 0.90), Color(1,1,1, 0.05), 0, 1)
+# ── Top selector strip (character roster style) ──────────────────
+func _build_selector_strip() -> void:
+	var strip_sb := _sb(Color(0.02, 0.03, 0.10, 0.95), Color(1,1,1, 0.06), 0, 0)
 	var strip := Panel.new()
-	strip.name     = "_ThumbStrip"
-	strip.size     = Vector2(THUMB_W, H - TOP_H - BOT_H)
+	strip.name     = "_SelectorStrip"
+	strip.size     = Vector2(W, SELECTOR_H)
 	strip.position = Vector2(0, TOP_H)
 	strip.add_theme_stylebox_override("panel", strip_sb)
 	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	strip.z_index  = 5
 	add_child(strip)
 
-	var total_h := TAB_H + (WARP_TYPES.size() - 1) * (TAB_H_INACT + TAB_GAP) + (WARP_TYPES.size() - 1) * TAB_GAP
-	var start_y := maxf((H - TOP_H - BOT_H - total_h) * 0.5, 12.0)
-	var cy := start_y
+	# Bottom separator line
+	var sep := ColorRect.new()
+	sep.color = Color(1, 1, 1, 0.07)
+	sep.size  = Vector2(W, 1)
+	sep.position = Vector2(0, SELECTOR_H - 1)
+	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	strip.add_child(sep)
+
+	# Character portrait cards centered in strip
+	var total_w := WARP_TYPES.size() * (SEL_CW + 10.0) - 10.0
+	var start_x := (W - total_w) * 0.5
 	for i in WARP_TYPES.size():
-		var wd: Dictionary = WARP_TYPES[i]
-		var active := i == _active_warp
-		var btn := _make_thumb_btn(wd, active)
-		var bh := TAB_H if active else TAB_H_INACT
-		btn.size     = Vector2(THUMB_W - 8, bh)
-		btn.position = Vector2(4, cy)
-		btn.pressed.connect(_on_warp_tab.bind(i))
-		strip.add_child(btn)
-		_warp_btns.append(btn)
-		cy += bh + TAB_GAP
+		var card := _make_selector_card(WARP_TYPES[i], i == _active_warp, i)
+		card.position = Vector2(start_x + i * (SEL_CW + 10.0),
+								(SELECTOR_H - SEL_CH) * 0.5)
+		strip.add_child(card)
+		_warp_btns.append(card)
+
+func _make_selector_card(wd: Dictionary, active: bool, idx: int) -> Panel:
+	var acc: Color = wd["accent"] as Color
+	var card := Panel.new()
+	card.size = Vector2(SEL_CW, SEL_CH)
+	card.clip_contents = true
+	card.mouse_filter  = Control.MOUSE_FILTER_STOP
+
+	# Blue glow / dimmed stylebox
+	var sb := StyleBoxFlat.new()
+	sb.bg_color     = Color(0.02, 0.06, 0.18, 1.0) if active else Color(0.03, 0.04, 0.10, 0.80)
+	sb.border_color = Color(acc.r, acc.g, acc.b, 0.85 if active else 0.22)
+	sb.set_border_width_all(1 if active else 1)
+	sb.set_corner_radius_all(6)
+	if active:
+		sb.shadow_color = Color(acc.r, acc.g, acc.b, 0.55)
+		sb.shadow_size  = 8
+	card.add_theme_stylebox_override("panel", sb)
+
+	var portrait_h := SEL_CH - 18.0
+
+	# Portrait background
+	var pbg := ColorRect.new()
+	pbg.color = Color(acc.r * 0.06, acc.g * 0.06, acc.b * 0.14, 1.0)
+	pbg.size  = Vector2(SEL_CW, portrait_h)
+	pbg.position = Vector2.ZERO
+	pbg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pbg)
+
+	# Portrait image
+	var art_path: String = str(wd.get("art_img", ""))
+	if art_path != "" and ResourceLoader.exists(art_path):
+		var ptex := TextureRect.new()
+		ptex.texture      = load(art_path)
+		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ptex.size         = Vector2(SEL_CW, portrait_h + 8)
+		ptex.position     = Vector2(0, 4)
+		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(ptex)
+	else:
+		var ico := _lbl(str(wd["icon"]), 18, Color(acc.r, acc.g, acc.b, 0.80))
+		ico.size = Vector2(SEL_CW, portrait_h)
+		ico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ico.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		card.add_child(ico)
+
+	# Rarity stripe at top (matches character roster)
+	var stripe := ColorRect.new()
+	stripe.color = Color(acc.r, acc.g, acc.b, 0.85 if active else 0.35)
+	stripe.size  = Vector2(SEL_CW, 3)
+	stripe.position = Vector2.ZERO
+	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(stripe)
+
+	# Bottom info overlay
+	var bot := ColorRect.new()
+	bot.color = Color(0.01, 0.01, 0.04, 0.88)
+	bot.size  = Vector2(SEL_CW, 18)
+	bot.position = Vector2(0, SEL_CH - 18)
+	bot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(bot)
+
+	# Label (banner name)
+	var lbl := _lbl(str(wd["label"]).replace("\n", " "), 7,
+					Color(1, 1, 1, 0.95 if active else 0.55))
+	lbl.size = Vector2(SEL_CW, 18)
+	lbl.position = Vector2(0, SEL_CH - 18)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	card.add_child(lbl)
+
+	# LIMITED tag
+	var tag := _lbl(str(wd["tag"]), 6, Color(acc.r, acc.g, acc.b, 0.85 if active else 0.35))
+	tag.size     = Vector2(SEL_CW - 4, 12)
+	tag.position = Vector2(2, 5)
+	card.add_child(tag)
+
+	card.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			_on_warp_tab(idx)
+	)
+	return card
+
+func _rebuild_art() -> void:
+	var old := get_node_or_null("_ArtRect")
+	if old: old.queue_free()
+	var d: Dictionary = WARP_TYPES[_active_warp]
+	var art_tex: Texture2D = _load_png(str(d.get("art_img", "")))
+	if not art_tex: return
+	var art_y  := TOP_H + SELECTOR_H
+	var art_h  := H - TOP_H - SELECTOR_H - BOT_H
+	var art_rect := TextureRect.new()
+	art_rect.name         = "_ArtRect"
+	art_rect.texture      = art_tex
+	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art_rect.size         = Vector2(W, art_h)
+	art_rect.position     = Vector2(0, art_y)
+	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	art_rect.z_index      = 0
+	add_child(art_rect)
 
 # ── Info card (left panel, HSR-style white/translucent card) ─────
 func _build_info_card() -> void:
@@ -183,9 +292,9 @@ func _build_info_card() -> void:
 	var acc: Color = d["accent"] as Color
 
 	var ix := 12.0
-	var iy := TOP_H + 16.0
+	var iy := TOP_H + SELECTOR_H + 8.0
 	var iw := INFO_W
-	var ih := H - TOP_H - BOT_H - 32.0
+	var ih := H - TOP_H - SELECTOR_H - BOT_H - 16.0
 
 	var card_sb := _sb(Color(0.93, 0.94, 0.97, 0.96), Color(0.75, 0.80, 0.95, 0.40), 14, 1)
 	card_sb.shadow_color = Color(0, 0, 0, 0.45)
@@ -498,119 +607,39 @@ func _warp_btn(count: int) -> Button:
 func _on_warp_tab(idx: int) -> void:
 	if idx == _active_warp: return
 	_active_warp = idx
-	if is_instance_valid(_info_card_node):
-		_info_card_node.free()
-		_info_card_node = null
-	_new_pity_lbl = null
-	_new_pity_bar = null
-	_new_pity4_lbl = null
-	_new_pity4_bar = null
-	# Rebuild art area for new warp
-	var old_art := get_node_or_null("_ArtRect")
-	if old_art: old_art.queue_free()
-	var d_new: Dictionary = WARP_TYPES[_active_warp]
-	var art_x := INFO_W + 16.0
-	var art_tex2: Texture2D = _load_png(str(d_new.get("art_img", "")))
-	if art_tex2:
-		var art_rect2 := TextureRect.new()
-		art_rect2.name         = "_ArtRect"
-		art_rect2.texture      = art_tex2
-		art_rect2.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		art_rect2.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		art_rect2.size         = Vector2(W - art_x, H - TOP_H - BOT_H)
-		art_rect2.position     = Vector2(art_x, TOP_H)
-		art_rect2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		art_rect2.z_index      = 0
-		add_child(art_rect2)
+	if is_instance_valid(_info_card_node): _info_card_node.free()
+	_info_card_node = null
+	_new_pity_lbl = null; _new_pity_bar = null
+	_new_pity4_lbl = null; _new_pity4_bar = null
+	# Rebuild selector strip
+	var old_strip := get_node_or_null("_SelectorStrip")
+	if old_strip: old_strip.queue_free()
+	_warp_btns.clear()
+	_build_selector_strip()
+	# Rebuild art + info card
+	_rebuild_art()
 	_build_info_card()
-	# Restyle and reposition all tab buttons
-	var strip := get_node_or_null("_ThumbStrip")
-	var total_h := TAB_H + (_warp_btns.size() - 1) * (TAB_H_INACT + TAB_GAP) + (_warp_btns.size() - 1) * TAB_GAP
-	var cy := maxf((H - TOP_H - BOT_H - total_h) * 0.5, 12.0)
-	for i in _warp_btns.size():
-		var active := i == _active_warp
-		var bh := TAB_H if active else TAB_H_INACT
-		_warp_btns[i].size.y = bh
-		_warp_btns[i].position.y = cy
-		_restyle_thumb_btn(_warp_btns[i], WARP_TYPES[i], active)
-		cy += bh + TAB_GAP
 	_refresh_ui()
 
-func _make_thumb_btn(d: Dictionary, active: bool) -> Button:
-	var btn := Button.new()
-	_restyle_thumb_btn(btn, d, active)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	return btn
-
-func _restyle_thumb_btn(btn: Button, d: Dictionary, active: bool) -> void:
-	var acc: Color = d["accent"] as Color
-	var bh := TAB_H if active else TAB_H_INACT
-	btn.size.y = bh
-
-	var bg_col  := Color(acc.r * 0.22, acc.g * 0.22, acc.b * 0.35, 0.95) if active else Color(acc.r*0.06, acc.g*0.06, acc.b*0.12, 0.70)
-	var bdr_col := Color(acc.r, acc.g, acc.b, 0.8) if active else Color(acc.r, acc.g, acc.b, 0.25)
-	var bdr_w   := 2 if active else 1
-
-	var sb  := _sb(bg_col, bdr_col, 6, bdr_w)
-	var sbf := StyleBoxFlat.new()
-	btn.add_theme_stylebox_override("normal",  sb)
-	btn.add_theme_stylebox_override("hover",   _sb(Color(acc.r*0.15, acc.g*0.15, acc.b*0.28, 0.92), bdr_col, 6, 1))
-	btn.add_theme_stylebox_override("pressed", sb)
-	btn.add_theme_stylebox_override("focus",   sbf)
-
-	for c in btn.get_children(): c.queue_free()
-
-	if active:
-		# Thumbnail art area
-		var thumb := ColorRect.new()
-		thumb.size     = Vector2(THUMB_W - 16, TAB_H * 0.55)
-		thumb.position = Vector2(4, 4)
-		thumb.color    = Color(acc.r * 0.08, acc.g * 0.08, acc.b * 0.15, 0.9)
-		thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(thumb)
-
-		var icon_lbl := Label.new()
-		icon_lbl.text = str(d["icon"])
-		icon_lbl.add_theme_font_size_override("font_size", 16)
-		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.85))
-		icon_lbl.size     = thumb.size
-		icon_lbl.position = thumb.position
-		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(icon_lbl)
-
-		var tab_lbl := Label.new()
-		tab_lbl.text = str(d["label"])
-		tab_lbl.add_theme_font_size_override("font_size", 7)
-		tab_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.85))
-		tab_lbl.size     = Vector2(THUMB_W - 8, TAB_H - thumb.size.y - 8)
-		tab_lbl.position = Vector2(2, 4 + thumb.size.y + 2)
-		tab_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		tab_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		tab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(tab_lbl)
-
-		# Active accent bar on left
-		var bar2 := ColorRect.new()
-		bar2.size     = Vector2(3, TAB_H - 8)
-		bar2.position = Vector2(0, 4)
-		bar2.color    = Color(acc.r, acc.g, acc.b, 1.0)
-		bar2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(bar2)
-	else:
-		# Collapsed: just icon + tiny label centered vertically
-		var icon_lbl := Label.new()
-		icon_lbl.text = str(d["icon"])
-		icon_lbl.add_theme_font_size_override("font_size", 11)
-		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.45))
-		icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(icon_lbl)
-
 # ── Helpers ───────────────────────────────────────────────────────
+func _lbl(text: String, font_sz: int, col: Color) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", font_sz)
+	l.add_theme_color_override("font_color", col)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return l
+
+func _blue_glow_sb(alpha: float = 1.0) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color     = Color(0.02, 0.06, 0.18, alpha)
+	sb.border_color = Color(0.25, 0.60, 1.0, 0.70 * alpha)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(8)
+	sb.shadow_color = Color(0.20, 0.55, 1.0, 0.45 * alpha)
+	sb.shadow_size  = 6
+	return sb
+
 func _fmt(n: int) -> String:
 	if n >= 1000000: return "%.1fM" % (n / 1000000.0)
 	if n >= 1000:    return "%.1fK" % (n / 1000.0)
@@ -1052,48 +1081,100 @@ func _build_reveal_card(char_name: String, rarity: int,
 	return card
 
 func _make_summary_card(char_name: String, rarity: int) -> Panel:
+	const CW := 90.0
+	const CH := 126.0
+	var portrait_h := CH - 30.0
+
+	var r_col: Color
+	match rarity:
+		5: r_col = Color(1.0,  0.80, 0.20)
+		4: r_col = Color(0.72, 0.50, 1.00)
+		_: r_col = Color(0.35, 0.65, 1.00)
+
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(88, 120)
-	var sb := StyleBoxFlat.new()
-	for i in [0,1,2,3]: sb.set_border_width(i, 1)
-	for r in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_right","corner_radius_bottom_left"]:
-		sb.set(r, 8)
-	match rarity:
-		5: sb.bg_color=Color(0.15,0.12,0.04,0.95); sb.border_color=Color(1.0,0.82,0.2,0.9); sb.shadow_color=Color(1.0,0.7,0.1,0.5); sb.shadow_size=8
-		4: sb.bg_color=Color(0.1,0.06,0.18,0.95);  sb.border_color=Color(0.65,0.45,1.0,0.9); sb.shadow_color=Color(0.5,0.2,1.0,0.4);  sb.shadow_size=6
-		_: sb.bg_color=Color(0.06,0.1,0.2,0.95);   sb.border_color=Color(0.37,0.62,1.0,0.4)
-	card.add_theme_stylebox_override("panel", sb)
+	card.custom_minimum_size = Vector2(CW, CH)
+	card.size = Vector2(CW, CH)
+	card.clip_contents = true
+	card.add_theme_stylebox_override("panel", _blue_glow_sb())
 
-	var stars := Label.new()
-	stars.text = "★".repeat(rarity)
-	stars.add_theme_font_size_override("font_size", 9)
-	match rarity:
-		5: stars.add_theme_color_override("font_color", Color(1.0,0.82,0.2))
-		4: stars.add_theme_color_override("font_color", Color(0.75,0.55,1.0))
-		_: stars.add_theme_color_override("font_color", Color(0.5,0.7,1.0))
-	stars.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	stars.offset_bottom=-6; stars.offset_left=4; stars.offset_right=84; stars.offset_top=-18
-	card.add_child(stars)
+	# 1) Portrait background
+	var pbg := ColorRect.new()
+	pbg.color = Color(0.03, 0.06, 0.18, 1.0)
+	pbg.size  = Vector2(CW, portrait_h)
+	pbg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(pbg)
 
-	if rarity == 3 and ELEM_NAME.has(char_name):
-		var sym := Label.new()
-		sym.text = char_name
-		sym.add_theme_font_size_override("font_size", 28)
-		sym.add_theme_color_override("font_color", Color(0.5, 0.78, 1.0, 0.9))
+	# 2) Content (portrait or element symbol)
+	if rarity >= 4:
+		var portrait_path: String = PORTRAITS.get(char_name, "")
+		if portrait_path != "" and ResourceLoader.exists(portrait_path):
+			var ptex := TextureRect.new()
+			ptex.texture      = load(portrait_path)
+			ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			ptex.size         = Vector2(CW, portrait_h + 16)
+			ptex.position     = Vector2(0, 10)
+			ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(ptex)
+		else:
+			var nm2 := _lbl(char_name, 22, Color(r_col.r, r_col.g, r_col.b, 0.90))
+			nm2.size = Vector2(CW, portrait_h)
+			nm2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			nm2.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+			card.add_child(nm2)
+	else:
+		# Element card: large symbol
+		var sym := _lbl(char_name, 32, Color(r_col.r, r_col.g, r_col.b, 0.90))
+		sym.size = Vector2(CW, portrait_h)
 		sym.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sym.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-		sym.offset_top=14; sym.offset_bottom=54; sym.offset_left=-44; sym.offset_right=44
+		sym.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		card.add_child(sym)
 
-	var name_lbl := Label.new()
-	name_lbl.text = ELEM_NAME.get(char_name, char_name) if rarity == 3 else char_name
-	name_lbl.add_theme_font_size_override("font_size", 8)
-	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.9))
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	name_lbl.offset_top=-22; name_lbl.offset_bottom=-4
-	card.add_child(name_lbl)
+	# 3) Bottom info overlay
+	var bot := ColorRect.new()
+	bot.color    = Color(0.01, 0.01, 0.04, 0.88)
+	bot.size     = Vector2(CW, 30)
+	bot.position = Vector2(0, CH - 30)
+	bot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(bot)
+
+	# 4) Rarity stripe at very top
+	var stripe := ColorRect.new()
+	stripe.color = Color(r_col.r, r_col.g, r_col.b, 0.80)
+	stripe.size  = Vector2(CW, 3)
+	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(stripe)
+
+	# 5) Stars (below stripe)
+	var stars := _lbl("★".repeat(rarity), 8, Color(r_col.r, r_col.g, r_col.b, 0.90))
+	stars.size     = Vector2(CW - 4, 13)
+	stars.position = Vector2(2, 4)
+	stars.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card.add_child(stars)
+
+	# 6) Name at bottom
+	var display_name := ELEM_NAME.get(char_name, char_name) if rarity == 3 else char_name
+	var nm := _lbl(display_name, 8, Color(0.92, 0.94, 1.0, 1.0))
+	nm.size     = Vector2(CW, 18)
+	nm.position = Vector2(0, CH - 20)
+	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nm.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	card.add_child(nm)
+
+	# 7) Card frame — g1.jpg BLEND_MODE_ADD (last child, renders on top)
+	var frame_tex := _load_png("res://image/g1.jpg")
+	if frame_tex:
+		var frame := TextureRect.new()
+		frame.texture      = frame_tex
+		frame.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		frame.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		frame.material = mat
+		card.add_child(frame)
 
 	card.modulate.a = 0.0
 	var t := card.create_tween()
