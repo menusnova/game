@@ -143,7 +143,7 @@ offset_right = 400.0
 offset_bottom = 62.0
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "Lyra · นักเล่นแร่"
+text = "Lyra"
 
 [node name="BannerTag" type="Panel" parent="BannerCard"]
 layout_mode = 0
