@@ -199,6 +199,9 @@ func _switch_tab(idx: int) -> void:
 
 	for c in _content.get_children():
 		c.queue_free()
+	# Remove achievement background when leaving that tab
+	var old_bg := get_node_or_null("_AchBg")
+	if old_bg: old_bg.queue_free()
 
 	if idx == 0:
 		_build_element_tab()
@@ -396,6 +399,20 @@ func _make_element_card(elem: Dictionary) -> Control:
 #  TAB 1 — Achievements
 # ════════════════════════════════════════════════════════════════
 func _build_achievement_tab() -> void:
+	# Full-screen background image for achievement tab
+	var old_bg := get_node_or_null("_AchBg")
+	if old_bg: old_bg.queue_free()
+	if ResourceLoader.exists("res://image/bgac.png"):
+		var bg := TextureRect.new()
+		bg.name         = "_AchBg"
+		bg.texture      = load("res://image/bgac.png")
+		bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		bg.z_index      = -1
+		add_child(bg)
+
 	var vbox := VBoxContainer.new()
 	vbox.custom_minimum_size = Vector2(1152, 0)
 	vbox.add_theme_constant_override("separation", 0)
