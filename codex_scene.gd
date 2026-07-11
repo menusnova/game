@@ -281,6 +281,19 @@ func _make_element_card(elem: Dictionary) -> Control:
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.clip_contents = true
 
+	# Card frame overlay — first child so text renders on top
+	var cftex := TextureRect.new()
+	cftex.texture      = preload("res://image/g1.jpg")
+	cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	cftex.stretch_mode = TextureRect.STRETCH_SCALE
+	cftex.size         = Vector2(264, 134)
+	cftex.position     = Vector2(-2, -2)
+	cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var cfmat := CanvasItemMaterial.new()
+	cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	cftex.material = cfmat
+	card.add_child(cftex)
+
 	if discovered:
 		# Atomic number — top-left small
 		if elem["number"] > 0:
