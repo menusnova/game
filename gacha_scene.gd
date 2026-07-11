@@ -137,9 +137,6 @@ func _build_hsr_ui() -> void:
 	# ── Art image (behind info card) ──
 	_rebuild_art()
 
-	# ── Left tab buttons ──
-	_build_selector_strip()
-
 	# ── Info card ──
 	_build_info_card()
 
@@ -269,7 +266,7 @@ func _build_info_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	var ix := THUMB_W + 4.0
+	var ix := 12.0
 	var iy := TOP_H + 8.0
 	var iw := INFO_W
 	var ih := H - TOP_H - BOT_H - 16.0

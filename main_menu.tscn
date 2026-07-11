@@ -758,6 +758,7 @@ mouse_filter = 2
 color = Color(1, 1, 1, 0.0)
 
 [node name="EventBanner" type="Panel" parent="." unique_id=1029562533]
+visible = false
 layout_mode = 0
 offset_left = 10.0
 offset_top = 390.0

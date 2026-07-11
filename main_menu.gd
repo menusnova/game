@@ -39,7 +39,6 @@ func _ready() -> void:
 	_setup_cards_fx()
 	_setup_quest_panel()
 	_setup_navbar()
-	_setup_event_banner()
 	_refresh_hud()
 	if not CurrencyManager.currency_changed.is_connected(_refresh_hud):
 		CurrencyManager.currency_changed.connect(_refresh_hud)
