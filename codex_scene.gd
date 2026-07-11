@@ -282,62 +282,101 @@ func _make_element_card(elem: Dictionary) -> Control:
 	card.clip_contents = true
 
 	if discovered:
-		# Atomic number — top-left small
+		# ── Left strip background ──────────────────────────────────
+		var left_bg := ColorRect.new()
+		left_bg.color = Color(col.r * 0.08, col.g * 0.08, col.b * 0.14, 0.85)
+		left_bg.position = Vector2(0, 0)
+		left_bg.size = Vector2(62, 130)
+		left_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(left_bg)
+
+		# Atomic number
 		if elem["number"] > 0:
 			var num := Label.new()
 			num.text = str(elem["number"])
-			num.position = Vector2(8, 6)
-			num.size = Vector2(30, 14)
-			num.add_theme_font_size_override("font_size", 9)
-			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
+			num.position = Vector2(0, 5)
+			num.size = Vector2(62, 13)
+			num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			num.add_theme_font_size_override("font_size", 8)
+			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.50))
+			num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(num)
 
-		# Symbol — top-left large (like lab tile)
+		# Symbol — centered in left strip
 		var badge := Label.new()
 		badge.text = elem["symbol"]
-		badge.position = Vector2(8, 18)
-		badge.size = Vector2(56, 36)
-		badge.add_theme_font_size_override("font_size", 26)
+		badge.position = Vector2(0, 20)
+		badge.size = Vector2(62, 56)
+		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		badge.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		badge.add_theme_font_size_override("font_size", 28)
 		badge.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.95))
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(badge)
 
-		# Thai name — right of symbol
+		# Element short name below symbol
+		var sym_name := Label.new()
+		sym_name.text = str(elem.get("name_en", "")).left(5)
+		sym_name.position = Vector2(0, 78)
+		sym_name.size = Vector2(62, 14)
+		sym_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sym_name.add_theme_font_size_override("font_size", 7)
+		sym_name.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.45))
+		sym_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(sym_name)
+
+		# Vertical divider
+		var vdiv := ColorRect.new()
+		vdiv.color = Color(col.r, col.g, col.b, 0.20)
+		vdiv.position = Vector2(62, 8)
+		vdiv.size = Vector2(1, 114)
+		vdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(vdiv)
+
+		# ── Right content ──────────────────────────────────────────
+		const RX := 70.0
+		const RW := 182.0
+
+		# Thai name
 		var name_lbl := Label.new()
 		name_lbl.text = elem["name_th"]
-		name_lbl.position = Vector2(68, 10)
-		name_lbl.size = Vector2(182, 20)
+		name_lbl.position = Vector2(RX, 8)
+		name_lbl.size = Vector2(RW, 20)
 		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		name_lbl.add_theme_font_size_override("font_size", 14)
+		name_lbl.add_theme_font_size_override("font_size", 13)
 		name_lbl.add_theme_color_override("font_color", C_TEXT)
+		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(name_lbl)
 
-		# English name · type
+		# English · type
 		var sub := Label.new()
 		sub.text = "%s  ·  %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(68, 32)
-		sub.size = Vector2(182, 16)
+		sub.position = Vector2(RX, 30)
+		sub.size = Vector2(RW, 14)
 		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		sub.add_theme_font_size_override("font_size", 9)
+		sub.add_theme_font_size_override("font_size", 8)
 		sub.add_theme_color_override("font_color", C_SUB)
+		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(sub)
 
 		# Divider
 		var div := ColorRect.new()
 		div.color = Color(col.r, col.g, col.b, 0.15)
-		div.size = Vector2(240, 1)
-		div.position = Vector2(10, 56)
+		div.size = Vector2(RW, 1)
+		div.position = Vector2(RX, 48)
 		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(div)
 
-		# Short desc — bottom area, clipped + wrapped
+		# Description — clipped to card
 		var desc := Label.new()
 		desc.text = elem["real_desc"]
-		desc.position = Vector2(10, 62)
-		desc.size = Vector2(240, 58)
-		desc.add_theme_font_size_override("font_size", 9)
-		desc.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9, 0.70))
+		desc.position = Vector2(RX, 52)
+		desc.size = Vector2(RW, 68)
+		desc.add_theme_font_size_override("font_size", 8)
+		desc.add_theme_color_override("font_color", Color(0.70, 0.82, 0.92, 0.68))
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(desc)
 
 		card.gui_input.connect(func(ev):
