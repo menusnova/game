@@ -133,24 +133,6 @@ func _build_hsr_ui() -> void:
 	add_child(bg)
 	_add_stars(bg)
 
-	# ── Art area (center-right) — character illustration ──
-	var art_x := INFO_W + 16.0
-	var art_w := W - art_x
-	var art_h := H - TOP_H - BOT_H
-	var d_active: Dictionary = WARP_TYPES[_active_warp]
-	var art_img_path: String = str(d_active.get("art_img", ""))
-	var art_tex: Texture2D = _load_png(art_img_path)
-	if art_tex:
-		var art_rect := TextureRect.new()
-		art_rect.name         = "_ArtRect"
-		art_rect.texture      = art_tex
-		art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		art_rect.size         = Vector2(art_w, art_h)
-		art_rect.position     = Vector2(art_x, TOP_H)
-		art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		art_rect.z_index      = 0
-		add_child(art_rect)
 	else:
 		var art_rect := ColorRect.new()
 		art_rect.name         = "_ArtRect"
