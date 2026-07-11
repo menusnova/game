@@ -103,6 +103,7 @@ func _ready() -> void:
 		if node: node.visible = false
 
 	if _skip_btn:
+		_skip_btn.icon = null
 		_skip_btn.pressed.connect(_on_skip)
 	if _result_ov:
 		_result_ov.visible = false
