@@ -539,6 +539,11 @@ func _setup_banner_carousel() -> void:
 			"accent": Color(1.0, 0.80, 0.25),
 			"icon":  "📖",
 		},
+		{
+			"image": "res://image/evenbanner.jpg",
+			"locked": true,
+			"accent": Color(1.0, 0.85, 0.30),
+		},
 	]
 
 	# Clip container — hides overflow when sliding
@@ -566,7 +571,8 @@ func _setup_banner_carousel() -> void:
 		var card := Panel.new()
 		card.position = Vector2(-i * BW, 0)
 		card.size     = Vector2(BW, BH)
-		card.mouse_filter = Control.MOUSE_FILTER_STOP
+		card.clip_contents = true
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(0.04, 0.05, 0.14, 0.97)
 		sb.border_color = Color(acc.r, acc.g, acc.b, 0.4)
@@ -578,13 +584,37 @@ func _setup_banner_carousel() -> void:
 		track.add_child(card)
 		banner_nodes.append(card)
 
+		if d.has("image"):
+			# Image-based banner
+			var img_tex := TextureRect.new()
+			img_tex.texture     = load(str(d["image"]))
+			img_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			img_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			img_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			img_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(img_tex)
+			if bool(d.get("locked", false)):
+				var lock_dim := ColorRect.new()
+				lock_dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				lock_dim.color = Color(0, 0, 0, 0.45)
+				lock_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(lock_dim)
+				var lock_lbl := Label.new()
+				lock_lbl.text = "🔒"
+				lock_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				lock_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+				lock_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_TOP
+				lock_lbl.add_theme_font_size_override("font_size", 14)
+				lock_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(lock_lbl)
+			continue
+
 		# Accent left bar
 		var bar := ColorRect.new()
 		bar.size = Vector2(3, BH)
 		bar.color = Color(acc.r, acc.g, acc.b, 0.85)
 		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(bar)
-
 
 		# Title
 		var title_lbl := Label.new()
@@ -617,8 +647,6 @@ func _setup_banner_carousel() -> void:
 		icon_lbl.add_theme_color_override("font_color", Color(acc.r, acc.g, acc.b, 0.55))
 		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(icon_lbl)
-
-		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Dot indicators
 	var dot_row := Control.new()
