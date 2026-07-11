@@ -253,8 +253,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _start_loading() -> void:
-	# Show logo for 1.5 seconds
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.2).timeout
 
 	# Fade in loading bar
 	var t := create_tween().set_parallel()
