@@ -122,10 +122,12 @@ const TAB_H_INACT := 22.0    # collapsed inactive tab height
 const TAB_GAP     := 16.0
 
 func _build_hsr_ui() -> void:
-	# Dark gradient background
-	var bg := ColorRect.new()
+	# Background image
+	var bg := TextureRect.new()
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.07, 0.05, 0.14, 1.0)
+	bg.texture = load("res://image/bggacha.jpg")
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg.z_index = -10
 	add_child(bg)
