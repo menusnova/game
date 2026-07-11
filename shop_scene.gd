@@ -20,7 +20,7 @@ const SHOPS := [
 	{
 		"id":       "void_market",
 		"label":    "Void Market",
-		"icon":     "🏪",
+		"icon":     "res://image/0ef05712-8898-4c56-9557-a58c058e02db.png",
 		"currency": "Aether Credit",
 		"cur_sym":  "AC",
 		"cur_col":  Color(1.00, 0.82, 0.28, 1.0),
@@ -31,7 +31,7 @@ const SHOPS := [
 	{
 		"id":       "synthesis",
 		"label":    "Synthesis Exchange",
-		"icon":     "⚡",
+		"icon":     "res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png",
 		"currency": "Void Crystal",
 		"cur_sym":  "VC",
 		"cur_col":  Color(0.55, 0.40, 1.00, 1.0),
@@ -136,14 +136,24 @@ func _make_shop_btn(shop: Dictionary) -> Button:
 		_flat(Color(accent.r,accent.g,accent.b,0.12), Color(accent.r,accent.g,accent.b,0.3), 28, 1))
 	btn.add_child(icon_bg)
 
-	var icon_lbl := Label.new()
-	icon_lbl.text = str(shop["icon"])
-	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.add_theme_font_size_override("font_size", 26)
-	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon_bg.add_child(icon_lbl)
+	var icon_path := str(shop["icon"])
+	if icon_path.begins_with("res://"):
+		var icon_tex := TextureRect.new()
+		icon_tex.texture = load(icon_path)
+		icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		icon_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_bg.add_child(icon_tex)
+	else:
+		var icon_lbl := Label.new()
+		icon_lbl.text = icon_path
+		icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		icon_lbl.add_theme_font_size_override("font_size", 26)
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_bg.add_child(icon_lbl)
 
 	# Name
 	var name_lbl := Label.new()
