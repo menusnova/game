@@ -566,18 +566,30 @@ func _warp_btn(count: int) -> Button:
 		bg_rect.material = mat
 		btn.add_child(bg_rect)
 	else:
-		# Fallback if image not yet imported
 		var sb_n := _sb(Color(0.14, 0.22, 0.55, 1.0), Color(0.35, 0.55, 1.0, 0.5), 10, 1)
 		btn.add_theme_stylebox_override("normal",  sb_n)
 		btn.add_theme_stylebox_override("hover",   _sb(Color(0.20, 0.30, 0.68, 1.0), Color(0.45, 0.65, 1.0, 0.7), 10, 1))
 		btn.add_theme_stylebox_override("pressed", sb_n)
 
-	# Label centered: "สุ่ม ×1" / "สุ่ม ×10"
+	# gacha_card icon on the left
+	var card_tex := _load_png("res://image/gacha_card.jpg")
+	if card_tex:
+		var ico := TextureRect.new()
+		ico.texture      = card_tex
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ico.size         = Vector2(34, 34)
+		ico.position     = Vector2(12, 6)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(ico)
+
+	# Label: "สุ่ม ×1" / "สุ่ม ×10" — offset right to leave room for icon
 	var warp_lbl := Label.new()
 	warp_lbl.text = "สุ่ม  ×%d" % count
 	warp_lbl.add_theme_font_size_override("font_size", 16)
 	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	warp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	warp_lbl.offset_left = 36
 	warp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	warp_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	warp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
