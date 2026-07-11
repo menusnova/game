@@ -217,7 +217,7 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 		add_child(dq)
 
 
-func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, elem_col: Color, icon_map: Dictionary) -> void:
+func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, _elem_col: Color, icon_map: Dictionary) -> void:
 	var card := Panel.new()
 	card.position     = pos
 	card.size         = sz

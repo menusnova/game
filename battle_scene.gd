@@ -1583,7 +1583,7 @@ func _flash_msg() -> void:
 # ════════════════════════════════════════════════════════════
 #  NAVIGATION
 # ════════════════════════════════════════════════════════════
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
+func _make_back_btn(pos: Vector2, _sz: Vector2, callback: Callable) -> Control:
 	var btn := Panel.new()
 	btn.position = pos
 	btn.z_index = 20
