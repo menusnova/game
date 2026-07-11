@@ -70,19 +70,6 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 			_sb(Color(0.1, 0.1, 0.15, 0.6), Color(0.3, 0.3, 0.4, 0.18), 8, 1))
 		tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# Card frame overlay — slightly oversized so it covers rounded corners
-	var ftex := TextureRect.new()
-	ftex.texture      = preload("res://image/g1.jpg")
-	ftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	ftex.stretch_mode = TextureRect.STRETCH_SCALE
-	ftex.size         = Vector2(TW + 4, TH + 4)
-	ftex.position     = Vector2(-2, -2)
-	ftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var fmat := CanvasItemMaterial.new()
-	fmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	ftex.material = fmat
-	tile.add_child(ftex)
-
 	var sym_lbl := Label.new()
 	sym_lbl.text = str(elem.get("symbol", ""))
 	sym_lbl.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -116,6 +103,19 @@ func _make_element_tile(elem: Dictionary) -> Panel:
 		lock.modulate     = Color(1, 1, 1, 0.85)
 		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		tile.add_child(lock)
+
+	# Frame on top of all content
+	var ftex := TextureRect.new()
+	ftex.texture      = preload("res://image/g1.jpg")
+	ftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	ftex.stretch_mode = TextureRect.STRETCH_SCALE
+	ftex.size         = Vector2(TW + 4, TH + 4)
+	ftex.position     = Vector2(-2, -2)
+	ftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fmat := CanvasItemMaterial.new()
+	fmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	ftex.material = fmat
+	tile.add_child(ftex)
 
 	return tile
 
@@ -250,7 +250,17 @@ func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel", _sb(bg, border, 16, 1))
 
-	# Card frame overlay first — text renders on top
+	var lbl := Label.new()
+	lbl.text = "?"
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 36)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.18))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lbl)
+
+	# Frame on top of all content
 	var sftex := TextureRect.new()
 	sftex.texture      = preload("res://image/g1.jpg")
 	sftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
@@ -262,16 +272,6 @@ func _make_slot_panel(bg := Color(0.05, 0.08, 0.18, 0.6), border := Color(0.3, 0
 	sfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	sftex.material = sfmat
 	panel.add_child(sftex)
-
-	var lbl := Label.new()
-	lbl.text = "?"
-	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 36)
-	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.18))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(lbl)
 	return panel
 
 func _show_placeholder() -> void:

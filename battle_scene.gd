@@ -896,8 +896,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		_flat(Color(col.r*bg_r, col.g*bg_r, col.b*(bg_r+0.06), 1.0),
 			  Color(col.r, col.g, col.b, border_a), 12, bw))
 
-	# Type tag
-	# Card frame overlay first — text renders on top
+	# Build frame tex — added last so it renders on top of all content
 	var frame_tier := 1
 	if ctype == "reaction":
 		frame_tier = clampi(int(data.get("tier", 1)), 1, 4)
@@ -911,7 +910,6 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var frame_mat := CanvasItemMaterial.new()
 	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	frame_tex.material = frame_mat
-	panel.add_child(frame_tex)
 
 	var tag_txt: String
 	match ctype:
@@ -962,6 +960,9 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		glow.color = Color(col.r, col.g, col.b, 0.12)
 		glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		panel.add_child(glow)
+
+	# Frame on top of all content (BLEND_MODE_ADD: dark center = transparent)
+	panel.add_child(frame_tex)
 
 	# Hover: lift up
 	var base_y := by - CARD_H

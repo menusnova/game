@@ -281,19 +281,6 @@ func _make_element_card(elem: Dictionary) -> Control:
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.clip_contents = true
 
-	# Card frame overlay — first child so text renders on top
-	var cftex := TextureRect.new()
-	cftex.texture      = preload("res://image/g1.jpg")
-	cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	cftex.stretch_mode = TextureRect.STRETCH_SCALE
-	cftex.size         = Vector2(264, 134)
-	cftex.position     = Vector2(-2, -2)
-	cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var cfmat := CanvasItemMaterial.new()
-	cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	cftex.material = cfmat
-	card.add_child(cftex)
-
 	if discovered:
 		# Atomic number — top-left small
 		if elem["number"] > 0:
@@ -376,6 +363,19 @@ func _make_element_card(elem: Dictionary) -> Control:
 		locked_lbl.add_theme_font_size_override("font_size", 11)
 		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
 		card.add_child(locked_lbl)
+
+	# Frame on top of all content
+	var cftex := TextureRect.new()
+	cftex.texture      = preload("res://image/g1.jpg")
+	cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	cftex.stretch_mode = TextureRect.STRETCH_SCALE
+	cftex.size         = Vector2(264, 134)
+	cftex.position     = Vector2(-2, -2)
+	cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var cfmat := CanvasItemMaterial.new()
+	cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	cftex.material = cfmat
+	card.add_child(cftex)
 
 	return card
 
