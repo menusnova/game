@@ -81,24 +81,24 @@ const ELEMENTS: Array = [
 # ── Achievement data ──────────────────────────────────────────────
 const ACHIEVEMENTS: Array = [
 	# Combat
-	{"id":"first_blood",  "icon":"⚔",  "title":"First Blood",          "desc":"ชนะการต่อสู้ครั้งแรก",                "current":0, "total":1,  "reward":"crystal", "reward_n":10,  "cat":"combat"},
-	{"id":"survivor",     "icon":"🛡",  "title":"Survivor",             "desc":"ชนะโดยที่ HP เหลือน้อยกว่า 10",     "current":0, "total":1,  "reward":"crystal", "reward_n":20,  "cat":"combat"},
-	{"id":"veteran",      "icon":"⚔",  "title":"Veteran",              "desc":"ชนะการต่อสู้ 50 ครั้ง",             "current":0, "total":50, "reward":"🧪×500",  "cat":"combat"},
-	{"id":"boss_slayer",  "icon":"💀",  "title":"Boss Slayer",          "desc":"กำจัด Boss ได้",                     "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"combat"},
-	{"id":"no_damage",    "icon":"✨",  "title":"Untouchable",          "desc":"ชนะโดยไม่โดนโจมตีเลย",             "current":0, "total":1,  "reward":"crystal", "reward_n":30,  "cat":"combat"},
+	{"id":"first_blood",  "icon":"⚔",  "title":"First Blood",          "desc":"ชนะการต่อสู้ครั้งแรก",                "detail":"เอาชนะศัตรูในการต่อสู้ครั้งแรกของคุณ ก้าวแรกของนักรบนักเคมี",                                      "current":0, "total":1,  "reward":"crystal", "reward_n":10,  "cat":"combat", "elems":["Hydrogen","Oxygen"]},
+	{"id":"survivor",     "icon":"🛡",  "title":"Survivor",             "desc":"ชนะโดยที่ HP เหลือน้อยกว่า 10",     "detail":"เอาชนะได้ทั้งที่ HP ใกล้หมด แสดงให้เห็นถึงความอดทนอย่างสูง",                                       "current":0, "total":1,  "reward":"crystal", "reward_n":20,  "cat":"combat", "elems":["Iron","Oxygen"]},
+	{"id":"veteran",      "icon":"⚔",  "title":"Veteran",              "desc":"ชนะการต่อสู้ 50 ครั้ง",             "detail":"ผ่านสมรภูมิมาแล้ว 50 ครั้ง ประสบการณ์ที่สั่งสมทำให้คุณเป็นนักรบที่แท้จริง",                        "current":0, "total":50, "reward":"🧪×500",  "cat":"combat", "elems":["Iron","Chlorine"]},
+	{"id":"boss_slayer",  "icon":"💀",  "title":"Boss Slayer",          "desc":"กำจัด Boss ได้",                     "detail":"เอาชนะบอสผู้ทรงพลังได้สำเร็จ ใช้สารเคมีที่ถูกต้องในเวลาที่เหมาะสม",                               "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"combat", "elems":["Rust","Salt"]},
+	{"id":"no_damage",    "icon":"✨",  "title":"Untouchable",          "desc":"ชนะโดยไม่โดนโจมตีเลย",             "detail":"เต้นรำในสนามรบโดยไม่โดนแตะต้องเลยแม้แต่ครั้งเดียว ความเชี่ยวชาญระดับสูงสุด",                      "current":0, "total":1,  "reward":"crystal", "reward_n":30,  "cat":"combat", "elems":["Water","Hydrogen"]},
 	# Alchemy
-	{"id":"first_brew",   "icon":"⚗",  "title":"First Brew",           "desc":"สังเคราะห์สารประกอบครั้งแรก",       "current":0, "total":1,  "reward":"🧪×50",  "cat":"alchemy"},
-	{"id":"water_maker",  "icon":"💧",  "title":"Water Maker",          "desc":"สังเคราะห์น้ำ 10 ครั้ง",           "current":0, "total":10, "reward":"🧪×100", "cat":"alchemy"},
-	{"id":"poison_master","icon":"☠",  "title":"Poison Master",        "desc":"วางพิษศัตรู 20 ครั้ง",              "current":0, "total":20, "reward":"crystal", "reward_n":25,  "cat":"alchemy"},
-	{"id":"all_recipes",  "icon":"📖",  "title":"Full Formula",         "desc":"ค้นพบสูตรสังเคราะห์ครบทุกสูตร",   "current":0, "total":3,  "reward":"crystal", "reward_n":100, "cat":"alchemy"},
+	{"id":"first_brew",   "icon":"⚗",  "title":"First Brew",           "desc":"สังเคราะห์สารประกอบครั้งแรก",       "detail":"ทดลองผสมธาตุสองชนิดเข้าด้วยกันจนเกิดสารประกอบใหม่ครั้งแรก จุดเริ่มต้นของนักเคมี",                 "current":0, "total":1,  "reward":"🧪×50",  "cat":"alchemy", "elems":["Hydrogen","Oxygen","Water"]},
+	{"id":"water_maker",  "icon":"💧",  "title":"Water Maker",          "desc":"สังเคราะห์น้ำ 10 ครั้ง",           "detail":"ผสม H + O จนได้ H₂O ถึง 10 ครั้ง น้ำคือรากฐานของสิ่งมีชีวิตทุกชนิด",                              "current":0, "total":10, "reward":"🧪×100", "cat":"alchemy", "elems":["Hydrogen","Oxygen","Water"]},
+	{"id":"poison_master","icon":"☠",  "title":"Poison Master",        "desc":"วางพิษศัตรู 20 ครั้ง",              "detail":"ใช้สนิมเหล็ก (Fe₂O₃) โจมตีและวางพิษศัตรูสะสม 20 ครั้ง เชี่ยวชาญในการใช้ปฏิกิริยาเคมีเป็นอาวุธ", "current":0, "total":20, "reward":"crystal", "reward_n":25,  "cat":"alchemy", "elems":["Iron","Oxygen","Rust"]},
+	{"id":"all_recipes",  "icon":"📖",  "title":"Full Formula",         "desc":"ค้นพบสูตรสังเคราะห์ครบทุกสูตร",   "detail":"ค้นพบสูตรสังเคราะห์ครบทุกสูตรในห้องปฏิบัติการ ได้แก่ น้ำ เกลือ และสนิมเหล็ก",                      "current":0, "total":3,  "reward":"crystal", "reward_n":100, "cat":"alchemy", "elems":["Water","Salt","Rust"]},
 	# Collection
-	{"id":"collector",    "icon":"🌟",  "title":"Collector",            "desc":"ปลดล็อคธาตุในสารานุกรมครบทุกตัว", "current":0, "total":8,  "reward":"crystal", "reward_n":200, "cat":"collect"},
-	{"id":"gacha_once",   "icon":"🎲",  "title":"Lucky Draw",           "desc":"สุ่มกาชาครั้งแรก",                 "current":0, "total":1,  "reward":"🧪×200", "cat":"collect"},
-	{"id":"pity_hit",     "icon":"⭐",  "title":"Pity Saved Me",        "desc":"ได้ตัวละคร 5★ จาก pity",           "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"collect"},
+	{"id":"collector",    "icon":"🌟",  "title":"Collector",            "desc":"ปลดล็อคธาตุในสารานุกรมครบทุกตัว", "detail":"ค้นพบและปลดล็อคธาตุในสารานุกรมครบทุกตัว รวมทั้งธาตุและสารประกอบทั้งหมด",                            "current":0, "total":8,  "reward":"crystal", "reward_n":200, "cat":"collect", "elems":["Hydrogen","Oxygen","Iron","Sodium","Chlorine","Water","Salt","Rust"]},
+	{"id":"gacha_once",   "icon":"🎲",  "title":"Lucky Draw",           "desc":"สุ่มกาชาครั้งแรก",                 "detail":"ลองโชคในระบบ Gacha ครั้งแรก ใครจะรู้ว่าจะได้ธาตุหายากแค่ไหน",                                       "current":0, "total":1,  "reward":"🧪×200", "cat":"collect", "elems":[]},
+	{"id":"pity_hit",     "icon":"⭐",  "title":"Pity Saved Me",        "desc":"ได้ตัวละคร 5★ จาก pity",           "detail":"ระบบ Pity ช่วยรับประกันให้ได้ตัวละคร 5 ดาวหลังจากสะสมครบจำนวน",                                    "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"collect", "elems":[]},
 	# Progression
-	{"id":"stage_10",     "icon":"🗺",  "title":"Explorer",             "desc":"ผ่าน Stage 10",                    "current":0, "total":10, "reward":"crystal", "reward_n":30,  "cat":"progress"},
-	{"id":"domain_full",  "icon":"🌐",  "title":"Domain Master",        "desc":"เติม Domain Gauge เต็ม",           "current":0, "total":1,  "reward":"crystal", "reward_n":40,  "cat":"progress"},
-	{"id":"ultimate_x5",  "icon":"💥",  "title":"Limit Breaker",        "desc":"ใช้ Ultimate 5 ครั้ง",             "current":0, "total":5,  "reward":"🧪×150", "cat":"progress"},
+	{"id":"stage_10",     "icon":"🗺",  "title":"Explorer",             "desc":"ผ่าน Stage 10",                    "detail":"ผ่านด่านที่ 10 สำเร็จ เส้นทางการผจญภัยยังยาวไกลข้างหน้า",                                           "current":0, "total":10, "reward":"crystal", "reward_n":30,  "cat":"progress", "elems":[]},
+	{"id":"domain_full",  "icon":"🌐",  "title":"Domain Master",        "desc":"เติม Domain Gauge เต็ม",           "detail":"เติม Domain Gauge จนเต็มสำเร็จ พลังงานธาตุที่สั่งสมมาถึงขีดสูงสุด",                                 "current":0, "total":1,  "reward":"crystal", "reward_n":40,  "cat":"progress", "elems":[]},
+	{"id":"ultimate_x5",  "icon":"💥",  "title":"Limit Breaker",        "desc":"ใช้ Ultimate 5 ครั้ง",             "detail":"ปลดปล่อยพลังขั้นสูงสุด 5 ครั้ง ยิ่งใช้ธาตุที่ผสมได้ยิ่งแรงขึ้น",                                  "current":0, "total":5,  "reward":"🧪×150", "cat":"progress", "elems":[]},
 ]
 
 const CAT_LABELS := {"combat":"⚔ การต่อสู้", "alchemy":"⚗ การสังเคราะห์", "collect":"🌟 การสะสม", "progress":"🗺 ความก้าวหน้า"}
