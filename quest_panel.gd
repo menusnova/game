@@ -21,10 +21,10 @@ const DAILY_MAX_PTS := 80
 
 const QUESTS := {
 	Tab.DAILY: [
-		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 0, "total": 1, "go": "",          "exp": 100,  "gold": 10000},
-		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 100, "gold": 10000},
-		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 100,  "gold": 10000},
-		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000},
+		{"id": "d_login",  "label": "ล็อกอินประจำวัน",    "desc": "เข้าสู่ระบบเกม",               "current": 0, "total": 1, "go": "",          "exp": 100,  "gold": 10000, "tp": 20},
+		{"id": "d_battle", "label": "ต่อสู้ 3 ครั้ง",       "desc": "เข้าสู่โหมดต่อสู้",             "current": 0, "total": 3, "go": "battle",    "exp": 100, "gold": 10000, "tp": 20},
+		{"id": "d_gacha",  "label": "สุ่มกาชา 1 ครั้ง",     "desc": "ใช้การสุ่มในพื้นที่ Gacha",     "current": 0, "total": 1, "go": "gacha",     "exp": 100,  "gold": 10000, "tp": 20},
+		{"id": "d_alch",   "label": "ใช้ห้องปฏิบัติการ",    "desc": "เปิดห้องปฏิบัติการเคมี",       "current": 0, "total": 1, "go": "alchemist", "exp": 100,  "gold": 10000, "tp": 20},
 	],
 	Tab.WEEKLY: [
 		{"id": "w_boss",    "label": "สังหาร Boss รายสัปดาห์",     "desc": "ท้าทาย Weekly Boss",        "current": 0, "total": 1,  "go": "battle",    "exp": 300, "gold": 3000, "crystal": 120, "upgrade": 2, "bond": 200},
@@ -392,6 +392,7 @@ class _QuestRow extends Control:
 		const REWARDS := [
 			["exp",     "⭐", "res://image/icon_exp.png",     Color(1.00, 0.82, 0.25), "EXP"],
 			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20), "Gold"],
+			["tp",      "",   "res://image/TP.jpg",           Color(0.40, 0.90, 0.65), "TP"],
 			["crystal", "",   "res://image/crystal_gem.png",  Color(0.40, 0.88, 1.00), "Crystal"],
 			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00), "Upgrade"],
 			["bond",    "",   "res://image/icon_bond.png",    Color(0.85, 0.55, 1.00), "Bond Pt"],
@@ -437,6 +438,10 @@ class _QuestRow extends Control:
 				icon_tx.size         = Vector2(CW, 32)
 				icon_tx.position     = Vector2(0, 2)
 				icon_tx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				if rpath.ends_with(".jpg"):
+					var mat := CanvasItemMaterial.new()
+					mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+					icon_tx.material = mat
 				card.add_child(icon_tx)
 			else:
 				var icon_l := Label.new()
