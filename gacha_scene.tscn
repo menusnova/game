@@ -117,12 +117,13 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_bannerpanel")
 
 [node name="BannerArt" type="TextureRect" parent="BannerCard"]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
+offset_left = 160.0
+offset_top = -80.0
 offset_right = 720.0
 offset_bottom = 360.0
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
+texture = preload("res://image/lyra_1.png")
 
 [node name="BannerTitle" type="Label" parent="BannerCard"]
 layout_mode = 0
@@ -196,11 +197,6 @@ offset_left = 16.0
 offset_top = 16.0
 offset_right = 340.0
 offset_bottom = 40.0
-
-[node name="GemIcon" type="Label" parent="InfoPanel/CurrencyRow"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "💎"
 
 [node name="GemCount" type="Label" parent="InfoPanel/CurrencyRow"]
 layout_mode = 2
