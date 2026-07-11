@@ -23,9 +23,9 @@ const CHAR_DATA: Dictionary = {
 			{"name": "Barrier Compound",  "type": "Defend",    "img": "res://image/lyra_2.png",
 			 "desc": "สร้างเกราะป้องกันให้ตัวเอง ลดความเสียหายที่ได้รับ 30% เป็นเวลา 1 รอบ"},
 			{"name": "Chain Reaction",    "type": "Skill",     "img": "res://image/lyra_3.png",
-			 "desc": "ปล่อยพลังธาตุโจมตีศัตรู 40 DMG ลดการโจมตีของศัตรู 20% เป็นเวลา 1 รอบ"},
+			 "desc": "จั๋วการ์ดธาตุ 1 ใบขึ้นมือ และฟื้นฟู AP เต็มในเทิร์นถัดไป (ใช้ได้ 1 ครั้งต่อการกด)"},
 			{"name": "Element Burst",     "type": "Ultimate",  "img": "res://image/lyra_1.png",
-			 "desc": "ปลดปล่อยพลังธาตุทั้งหมดพร้อมกัน สร้างความเสียหาย 60 DMG วางพิษและเผาไหม้ศัตรู"},
+			 "desc": "จั๋วการ์ดธาตุที่ผสมกันได้ 2 ใบขึ้นมือทันที เพิ่มโอกาสสร้าง Reaction ในเทิร์นนั้น"},
 		],
 		"passive": {
 			"name": "Reaction Master",

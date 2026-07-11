@@ -43,15 +43,13 @@ const RECIPES := {
 
 # ── Character ─────────────────────────────────────────────
 const CHARACTER := {
-	"name":         "Alchemist",
+	"name":         "Lyra",
 	"max_hp":       100,
 	"passive":      "Reaction Master",
-	"skill_name":   "Power Strike",
-	"skill_damage": 40,
+	"skill_name":   "Chain Reaction",
 	"skill_ap":     2,
 	"skill_cd":     2,
 	"ult_name":     "Element Burst",
-	"ult_damage":   60,
 }
 
 # ════════════════════════════════════════════════════════════
@@ -79,6 +77,7 @@ var _reaction_gauge_used: bool = false  # once per turn
 
 var _main_action_done: bool = false
 var _ult_used:         bool = false
+var _skill_ap_boost:   bool = false  # recover full AP next turn after skill
 var _player_turn:      bool = true
 var _skill_cd:         int  = 0
 var _is_defending:     bool = false
@@ -1120,21 +1119,19 @@ func _on_defend() -> void:
 
 func _on_skill() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
-	if _ap < 2:      _msg("❌ AP ไม่พอ (ต้องการ 2 AP)"); return
+	if _ap < 2:       _msg("❌ AP ไม่พอ (ต้องการ 2 AP)"); return
 	if _skill_cd > 0: _msg("⏳ Skill Cooldown เหลือ %d เทิร์น" % _skill_cd); return
 
 	_ap -= 2
 	_main_action_done = true
 	_skill_cd = CHARACTER["skill_cd"]
+	_skill_ap_boost = true  # recover full AP next turn
 
-	var dmg: int = CHARACTER["skill_damage"]
-	if _player_weak > 0: dmg = max(0, dmg - 10)
-	_enemy_hp -= dmg
-	_add_gauge(10)
-	_msg("⚡ %s — %d ดาเมจ" % [CHARACTER["skill_name"], dmg])
+	_draw_one()
+	_add_gauge(8)
+	_msg("⚡ %s — จั๋ว 1 ใบ · AP เต็มเทิร์นหน้า" % CHARACTER["skill_name"])
 	_flash_msg()
 	_refresh_ui()
-	_check_battle()
 
 func _on_ultimate() -> void:
 	if not _player_turn or _battle_over: return
@@ -1144,13 +1141,30 @@ func _on_ultimate() -> void:
 	_ult_used  = true
 	_ult_gauge = 0
 
-	var dmg: int = CHARACTER["ult_damage"]
-	_enemy_hp     -= dmg
-	_enemy_poison += 3
-	_msg("💥 %s — %d ดาเมจ + ติดพิษ +3!" % [CHARACTER["ult_name"], dmg])
+	# Draw 2 element cards that form a valid reaction pair
+	var pair_drawn := 0
+	var tried: Array[String] = []
+	for recipe_key in RECIPES.keys():
+		var parts := recipe_key.split("+")
+		if parts.size() == 2 and pair_drawn == 0:
+			var ea: String = parts[0]; var eb: String = parts[1]
+			if ea in _deck or ea in _discard:
+				_hand.append(ea)
+				if ea in _deck: _deck.erase(ea) else: _discard.erase(ea)
+				_hand.append(eb if (eb in _deck or eb in _discard) else ea)
+				if eb in _deck: _deck.erase(eb) elif eb in _discard: _discard.erase(eb)
+				pair_drawn = 2
+				tried = [ea, eb]
+				break
+	# fallback: draw any 2 element cards
+	if pair_drawn == 0:
+		for _i in 2:
+			_draw_one()
+
+	_msg("💥 %s — จั๋ว%s ขึ้นมือ!" % [CHARACTER["ult_name"],
+		(" %s+%s" % [tried[0], tried[1]]) if tried.size() == 2 else " 2 ใบ"])
 	_flash_msg()
 	_refresh_ui()
-	_check_battle()
 
 func _on_end_turn() -> void:
 	if not _player_turn or _battle_over: return
@@ -1214,12 +1228,20 @@ func _start_player_turn() -> void:
 	_ult_used             = false
 	_reaction_gauge_used  = false
 
-	_ap = min(_ap + AP_RECOVER, MAX_AP)
+	var ap_gain: int
+	if _skill_ap_boost:
+		_skill_ap_boost = false
+		ap_gain = MAX_AP - _ap
+		_ap = MAX_AP
+		_msg("✨ เทิร์นของคุณ — AP ฟื้นฟูเต็ม! (%d)" % MAX_AP)
+	else:
+		ap_gain = AP_RECOVER
+		_ap = min(_ap + AP_RECOVER, MAX_AP)
+		_msg("✨ เทิร์นของคุณ — AP ฟื้นฟู +%d" % ap_gain)
 	_draw_one()
 
 	_set_buttons_enabled(true)
 	_refresh_ui()
-	_msg("✨ เทิร์นของคุณ — AP ฟื้นฟู +%d" % AP_RECOVER)
 
 # ════════════════════════════════════════════════════════════
 #  WIN / LOSE
