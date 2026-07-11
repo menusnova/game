@@ -275,8 +275,8 @@ func _make_element_card(elem: Dictionary) -> Control:
 	var card := Panel.new()
 	card.custom_minimum_size = Vector2(260, 130)
 	var col := elem["color"] as Color
-	var border_col := Color(col.r, col.g, col.b, 0.6) if discovered else Color(0.3, 0.35, 0.5, 0.4)
-	var bg_col := Color(col.r * 0.12, col.g * 0.12, col.b * 0.15, 1.0) if discovered else C_LOCK
+	var border_col := Color(col.r, col.g, col.b, 0.6) if discovered else Color(0.15, 0.18, 0.25, 0.35)
+	var bg_col := Color(col.r * 0.12, col.g * 0.12, col.b * 0.15, 1.0) if discovered else Color(0.06, 0.07, 0.12, 1.0)
 	card.add_theme_stylebox_override("panel", _flat(bg_col, border_col, 10, 1))
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.clip_contents = true
@@ -344,38 +344,19 @@ func _make_element_card(elem: Dictionary) -> Control:
 			if ev is InputEventMouseButton and ev.pressed:
 				_open_element_detail(elem)
 		)
-	else:
-		# Locked — style same as lab tile
-		var q := Label.new()
-		q.text = "?"
-		q.size = Vector2(260, 80)
-		q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		q.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		q.add_theme_font_size_override("font_size", 32)
-		q.add_theme_color_override("font_color", Color(0.4, 0.45, 0.6, 0.5))
-		card.add_child(q)
-
-		var locked_lbl := Label.new()
-		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.size = Vector2(260, 30)
-		locked_lbl.position = Vector2(0, 88)
-		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		locked_lbl.add_theme_font_size_override("font_size", 11)
-		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
-		card.add_child(locked_lbl)
-
-	# Frame on top of all content
-	var cftex := TextureRect.new()
-	cftex.texture      = preload("res://image/g1.jpg")
-	cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	cftex.stretch_mode = TextureRect.STRETCH_SCALE
-	cftex.size         = Vector2(264, 134)
-	cftex.position     = Vector2(-2, -2)
-	cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var cfmat := CanvasItemMaterial.new()
-	cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	cftex.material = cfmat
-	card.add_child(cftex)
+	# Frame เฉพาะการ์ดที่ค้นพบแล้ว
+	if discovered:
+		var cftex := TextureRect.new()
+		cftex.texture      = preload("res://image/g1.jpg")
+		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		cftex.stretch_mode = TextureRect.STRETCH_SCALE
+		cftex.size         = Vector2(264, 134)
+		cftex.position     = Vector2(-2, -2)
+		cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var cfmat := CanvasItemMaterial.new()
+		cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		cftex.material = cfmat
+		card.add_child(cftex)
 
 	return card
 
@@ -574,25 +555,7 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 		card.add_child(desc)
 	else:
 		card.add_theme_stylebox_override("panel", _flat(
-			Color(0.04, 0.06, 0.12, 0.72), Color(0.20, 0.28, 0.48, 0.15), 10, 1))
-
-		var q := Label.new()
-		q.text = "?"
-		q.size = Vector2(260, 80)
-		q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		q.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		q.add_theme_font_size_override("font_size", 32)
-		q.add_theme_color_override("font_color", Color(0.4, 0.45, 0.6, 0.5))
-		card.add_child(q)
-
-		var locked_lbl := Label.new()
-		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.size = Vector2(260, 30)
-		locked_lbl.position = Vector2(0, 88)
-		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		locked_lbl.add_theme_font_size_override("font_size", 11)
-		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
-		card.add_child(locked_lbl)
+			Color(0.06, 0.07, 0.12, 1.0), Color(0.15, 0.18, 0.25, 0.35), 10, 1))
 
 	return card
 
