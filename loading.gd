@@ -244,11 +244,12 @@ func _input(event: InputEvent) -> void:
 		can_press = false
 		if done:
 			_go()
-		else:
+		elif not loading_started:
 			_start_loading()
 
 
 func _start_loading() -> void:
+	loading_started = true   # set ก่อน await กันการ trigger ซ้ำ
 	await get_tree().create_timer(0.2).timeout
 
 	# Fade in loading bar
@@ -260,7 +261,6 @@ func _start_loading() -> void:
 	particles_trail.emitting = true
 	particles_spark.emitting = true
 	dot_timer.start()
-	loading_started = true
 
 
 func _go() -> void:
