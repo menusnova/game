@@ -221,9 +221,9 @@ func _build_element_tab() -> void:
 	vbox.add_child(sec)
 
 	var grid := GridContainer.new()
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 20)
-	grid.add_theme_constant_override("v_separation", 20)
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 16)
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var grid_wrap := MarginContainer.new()
 	grid_wrap.add_theme_constant_override("margin_left", 28)
@@ -248,9 +248,9 @@ func _build_element_tab() -> void:
 	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, total_undiscov]))
 
 	var cgrid := GridContainer.new()
-	cgrid.columns = 4
-	cgrid.add_theme_constant_override("h_separation", 20)
-	cgrid.add_theme_constant_override("v_separation", 20)
+	cgrid.columns = 5
+	cgrid.add_theme_constant_override("h_separation", 16)
+	cgrid.add_theme_constant_override("v_separation", 16)
 	cgrid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var cgrid_wrap := MarginContainer.new()
 	cgrid_wrap.add_theme_constant_override("margin_left", 28)
@@ -271,77 +271,56 @@ func _build_element_tab() -> void:
 		cgrid.add_child(_make_element_card(elem))
 
 func _make_element_card(elem: Dictionary) -> Control:
+	const CW := 162.0; const CH := 210.0
 	var discovered: bool = elem["id"] in _discovered
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(260, 130)
+	card.custom_minimum_size = Vector2(CW, CH)
 	var col := elem["color"] as Color
-	var border_col := Color(col.r, col.g, col.b, 0.6) if discovered else Color(0.15, 0.18, 0.25, 0.35)
-	var bg_col := Color(col.r * 0.12, col.g * 0.12, col.b * 0.15, 1.0) if discovered else Color(0.06, 0.07, 0.12, 1.0)
+	var border_col := Color(col.r, col.g, col.b, 0.55) if discovered else Color(0.15, 0.18, 0.25, 0.35)
+	var bg_col     := Color(col.r * 0.10, col.g * 0.10, col.b * 0.14, 1.0) if discovered else Color(0.06, 0.07, 0.12, 1.0)
 	card.add_theme_stylebox_override("panel", _flat(bg_col, border_col, 10, 1))
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.clip_contents = true
 
 	if discovered:
-		# ── Left strip background ──────────────────────────────────
-		var left_bg := ColorRect.new()
-		left_bg.color = Color(col.r * 0.08, col.g * 0.08, col.b * 0.14, 0.85)
-		left_bg.position = Vector2(0, 0)
-		left_bg.size = Vector2(62, 130)
-		left_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(left_bg)
-
-		# Atomic number
+		# Atomic number — top-right
 		if elem["number"] > 0:
 			var num := Label.new()
 			num.text = str(elem["number"])
-			num.position = Vector2(0, 5)
-			num.size = Vector2(62, 13)
-			num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			num.add_theme_font_size_override("font_size", 8)
-			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.50))
+			num.position = Vector2(CW - 30, 5)
+			num.size = Vector2(26, 14)
+			num.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			num.add_theme_font_size_override("font_size", 9)
+			num.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.45))
 			num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(num)
 
-		# Symbol — centered in left strip
+		# Symbol — large, centered top
 		var badge := Label.new()
 		badge.text = elem["symbol"]
-		badge.position = Vector2(0, 20)
-		badge.size = Vector2(62, 56)
+		badge.position = Vector2(0, 14)
+		badge.size = Vector2(CW, 64)
 		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		badge.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		badge.add_theme_font_size_override("font_size", 28)
+		badge.add_theme_font_size_override("font_size", 40)
 		badge.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.95))
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(badge)
 
-		# Element short name below symbol
-		var sym_name := Label.new()
-		sym_name.text = str(elem.get("name_en", "")).left(5)
-		sym_name.position = Vector2(0, 78)
-		sym_name.size = Vector2(62, 14)
-		sym_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sym_name.add_theme_font_size_override("font_size", 7)
-		sym_name.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.45))
-		sym_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(sym_name)
-
-		# Vertical divider
-		var vdiv := ColorRect.new()
-		vdiv.color = Color(col.r, col.g, col.b, 0.20)
-		vdiv.position = Vector2(62, 8)
-		vdiv.size = Vector2(1, 114)
-		vdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(vdiv)
-
-		# ── Right content ──────────────────────────────────────────
-		const RX := 70.0
-		const RW := 182.0
+		# Divider under symbol
+		var div1 := ColorRect.new()
+		div1.color = Color(col.r, col.g, col.b, 0.18)
+		div1.size = Vector2(CW - 24, 1)
+		div1.position = Vector2(12, 82)
+		div1.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(div1)
 
 		# Thai name
 		var name_lbl := Label.new()
 		name_lbl.text = elem["name_th"]
-		name_lbl.position = Vector2(RX, 8)
-		name_lbl.size = Vector2(RW, 20)
+		name_lbl.position = Vector2(4, 88)
+		name_lbl.size = Vector2(CW - 8, 22)
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		name_lbl.add_theme_font_size_override("font_size", 13)
 		name_lbl.add_theme_color_override("font_color", C_TEXT)
@@ -350,30 +329,23 @@ func _make_element_card(elem: Dictionary) -> Control:
 
 		# English · type
 		var sub := Label.new()
-		sub.text = "%s  ·  %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(RX, 30)
-		sub.size = Vector2(RW, 14)
+		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
+		sub.position = Vector2(4, 112)
+		sub.size = Vector2(CW - 8, 16)
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		sub.add_theme_font_size_override("font_size", 8)
 		sub.add_theme_color_override("font_color", C_SUB)
 		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(sub)
 
-		# Divider
-		var div := ColorRect.new()
-		div.color = Color(col.r, col.g, col.b, 0.15)
-		div.size = Vector2(RW, 1)
-		div.position = Vector2(RX, 48)
-		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(div)
-
-		# Description — clipped to card
+		# Description — 2–3 lines
 		var desc := Label.new()
 		desc.text = elem["real_desc"]
-		desc.position = Vector2(RX, 52)
-		desc.size = Vector2(RW, 68)
+		desc.position = Vector2(8, 132)
+		desc.size = Vector2(CW - 16, 68)
 		desc.add_theme_font_size_override("font_size", 8)
-		desc.add_theme_color_override("font_color", Color(0.70, 0.82, 0.92, 0.68))
+		desc.add_theme_color_override("font_color", Color(0.68, 0.80, 0.90, 0.62))
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -383,13 +355,13 @@ func _make_element_card(elem: Dictionary) -> Control:
 			if ev is InputEventMouseButton and ev.pressed:
 				_open_element_detail(elem)
 		)
-	if discovered:
-		# Frame เฉพาะการ์ดที่ค้นพบแล้ว
+
+		# g1 frame overlay
 		var cftex := TextureRect.new()
 		cftex.texture      = preload("res://image/g1.jpg")
 		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		cftex.stretch_mode = TextureRect.STRETCH_SCALE
-		cftex.size         = Vector2(264, 134)
+		cftex.size         = Vector2(CW + 4, CH + 4)
 		cftex.position     = Vector2(-2, -2)
 		cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var cfmat := CanvasItemMaterial.new()
@@ -397,21 +369,21 @@ func _make_element_card(elem: Dictionary) -> Control:
 		cftex.material = cfmat
 		card.add_child(cftex)
 	else:
-		# Lock icon กลางการ์ด
+		# Lock icon centered
 		var lock := TextureRect.new()
 		lock.texture      = preload("res://image/lock_chain_x.png")
 		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		lock.size         = Vector2(48, 48)
-		lock.position     = Vector2(107, 30)
+		lock.position     = Vector2((CW - 48) * 0.5, 68)
 		lock.modulate     = Color(1, 1, 1, 0.70)
 		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(lock)
 
 		var locked_lbl := Label.new()
 		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.size = Vector2(260, 26)
-		locked_lbl.position = Vector2(0, 95)
+		locked_lbl.size = Vector2(CW, 22)
+		locked_lbl.position = Vector2(0, 128)
 		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		locked_lbl.add_theme_font_size_override("font_size", 11)
 		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
@@ -559,60 +531,79 @@ func _make_achievement_row(ach: Dictionary) -> Control:
 
 
 func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
+	const CW := 162.0; const CH := 210.0
 	var card := Panel.new()
-	card.custom_minimum_size = Vector2(260, 130)
+	card.custom_minimum_size = Vector2(CW, CH)
 	card.clip_contents = true
 
 	if is_found:
 		card.add_theme_stylebox_override("panel", _flat(
-			Color(0.05, 0.10, 0.22, 0.92), Color(0.35, 0.60, 1, 0.35), 10, 1))
+			Color(0.05, 0.10, 0.22, 0.92), Color(0.35, 0.60, 1, 0.40), 10, 1))
 
+		# Formula — large, centered top
 		var fml := Label.new()
 		fml.text = str(compound.get("formula", ""))
-		fml.position = Vector2(8, 14)
-		fml.size = Vector2(56, 32)
-		fml.add_theme_font_size_override("font_size", 22)
+		fml.position = Vector2(0, 14)
+		fml.size = Vector2(CW, 64)
+		fml.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		fml.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		fml.add_theme_font_size_override("font_size", 32)
 		fml.add_theme_color_override("font_color", Color(0.48, 0.84, 1, 0.92))
 		fml.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(fml)
 
+		var div1 := ColorRect.new()
+		div1.color = Color(0.3, 0.6, 1, 0.18)
+		div1.size = Vector2(CW - 24, 1)
+		div1.position = Vector2(12, 82)
+		div1.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(div1)
+
 		var nm := Label.new()
 		nm.text = str(compound.get("name", ""))
-		nm.position = Vector2(68, 10)
-		nm.size = Vector2(182, 20)
+		nm.position = Vector2(4, 88)
+		nm.size = Vector2(CW - 8, 22)
+		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		nm.add_theme_font_size_override("font_size", 14)
+		nm.add_theme_font_size_override("font_size", 13)
 		nm.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.90))
 		nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(nm)
 
 		var tp := Label.new()
 		tp.text = str(compound.get("type", ""))
-		tp.position = Vector2(68, 32)
-		tp.size = Vector2(182, 16)
+		tp.position = Vector2(4, 112)
+		tp.size = Vector2(CW - 8, 16)
+		tp.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		tp.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		tp.add_theme_font_size_override("font_size", 9)
+		tp.add_theme_font_size_override("font_size", 8)
 		tp.add_theme_color_override("font_color", Color(0.55, 0.75, 1, 0.55))
 		tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(tp)
 
-		var div := ColorRect.new()
-		div.color = Color(0.3, 0.55, 1, 0.15)
-		div.size = Vector2(240, 1)
-		div.position = Vector2(10, 56)
-		div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(div)
-
 		var desc := Label.new()
 		desc.text = str(compound.get("description", ""))
-		desc.position = Vector2(10, 62)
-		desc.size = Vector2(240, 58)
-		desc.add_theme_font_size_override("font_size", 9)
-		desc.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9, 0.70))
+		desc.position = Vector2(8, 132)
+		desc.size = Vector2(CW - 16, 68)
+		desc.add_theme_font_size_override("font_size", 8)
+		desc.add_theme_color_override("font_color", Color(0.68, 0.80, 0.92, 0.62))
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(desc)
+
+		# g1 frame overlay
+		var cftex := TextureRect.new()
+		cftex.texture      = preload("res://image/g1.jpg")
+		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		cftex.stretch_mode = TextureRect.STRETCH_SCALE
+		cftex.size         = Vector2(CW + 4, CH + 4)
+		cftex.position     = Vector2(-2, -2)
+		cftex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var cfmat := CanvasItemMaterial.new()
+		cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		cftex.material = cfmat
+		card.add_child(cftex)
 	else:
 		card.add_theme_stylebox_override("panel", _flat(
 			Color(0.06, 0.07, 0.12, 1.0), Color(0.15, 0.18, 0.25, 0.35), 10, 1))
@@ -622,15 +613,15 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		lock.size         = Vector2(48, 48)
-		lock.position     = Vector2(107, 30)
+		lock.position     = Vector2((CW - 48) * 0.5, 68)
 		lock.modulate     = Color(1, 1, 1, 0.70)
 		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(lock)
 
 		var locked_lbl := Label.new()
 		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.size = Vector2(260, 26)
-		locked_lbl.position = Vector2(0, 95)
+		locked_lbl.size = Vector2(CW, 22)
+		locked_lbl.position = Vector2(0, 128)
 		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		locked_lbl.add_theme_font_size_override("font_size", 11)
 		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
