@@ -585,29 +585,6 @@ func _setup_banner_carousel() -> void:
 		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(bar)
 
-		# Tag pill
-		var tag_bg := Panel.new()
-		tag_bg.position = Vector2(10, 7)
-		tag_bg.size = Vector2(80, 13)
-		tag_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var tsb := StyleBoxFlat.new()
-		tsb.bg_color = Color((d["tag_color"] as Color).r * 0.25, (d["tag_color"] as Color).g * 0.25, (d["tag_color"] as Color).b * 0.35, 0.95)
-		tsb.border_color = d["tag_color"]
-		tsb.border_width_left = 1; tsb.border_width_right = 1
-		tsb.border_width_top = 1; tsb.border_width_bottom = 1
-		tsb.corner_radius_top_left = 3; tsb.corner_radius_top_right = 3
-		tsb.corner_radius_bottom_right = 3; tsb.corner_radius_bottom_left = 3
-		tag_bg.add_theme_stylebox_override("panel", tsb)
-		card.add_child(tag_bg)
-		var tag_lbl := Label.new()
-		tag_lbl.text = str(d["tag"])
-		tag_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		tag_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		tag_lbl.add_theme_font_size_override("font_size", 7)
-		tag_lbl.add_theme_color_override("font_color", d["tag_color"])
-		tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		tag_bg.add_child(tag_lbl)
 
 		# Title
 		var title_lbl := Label.new()
