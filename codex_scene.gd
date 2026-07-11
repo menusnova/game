@@ -344,8 +344,8 @@ func _make_element_card(elem: Dictionary) -> Control:
 			if ev is InputEventMouseButton and ev.pressed:
 				_open_element_detail(elem)
 		)
-	# Frame เฉพาะการ์ดที่ค้นพบแล้ว
 	if discovered:
+		# Frame เฉพาะการ์ดที่ค้นพบแล้ว
 		var cftex := TextureRect.new()
 		cftex.texture      = preload("res://image/g1.jpg")
 		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
@@ -357,6 +357,27 @@ func _make_element_card(elem: Dictionary) -> Control:
 		cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		cftex.material = cfmat
 		card.add_child(cftex)
+	else:
+		# Lock icon กลางการ์ด
+		var lock := TextureRect.new()
+		lock.texture      = preload("res://image/lock_chain_x.png")
+		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		lock.size         = Vector2(48, 48)
+		lock.position     = Vector2(107, 30)
+		lock.modulate     = Color(1, 1, 1, 0.70)
+		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(lock)
+
+		var locked_lbl := Label.new()
+		locked_lbl.text = "ยังไม่ค้นพบ"
+		locked_lbl.size = Vector2(260, 26)
+		locked_lbl.position = Vector2(0, 95)
+		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		locked_lbl.add_theme_font_size_override("font_size", 11)
+		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
+		locked_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(locked_lbl)
 
 	return card
 
@@ -556,6 +577,26 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 	else:
 		card.add_theme_stylebox_override("panel", _flat(
 			Color(0.06, 0.07, 0.12, 1.0), Color(0.15, 0.18, 0.25, 0.35), 10, 1))
+
+		var lock := TextureRect.new()
+		lock.texture      = preload("res://image/lock_chain_x.png")
+		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		lock.size         = Vector2(48, 48)
+		lock.position     = Vector2(107, 30)
+		lock.modulate     = Color(1, 1, 1, 0.70)
+		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(lock)
+
+		var locked_lbl := Label.new()
+		locked_lbl.text = "ยังไม่ค้นพบ"
+		locked_lbl.size = Vector2(260, 26)
+		locked_lbl.position = Vector2(0, 95)
+		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		locked_lbl.add_theme_font_size_override("font_size", 11)
+		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
+		locked_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(locked_lbl)
 
 	return card
 
