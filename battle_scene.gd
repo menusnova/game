@@ -142,13 +142,13 @@ const PLAYER_W := 240.0
 const PLAYER_H := 300.0
 # Action ring center (bottom-right)
 const RING_CX  := 990.0
-const RING_CY  := 530.0
+const RING_CY  := 497.0
 const RING_R   := 88.0
 # Card hand strip
 const HAND_Y   := 556.0
 const HAND_H   := 88.0
 # Fan hand layout
-const FAN_CENTER_X := 340.0
+const FAN_CENTER_X := 165.0
 const FAN_BASE_Y   := 636.0
 const FAN_ARC_R    := 520.0
 const FAN_SPREAD   := 6.5
@@ -414,34 +414,20 @@ func _build_player_hud() -> void:
 	ap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pp.add_child(ap_row)
 
-	# Image slot inside row
-	var ap_img_bg := Panel.new()
-	ap_img_bg.size     = Vector2(44, 44)
-	ap_img_bg.position = Vector2(6, 6)
-	ap_img_bg.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
-	ap_img_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ap_row.add_child(ap_img_bg)
-
-	var ap_img := TextureRect.new()
-	ap_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ap_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	ap_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ap_img_bg.add_child(ap_img)
-
 	# AP sub-label
 	var ap_sub := Label.new()
 	ap_sub.text = "AP"
-	ap_sub.position = Vector2(56, 6)
-	ap_sub.add_theme_font_size_override("font_size", 9)
+	ap_sub.position = Vector2(4, 4)
+	ap_sub.add_theme_font_size_override("font_size", 10)
 	ap_sub.add_theme_color_override("font_color", C_SUB)
 	ap_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ap_row.add_child(ap_sub)
 
-	# Dots — fill full width of row after image slot
+	# Dots — start from left, bigger font
 	_ap_lbl = Label.new()
-	_ap_lbl.position = Vector2(54, 18)
-	_ap_lbl.size     = Vector2(228, 30)
-	_ap_lbl.add_theme_font_size_override("font_size", 24)
+	_ap_lbl.position = Vector2(4, 18)
+	_ap_lbl.size     = Vector2(280, 34)
+	_ap_lbl.add_theme_font_size_override("font_size", 30)
 	_ap_lbl.add_theme_color_override("font_color", C_AP)
 	_ap_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ap_row.add_child(_ap_lbl)
@@ -904,8 +890,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	frame_tex.texture      = load("res://image/g%d.jpg" % frame_tier)
 	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	frame_tex.stretch_mode = TextureRect.STRETCH_SCALE
-	frame_tex.size     = Vector2(CARD_W, CARD_H)
-	frame_tex.position = Vector2(0, 0)
+	# Bigger than the card so frame fully covers all edges
+	const FRAME_PAD := 10.0
+	frame_tex.size     = Vector2(CARD_W + FRAME_PAD * 2, CARD_H + FRAME_PAD * 2)
+	frame_tex.position = Vector2(-FRAME_PAD, -FRAME_PAD)
 	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var frame_mat := CanvasItemMaterial.new()
 	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
