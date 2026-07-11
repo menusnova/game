@@ -897,6 +897,21 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 			  Color(col.r, col.g, col.b, border_a), 12, bw))
 
 	# Type tag
+	# Card frame overlay first — text renders on top
+	var frame_tier := 1
+	if ctype == "reaction":
+		frame_tier = clampi(int(data.get("tier", 1)), 1, 4)
+	var frame_tex := TextureRect.new()
+	frame_tex.texture      = load("res://image/g%d.jpg" % frame_tier)
+	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	frame_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	frame_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame_mat := CanvasItemMaterial.new()
+	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	frame_tex.material = frame_mat
+	panel.add_child(frame_tex)
+
 	var tag_txt: String
 	match ctype:
 		"element":  tag_txt = "ELEMENT"
@@ -938,21 +953,6 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_lbl)
-
-	# Card frame overlay (g1-g4 based on tier)
-	var frame_tier := 1
-	if ctype == "reaction":
-		frame_tier = clampi(int(data.get("tier", 1)), 1, 4)
-	var frame_tex := TextureRect.new()
-	frame_tex.texture      = load("res://image/g%d.jpg" % frame_tier)
-	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	frame_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	frame_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var frame_mat := CanvasItemMaterial.new()
-	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	frame_tex.material = frame_mat
-	panel.add_child(frame_tex)
 
 	# Selection glow
 	if selected:
