@@ -293,18 +293,6 @@ func _make_item_card(item: Dictionary, px: float, py: float, pw: float, ph: floa
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		img_tex.material = mat
 		card.add_child(img_tex)
-
-	if item.has("tier"):
-		var frame_tex := TextureRect.new()
-		frame_tex.texture      = load("res://image/g%d.jpg" % int(item["tier"]))
-		frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		frame_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		frame_tex.size         = Vector2(pw, IMG_H)
-		frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var frame_mat := CanvasItemMaterial.new()
-		frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		frame_tex.material = frame_mat
-		card.add_child(frame_tex)
 	else:
 		var icon_lbl := Label.new()
 		icon_lbl.text = str(item.get("icon", "📦"))
