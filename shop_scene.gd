@@ -220,29 +220,6 @@ func _build_shop_page(items: Array, shop: Dictionary) -> void:
 	var accent: Color = shop["accent"]
 	var cur_col: Color = shop["cur_col"]
 
-	# Header banner
-	var banner := ColorRect.new()
-	banner.size  = Vector2(cw, 56)
-	banner.color = Color(accent.r * 0.18, accent.g * 0.18, accent.b * 0.22, 1.0)
-	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner)
-
-	var banner_title := Label.new()
-	banner_title.text = "%s  %s" % [str(shop["icon"]), str(shop["label"])]
-	banner_title.position = Vector2(20, 8)
-	banner_title.add_theme_font_size_override("font_size", 18)
-	banner_title.add_theme_color_override("font_color", Color(accent.r + 0.2, accent.g + 0.1, accent.b + 0.1, 1.0))
-	banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner_title)
-
-	var banner_sub := Label.new()
-	banner_sub.text = str(shop["desc"])
-	banner_sub.position = Vector2(20, 32)
-	banner_sub.add_theme_font_size_override("font_size", 10)
-	banner_sub.add_theme_color_override("font_color", Color(accent.r, accent.g, accent.b, 0.65))
-	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner_sub)
-
 	# Item grid: 4 columns, portrait cards
 	const COLS    := 4
 	const CARD_W  := 212.0
@@ -250,7 +227,7 @@ func _build_shop_page(items: Array, shop: Dictionary) -> void:
 	const PAD_X   := 10.0
 	const PAD_Y   := 10.0
 	const START_X := 16.0
-	const START_Y := 68.0
+	const START_Y := 12.0
 
 	for i in items.size():
 		var item: Dictionary = items[i]
@@ -383,47 +360,6 @@ func _build_premium_page() -> void:
 	var accent: Color = shop["accent"]
 	var cw := W - SIDE_W
 
-	# Header banner with premium gradient feel
-	var banner := ColorRect.new()
-	banner.size  = Vector2(cw, 56)
-	banner.color = Color(0.05, 0.12, 0.22, 1.0)
-	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner)
-
-	var banner_title := Label.new()
-	banner_title.text = "💎  Premium Store"
-	banner_title.position = Vector2(20, 8)
-	banner_title.add_theme_font_size_override("font_size", 18)
-	banner_title.add_theme_color_override("font_color", Color(0.55, 0.90, 1.0, 1.0))
-	banner_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner_title)
-
-	var banner_sub := Label.new()
-	banner_sub.text = "ใช้ Void Crystal X (เติมเงินเท่านั้น)  ·  ปลอดภัย · ไม่บังคับ"
-	banner_sub.position = Vector2(20, 32)
-	banner_sub.add_theme_font_size_override("font_size", 10)
-	banner_sub.add_theme_color_override("font_color", Color(0.45, 0.75, 1.0, 0.65))
-	banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(banner_sub)
-
-	# "First top-up bonus" notice
-	var notice := ColorRect.new()
-	notice.size     = Vector2(cw - 24, 32)
-	notice.position = Vector2(12, 64)
-	notice.color    = Color(0.18, 0.30, 0.55, 0.55)
-	notice.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(notice)
-
-	var notice_lbl := Label.new()
-	notice_lbl.text = "✦  รับโบนัสสองเท่าสำหรับการเติมเงินครั้งแรก — ครั้งเดียวตลอดชีพ"
-	notice_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	notice_lbl.offset_left = 12; notice_lbl.offset_right = 12
-	notice_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	notice_lbl.add_theme_font_size_override("font_size", 11)
-	notice_lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0, 0.90))
-	notice_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	notice.add_child(notice_lbl)
-
 	# 2-column grid for premium items
 	const COLS   := 2
 	const CARD_W := 440.0
@@ -431,7 +367,7 @@ func _build_premium_page() -> void:
 	const PAD_X  := 24.0
 	const PAD_Y  := 12.0
 	const START_X := 20.0
-	const START_Y := 108.0
+	const START_Y := 12.0
 
 	for i in PREMIUM_ITEMS.size():
 		var item: Dictionary = PREMIUM_ITEMS[i]
