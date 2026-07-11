@@ -171,22 +171,32 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 	back.position = Vector2(RIGHT_X + RIGHT_W - 46, 14)
 	add_child(back)
 
-	# Level box + "+" button
-	var level: int     = int(data.get("level", 1))
-	var level_max: int = int(data.get("level_max", 30))
-	var lv_box := _info_box(Vector2(RIGHT_X + 14, 52), Vector2(148, 44),
-		"LEVEL", "%d / %d" % [level, level_max], elem_col)
-	add_child(lv_box)
-	var lv_plus := _plus_btn(Vector2(RIGHT_X + 166, 60), elem_col)
-	add_child(lv_plus)
+	# Level Up button
+	var lvup := Panel.new()
+	lvup.size     = Vector2(RIGHT_W - 28, 44)
+	lvup.position = Vector2(RIGHT_X + 14, 52)
+	lvup.mouse_filter = Control.MOUSE_FILTER_STOP
+	var lvup_sb := StyleBoxFlat.new()
+	lvup_sb.bg_color = Color(elem_col.r * 0.22, elem_col.g * 0.22, elem_col.b * 0.35, 1.0)
+	lvup_sb.border_color = Color(elem_col.r, elem_col.g, elem_col.b, 0.70)
+	lvup_sb.set_border_width_all(1)
+	lvup_sb.set_corner_radius_all(8)
+	lvup.add_theme_stylebox_override("panel", lvup_sb)
+	add_child(lvup)
 
-	# Insight box + "+" button
-	var insight: int = int(data.get("insight", 0))
-	var ins_box := _info_box(Vector2(RIGHT_X + 204, 52), Vector2(130, 44),
-		"INSIGHT", "Phase %d" % insight, elem_col)
-	add_child(ins_box)
-	var ins_plus := _plus_btn(Vector2(RIGHT_X + 338, 60), elem_col)
-	add_child(ins_plus)
+	var lvup_lbl := _lbl("Level Up", 15, Color(elem_col.r + 0.15, elem_col.g + 0.1, elem_col.b + 0.1, 1.0))
+	lvup_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	lvup_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lvup_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lvup_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lvup.add_child(lvup_lbl)
+
+	lvup.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var t := lvup.create_tween().set_trans(Tween.TRANS_BACK)
+			t.tween_property(lvup, "scale", Vector2(0.93, 0.93), 0.08)
+			t.tween_property(lvup, "scale", Vector2(1.0,  1.0),  0.12)
+	)
 
 	# Divider
 	add_child(_crect(Vector2(RIGHT_X + 14, 140), Vector2(RIGHT_W - 28, 1), C_LINE))
