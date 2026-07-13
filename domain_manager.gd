@@ -20,7 +20,8 @@ var _points: float = 0.0
 var _last_reset_day: int = -1
 
 func _ready() -> void:
-	_load()
+	# Design choice: start fresh every launch, don't restore old saves.
+	# _last_reset_day stays at its default (-1), so this always resets.
 	_check_daily_reset()
 
 func add_points(source: String) -> void:

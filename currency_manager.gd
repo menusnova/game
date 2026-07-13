@@ -15,7 +15,8 @@ var energy:       int = 240    # ⚡ พลังงาน
 var _regen_acc: float = 0.0   # เศษวินาทีสะสม
 
 func _ready() -> void:
-	_load()
+	# Design choice: start fresh every launch, don't restore old saves.
+	_save()
 	set_process(true)
 
 func _process(delta: float) -> void:
