@@ -1295,7 +1295,11 @@ func _check_battle() -> void:
 		if not is_instance_valid(self): return
 		_show_result_screen(false)
 
+const FINAL_STAGE := 2   # only 2 stages exist — winning stage 2 ends the run
+
 func _show_result_screen(won: bool) -> void:
+	var is_final_win := won and _current_stage >= FINAL_STAGE
+
 	# Rewards
 	var exp_gain    := 30 + _current_stage * 20
 	var gold_gain   := 100 + _current_stage * 50
@@ -1307,7 +1311,7 @@ func _show_result_screen(won: bool) -> void:
 	CurrencyManager.add_gold(gold_gain)
 	CurrencyManager.add_free_crystal(crystal_gain)
 
-	# Overlay
+	# Full-screen overlay
 	var ov := ColorRect.new()
 	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ov.color   = Color(0.0, 0.0, 0.0, 0.0)
@@ -1316,101 +1320,81 @@ func _show_result_screen(won: bool) -> void:
 	add_child(ov)
 
 	var tw_bg := ov.create_tween()
-	tw_bg.tween_property(ov, "color", Color(0.0, 0.0, 0.05, 0.82), 0.35)
+	tw_bg.tween_property(ov, "color", Color(0.02, 0.02, 0.06, 0.92), 0.35)
 
-	# Card panel — right-center
-	const PW := 380.0; const PH := 430.0
-	const PX := 1152.0 - PW - 32.0; const PY := (648.0 - PH) * 0.5
-	var panel := Panel.new()
-	panel.position = Vector2(PX, PY)
-	panel.size     = Vector2(PW, PH)
-	panel.modulate = Color(1, 1, 1, 0.0)
-	var psb := StyleBoxFlat.new()
-	psb.bg_color = Color(0.04, 0.05, 0.14, 0.97) if won else Color(0.10, 0.03, 0.05, 0.97)
-	psb.border_color = Color(0.95, 0.78, 0.20, 0.9) if won else Color(0.80, 0.20, 0.20, 0.9)
-	psb.set_border_width(SIDE_LEFT, 2); psb.set_border_width(SIDE_RIGHT, 2)
-	psb.set_border_width(SIDE_TOP, 2);  psb.set_border_width(SIDE_BOTTOM, 2)
-	psb.corner_radius_top_left    = 18; psb.corner_radius_top_right    = 18
-	psb.corner_radius_bottom_right= 18; psb.corner_radius_bottom_left  = 18
-	psb.shadow_color = Color(0.95, 0.78, 0.20, 0.35) if won else Color(0.80, 0.20, 0.20, 0.35)
-	psb.shadow_size  = 12
-	panel.add_theme_stylebox_override("panel", psb)
-	ov.add_child(panel)
+	var main_col: Color = Color(0.98, 0.88, 0.30, 1.0) if won else Color(0.95, 0.35, 0.35, 1.0)
 
-	var tw_p := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw_p.tween_property(panel, "modulate:a", 1.0, 0.45)
-
-	# Top accent bar
-	var accent := ColorRect.new()
-	accent.size  = Vector2(PW, 4)
-	accent.color = Color(0.95, 0.78, 0.20, 1.0) if won else Color(0.90, 0.20, 0.20, 1.0)
-	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(accent)
-
-	# Result title
+	# Big centered result text, upper-middle of screen
 	var title_lbl := Label.new()
-	title_lbl.text = "VICTORY" if won else "DEFEAT"
-	title_lbl.position = Vector2(0, 28)
-	title_lbl.size     = Vector2(PW, 72)
+	title_lbl.text = "ชนะ" if won else "แพ้"
+	title_lbl.position = Vector2(0, 90)
+	title_lbl.size     = Vector2(1152.0, 110)
 	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	title_lbl.add_theme_font_size_override("font_size", 44)
-	title_lbl.add_theme_color_override("font_color",
-		Color(0.98, 0.88, 0.30, 1.0) if won else Color(0.95, 0.35, 0.35, 1.0))
+	title_lbl.add_theme_font_size_override("font_size", 80)
+	title_lbl.add_theme_color_override("font_color", main_col)
 	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(title_lbl)
+	title_lbl.modulate = Color(1, 1, 1, 0.0)
+	ov.add_child(title_lbl)
+	var tw_t := title_lbl.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tw_t.tween_property(title_lbl, "modulate:a", 1.0, 0.45)
 
-	# Sub text
 	var sub_lbl := Label.new()
-	sub_lbl.text = "Stage %d — ผ่านแล้ว!" % _current_stage if won else "Stage %d — พ่ายแพ้" % _current_stage
-	sub_lbl.position = Vector2(0, 102)
-	sub_lbl.size     = Vector2(PW, 22)
+	if is_final_win:
+		sub_lbl.text = "ผ่านทุกด่านแล้ว! (Stage %d/%d)" % [_current_stage, FINAL_STAGE]
+	elif won:
+		sub_lbl.text = "Stage %d — ผ่านแล้ว!" % _current_stage
+	else:
+		sub_lbl.text = "Stage %d — พ่ายแพ้" % _current_stage
+	sub_lbl.position = Vector2(0, 200)
+	sub_lbl.size     = Vector2(1152.0, 26)
 	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub_lbl.add_theme_font_size_override("font_size", 13)
-	sub_lbl.add_theme_color_override("font_color", Color(0.70, 0.80, 1.0, 0.75))
+	sub_lbl.add_theme_font_size_override("font_size", 15)
+	sub_lbl.add_theme_color_override("font_color", Color(0.75, 0.83, 1.0, 0.80))
 	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(sub_lbl)
+	sub_lbl.modulate = Color(1, 1, 1, 0.0)
+	ov.add_child(sub_lbl)
+	var tw_s := sub_lbl.create_tween()
+	tw_s.tween_property(sub_lbl, "modulate:a", 1.0, 0.4).set_delay(0.15)
 
-	# Divider
-	var div := ColorRect.new()
-	div.position = Vector2(24, 132)
-	div.size     = Vector2(PW - 48, 1)
-	div.color    = Color(1, 1, 1, 0.1)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(div)
+	# Rewards — centered column below the title
+	const RW := 360.0
+	var rx := (1152.0 - RW) * 0.5
+	var ry := 250.0
 
-	# Rewards header
 	var rew_hdr := Label.new()
 	rew_hdr.text     = "รางวัลที่ได้รับ" if won else "สิ่งที่ได้รับ"
-	rew_hdr.position = Vector2(24, 148)
-	rew_hdr.size     = Vector2(PW - 48, 20)
-	rew_hdr.add_theme_font_size_override("font_size", 11)
+	rew_hdr.position = Vector2(rx, ry)
+	rew_hdr.size     = Vector2(RW, 20)
+	rew_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rew_hdr.add_theme_font_size_override("font_size", 12)
 	rew_hdr.add_theme_color_override("font_color", Color(0.6, 0.7, 0.9, 0.7))
 	rew_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(rew_hdr)
+	rew_hdr.modulate = Color(1, 1, 1, 0.0)
+	ov.add_child(rew_hdr)
+	ry += 30.0
 
-	# Reward rows
 	const ROWS: Array = [
 		["⚔", "EXP",      Color(0.50, 0.90, 1.00)],
 		["💰", "Gold",     Color(0.95, 0.78, 0.20)],
 		["💎", "Crystal",  Color(0.55, 0.75, 1.00)],
 	]
 	var row_vals := [exp_gain, gold_gain, crystal_gain]
-	var ry := 178.0
+	var reward_nodes: Array = [rew_hdr]
 	for i in ROWS.size():
 		var row_data: Array = ROWS[i]
 		var val: int = row_vals[i]
-		# Row bg
 		var row_bg := Panel.new()
-		row_bg.position = Vector2(24, ry)
-		row_bg.size     = Vector2(PW - 48, 44)
+		row_bg.position = Vector2(rx, ry)
+		row_bg.size     = Vector2(RW, 44)
 		row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var rsb := StyleBoxFlat.new()
-		rsb.bg_color = Color(1, 1, 1, 0.04)
-		rsb.corner_radius_top_left    = 8; rsb.corner_radius_top_right    = 8
-		rsb.corner_radius_bottom_right= 8; rsb.corner_radius_bottom_left  = 8
+		rsb.bg_color = Color(1, 1, 1, 0.05)
+		rsb.set_corner_radius_all(8)
 		row_bg.add_theme_stylebox_override("panel", rsb)
-		panel.add_child(row_bg)
+		row_bg.modulate = Color(1, 1, 1, 0.0)
+		ov.add_child(row_bg)
+		reward_nodes.append(row_bg)
 
 		var icon_lbl := Label.new()
 		icon_lbl.text     = str(row_data[0])
@@ -1434,7 +1418,7 @@ func _show_result_screen(won: bool) -> void:
 		var val_lbl := Label.new()
 		val_lbl.text     = "+%d" % val if val > 0 else "—"
 		val_lbl.position = Vector2(0, 0)
-		val_lbl.size     = Vector2(PW - 48 - 16, 44)
+		val_lbl.size     = Vector2(RW - 16, 44)
 		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		val_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 		val_lbl.add_theme_font_size_override("font_size", 18)
@@ -1444,25 +1428,37 @@ func _show_result_screen(won: bool) -> void:
 
 		ry += 52.0
 
-	# Button
-	var btn_y := PH - 64.0
+	for i in reward_nodes.size():
+		var n: CanvasItem = reward_nodes[i]
+		var tw_r := n.create_tween()
+		tw_r.tween_property(n, "modulate:a", 1.0, 0.3).set_delay(0.20 + i * 0.06)
+
+	# Button — bottom center
+	var btn_w := 240.0; var btn_h := 50.0
 	var btn := Panel.new()
-	btn.position = Vector2(32, btn_y)
-	btn.size     = Vector2(PW - 64, 44)
+	btn.position = Vector2((1152.0 - btn_w) * 0.5, 648.0 - 90.0)
+	btn.size     = Vector2(btn_w, btn_h)
 	var bsb := StyleBoxFlat.new()
 	bsb.bg_color     = Color(0.95, 0.78, 0.20, 1.0) if won else Color(0.55, 0.12, 0.12, 1.0)
-	bsb.corner_radius_top_left    = 10; bsb.corner_radius_top_right    = 10
-	bsb.corner_radius_bottom_right= 10; bsb.corner_radius_bottom_left  = 10
+	bsb.set_corner_radius_all(12)
 	btn.add_theme_stylebox_override("panel", bsb)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.add_child(btn)
+	btn.modulate = Color(1, 1, 1, 0.0)
+	ov.add_child(btn)
+	var tw_b := btn.create_tween()
+	tw_b.tween_property(btn, "modulate:a", 1.0, 0.3).set_delay(0.45)
 
 	var btn_lbl := Label.new()
-	btn_lbl.text = "ต่อไป →" if won else "กลับหน้าหลัก"
+	if is_final_win:
+		btn_lbl.text = "กลับหน้าหลัก"
+	elif won:
+		btn_lbl.text = "ต่อไป →"
+	else:
+		btn_lbl.text = "กลับหน้าหลัก"
 	btn_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	btn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	btn_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn_lbl.add_theme_font_size_override("font_size", 15)
+	btn_lbl.add_theme_font_size_override("font_size", 16)
 	btn_lbl.add_theme_color_override("font_color",
 		Color(0.10, 0.06, 0.02, 1.0) if won else Color(1.0, 0.80, 0.80, 1.0))
 	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1473,9 +1469,10 @@ func _show_result_screen(won: bool) -> void:
 			var tw_out := ov.create_tween()
 			tw_out.tween_property(ov, "modulate:a", 0.0, 0.25)
 			tw_out.tween_callback(func():
+				ov.queue_free()
 				if not is_instance_valid(self): return
-				if won: _next_stage()
-				else:   _go_back()
+				if won and not is_final_win: _next_stage()
+				else: _go_back()
 			)
 	)
 
