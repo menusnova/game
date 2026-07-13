@@ -184,6 +184,26 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	sb.border_width_bottom = bw
 	return sb
 
+# ── clipped description label helper ──
+func _clipped_desc(parent: Control, txt: String, px: float, py: float,
+		w: float, h: float, font_sz: int, col: Color) -> void:
+	var clip := Control.new()
+	clip.position = Vector2(px, py)
+	clip.size = Vector2(w, h)
+	clip.clip_contents = true
+	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(clip)
+
+	var lbl := Label.new()
+	lbl.text = txt
+	lbl.position = Vector2(0, 0)
+	lbl.size = Vector2(w, h + 40)   # taller than clip so wrap has room
+	lbl.add_theme_font_size_override("font_size", font_sz)
+	lbl.add_theme_color_override("font_color", col)
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip.add_child(lbl)
+
 func _switch_tab(idx: int) -> void:
 	_tab = idx
 	for i in _tab_btns.size():
@@ -342,17 +362,10 @@ func _make_element_card(elem: Dictionary) -> Control:
 		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(sub)
 
-		# Description — 2–3 lines
-		var desc := Label.new()
-		desc.text = elem["real_desc"]
-		desc.position = Vector2(8, 132)
-		desc.size = Vector2(CW - 16, 68)
-		desc.add_theme_font_size_override("font_size", 8)
-		desc.add_theme_color_override("font_color", Color(0.68, 0.80, 0.90, 0.62))
-		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(desc)
+		# Description — clipped to card bottom
+		_clipped_desc(card, elem["real_desc"],
+			8, 132, CW - 16, CH - 136,
+			8, Color(0.68, 0.80, 0.90, 0.62))
 
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed:
@@ -598,16 +611,10 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 		tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(tp)
 
-		var desc := Label.new()
-		desc.text = str(compound.get("description", ""))
-		desc.position = Vector2(8, 132)
-		desc.size = Vector2(CW - 16, 68)
-		desc.add_theme_font_size_override("font_size", 8)
-		desc.add_theme_color_override("font_color", Color(0.68, 0.80, 0.92, 0.62))
-		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(desc)
+		# Description — clipped to card bottom
+		_clipped_desc(card, str(compound.get("description", "")),
+			8, 132, CW - 16, CH - 136,
+			8, Color(0.68, 0.80, 0.92, 0.62))
 
 		# g1 frame overlay
 		var cftex := TextureRect.new()
