@@ -520,13 +520,15 @@ func _warp_btn(count: int) -> Button:
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	btn.clip_contents = true
 
-	# btgacha.jpg as button background
+	# btgacha.jpg as button background — STRETCH_SCALE avoids the aspect-cover
+	# crop that produced a thin cropped "strip" (image is 1344x768, far wider
+	# aspect than the 210x48 button, so COVERED mode zoomed into a sliver)
 	var bg_tex := _load_png("res://image/btgacha.jpg")
 	if bg_tex:
 		var bg_rect := TextureRect.new()
 		bg_rect.texture      = bg_tex
 		bg_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		bg_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg_rect.stretch_mode = TextureRect.STRETCH_SCALE
 		bg_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var mat := CanvasItemMaterial.new()
@@ -839,7 +841,10 @@ func _show_confirm_dialog(count: int) -> void:
 	var confirm_btn := Button.new()
 	confirm_btn.text = "ยืนยัน (%s)" % cost_str
 	if gem_tex: confirm_btn.icon = gem_tex
-	confirm_btn.expand_icon = false
+	confirm_btn.expand_icon = true
+	# crystal_gem.png is 1024x1024 — Button.icon renders at native size
+	# unless capped; match the 18px icon used in cost_row above (same group)
+	confirm_btn.add_theme_constant_override("icon_max_width", 18)
 	confirm_btn.size = Vector2(btn_w, 38)
 	confirm_btn.position = Vector2((bw * 0.5) + 8, btn_y)
 	confirm_btn.add_theme_font_size_override("font_size", 13)
