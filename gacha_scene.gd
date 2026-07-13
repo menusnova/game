@@ -552,6 +552,9 @@ func _warp_btn(count: int) -> Button:
 		bg_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		bg_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		bg_rect.material = mat
 		btn.add_child(bg_rect)
 	else:
 		var sb_n := _sb(Color(0.14, 0.22, 0.55, 1.0), Color(0.35, 0.55, 1.0, 0.5), 10, 1)
