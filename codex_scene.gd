@@ -166,9 +166,9 @@ func _ready() -> void:
 		if base not in _discovered:
 			_discovered.append(base)
 
-	if ResourceLoader.exists("res://image/bgac.png"):
+	if ResourceLoader.exists("res://image/bguio.png"):
 		var bg := TextureRect.new()
-		bg.texture      = load("res://image/bgac.png")
+		bg.texture      = load("res://image/bguio.png")
 		bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		bg.set_anchors_preset(Control.PRESET_FULL_RECT)
