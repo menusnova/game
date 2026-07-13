@@ -161,14 +161,22 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 	lvup.position = Vector2(RIGHT_X + 14, 52)
 	lvup.mouse_filter = Control.MOUSE_FILTER_STOP
 	var lvup_sb := StyleBoxFlat.new()
-	lvup_sb.bg_color = Color(elem_col.r * 0.22, elem_col.g * 0.22, elem_col.b * 0.35, 1.0)
-	lvup_sb.border_color = Color(elem_col.r, elem_col.g, elem_col.b, 0.70)
+	var is_void := elem_col.b > elem_col.r and elem_col.b > elem_col.g
+	if is_void:
+		lvup_sb.bg_color = Color(0.04, 0.08, 0.24, 1.0)
+		lvup_sb.border_color = Color(0.2, 0.85, 1.0, 0.90)
+		lvup_sb.shadow_color = Color(0.0, 0.8, 1.0, 0.45)
+		lvup_sb.shadow_size = 6
+	else:
+		lvup_sb.bg_color = Color(elem_col.r * 0.22, elem_col.g * 0.22, elem_col.b * 0.35, 1.0)
+		lvup_sb.border_color = Color(elem_col.r, elem_col.g, elem_col.b, 0.70)
 	lvup_sb.set_border_width_all(1)
 	lvup_sb.set_corner_radius_all(8)
 	lvup.add_theme_stylebox_override("panel", lvup_sb)
 	add_child(lvup)
 
-	var lvup_lbl := _lbl("Level Up", 15, Color(elem_col.r + 0.15, elem_col.g + 0.1, elem_col.b + 0.1, 1.0))
+	var lvup_txt_col := Color(0.4, 0.95, 1.0, 1.0) if is_void else Color(elem_col.r + 0.15, elem_col.g + 0.1, elem_col.b + 0.1, 1.0)
+	var lvup_lbl := _lbl("Level Up", 15, lvup_txt_col)
 	lvup_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	lvup_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lvup_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
