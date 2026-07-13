@@ -546,24 +546,25 @@ func _build_char_grid(parent: Control) -> void:
 		strip.add_theme_stylebox_override("panel", strip_sb)
 		card.add_child(strip)
 
-		var nl := Label.new()
-		nl.text = name_str if owned else "ยังไม่ปลดล็อค"
-		nl.add_theme_font_size_override("font_size", 9 if owned else 7)
-		nl.add_theme_color_override("font_color", Color(0.85, 0.92, 1.0) if owned else Color(0.5, 0.5, 0.6))
-		nl.position = Vector2(2, 2)
-		nl.size = Vector2(cw - 4, 12)
-		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		strip.add_child(nl)
+		if not owned:
+			var nl := Label.new()
+			nl.text = "ยังไม่ปลดล็อค"
+			nl.add_theme_font_size_override("font_size", 7)
+			nl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+			nl.position = Vector2(2, 2)
+			nl.size = Vector2(cw - 4, 12)
+			nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			strip.add_child(nl)
 
 		if owned:
 			var stars_lbl := Label.new()
 			var star_count: int = entry.get("rarity", 3)
 			stars_lbl.text = "★".repeat(star_count)
-			stars_lbl.add_theme_font_size_override("font_size", 7)
+			stars_lbl.add_theme_font_size_override("font_size", 9)
 			stars_lbl.add_theme_color_override("font_color", rcol)
-			stars_lbl.position = Vector2(2, 12)
-			stars_lbl.size = Vector2(cw - 4, 10)
+			stars_lbl.position = Vector2(2, 5)
+			stars_lbl.size = Vector2(cw - 4, 12)
 			stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			strip.add_child(stars_lbl)
