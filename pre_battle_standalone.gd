@@ -341,7 +341,7 @@ func _build_edit_panel() -> void:
 	bg.add_child(sep)
 
 	# Element cards sub-section (discovered only)
-	var elem_count := max(PlayerData.discovered_elements.size(), 2)
+	var elem_count := maxi(PlayerData.discovered_elements.size(), 2)
 	var elem_rows  := ceili(float(elem_count) / 5.0)
 	var elem_h     := elem_rows * (64 + 6) + 4
 
