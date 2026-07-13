@@ -42,11 +42,11 @@ const ELEM_NAME: Dictionary = {
 const WARP_TYPES := [
 	{
 		"id":     "char",
-		"label":  "Character\nEvent Warp",
+		"label":  "Void\nResonance",
 		"tag":    "LIMITED",
 		"icon":   "✦",
 		"accent": Color(0.35, 0.75, 1.0),
-		"banner_title": "Character Event Warp",
+		"banner_title": "Void Resonance",
 		"banner_sub":   "LIMITED",
 		"art_icon":     "🔥",
 		"art_col":      Color(1.0, 0.40, 0.15),
@@ -60,11 +60,11 @@ const WARP_TYPES := [
 	},
 	{
 		"id":     "lc",
-		"label":  "Light Cone\nEvent Warp",
+		"label":  "Formula\nResonance",
 		"tag":    "LIMITED",
 		"icon":   "📖",
 		"accent": Color(1.0, 0.78, 0.22),
-		"banner_title": "Light Cone Event Warp",
+		"banner_title": "Formula Resonance",
 		"banner_sub":   "LIMITED",
 		"art_icon":     "📖",
 		"art_col":      Color(1.0, 0.80, 0.25),
@@ -74,6 +74,24 @@ const WARP_TYPES := [
 		"desc_lines": [
 			"ทุก 10 ครั้งรับประกันได้ไพ่ช่วย 4★ ขึ้นไป",
 			"ไพ่หลักในแบนเนอร์นี้มีอัตราได้รับสูงขึ้น",
+		],
+	},
+	{
+		"id":     "std",
+		"label":  "Eternal\nSynthesis",
+		"tag":    "STANDARD",
+		"icon":   "⚗",
+		"accent": Color(0.55, 0.90, 0.65),
+		"banner_title": "Eternal Synthesis",
+		"banner_sub":   "STANDARD",
+		"art_icon":     "⚗",
+		"art_col":      Color(0.55, 0.90, 0.65),
+		"art_img":      "res://image/lyra_3.png",
+		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
+		"duration":     "ถาวร",
+		"desc_lines": [
+			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
+			"แบนเนอร์มาตรฐาน ไม่มีวันหมดอายุ",
 		],
 	},
 ]
@@ -447,7 +465,7 @@ func _build_top_bar() -> void:
 	add_child(bar)
 
 	var title_lbl := Label.new()
-	title_lbl.text = "Gacha"
+	title_lbl.text = "Void Gate"
 	title_lbl.position = Vector2(16, 0)
 	title_lbl.size = Vector2(200, TOP_H)
 	title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -576,7 +594,7 @@ func _warp_btn(count: int) -> Button:
 
 	# Label: "สุ่ม ×1" / "สุ่ม ×10" — offset right to leave room for icon
 	var warp_lbl := Label.new()
-	warp_lbl.text = "สุ่ม  ×%d" % count
+	warp_lbl.text = "Synthesize  ×%d" % count
 	warp_lbl.add_theme_font_size_override("font_size", 16)
 	warp_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 	warp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
