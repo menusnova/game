@@ -1082,7 +1082,7 @@ func _remove_from_hand(id: String) -> void:
 # ════════════════════════════════════════════════════════════
 # ── Void Strike — Basic ATK ──────────────────────────────
 func _on_attack() -> void:
-	if not _player_turn or _main_action_done or _battle_over: return
+	if not _player_turn or _main_action_done or _is_defending or _battle_over: return
 	if _ap < 1: _msg("❌ AP ไม่พอ"); return
 
 	_ap -= 1
@@ -1101,9 +1101,10 @@ func _on_attack() -> void:
 	_refresh_ui()
 	_check_battle()
 
-# ── Null Barrier — Defend (ไม่เสียเทิร์น) ────────────────
+# ── Null Barrier — Defend (ไม่เสียเทิร์น แต่ใช้แทน Attack ไม่ได้ทั้งคู่) ────────────────
 func _on_defend() -> void:
-	if not _player_turn or _battle_over: return   # ไม่เช็ค _main_action_done
+	if not _player_turn or _battle_over: return
+	if _main_action_done or _is_defending: return   # ใช้ได้แทน Attack เท่านั้น ไม่ใช่เพิ่มเติม
 
 	_is_defending = true
 	_add_gauge(5)
@@ -1569,9 +1570,9 @@ func _refresh_ui() -> void:
 
 	# Buttons
 	var pt := _player_turn and not _battle_over
-	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _ap < 1
-	# Null Barrier — ไม่เช็ค _main_action_done (ไม่เสียเทิร์น)
-	if _btn_defend: _btn_defend.disabled = not pt or _is_defending
+	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _is_defending or _ap < 1
+	# Defend and Attack are mutually exclusive (one basic action per turn)
+	if _btn_defend: _btn_defend.disabled = not pt or _is_defending or _main_action_done
 	if _btn_skill:
 		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n0AP"
 		_btn_skill.text = "✨\nSKL%s" % cd
