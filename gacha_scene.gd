@@ -99,6 +99,7 @@ const WARP_TYPES := [
 var _pity   := 0
 var _pity_4 := 0
 var _active_warp := 0
+var _pull_history: Array = []   # [{name, entity_type, banner, time, rarity}]
 
 var _revealing   := false
 var _skip_to_end := false
@@ -438,6 +439,7 @@ func _build_info_card() -> void:
 	var hist_btn := _ghost_btn("ประวัติ", 12)
 	hist_btn.size     = Vector2(iw - pad * 2, 40)
 	hist_btn.position = Vector2(pad, ih - pad - 40)
+	hist_btn.pressed.connect(_show_history_overlay)
 	card.add_child(hist_btn)
 
 # ── Top bar ──────────────────────────────────────────────────────
@@ -851,9 +853,22 @@ func _execute_pull(count: int) -> void:
 		results.append(str(r[0]))
 		rarities.append(int(r[1]))
 	DomainManager.add_points("gacha")
+	var banner_name: String = str(WARP_TYPES[_active_warp].get("banner_title", ""))
+	var now := Time.get_datetime_string_from_system(false, true)
 	for i in results.size():
 		if rarities[i] >= 4:
 			CharacterManager.unlock(results[i])
+		var etype: String
+		if rarities[i] == 3:
+			etype = "Element Card"
+		elif CARD_TYPE.get(results[i], "") == "SUPPORT":
+			etype = "Formula Card"
+		else:
+			etype = "Character"
+		_pull_history.insert(0, {
+			"name": results[i], "entity_type": etype,
+			"banner": banner_name, "time": now, "rarity": rarities[i]
+		})
 	_refresh_ui()
 	_run_reveal(results, rarities)
 
@@ -1203,6 +1218,213 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
 
 func _make_visible_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
 	return _make_back_btn(pos, sz, callback)
+
+func _show_history_overlay() -> void:
+	if get_node_or_null("_HistoryOv") != null: return
+	const OW := 900.0; const OH := 520.0
+	const COL_W := [160.0, 200.0, 220.0, 210.0]
+	const COL_H := ["Entity Type", "Entity Name", "Synthesize Type", "Time"]
+
+	# Dim backdrop
+	var dim := ColorRect.new()
+	dim.name = "_HistoryOv"
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.72)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 90
+	add_child(dim)
+	dim.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed:
+			dim.queue_free()
+	)
+
+	# Main panel
+	var box := Panel.new()
+	box.size     = Vector2(OW, OH)
+	box.position = Vector2((W - OW) * 0.5, (H - OH) * 0.5)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP
+	var box_sb := StyleBoxFlat.new()
+	box_sb.bg_color     = Color(0.93, 0.92, 0.88, 0.98)
+	box_sb.border_color = Color(0.65, 0.60, 0.50, 0.60)
+	box_sb.set_border_width_all(1)
+	box_sb.set_corner_radius_all(6)
+	box_sb.shadow_color = Color(0, 0, 0, 0.50)
+	box_sb.shadow_size  = 16
+	box.add_theme_stylebox_override("panel", box_sb)
+	dim.add_child(box)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP  # block clicks from reaching dim
+
+	# Tab bar background
+	var tab_bg := ColorRect.new()
+	tab_bg.color = Color(0.18, 0.16, 0.14, 1.0)
+	tab_bg.size  = Vector2(OW, 48)
+	tab_bg.position = Vector2.ZERO
+	tab_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(tab_bg)
+
+	# Tab: View Details (inactive)
+	var tab_det := Button.new()
+	tab_det.text = "View Details"
+	tab_det.size = Vector2(200, 48)
+	tab_det.position = Vector2(0, 0)
+	tab_det.add_theme_font_size_override("font_size", 14)
+	tab_det.add_theme_color_override("font_color", Color(0.70, 0.68, 0.62, 1.0))
+	tab_det.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0)))
+	tab_det.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.06), Color(0,0,0,0)))
+	tab_det.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	box.add_child(tab_det)
+
+	# Vertical divider between tabs
+	var vdiv := ColorRect.new()
+	vdiv.color = Color(0.50, 0.48, 0.44, 0.5)
+	vdiv.size  = Vector2(1, 28)
+	vdiv.position = Vector2(200, 10)
+	vdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(vdiv)
+
+	# Tab: Records (active)
+	var tab_rec := Button.new()
+	tab_rec.text = "Records"
+	tab_rec.size = Vector2(160, 48)
+	tab_rec.position = Vector2(201, 0)
+	tab_rec.add_theme_font_size_override("font_size", 14)
+	tab_rec.add_theme_color_override("font_color", Color(0.85, 0.72, 0.35, 1.0))
+	tab_rec.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0)))
+	tab_rec.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.06), Color(0,0,0,0)))
+	tab_rec.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	box.add_child(tab_rec)
+
+	# Gold underline for active tab
+	var uline := ColorRect.new()
+	uline.color    = Color(0.85, 0.72, 0.35, 1.0)
+	uline.size     = Vector2(80, 2)
+	uline.position = Vector2(201 + 40, 46)
+	uline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(uline)
+
+	# Close button
+	var close_btn := Button.new()
+	close_btn.text = "✕"
+	close_btn.size = Vector2(42, 42)
+	close_btn.position = Vector2(OW - 48, 3)
+	close_btn.add_theme_font_size_override("font_size", 16)
+	close_btn.add_theme_color_override("font_color", Color(0.70, 0.68, 0.62, 1.0))
+	close_btn.add_theme_stylebox_override("normal",  _sb(Color(0,0,0,0), Color(0,0,0,0)))
+	close_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.08), Color(0,0,0,0)))
+	close_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
+	close_btn.pressed.connect(func(): dim.queue_free())
+	box.add_child(close_btn)
+
+	# Divider below tab bar
+	var hdiv := ColorRect.new()
+	hdiv.color = Color(0.60, 0.58, 0.52, 0.40)
+	hdiv.size  = Vector2(OW, 1)
+	hdiv.position = Vector2(0, 48)
+	hdiv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(hdiv)
+
+	# Banner title inside content
+	var active_title: String = str(WARP_TYPES[_active_warp].get("banner_title", ""))
+	var banner_lbl := Label.new()
+	banner_lbl.text = active_title
+	banner_lbl.position = Vector2(20, 58)
+	banner_lbl.size = Vector2(OW - 40, 28)
+	banner_lbl.add_theme_font_size_override("font_size", 18)
+	banner_lbl.add_theme_color_override("font_color", Color(0.12, 0.10, 0.08, 0.95))
+	banner_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(banner_lbl)
+
+	var sub_lbl := Label.new()
+	sub_lbl.text = "ดูประวัติ Synthesize ย้อนหลัง ข้อมูลอาจใช้เวลาอัปเดตสักครู่"
+	sub_lbl.position = Vector2(20, 88)
+	sub_lbl.size = Vector2(OW - 40, 22)
+	sub_lbl.add_theme_font_size_override("font_size", 11)
+	sub_lbl.add_theme_color_override("font_color", Color(0.35, 0.33, 0.28, 0.85))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(sub_lbl)
+
+	# Table header
+	const TABLE_Y := 118.0
+	const ROW_H   := 44.0
+	var hdr_bg := ColorRect.new()
+	hdr_bg.color    = Color(0.85, 0.82, 0.76, 0.55)
+	hdr_bg.size     = Vector2(OW - 2, ROW_H)
+	hdr_bg.position = Vector2(1, TABLE_Y)
+	hdr_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(hdr_bg)
+
+	var hx := 20.0
+	for c in COL_H.size():
+		var hl := Label.new()
+		hl.text = COL_H[c]
+		hl.position = Vector2(hx, TABLE_Y + 4)
+		hl.size = Vector2(COL_W[c], ROW_H - 8)
+		hl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		hl.add_theme_font_size_override("font_size", 12)
+		hl.add_theme_color_override("font_color", Color(0.68, 0.55, 0.22, 1.0))
+		hl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(hl)
+		hx += COL_W[c]
+
+	# Scrollable rows
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(0, TABLE_Y + ROW_H)
+	scroll.size     = Vector2(OW, OH - TABLE_Y - ROW_H - 4)
+	scroll.mouse_filter = Control.MOUSE_FILTER_STOP
+	box.add_child(scroll)
+
+	var rows_vbox := VBoxContainer.new()
+	rows_vbox.custom_minimum_size = Vector2(OW, 0)
+	rows_vbox.add_theme_constant_override("separation", 0)
+	scroll.add_child(rows_vbox)
+
+	var rarity_cols := {5: Color(0.85,0.68,0.18,1.0), 4: Color(0.65,0.42,0.92,1.0), 3: Color(0.35,0.55,0.90,1.0)}
+
+	if _pull_history.is_empty():
+		var empty_lbl := Label.new()
+		empty_lbl.text = "ยังไม่มีประวัติการ Synthesize"
+		empty_lbl.add_theme_font_size_override("font_size", 13)
+		empty_lbl.add_theme_color_override("font_color", Color(0.45, 0.42, 0.38, 0.80))
+		empty_lbl.custom_minimum_size = Vector2(OW, 80)
+		empty_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		empty_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		rows_vbox.add_child(empty_lbl)
+	else:
+		for i in _pull_history.size():
+			var entry: Dictionary = _pull_history[i]
+			var row_bg := Panel.new()
+			row_bg.custom_minimum_size = Vector2(OW, ROW_H)
+			var row_sb := StyleBoxFlat.new()
+			row_sb.bg_color = Color(0.96, 0.95, 0.91, 1.0) if i % 2 == 0 else Color(0.90, 0.89, 0.85, 1.0)
+			row_sb.set_border_width(SIDE_BOTTOM, 1)
+			row_sb.border_color = Color(0.75, 0.73, 0.68, 0.35)
+			row_bg.add_theme_stylebox_override("panel", row_sb)
+			row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			rows_vbox.add_child(row_bg)
+
+			var rx := 20.0
+			var cols_data: Array = [
+				{"text": str(entry.get("entity_type","")), "col": Color(0.15,0.13,0.10,0.90)},
+				{"text": str(entry.get("name","")),        "col": rarity_cols.get(int(entry.get("rarity",3)), Color(0.15,0.13,0.10,0.90))},
+				{"text": str(entry.get("banner","")),      "col": Color(0.15,0.13,0.10,0.80)},
+				{"text": str(entry.get("time","")),        "col": Color(0.35,0.33,0.28,0.80)},
+			]
+			for c in cols_data.size():
+				var cl := Label.new()
+				cl.text = cols_data[c]["text"]
+				cl.position = Vector2(rx, 4)
+				cl.size = Vector2(COL_W[c] - 8, ROW_H - 8)
+				cl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+				cl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				cl.add_theme_font_size_override("font_size", 12)
+				cl.add_theme_color_override("font_color", cols_data[c]["col"])
+				cl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				row_bg.add_child(cl)
+				rx += COL_W[c]
+
+	# Fade in
+	dim.modulate.a = 0.0
+	dim.create_tween().tween_property(dim, "modulate:a", 1.0, 0.18)
 
 func _go_back() -> void:
 	if _revealing: return
