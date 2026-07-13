@@ -78,31 +78,6 @@ const ELEMENTS: Array = [
 	},
 ]
 
-# ── Achievement data ──────────────────────────────────────────────
-const ACHIEVEMENTS: Array = [
-	# Combat
-	{"id":"first_blood",  "icon":"⚔",  "title":"First Blood",          "desc":"ชนะการต่อสู้ครั้งแรก",                "detail":"เอาชนะศัตรูในการต่อสู้ครั้งแรกของคุณ ก้าวแรกของนักรบนักเคมี",                                      "current":0, "total":1,  "reward":"crystal", "reward_n":10,  "cat":"combat", "elems":["Hydrogen","Oxygen"]},
-	{"id":"survivor",     "icon":"🛡",  "title":"Survivor",             "desc":"ชนะโดยที่ HP เหลือน้อยกว่า 10",     "detail":"เอาชนะได้ทั้งที่ HP ใกล้หมด แสดงให้เห็นถึงความอดทนอย่างสูง",                                       "current":0, "total":1,  "reward":"crystal", "reward_n":20,  "cat":"combat", "elems":["Iron","Oxygen"]},
-	{"id":"veteran",      "icon":"⚔",  "title":"Veteran",              "desc":"ชนะการต่อสู้ 50 ครั้ง",             "detail":"ผ่านสมรภูมิมาแล้ว 50 ครั้ง ประสบการณ์ที่สั่งสมทำให้คุณเป็นนักรบที่แท้จริง",                        "current":0, "total":50, "reward":"🧪×500",  "cat":"combat", "elems":["Iron","Chlorine"]},
-	{"id":"boss_slayer",  "icon":"💀",  "title":"Boss Slayer",          "desc":"กำจัด Boss ได้",                     "detail":"เอาชนะบอสผู้ทรงพลังได้สำเร็จ ใช้สารเคมีที่ถูกต้องในเวลาที่เหมาะสม",                               "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"combat", "elems":["Rust","Salt"]},
-	{"id":"no_damage",    "icon":"✨",  "title":"Untouchable",          "desc":"ชนะโดยไม่โดนโจมตีเลย",             "detail":"เต้นรำในสนามรบโดยไม่โดนแตะต้องเลยแม้แต่ครั้งเดียว ความเชี่ยวชาญระดับสูงสุด",                      "current":0, "total":1,  "reward":"crystal", "reward_n":30,  "cat":"combat", "elems":["Water","Hydrogen"]},
-	# Alchemy
-	{"id":"first_brew",   "icon":"⚗",  "title":"First Brew",           "desc":"สังเคราะห์สารประกอบครั้งแรก",       "detail":"ทดลองผสมธาตุสองชนิดเข้าด้วยกันจนเกิดสารประกอบใหม่ครั้งแรก จุดเริ่มต้นของนักเคมี",                 "current":0, "total":1,  "reward":"🧪×50",  "cat":"alchemy", "elems":["Hydrogen","Oxygen","Water"]},
-	{"id":"water_maker",  "icon":"💧",  "title":"Water Maker",          "desc":"สังเคราะห์น้ำ 10 ครั้ง",           "detail":"ผสม H + O จนได้ H₂O ถึง 10 ครั้ง น้ำคือรากฐานของสิ่งมีชีวิตทุกชนิด",                              "current":0, "total":10, "reward":"🧪×100", "cat":"alchemy", "elems":["Hydrogen","Oxygen","Water"]},
-	{"id":"poison_master","icon":"☠",  "title":"Poison Master",        "desc":"วางพิษศัตรู 20 ครั้ง",              "detail":"ใช้สนิมเหล็ก (Fe₂O₃) โจมตีและวางพิษศัตรูสะสม 20 ครั้ง เชี่ยวชาญในการใช้ปฏิกิริยาเคมีเป็นอาวุธ", "current":0, "total":20, "reward":"crystal", "reward_n":25,  "cat":"alchemy", "elems":["Iron","Oxygen","Rust"]},
-	{"id":"all_recipes",  "icon":"📖",  "title":"Full Formula",         "desc":"ค้นพบสูตรสังเคราะห์ครบทุกสูตร",   "detail":"ค้นพบสูตรสังเคราะห์ครบทุกสูตรในห้องปฏิบัติการ ได้แก่ น้ำ เกลือ และสนิมเหล็ก",                      "current":0, "total":3,  "reward":"crystal", "reward_n":100, "cat":"alchemy", "elems":["Water","Salt","Rust"]},
-	# Collection
-	{"id":"collector",    "icon":"🌟",  "title":"Collector",            "desc":"ปลดล็อคธาตุในสารานุกรมครบทุกตัว", "detail":"ค้นพบและปลดล็อคธาตุในสารานุกรมครบทุกตัว รวมทั้งธาตุและสารประกอบทั้งหมด",                            "current":0, "total":8,  "reward":"crystal", "reward_n":200, "cat":"collect", "elems":["Hydrogen","Oxygen","Iron","Sodium","Chlorine","Water","Salt","Rust"]},
-	{"id":"gacha_once",   "icon":"🎲",  "title":"Lucky Draw",           "desc":"สุ่มกาชาครั้งแรก",                 "detail":"ลองโชคในระบบ Gacha ครั้งแรก ใครจะรู้ว่าจะได้ธาตุหายากแค่ไหน",                                       "current":0, "total":1,  "reward":"🧪×200", "cat":"collect", "elems":[]},
-	{"id":"pity_hit",     "icon":"⭐",  "title":"Pity Saved Me",        "desc":"ได้ตัวละคร 5★ จาก pity",           "detail":"ระบบ Pity ช่วยรับประกันให้ได้ตัวละคร 5 ดาวหลังจากสะสมครบจำนวน",                                    "current":0, "total":1,  "reward":"crystal", "reward_n":50,  "cat":"collect", "elems":[]},
-	# Progression
-	{"id":"stage_10",     "icon":"🗺",  "title":"Explorer",             "desc":"ผ่าน Stage 10",                    "detail":"ผ่านด่านที่ 10 สำเร็จ เส้นทางการผจญภัยยังยาวไกลข้างหน้า",                                           "current":0, "total":10, "reward":"crystal", "reward_n":30,  "cat":"progress", "elems":[]},
-	{"id":"domain_full",  "icon":"🌐",  "title":"Domain Master",        "desc":"เติม Domain Gauge เต็ม",           "detail":"เติม Domain Gauge จนเต็มสำเร็จ พลังงานธาตุที่สั่งสมมาถึงขีดสูงสุด",                                 "current":0, "total":1,  "reward":"crystal", "reward_n":40,  "cat":"progress", "elems":[]},
-	{"id":"ultimate_x5",  "icon":"💥",  "title":"Limit Breaker",        "desc":"ใช้ Ultimate 5 ครั้ง",             "detail":"ปลดปล่อยพลังขั้นสูงสุด 5 ครั้ง ยิ่งใช้ธาตุที่ผสมได้ยิ่งแรงขึ้น",                                  "current":0, "total":5,  "reward":"🧪×150", "cat":"progress", "elems":[]},
-]
-
-const CAT_LABELS := {"combat":"⚔ การต่อสู้", "alchemy":"⚗ การสังเคราะห์", "collect":"🌟 การสะสม", "progress":"🗺 ความก้าวหน้า"}
-
 # ── Colors ────────────────────────────────────────────────────────
 const C_BG     := Color(0.04, 0.05, 0.10, 1.0)
 const C_PANEL  := Color(0.07, 0.09, 0.16, 1.0)
@@ -113,8 +88,7 @@ const C_GOLD   := Color(1.00, 0.82, 0.25, 1.0)
 const C_DONE   := Color(0.30, 0.85, 0.55, 1.0)
 const C_LOCK   := Color(0.25, 0.28, 0.38, 1.0)
 
-var _tab := 0  # 0=elements, 1=achievements, 2=compounds
-var _tab_btns: Array[Button] = []
+var _tab := 0  # 0=elements (only tab)
 
 # Compound keys already shown in elements tab — skip in compounds tab
 const ELEM_COMPOUND_KEYS := ["water", "salt", "rust"]
@@ -126,9 +100,6 @@ var _discovered: Array[String] = []  # element ids unlocked
 @onready var _fade: ColorRect = $FadeOverlay
 
 func _ready() -> void:
-	_tab_btns = [$TabBar/ElementsBtn, $TabBar/AchievBtn]
-	for i in _tab_btns.size():
-		_tab_btns[i].pressed.connect(_switch_tab.bind(i))
 
 	_back_btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
@@ -217,24 +188,9 @@ func _clipped_desc(parent: Control, txt: String, px: float, py: float,
 
 func _switch_tab(idx: int) -> void:
 	_tab = idx
-	for i in _tab_btns.size():
-		var btn := _tab_btns[i]
-		if i == idx:
-			btn.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0))
-			btn.add_theme_stylebox_override("normal",  _flat(Color(0.12, 0.22, 0.45, 1.0), Color(0.3, 0.6, 1.0, 0.5), 8, 1))
-			btn.add_theme_stylebox_override("hover",   _flat(Color(0.12, 0.22, 0.45, 1.0), Color(0.3, 0.6, 1.0, 0.5), 8, 1))
-		else:
-			btn.add_theme_color_override("font_color", C_SUB)
-			btn.add_theme_stylebox_override("normal", _flat(Color(0,0,0,0), Color(0,0,0,0)))
-			btn.add_theme_stylebox_override("hover",  _flat(Color(1,1,1,0.05), Color(0,0,0,0)))
-
 	for c in _content.get_children():
 		c.queue_free()
-
-	if idx == 0:
-		_build_element_tab()
-	elif idx == 1:
-		_build_achievement_tab()
+	_build_element_tab()
 
 # ════════════════════════════════════════════════════════════════
 #  TAB 0 — Elements
@@ -415,144 +371,6 @@ func _make_element_card(elem: Dictionary) -> Control:
 		card.add_child(locked_lbl)
 
 	return card
-
-# ════════════════════════════════════════════════════════════════
-#  TAB 1 — Achievements
-# ════════════════════════════════════════════════════════════════
-func _build_achievement_tab() -> void:
-
-	var vbox := VBoxContainer.new()
-	vbox.custom_minimum_size = Vector2(1152, 0)
-	vbox.add_theme_constant_override("separation", 0)
-	_content.add_child(vbox)
-
-	var done_count: int = ACHIEVEMENTS.filter(func(a): return int(a["current"]) >= int(a["total"])).size()
-	vbox.add_child(_section_label("ความสำเร็จ  (%d/%d)" % [done_count, ACHIEVEMENTS.size()]))
-
-	var categories := CAT_LABELS.keys()
-	for cat in categories:
-		var cat_items: Array = ACHIEVEMENTS.filter(func(a): return a["cat"] == cat)
-		if cat_items.is_empty():
-			continue
-
-		# Category header
-		var cat_lbl := Label.new()
-		cat_lbl.text = CAT_LABELS[cat]
-		cat_lbl.add_theme_font_size_override("font_size", 13)
-		cat_lbl.add_theme_color_override("font_color", C_GOLD)
-		var cat_wrap := MarginContainer.new()
-		cat_wrap.add_theme_constant_override("margin_left", 24)
-		cat_wrap.add_theme_constant_override("margin_top", 16)
-		cat_wrap.add_theme_constant_override("margin_bottom", 6)
-		cat_wrap.add_child(cat_lbl)
-		vbox.add_child(cat_wrap)
-
-		for ach in cat_items:
-			vbox.add_child(_make_achievement_row(ach))
-
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 20)
-	vbox.add_child(spacer)
-
-func _make_achievement_row(ach: Dictionary) -> Control:
-	var total: int = max(1, int(ach["total"]))
-	var cur: int   = clampi(int(ach["current"]), 0, total)
-	var done: bool = cur >= total
-
-	var row := Panel.new()
-	row.custom_minimum_size = Vector2(1152, 70)
-	row.add_theme_stylebox_override("panel", _flat(
-		Color(1,1,1,0.03) if done else Color(0,0,0,0),
-		Color(0.3, 0.85, 0.55, 0.25) if done else Color(0,0,0,0),
-		0, 1 if done else 0
-	))
-	row.mouse_filter = Control.MOUSE_FILTER_STOP
-	row.gui_input.connect(func(ev):
-		if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
-			_open_achievement_detail(ach)
-	)
-
-	# Icon
-	var icon := Label.new()
-	icon.text = ach["icon"]
-	icon.position = Vector2(18, 18)
-	icon.add_theme_font_size_override("font_size", 22)
-	icon.add_theme_color_override("font_color", C_DONE if done else Color(0.5, 0.55, 0.7))
-	row.add_child(icon)
-
-	# Title
-	var title := Label.new()
-	title.text = ("✓  " if done else "") + ach["title"]
-	title.position = Vector2(56, 10)
-	title.add_theme_font_size_override("font_size", 14)
-	title.add_theme_color_override("font_color", C_DONE if done else C_TEXT)
-	row.add_child(title)
-
-	# Desc
-	var desc := Label.new()
-	desc.text = ach["desc"]
-	desc.position = Vector2(56, 30)
-	desc.size = Vector2(600, 20)
-	desc.clip_text = true
-	desc.add_theme_font_size_override("font_size", 11)
-	desc.add_theme_color_override("font_color", C_SUB)
-	row.add_child(desc)
-
-	# Progress bar bg
-	var bar_bg := ColorRect.new()
-	bar_bg.color = Color(1, 1, 1, 0.07)
-	bar_bg.size = Vector2(260, 5)
-	bar_bg.position = Vector2(56, 52)
-	row.add_child(bar_bg)
-
-	var fill := ColorRect.new()
-	fill.color = C_DONE if done else Color(0.35, 0.62, 1.0)
-	fill.size = Vector2(260.0 * cur / total, 5)
-	fill.position = Vector2(56, 52)
-	row.add_child(fill)
-
-	# Count
-	var cnt := Label.new()
-	cnt.text = "%d/%d" % [cur, total]
-	cnt.position = Vector2(324, 46)
-	cnt.add_theme_font_size_override("font_size", 10)
-	cnt.add_theme_color_override("font_color", Color(1,1,1,0.35))
-	row.add_child(cnt)
-
-	# Reward
-	var reward_str: String = str(ach.get("reward", ""))
-	var reward_n: int = int(ach.get("reward_n", 0))
-	if reward_str == "crystal" and reward_n > 0:
-		var ico := TextureRect.new()
-		ico.texture = preload("res://image/crystal_gem.png")
-		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ico.size = Vector2(18, 18)
-		ico.position = Vector2(900, 26)
-		row.add_child(ico)
-		var rew := Label.new()
-		rew.text = "×%d" % reward_n
-		rew.position = Vector2(922, 22)
-		rew.add_theme_font_size_override("font_size", 12)
-		rew.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 0.95) if done else Color(0.4, 0.6, 0.75))
-		row.add_child(rew)
-	else:
-		var rew := Label.new()
-		rew.text = "🎁 " + reward_str
-		rew.position = Vector2(900, 22)
-		rew.add_theme_font_size_override("font_size", 12)
-		rew.add_theme_color_override("font_color", C_GOLD if done else Color(0.6, 0.65, 0.8))
-		row.add_child(rew)
-
-	# Divider
-	var div := ColorRect.new()
-	div.color = Color(1,1,1,0.05)
-	div.size = Vector2(1152, 1)
-	div.position = Vector2(0, 69)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(div)
-
-	return row
 
 
 func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
@@ -833,189 +651,6 @@ func _open_element_detail(elem: Dictionary) -> void:
 		rl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(rl)
 		ry += 20
-
-	# Close button
-	var close_btn := Button.new()
-	close_btn.text = "✕"
-	close_btn.size = Vector2(32, 32)
-	close_btn.position = Vector2(CW - 44, 10)
-	close_btn.add_theme_font_size_override("font_size", 14)
-	close_btn.add_theme_color_override("font_color", C_SUB)
-	close_btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
-	close_btn.add_theme_stylebox_override("hover",   _flat(Color(1,1,1,0.08), Color(0,0,0,0)))
-	close_btn.add_theme_stylebox_override("focus",   _flat(Color(0,0,0,0), Color(0,0,0,0)))
-	close_btn.pressed.connect(func(): _detail_overlay.visible = false)
-	card.add_child(close_btn)
-
-	_detail_overlay.visible = true
-
-func _open_achievement_detail(ach: Dictionary) -> void:
-	for c in _detail_overlay.get_children():
-		if c is Panel:
-			c.queue_free()
-
-	const CW := 520.0; const CH := 360.0
-	var card := Panel.new()
-	card.size = Vector2(CW, CH)
-	card.position = Vector2((1152 - CW) * 0.5, (648 - CH) * 0.5)
-	card.clip_contents = true
-	card.add_theme_stylebox_override("panel", _flat(
-		Color(0.06, 0.08, 0.16, 1.0),
-		Color(0.30, 0.85, 0.55, 0.55), 12, 2
-	))
-	card.mouse_filter = Control.MOUSE_FILTER_STOP
-	_detail_overlay.add_child(card)
-
-	const IW := 480.0
-
-	# Icon + title row
-	var icon_lbl := Label.new()
-	icon_lbl.text = ach["icon"]
-	icon_lbl.position = Vector2(20, 14)
-	icon_lbl.size = Vector2(44, 44)
-	icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.add_theme_font_size_override("font_size", 28)
-	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(icon_lbl)
-
-	var title_lbl := Label.new()
-	title_lbl.text = ach["title"]
-	title_lbl.position = Vector2(72, 14)
-	title_lbl.size = Vector2(IW - 60, 28)
-	title_lbl.add_theme_font_size_override("font_size", 20)
-	title_lbl.add_theme_color_override("font_color", C_DONE if int(ach["current"]) >= int(ach["total"]) else C_TEXT)
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(title_lbl)
-
-	var sub_lbl := Label.new()
-	sub_lbl.text = ach["desc"]
-	sub_lbl.position = Vector2(72, 44)
-	sub_lbl.size = Vector2(IW - 60, 18)
-	sub_lbl.add_theme_font_size_override("font_size", 11)
-	sub_lbl.add_theme_color_override("font_color", C_SUB)
-	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(sub_lbl)
-
-	var div1 := ColorRect.new()
-	div1.color = Color(0.30, 0.85, 0.55, 0.2)
-	div1.size = Vector2(IW, 1)
-	div1.position = Vector2(20, 72)
-	div1.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(div1)
-
-	# Detail text
-	var det_title := Label.new()
-	det_title.text = "รายละเอียด"
-	det_title.position = Vector2(20, 82)
-	det_title.size = Vector2(IW, 16)
-	det_title.add_theme_font_size_override("font_size", 11)
-	det_title.add_theme_color_override("font_color", C_GOLD)
-	det_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(det_title)
-
-	var det_clip := Panel.new()
-	det_clip.position = Vector2(20, 100)
-	det_clip.size = Vector2(IW, 80)
-	det_clip.clip_contents = true
-	det_clip.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0)))
-	det_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(det_clip)
-
-	var det_lbl := Label.new()
-	det_lbl.text = str(ach.get("detail", ach["desc"]))
-	det_lbl.position = Vector2(0, 0)
-	det_lbl.size = Vector2(IW, 80)
-	det_lbl.add_theme_font_size_override("font_size", 12)
-	det_lbl.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
-	det_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	det_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	det_clip.add_child(det_lbl)
-
-	var div2 := ColorRect.new()
-	div2.color = Color(0.30, 0.85, 0.55, 0.12)
-	div2.size = Vector2(IW, 1)
-	div2.position = Vector2(20, 192)
-	div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(div2)
-
-	# Element cards row
-	var elems_arr: Array = ach.get("elems", [])
-	if not elems_arr.is_empty():
-		var elem_title := Label.new()
-		elem_title.text = "ธาตุที่เกี่ยวข้อง"
-		elem_title.position = Vector2(20, 202)
-		elem_title.size = Vector2(IW, 16)
-		elem_title.add_theme_font_size_override("font_size", 11)
-		elem_title.add_theme_color_override("font_color", C_GOLD)
-		elem_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(elem_title)
-
-		const MINI_W := 88.0; const MINI_H := 70.0; const MINI_GAP := 10.0
-		var total_w := elems_arr.size() * MINI_W + (elems_arr.size() - 1) * MINI_GAP
-		var ex := (CW - total_w) * 0.5
-		for i in elems_arr.size():
-			var eid: String = elems_arr[i]
-			var edata: Dictionary = {}
-			for e in ELEMENTS:
-				if e["id"] == eid:
-					edata = e
-					break
-			if edata.is_empty():
-				continue
-			var ecol: Color = edata.get("color", Color(0.5, 0.7, 1.0))
-			var mini := Panel.new()
-			mini.size = Vector2(MINI_W, MINI_H)
-			mini.position = Vector2(ex + i * (MINI_W + MINI_GAP), 224)
-			mini.clip_contents = true
-			mini.add_theme_stylebox_override("panel", _flat(
-				Color(ecol.r*0.15, ecol.g*0.15, ecol.b*0.22, 1.0),
-				Color(ecol.r, ecol.g, ecol.b, 0.55), 8, 1
-			))
-			mini.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(mini)
-
-			var sym := Label.new()
-			sym.text = str(edata.get("symbol", "?"))
-			sym.position = Vector2(0, 6)
-			sym.size = Vector2(MINI_W, 30)
-			sym.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			sym.add_theme_font_size_override("font_size", 22)
-			sym.add_theme_color_override("font_color", Color(ecol.r, ecol.g, ecol.b, 0.9))
-			sym.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			mini.add_child(sym)
-
-			var ename := Label.new()
-			ename.text = str(edata.get("name_th", eid))
-			ename.position = Vector2(2, 38)
-			ename.size = Vector2(MINI_W - 4, 18)
-			ename.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			ename.add_theme_font_size_override("font_size", 9)
-			ename.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.75))
-			ename.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			ename.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			mini.add_child(ename)
-
-			var etype := Label.new()
-			etype.text = str(edata.get("type", ""))
-			etype.position = Vector2(2, 52)
-			etype.size = Vector2(MINI_W - 4, 14)
-			etype.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			etype.add_theme_font_size_override("font_size", 8)
-			etype.add_theme_color_override("font_color", Color(ecol.r, ecol.g, ecol.b, 0.5))
-			etype.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			etype.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			mini.add_child(etype)
-
-			var mframe := TextureRect.new()
-			mframe.texture      = load("res://image/g1.jpg")
-			mframe.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			mframe.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			mframe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			mframe.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			var mfmat := CanvasItemMaterial.new()
-			mfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-			mframe.material = mfmat
-			mini.add_child(mframe)
 
 	# Close button
 	var close_btn := Button.new()
