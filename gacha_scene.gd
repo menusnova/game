@@ -374,6 +374,8 @@ func _build_info_card() -> void:
 	_new_pity_bar.show_percentage = false
 	_new_pity_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
+	_new_pity_bar.add_theme_stylebox_override("background", _sb(Color(0.15, 0.13, 0.05, 0.8), Color(0,0,0,0), 3, 0))
+	_new_pity_bar.add_theme_stylebox_override("fill", _sb(Color(1.0, 0.82, 0.25, 1.0), Color(0,0,0,0), 3, 0))
 	pity5_row.add_child(_new_pity_bar)
 
 	_new_pity_lbl = Label.new()
@@ -407,6 +409,8 @@ func _build_info_card() -> void:
 	_new_pity4_bar.show_percentage = false
 	_new_pity4_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity4_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
+	_new_pity4_bar.add_theme_stylebox_override("background", _sb(Color(0.13, 0.06, 0.18, 0.8), Color(0,0,0,0), 3, 0))
+	_new_pity4_bar.add_theme_stylebox_override("fill", _sb(Color(0.75, 0.40, 1.0, 1.0), Color(0,0,0,0), 3, 0))
 	pity4_row.add_child(_new_pity4_bar)
 
 	_new_pity4_lbl = Label.new()
