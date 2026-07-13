@@ -170,17 +170,7 @@ func _build_center_panel() -> void:
 	const SLOT_B_X := SLOT_A_X + SW + GAP
 	const SLOTS_Y  := CY + 56.0
 
-	var title := Label.new()
-	title.text = "Reaction Chamber"
-	title.position = Vector2(CX, CY + 14)
-	title.size = Vector2(CW, 20)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 12)
-	title.add_theme_color_override("font_color", Color(0.5, 0.85, 1, 0.40))
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(title)
-
-	_slot_a_panel = _make_slot_panel(SW, SH)
+_slot_a_panel = _make_slot_panel(SW, SH)
 	_slot_a_panel.position = Vector2(SLOT_A_X, SLOTS_Y)
 	_slot_a_lbl = _slot_a_panel.get_child(0) as Label
 	_slot_a_panel.gui_input.connect(func(ev: InputEvent):
