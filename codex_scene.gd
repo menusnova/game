@@ -217,9 +217,17 @@ func _ready() -> void:
 	const COMPOUND_TO_ELEM := {
 		"water": "Water", "salt": "Salt", "rust": "Rust",
 	}
-	# Discovery is driven purely by PlayerData — mixing in the lab is the
-	# only way an element/compound appears here. No free unlocks.
 	_discovered = []
+	# Starter elements — same set the lab gives you from the start
+	# (ReactionDB.ELEMENTS unlocked=true) count as already discovered,
+	# no need to mix them first.
+	for e in ReactionDB.ELEMENTS:
+		if e.get("unlocked", false):
+			var mapped: String = SYM_TO_ID.get(e["symbol"], e["symbol"])
+			if mapped not in _discovered:
+				_discovered.append(mapped)
+	# Everything else (locked lab elements, and compounds) is gated by
+	# actual PlayerData discovery from mixing in the lab.
 	for entry in PlayerData.discovered_elements:
 		var mapped: String = SYM_TO_ID.get(entry, entry)
 		if mapped not in _discovered:
