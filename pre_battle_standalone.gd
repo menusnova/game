@@ -127,10 +127,22 @@ func _refresh_team_display() -> void:
 		var ch: String = chars[0]
 		var pw := 220.0; var ph := 340.0
 		var cx := (SW - pw) / 2.0
-		var cy := center_y - ph * 0.55
+		var cy := center_y - ph * 0.55 + 50.0   # nudged down
 
 		var portrait_path := "res://image/%s_1.png" % ch.to_lower()
 		if ResourceLoader.exists(portrait_path):
+			# Soft elliptical ground shadow right at the feet
+			var shadow := Panel.new()
+			var shadow_w := pw * 0.42
+			shadow.size = Vector2(shadow_w, 14)
+			shadow.position = Vector2(cx + (pw - shadow_w) * 0.5, cy + ph - 10)
+			var shadow_sb := StyleBoxFlat.new()
+			shadow_sb.bg_color = Color(0, 0, 0, 0.30)
+			shadow_sb.set_corner_radius_all(7)
+			shadow.add_theme_stylebox_override("panel", shadow_sb)
+			shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_char_display_root.add_child(shadow)
+
 			var tex_rect := TextureRect.new()
 			tex_rect.texture = load(portrait_path)
 			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -139,15 +151,6 @@ func _refresh_team_display() -> void:
 			tex_rect.size = Vector2(pw, ph)
 			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_char_display_root.add_child(tex_rect)
-
-			# Ground shadow under the standing character
-			var shadow := ColorRect.new()
-			shadow.color = Color(0, 0, 0, 0.35)
-			shadow.size = Vector2(pw * 0.6, 16)
-			shadow.position = Vector2(cx + pw * 0.2, cy + ph - 6)
-			shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			_char_display_root.add_child(shadow)
-			_char_display_root.move_child(shadow, 0)
 
 			_char_slots.append(tex_rect)
 		else:
@@ -210,11 +213,6 @@ func _refresh_team_display() -> void:
 
 			_char_slots.append(card)
 
-	# Mission title (bottom center)
-	var mission_lbl := _lbl("MISSION 1-1  ·  ห้องปฏิบัติการต้องห้าม",
-		12, Color(0.5, 0.7, 1.0, 0.6), _char_display_root,
-		Vector2(SW / 2.0 - 200, center_y + 58), Vector2(400, 20))
-	mission_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 # ── enemy panel (top-right, compact → expandable) ──
 func _build_enemy_panel() -> void:
