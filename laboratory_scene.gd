@@ -170,7 +170,7 @@ func _build_center_panel() -> void:
 	const SLOT_B_X := SLOT_A_X + SW + GAP
 	const SLOTS_Y  := CY + 56.0
 
-_slot_a_panel = _make_slot_panel(SW, SH)
+	_slot_a_panel = _make_slot_panel(SW, SH)
 	_slot_a_panel.position = Vector2(SLOT_A_X, SLOTS_Y)
 	_slot_a_lbl = _slot_a_panel.get_child(0) as Label
 	_slot_a_panel.gui_input.connect(func(ev: InputEvent):
