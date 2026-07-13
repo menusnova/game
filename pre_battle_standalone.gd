@@ -79,6 +79,16 @@ func _btn(txt: String, sz: int, txt_col: Color, bg: StyleBoxFlat, parent: Contro
 
 # ── _ready ──
 func _ready() -> void:
+	if ResourceLoader.exists("res://image/bguio.png"):
+		var bg := TextureRect.new()
+		bg.texture = load("res://image/bguio.png")
+		bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+		bg.z_index = -1
+		add_child(bg)
+		move_child(bg, 0)
+
 	$BottomBar/EditBtn.pressed.connect(_on_edit)
 	$BottomBar/StartBtn.pressed.connect(_on_start)
 	_build_edit_panel()
