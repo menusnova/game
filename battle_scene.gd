@@ -1081,41 +1081,52 @@ func _remove_from_hand(id: String) -> void:
 #  MAIN ACTIONS
 # ════════════════════════════════════════════════════════════
 # ── Void Strike — Basic ATK ──────────────────────────────
+# ── Void Resonance passive — active only after using an element/reaction
+# card this turn, or while the enemy carries an active debuff ────────────
+func _void_resonance_active() -> bool:
+	return _reaction_gauge_used or _enemy_atk_debuff > 0
+
 func _on_attack() -> void:
-	if not _player_turn or _main_action_done or _is_defending or _battle_over: return
-	if _ap < 1: _msg("❌ AP ไม่พอ"); return
+	if not _player_turn or _main_action_done or _battle_over: return
+	if _ap < 1: _msg("❌ AP ไม่พอ (ต้องการ 1 AP)"); return
 
 	_ap -= 1
 	_main_action_done = true
 	_is_defending = false
 
-	# Base 24 + 20% Void Resonance passive
 	var base: int = CHARACTER["atk_base"]
-	var bonus: float = CHARACTER["passive_bonus"]
-	var dmg := int(ceil(base * (1.0 + bonus)))   # 24 × 1.20 = 28.8 → 29
+	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
+	var dmg := int(ceil(base * (1.0 + bonus)))   # 24, or ×1.20 = 28.8 → 29 when active
 
 	_enemy_hp -= dmg
 	_add_gauge(10)
-	_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)" % [dmg, bonus * 100])
+	if bonus > 0.0:
+		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)" % [dmg, bonus * 100])
+	else:
+		_msg("🌀 Void Strike — %d DMG" % dmg)
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
 
-# ── Null Barrier — Defend (ไม่เสียเทิร์น แต่ใช้แทน Attack ไม่ได้ทั้งคู่) ────────────────
+# ── Null Barrier — Defend (1 AP, ใช้แทน Attack/Skill ได้อย่างเดียวต่อเทิร์น) ──
 func _on_defend() -> void:
-	if not _player_turn or _battle_over: return
-	if _main_action_done or _is_defending: return   # ใช้ได้แทน Attack เท่านั้น ไม่ใช่เพิ่มเติม
+	if not _player_turn or _main_action_done or _battle_over: return
+	if _ap < 1: _msg("❌ AP ไม่พอ (ต้องการ 1 AP)"); return
 
+	_ap -= 1
+	_main_action_done = true
 	_is_defending = true
 	_add_gauge(5)
-	_msg("🛡 Null Barrier — ลดดาเมจ 50%  ยังใช้ Skill/Ult ได้ในเทิร์นนี้")
+	_msg("🛡 Null Barrier — ลดดาเมจ 50%")
 	_refresh_ui()
 
-# ── Aether Pulse — Skill ─────────────────────────────────
+# ── Aether Pulse — Skill (2 AP, ใช้แทน Attack/Defend ได้อย่างเดียวต่อเทิร์น) ──
 func _on_skill() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
 	if _skill_cd > 0: _msg("⏳ Aether Pulse CD เหลือ %d เทิร์น" % _skill_cd); return
+	if _ap < 2: _msg("❌ AP ไม่พอ (ต้องการ 2 AP)"); return
 
+	_ap -= 2
 	_main_action_done = true
 	_skill_cd = CHARACTER["skill_cd"]   # 3 turns
 
@@ -1140,9 +1151,11 @@ func _on_ultimate() -> void:
 	_ult_used  = true
 	_ult_gauge = 0
 
-	# 55 DMG + Void Resonance 20%
+	# 55 DMG, + Void Resonance 20% only if already primed (reaction card
+	# used this turn, or enemy already carries a debuff from a prior cast)
 	var base_dmg: int = CHARACTER["ult_dmg"]
-	var dmg := int(ceil(base_dmg * (1.0 + CHARACTER["passive_bonus"])))   # 55 × 1.20 = 66
+	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
+	var dmg := int(ceil(base_dmg * (1.0 + bonus)))   # 55, or ×1.20 = 66 when active
 
 	_enemy_hp -= dmg
 
@@ -1150,7 +1163,10 @@ func _on_ultimate() -> void:
 	_enemy_atk_debuff   = 30
 	_enemy_debuff_turns = 2
 
-	_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว  |  ลด ATK ศัตรู 30%% × 2 เทิร์น" % dmg)
+	if bonus > 0.0:
+		_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว (+%.0f%% Void Resonance) | ลด ATK ศัตรู 30%% × 2 เทิร์น" % [dmg, bonus * 100])
+	else:
+		_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว | ลด ATK ศัตรู 30%% × 2 เทิร์น" % dmg)
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
@@ -1568,15 +1584,15 @@ func _refresh_ui() -> void:
 	if _deck_lbl:    _deck_lbl.text    = "Deck: %d" % _deck.size()
 	if _discard_lbl: _discard_lbl.text = "Discard: %d" % _discard.size()
 
-	# Buttons
+	# Buttons — Attack (1 AP) / Defend (1 AP) / Skill (2 AP) are mutually
+	# exclusive, pick exactly one per turn. Ultimate is independent.
 	var pt := _player_turn and not _battle_over
-	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _is_defending or _ap < 1
-	# Defend and Attack are mutually exclusive (one basic action per turn)
-	if _btn_defend: _btn_defend.disabled = not pt or _is_defending or _main_action_done
+	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _ap < 1
+	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done or _ap < 1
 	if _btn_skill:
-		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n0AP"
+		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n2AP"
 		_btn_skill.text = "✨\nSKL%s" % cd
-		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0
+		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0 or _ap < 2
 	if _btn_ult:
 		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used
 	if _btn_end:
