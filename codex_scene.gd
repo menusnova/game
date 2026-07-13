@@ -230,6 +230,12 @@ func _ready() -> void:
 			_discovered.append(elem_id)
 
 	if ResourceLoader.exists("res://image/bgac.png"):
+		# The scene has an opaque "Background" ColorRect fallback — hide it
+		# or it sits on top of / behind incorrectly and covers this texture.
+		var old_bg := get_node_or_null("Background")
+		if old_bg:
+			old_bg.visible = false
+
 		var bg := TextureRect.new()
 		bg.texture      = load("res://image/bgac.png")
 		bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE

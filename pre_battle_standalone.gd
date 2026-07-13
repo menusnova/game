@@ -82,6 +82,13 @@ func _btn(txt: String, sz: int, txt_col: Color, bg: StyleBoxFlat, parent: Contro
 # ── _ready ──
 func _ready() -> void:
 	if ResourceLoader.exists("res://image/bguio.png"):
+		# The scene already has an opaque "Background" ColorRect (fallback
+		# solid color) sitting at child index 0 — hide it, otherwise it
+		# draws on top of / behind incorrectly and can cover this texture.
+		var old_bg := get_node_or_null("Background")
+		if old_bg:
+			old_bg.visible = false
+
 		var bg := TextureRect.new()
 		bg.texture = load("res://image/bguio.png")
 		bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
