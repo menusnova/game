@@ -8,7 +8,6 @@ const SH := 648.0
 const STAGE_ENEMIES := [
 	[
 		{"name": "Bone Golem",  "hp": 4200, "weak": ["ไฟ", "กรด"],      "icon": "💀"},
-		{"name": "Void Shade",  "hp": 3100, "weak": ["แสง", "ไฟฟ้า"],   "icon": "👁"},
 	],
 	[
 		{"name": "Null Core",   "hp": 8800, "weak": ["น้ำ", "ไฟฟ้า"],   "icon": "☢"},
