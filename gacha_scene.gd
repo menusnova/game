@@ -141,9 +141,6 @@ func _build_hsr_ui() -> void:
 	# ── Left selector strip ──
 	_build_selector_strip()
 
-	# ── Art image (behind info card) ──
-	_rebuild_art()
-
 	# ── Info card ──
 	_build_info_card()
 
@@ -609,8 +606,7 @@ func _on_warp_tab(idx: int) -> void:
 		if is_instance_valid(btn): btn.queue_free()
 	_warp_btns.clear()
 	_build_selector_strip()
-	# Rebuild art + info card
-	_rebuild_art()
+	# Rebuild info card
 	_build_info_card()
 	_refresh_ui()
 
