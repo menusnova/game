@@ -203,31 +203,13 @@ func _make_selector_card(wd: Dictionary, active: bool, idx: int,
 		sb.shadow_size  = 8
 	card.add_theme_stylebox_override("panel", sb)
 
-	var portrait_h := ch - 20.0
-
-	var pbg := ColorRect.new()
-	pbg.color = Color(acc.r * 0.06, acc.g * 0.06, acc.b * 0.14, 1.0)
-	pbg.size  = Vector2(cw, portrait_h)
-	pbg.position = Vector2.ZERO
-	pbg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(pbg)
-
-	var art_path: String = str(wd.get("art_img", ""))
-	if art_path != "" and ResourceLoader.exists(art_path):
-		var ptex := TextureRect.new()
-		ptex.texture      = load(art_path)
-		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		ptex.size         = Vector2(cw, portrait_h + 10)
-		ptex.position     = Vector2(0, 5)
-		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(ptex)
-	else:
-		var ico := _lbl(str(wd["icon"]), 18, Color(acc.r, acc.g, acc.b, 0.80))
-		ico.size = Vector2(cw, portrait_h)
-		ico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		ico.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		card.add_child(ico)
+	# Icon centered (no portrait art)
+	var ico := _lbl(str(wd["icon"]), 22, Color(acc.r, acc.g, acc.b, 0.85))
+	ico.size = Vector2(cw, ch - 28)
+	ico.position = Vector2(0, 8)
+	ico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ico.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	card.add_child(ico)
 
 	var stripe := ColorRect.new()
 	stripe.color = Color(acc.r, acc.g, acc.b, 0.85 if active else 0.35)
@@ -450,7 +432,13 @@ func _build_info_card() -> void:
 	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.90))
 	_new_pity4_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pity4_row.add_child(_new_pity4_lbl)
-	cy += 22
+	cy += 28
+
+	# ประวัติ button inside white card (bottom)
+	var hist_btn := _ghost_btn("ประวัติ", 12)
+	hist_btn.size     = Vector2(iw - pad * 2, 40)
+	hist_btn.position = Vector2(pad, ih - pad - 40)
+	card.add_child(hist_btn)
 
 # ── Top bar ──────────────────────────────────────────────────────
 func _build_top_bar() -> void:
@@ -518,19 +506,6 @@ func _build_bottom_bar() -> void:
 
 	var btn_h := 48.0
 	var btn_y := (BOT_H - btn_h) * 0.5
-
-	# Left action buttons aligned with info card left edge
-	var left_btns := [
-		{"label": "ดูรายละเอียด", "w": 160.0},
-		{"label": "ประวัติ",        "w": 130.0},
-	]
-	var lx := THUMB_W + 12.0
-	for lb in left_btns:
-		var b := _ghost_btn(str(lb["label"]), 13)
-		b.size     = Vector2(float(lb["w"]), btn_h)
-		b.position = Vector2(lx, btn_y)
-		bar.add_child(b)
-		lx += float(lb["w"]) + 10.0
 
 	# Right warp buttons — bigger for easy tapping
 	var btn_w2 := 210.0
