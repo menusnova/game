@@ -767,7 +767,7 @@ func _show_confirm_dialog(count: int) -> void:
 
 	# Dialog box
 	var box := Panel.new()
-	var bw := 420.0; var bh := 200.0
+	var bw := 420.0; var bh := 210.0
 	box.size = Vector2(bw, bh)
 	box.position = Vector2((W - bw) * 0.5, (H - bh) * 0.5)
 	var box_sb := StyleBoxFlat.new()
@@ -792,17 +792,47 @@ func _show_confirm_dialog(count: int) -> void:
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(title)
 
-	# Description
-	var desc := Label.new()
-	desc.text = "ใช้ %s 💎 เพื่อสุ่ม %d ครั้ง\nและรับ %d เม็ดสุ่ม (การ์ดข้อมูลบุคคล)" % [cost_str, count, count]
-	desc.add_theme_font_size_override("font_size", 13)
-	desc.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0, 0.90))
-	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.size = Vector2(bw - 40, 60)
-	desc.position = Vector2(20, 62)
-	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(desc)
+	# Description — cost row with crystal icon
+	var cost_row := HBoxContainer.new()
+	cost_row.size     = Vector2(bw - 40, 28)
+	cost_row.position = Vector2(20, 62)
+	cost_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	cost_row.add_theme_constant_override("separation", 4)
+	cost_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(cost_row)
+
+	var cost_pre := Label.new()
+	cost_pre.text = "ใช้ %s" % cost_str
+	cost_pre.add_theme_font_size_override("font_size", 13)
+	cost_pre.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0, 0.90))
+	cost_pre.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cost_row.add_child(cost_pre)
+
+	var gem_ico := TextureRect.new()
+	var gem_tex := _load_png("res://image/crystal_gem.png")
+	if gem_tex: gem_ico.texture = gem_tex
+	gem_ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	gem_ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	gem_ico.custom_minimum_size = Vector2(18, 18)
+	gem_ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cost_row.add_child(gem_ico)
+
+	var cost_suf := Label.new()
+	cost_suf.text = "เพื่อ Synthesize %d ครั้ง" % count
+	cost_suf.add_theme_font_size_override("font_size", 13)
+	cost_suf.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0, 0.90))
+	cost_suf.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cost_row.add_child(cost_suf)
+
+	var desc2 := Label.new()
+	desc2.text = "และรับ %d เม็ดสุ่ม (การ์ดข้อมูลบุคคล)" % count
+	desc2.add_theme_font_size_override("font_size", 11)
+	desc2.add_theme_color_override("font_color", Color(0.70, 0.76, 0.90, 0.72))
+	desc2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc2.size     = Vector2(bw - 40, 22)
+	desc2.position = Vector2(20, 94)
+	desc2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(desc2)
 
 	# Buttons row
 	var btn_y := bh - 56.0
@@ -822,7 +852,9 @@ func _show_confirm_dialog(count: int) -> void:
 	box.add_child(cancel_btn)
 
 	var confirm_btn := Button.new()
-	confirm_btn.text = "ยืนยัน (%s 💎)" % cost_str
+	confirm_btn.text = "ยืนยัน (%s)" % cost_str
+	if gem_tex: confirm_btn.icon = gem_tex
+	confirm_btn.expand_icon = false
 	confirm_btn.size = Vector2(btn_w, 38)
 	confirm_btn.position = Vector2((bw * 0.5) + 8, btn_y)
 	confirm_btn.add_theme_font_size_override("font_size", 13)
