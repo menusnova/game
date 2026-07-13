@@ -121,9 +121,9 @@ const W          := 1152.0
 const H          := 648.0
 const TOP_H      := 52.0    # top bar height
 const BOT_H      := 72.0    # bottom bar height
-const THUMB_W    := 175.0   # left selector strip width
-const INFO_W     := 300.0   # info card width
-const SEL_CW     := 160.0   # selector card width
+const THUMB_W    := 180.0   # left selector strip width
+const INFO_W     := 320.0   # info card width
+const SEL_CW     := 164.0   # selector card width
 const SEL_CH     := 76.0
 
 func _build_hsr_ui() -> void:
@@ -269,7 +269,7 @@ func _build_info_card() -> void:
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var acc: Color = d["accent"] as Color
 
-	var ix := THUMB_W + 8.0
+	var ix := THUMB_W + 12.0
 	var iy := TOP_H + 8.0
 	var iw := INFO_W
 	var ih := H - TOP_H - BOT_H - 16.0
@@ -311,16 +311,17 @@ func _build_info_card() -> void:
 	tag.add_child(tag_lbl)
 	cy += 30
 
-	# Banner title (large, dark text on white card)
+	# Banner title
 	var title := Label.new()
 	title.text = str(d["banner_title"])
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", 20)
 	title.add_theme_color_override("font_color", Color(0.10, 0.12, 0.22, 0.95))
-	title.size     = Vector2(iw - pad * 2, 40)
+	title.size     = Vector2(iw - pad * 2, 52)
 	title.position = Vector2(pad, cy)
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(title)
-	cy += 46
+	cy += 58
 
 	# Duration
 	var dur_lbl := Label.new()
@@ -433,13 +434,6 @@ func _build_info_card() -> void:
 	pity4_row.add_child(_new_pity4_lbl)
 	cy += 22
 
-	# Bottom action button (View Details)
-	var btn_y := ih - 52.0
-	var det_btn := _ghost_btn("ดูรายละเอียด", 12)
-	det_btn.size     = Vector2(iw - pad * 2, 38)
-	det_btn.position = Vector2(pad, btn_y)
-	card.add_child(det_btn)
-
 # ── Top bar ──────────────────────────────────────────────────────
 func _build_top_bar() -> void:
 	var bar_sb := _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0)
@@ -504,27 +498,27 @@ func _build_bottom_bar() -> void:
 	bar.z_index  = 6
 	add_child(bar)
 
-	var btn_h := 46.0
+	var btn_h := 48.0
 	var btn_y := (BOT_H - btn_h) * 0.5
 
-	# Left action buttons: ดูรายละเอียด | ประวัติ
+	# Left action buttons aligned with info card left edge
 	var left_btns := [
-		{"label": "ดูรายละเอียด", "w": 150.0},
+		{"label": "ดูรายละเอียด", "w": 160.0},
 		{"label": "ประวัติ",        "w": 130.0},
 	]
-	var lx := THUMB_W + 8.0
+	var lx := THUMB_W + 12.0
 	for lb in left_btns:
-		var b := _ghost_btn(str(lb["label"]), 12)
+		var b := _ghost_btn(str(lb["label"]), 13)
 		b.size     = Vector2(float(lb["w"]), btn_h)
 		b.position = Vector2(lx, btn_y)
 		bar.add_child(b)
-		lx += float(lb["w"]) + 8.0
+		lx += float(lb["w"]) + 10.0
 
-	# Right warp buttons
-	var btn_w2 := 200.0
-	var btn_w1 := 200.0
+	# Right warp buttons — bigger for easy tapping
+	var btn_w2 := 210.0
+	var btn_w1 := 210.0
 	var bx2    := W - btn_w2 - 16.0
-	var bx1    := bx2 - btn_w1 - 10.0
+	var bx1    := bx2 - btn_w1 - 12.0
 
 	_new_pull1 = _warp_btn(1)
 	_new_pull1.size     = Vector2(btn_w1, btn_h)
