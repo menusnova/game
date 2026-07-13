@@ -953,7 +953,10 @@ func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 
 	dim.queue_free()
 	_result_con.visible = true
-	for i in names.size():
+	# Sort indices by rarity descending so highest rarity appears first (left)
+	var indices := range(names.size())
+	indices.sort_custom(func(a, b): return rarities[a] > rarities[b])
+	for i in indices:
 		_result_con.add_child(_make_summary_card(names[i], rarities[i]))
 
 	_revealing   = false
