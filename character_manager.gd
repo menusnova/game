@@ -3,7 +3,7 @@ extends Node
 # ── Master character list ────────────────────────────────────────
 const ALL_CHARACTERS: Array[Dictionary] = [
 	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
-	{"name": "Lyra",      "element": "🔥", "rarity": 5, "element_color": Color(1.0,  0.45, 0.2),   "owned": true},
+	{"name": "Lyra",      "element": "🌀", "rarity": 5, "element_color": Color(0.5, 0.3, 1.0),   "owned": true},
 ]
 
 # Extended stat/lore data per character
@@ -32,26 +32,26 @@ const CHAR_DATA: Dictionary = {
 		},
 	},
 	"Lyra": {
-		"title": "Flame Walker",
+		"title": "Void Walker",
 		"faction": "Free Spirit",
 		"roles": ["DPS"],
 		"level": 0, "level_max": 30, "insight": 0,
 		"atk": 310, "hp": 1420, "rdef": 110, "mdef": 98, "crit": 205, "def": 104,
 		"bond": 0,
-		"dialogue": "ไฟไม่โกหก มันแสดงทุกอย่าง",
+		"dialogue": "void ไม่โกหก มันแสดงทุกอย่าง",
 		"skills": [
-			{"name": "Flame Strike",  "type": "Basic ATK", "img": "res://image/lyra_2.png",
-			 "desc": "โจมตีศัตรู 1 เป้าหมายด้วยเปลวไฟ สร้างความเสียหาย 24 DMG"},
-			{"name": "Heat Shield",   "type": "Defend",    "img": "res://image/lyra_1.png",
-			 "desc": "ห่อหุ้มร่างด้วยเปลวไฟ สะท้อนความเสียหาย 10 DMG ต่อการโจมตีทุกครั้งใน 1 รอบ"},
-			{"name": "Inferno",       "type": "Skill",     "img": "res://image/lyra_3.png",
-			 "desc": "ปล่อยพลังไฟโจมตีศัตรู 1 เป้าหมาย 45 DMG และสุ่มเผาไหม้ 3 รอบ"},
-			{"name": "Ember Field",   "type": "Ultimate",  "img": "res://image/lyra_2.png",
-			 "desc": "สร้างสนามไฟล้อมรอบศัตรูทุกตัว 55 DMG ต่อรอบ เป็นเวลา 2 รอบ"},
+			{"name": "Void Strike",   "type": "Basic ATK", "img": "res://image/lyra_2.png",
+			 "desc": "โจมตีศัตรู 1 เป้าหมายด้วยพลัง void สร้างความเสียหาย 24 DMG"},
+			{"name": "Null Barrier",  "type": "Defend",    "img": "res://image/lyra_1.png",
+			 "desc": "ห่อหุ้มร่างด้วยโล่ void สะท้อนความเสียหาย 10 DMG ต่อการโจมตีทุกครั้งใน 1 รอบ"},
+			{"name": "Aether Pulse",  "type": "Skill",     "img": "res://image/lyra_3.png",
+			 "desc": "ปล่อยคลื่น void โจมตีศัตรู 1 เป้าหมาย 45 DMG และสุ่มหยุดการสังเคราะห์ 3 รอบ"},
+			{"name": "Absolute Zero Formula", "type": "Ultimate", "img": "res://image/lyra_2.png",
+			 "desc": "สูตร void alchemy ล้อมรอบศัตรูทุกตัว 55 DMG ต่อรอบ เป็นเวลา 2 รอบ"},
 		],
 		"passive": {
-			"name": "Wildfire",
-			"desc": "เมื่อศัตรูมีสถานะเผาไหม้ ทุกการโจมตีของ Lyra สร้างความเสียหายเพิ่มขึ้น 20%",
+			"name": "Void Resonance",
+			"desc": "เมื่อศัตรูมีสถานะ void ทุกการโจมตีของ Lyra สร้างความเสียหายเพิ่มขึ้น 20%",
 		},
 	},
 }
