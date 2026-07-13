@@ -76,24 +76,6 @@ const WARP_TYPES := [
 			"ไพ่หลักในแบนเนอร์นี้มีอัตราได้รับสูงขึ้น",
 		],
 	},
-	{
-		"id":     "std",
-		"label":  "Eternal\nSynthesis",
-		"tag":    "STANDARD",
-		"icon":   "⚗",
-		"accent": Color(0.55, 0.90, 0.65),
-		"banner_title": "Eternal Synthesis",
-		"banner_sub":   "STANDARD",
-		"art_icon":     "⚗",
-		"art_col":      Color(0.55, 0.90, 0.65),
-		"art_img":      "res://image/lyra_3.png",
-		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
-		"duration":     "ถาวร",
-		"desc_lines": [
-			"ทุก 10 ครั้งรับประกันได้ตัวละคร 4★ ขึ้นไป",
-			"แบนเนอร์มาตรฐาน ไม่มีวันหมดอายุ",
-		],
-	},
 ]
 
 var _pity   := 0
@@ -557,7 +539,7 @@ func _warp_btn(count: int) -> Button:
 		btn.add_theme_stylebox_override("hover",   _sb(Color(0.20, 0.30, 0.68, 1.0), Color(0.45, 0.65, 1.0, 0.7), 10, 1))
 		btn.add_theme_stylebox_override("pressed", sb_n)
 
-	# gacha_card icon on the left
+	# gacha_card icon on the left — BLEND_MODE_ADD makes black bg transparent
 	var card_tex := _load_png("res://image/gacha_card.jpg")
 	if card_tex:
 		var ico := TextureRect.new()
@@ -567,6 +549,9 @@ func _warp_btn(count: int) -> Button:
 		ico.size         = Vector2(34, 34)
 		ico.position     = Vector2(12, 6)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var ico_mat := CanvasItemMaterial.new()
+		ico_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		ico.material = ico_mat
 		btn.add_child(ico)
 
 	# Label: "สุ่ม ×1" / "สุ่ม ×10" — offset right to leave room for icon
