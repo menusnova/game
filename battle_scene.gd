@@ -117,6 +117,9 @@ var _btn_skill:        Button
 var _btn_ult:          Button
 var _btn_end:          Button
 
+var _back_menu:        Panel = null
+var _back_menu_open:   bool  = false
+
 var _deck_cnt_lbl:  Label   = null
 var _disc_cnt_lbl:  Label   = null
 var _info_panel:    Panel   = null
@@ -276,10 +279,90 @@ func _build_topbar() -> void:
 	_stage_lbl = _mk_label("Stage 1", 12, C_SUB, bar, Vector2(14, 11))
 	_turn_lbl  = _mk_label("เทิร์นของคุณ", 13, C_GOLD, bar, Vector2(426, 11), Vector2(300, 18), true)
 
-	var back := _make_back_btn(Vector2(1104, 4), Vector2(42, 45), func():
-		if _battle_over or _player_turn: _go_back()
+	_build_back_menu(bar)
+
+# ── Back button → expands left into Surrender / Continue choices ──
+const BACK_X := 1104.0
+const BACK_Y := 4.0
+const BACK_W := 42.0
+const BACK_H := 45.0
+const BACK_MENU_W := 220.0
+
+func _build_back_menu(bar: Panel) -> void:
+	_back_menu = Panel.new()
+	_back_menu.size = Vector2(BACK_MENU_W, BACK_H)
+	_back_menu.position = Vector2(BACK_X + BACK_W, BACK_Y)   # tucked away, off past the back btn
+	_back_menu.visible = false
+	_back_menu.z_index = 19
+	var msb := StyleBoxFlat.new()
+	msb.bg_color = Color(0.03, 0.05, 0.14, 0.96)
+	msb.border_color = Color(0.45, 0.72, 1.0, 0.5)
+	msb.set_border_width_all(1)
+	msb.set_corner_radius_all(10)
+	_back_menu.add_theme_stylebox_override("panel", msb)
+	_back_menu.mouse_filter = Control.MOUSE_FILTER_STOP
+	bar.add_child(_back_menu)
+
+	var surrender_btn := Button.new()
+	surrender_btn.text = "ยอมแพ้"
+	surrender_btn.position = Vector2(8, 6)
+	surrender_btn.size = Vector2(96, 33)
+	surrender_btn.focus_mode = Control.FOCUS_NONE
+	surrender_btn.add_theme_font_size_override("font_size", 12)
+	surrender_btn.add_theme_color_override("font_color", Color(1.0, 0.75, 0.75, 1.0))
+	var surrender_sb := _flat(Color(0.45, 0.10, 0.10, 0.9), Color(0.90, 0.30, 0.30, 0.6), 8, 1)
+	for s in ["normal", "hover", "pressed"]:
+		surrender_btn.add_theme_stylebox_override(s, surrender_sb)
+	surrender_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	surrender_btn.pressed.connect(_on_surrender)
+	_back_menu.add_child(surrender_btn)
+
+	var continue_btn := Button.new()
+	continue_btn.text = "เล่นต่อ"
+	continue_btn.position = Vector2(112, 6)
+	continue_btn.size = Vector2(100, 33)
+	continue_btn.focus_mode = Control.FOCUS_NONE
+	continue_btn.add_theme_font_size_override("font_size", 12)
+	continue_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 1.0))
+	var continue_sb := _flat(Color(0.10, 0.20, 0.45, 0.9), Color(0.40, 0.65, 1.0, 0.6), 8, 1)
+	for s in ["normal", "hover", "pressed"]:
+		continue_btn.add_theme_stylebox_override(s, continue_sb)
+	continue_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	continue_btn.pressed.connect(_close_back_menu)
+	_back_menu.add_child(continue_btn)
+
+	var back := _make_back_btn(Vector2(BACK_X, BACK_Y), Vector2(BACK_W, BACK_H), func():
+		_toggle_back_menu()
 	)
+	back.z_index = 21   # stays above the sliding menu
 	bar.add_child(back)
+
+func _toggle_back_menu() -> void:
+	if _back_menu_open: _close_back_menu()
+	else:               _open_back_menu()
+
+func _open_back_menu() -> void:
+	if _battle_over: return
+	_back_menu_open = true
+	_back_menu.visible = true
+	var t := _back_menu.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_back_menu, "position:x", BACK_X + BACK_W - BACK_MENU_W, 0.22)
+
+func _close_back_menu() -> void:
+	if not _back_menu_open: return
+	_back_menu_open = false
+	var t := _back_menu.create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_back_menu, "position:x", BACK_X + BACK_W, 0.18)
+	t.tween_callback(func():
+		if is_instance_valid(_back_menu): _back_menu.visible = false
+	)
+
+func _on_surrender() -> void:
+	_close_back_menu()
+	if _battle_over: return
+	_battle_over = true
+	_set_buttons_enabled(false)
+	_show_result_screen(false)
 
 # ── Enemy — center-top, smaller (distance perspective) ───
 func _build_enemy_panel() -> void:
@@ -1433,47 +1516,70 @@ func _show_result_screen(won: bool) -> void:
 		var tw_r := n.create_tween()
 		tw_r.tween_property(n, "modulate:a", 1.0, 0.3).set_delay(0.20 + i * 0.06)
 
-	# Button — bottom center
-	var btn_w := 240.0; var btn_h := 50.0
+	# Button(s) — bottom center. Non-final win shows both "ต่อไป" and
+	# "กลับหน้าหลัก" side by side; every other outcome shows a single
+	# centered "กลับหน้าหลัก" button.
+	var show_continue := won and not is_final_win
+	var btn_h := 50.0
+	var by := 648.0 - 90.0
+
+	if show_continue:
+		var bw := 180.0; var gap := 16.0
+		var total_w := bw * 2 + gap
+		var bx0 := (1152.0 - total_w) * 0.5
+		_make_result_btn(ov, Vector2(bx0, by), Vector2(bw, btn_h),
+			"ต่อไป →", Color(0.95, 0.78, 0.20, 1.0), Color(0.10, 0.06, 0.02, 1.0), 0.45,
+			func():
+				ov.queue_free()
+				if is_instance_valid(self): _next_stage()
+		)
+		_make_result_btn(ov, Vector2(bx0 + bw + gap, by), Vector2(bw, btn_h),
+			"กลับหน้าหลัก", Color(0.14, 0.16, 0.26, 1.0), Color(0.85, 0.88, 1.0, 1.0), 0.52,
+			func():
+				ov.queue_free()
+				if is_instance_valid(self): _go_back()
+		)
+	else:
+		var bw := 240.0
+		_make_result_btn(ov, Vector2((1152.0 - bw) * 0.5, by), Vector2(bw, btn_h),
+			"กลับหน้าหลัก",
+			Color(0.95, 0.78, 0.20, 1.0) if won else Color(0.55, 0.12, 0.12, 1.0),
+			Color(0.10, 0.06, 0.02, 1.0) if won else Color(1.0, 0.80, 0.80, 1.0), 0.45,
+			func():
+				ov.queue_free()
+				if is_instance_valid(self): _go_back()
+		)
+
+func _make_result_btn(parent: Control, pos: Vector2, sz: Vector2, txt: String,
+		bg_col: Color, txt_col: Color, delay: float, on_press: Callable) -> void:
 	var btn := Panel.new()
-	btn.position = Vector2((1152.0 - btn_w) * 0.5, 648.0 - 90.0)
-	btn.size     = Vector2(btn_w, btn_h)
+	btn.position = pos
+	btn.size     = sz
 	var bsb := StyleBoxFlat.new()
-	bsb.bg_color     = Color(0.95, 0.78, 0.20, 1.0) if won else Color(0.55, 0.12, 0.12, 1.0)
+	bsb.bg_color = bg_col
 	bsb.set_corner_radius_all(12)
 	btn.add_theme_stylebox_override("panel", bsb)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	btn.modulate = Color(1, 1, 1, 0.0)
-	ov.add_child(btn)
+	parent.add_child(btn)
 	var tw_b := btn.create_tween()
-	tw_b.tween_property(btn, "modulate:a", 1.0, 0.3).set_delay(0.45)
+	tw_b.tween_property(btn, "modulate:a", 1.0, 0.3).set_delay(delay)
 
 	var btn_lbl := Label.new()
-	if is_final_win:
-		btn_lbl.text = "กลับหน้าหลัก"
-	elif won:
-		btn_lbl.text = "ต่อไป →"
-	else:
-		btn_lbl.text = "กลับหน้าหลัก"
+	btn_lbl.text = txt
 	btn_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	btn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	btn_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn_lbl.add_theme_font_size_override("font_size", 16)
-	btn_lbl.add_theme_color_override("font_color",
-		Color(0.10, 0.06, 0.02, 1.0) if won else Color(1.0, 0.80, 0.80, 1.0))
+	btn_lbl.add_theme_font_size_override("font_size", 15)
+	btn_lbl.add_theme_color_override("font_color", txt_col)
 	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(btn_lbl)
 
 	btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw_out := ov.create_tween()
-			tw_out.tween_property(ov, "modulate:a", 0.0, 0.25)
-			tw_out.tween_callback(func():
-				ov.queue_free()
-				if not is_instance_valid(self): return
-				if won and not is_final_win: _next_stage()
-				else: _go_back()
-			)
+			var tw_out := parent.create_tween()
+			tw_out.tween_property(parent, "modulate:a", 0.0, 0.25)
+			tw_out.tween_callback(on_press)
 	)
 
 func _next_stage() -> void:
