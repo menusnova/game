@@ -299,61 +299,73 @@ func _build_element_tab() -> void:
 	vbox.add_theme_constant_override("separation", 0)
 	_content.add_child(vbox)
 
-	# ── Elements section ──
+	# ── Elements section — discovered ones first, locked ones after,
+	#    all elements live together here (not mixed into compounds) ──
 	var elem_total := ELEMENTS.filter(func(e): return e["type"] != "Compound").size()
 	var elem_disc_count := ELEMENTS.filter(func(e): return e["id"] in _discovered and e["type"] != "Compound").size()
-	var sec := _section_label("ธาตุที่ค้นพบ  (%d/%d)" % [elem_disc_count, elem_total])
-	vbox.add_child(sec)
+	vbox.add_child(_section_label("ธาตุที่ค้นพบ  (%d/%d)" % [elem_disc_count, elem_total]))
 
+	var grid := _make_card_grid()
+	vbox.add_child(grid)
+
+	var elem_found: Array = ELEMENTS.filter(func(e): return e["id"] in _discovered)
+	var elem_hidden: Array = ELEMENTS.filter(func(e): return e["id"] not in _discovered)
+	for elem in elem_found + elem_hidden:
+		grid.get_child(0).add_child(_make_element_card(elem))
+
+	# ── Compounds section — split into Tier 1 / Tier 2 sub-groups,
+	#    discovered ones sorted first within each tier ──
+	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
+	var comp_keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
+	var found_count := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
+
+	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, comp_keys.size()]))
+
+	for tier in [1, 2]:
+		var tier_keys: Array = comp_keys.filter(func(k):
+			return int(ReactionDB.COMPOUNDS[k].get("tier", 1)) == tier)
+		if tier_keys.is_empty():
+			continue
+
+		var tier_found: Array = tier_keys.filter(func(k): return k in PlayerData.discovered_compounds)
+		var tier_hidden: Array = tier_keys.filter(func(k): return k not in PlayerData.discovered_compounds)
+
+		var tier_lbl := Label.new()
+		tier_lbl.text = "Tier %d" % tier
+		tier_lbl.add_theme_font_size_override("font_size", 12)
+		tier_lbl.add_theme_color_override("font_color", C_SUB)
+		var tier_wrap := MarginContainer.new()
+		tier_wrap.add_theme_constant_override("margin_left", 28)
+		tier_wrap.add_theme_constant_override("margin_top", 8)
+		tier_wrap.add_theme_constant_override("margin_bottom", 4)
+		tier_wrap.add_child(tier_lbl)
+		vbox.add_child(tier_wrap)
+
+		var cgrid := _make_card_grid()
+		vbox.add_child(cgrid)
+		for key in tier_found + tier_hidden:
+			var compound: Dictionary = ReactionDB.COMPOUNDS[key]
+			var is_found: bool = key in PlayerData.discovered_compounds
+			cgrid.get_child(0).add_child(_make_compound_card(compound, is_found))
+
+	var bottom_spacer := Control.new()
+	bottom_spacer.custom_minimum_size = Vector2(0, 20)
+	vbox.add_child(bottom_spacer)
+
+# ── shared 5-col card grid wrapped in margins ──
+func _make_card_grid() -> MarginContainer:
 	var grid := GridContainer.new()
 	grid.columns = 5
 	grid.add_theme_constant_override("h_separation", 16)
 	grid.add_theme_constant_override("v_separation", 16)
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var grid_wrap := MarginContainer.new()
-	grid_wrap.add_theme_constant_override("margin_left", 28)
-	grid_wrap.add_theme_constant_override("margin_right", 28)
-	grid_wrap.add_theme_constant_override("margin_top", 16)
-	grid_wrap.add_theme_constant_override("margin_bottom", 24)
-	grid_wrap.add_child(grid)
-	vbox.add_child(grid_wrap)
-
-	# show only discovered elements here
-	var elem_found := ELEMENTS.filter(func(e): return e["id"] in _discovered)
-	var elem_hidden := ELEMENTS.filter(func(e): return e["id"] not in _discovered)
-	for elem in elem_found:
-		grid.add_child(_make_element_card(elem))
-
-	# ── Compounds + undiscovered elements section ──
-	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
-	var comp_keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
-	var found_count := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds).size()
-	var total_undiscov := comp_keys.size() + elem_hidden.size()
-
-	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, total_undiscov]))
-
-	var cgrid := GridContainer.new()
-	cgrid.columns = 5
-	cgrid.add_theme_constant_override("h_separation", 16)
-	cgrid.add_theme_constant_override("v_separation", 16)
-	cgrid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var cgrid_wrap := MarginContainer.new()
-	cgrid_wrap.add_theme_constant_override("margin_left", 28)
-	cgrid_wrap.add_theme_constant_override("margin_right", 28)
-	cgrid_wrap.add_theme_constant_override("margin_top", 16)
-	cgrid_wrap.add_theme_constant_override("margin_bottom", 24)
-	cgrid_wrap.add_child(cgrid)
-	vbox.add_child(cgrid_wrap)
-
-	var comp_found := comp_keys.filter(func(k): return k in PlayerData.discovered_compounds)
-	var comp_hidden := comp_keys.filter(func(k): return k not in PlayerData.discovered_compounds)
-	for key in comp_found + comp_hidden:
-		var compound: Dictionary = ReactionDB.COMPOUNDS[key]
-		var is_found: bool = key in PlayerData.discovered_compounds
-		cgrid.add_child(_make_compound_card(compound, is_found))
-	# undiscovered elements go here too
-	for elem in elem_hidden:
-		cgrid.add_child(_make_element_card(elem))
+	var wrap := MarginContainer.new()
+	wrap.add_theme_constant_override("margin_left", 28)
+	wrap.add_theme_constant_override("margin_right", 28)
+	wrap.add_theme_constant_override("margin_top", 16)
+	wrap.add_theme_constant_override("margin_bottom", 24)
+	wrap.add_child(grid)
+	return wrap
 
 func _make_element_card(elem: Dictionary) -> Control:
 	const CW := 162.0; const CH := 210.0
