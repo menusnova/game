@@ -43,13 +43,15 @@ const RECIPES := {
 
 # ── Character ─────────────────────────────────────────────
 const CHARACTER := {
-	"name":         "Lyra",
-	"max_hp":       1000,
-	"passive":      "Reaction Master",
-	"skill_name":   "Chain Reaction",
-	"skill_ap":     2,
-	"skill_cd":     2,
-	"ult_name":     "Element Burst",
+	"name":          "Lyra",
+	"max_hp":        1000,
+	"passive":       "Void Resonance",
+	"atk_base":      24,
+	"passive_bonus": 0.20,
+	"skill_name":    "Aether Pulse",
+	"skill_cd":      3,
+	"ult_name":      "Absolute Zero Formula",
+	"ult_dmg":       55,
 }
 
 # ════════════════════════════════════════════════════════════
@@ -80,9 +82,12 @@ var _ult_used:         bool = false
 var _skill_ap_boost:   bool = false  # recover full AP next turn after skill
 var _player_turn:      bool = true
 var _skill_cd:         int  = 0
-var _is_defending:     bool = false
-var _current_stage:    int  = 1
-var _battle_over:      bool = false
+var _is_defending:        bool = false   # Null Barrier active (50% reduction)
+var _void_shield:         bool = false   # Aether Pulse — absorbs 1 hit
+var _enemy_atk_debuff:    int  = 0       # Absolute Zero — enemy ATK reduction %
+var _enemy_debuff_turns:  int  = 0       # turns remaining on ATK debuff
+var _current_stage:       int  = 1
+var _battle_over:         bool = false
 
 # Reaction element selection (click-to-select, no drag)
 var _selected_elem: String = ""
@@ -1074,6 +1079,7 @@ func _remove_from_hand(id: String) -> void:
 # ════════════════════════════════════════════════════════════
 #  MAIN ACTIONS
 # ════════════════════════════════════════════════════════════
+# ── Void Strike — Basic ATK ──────────────────────────────
 func _on_attack() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
 	if _ap < 1: _msg("❌ AP ไม่พอ"); return
@@ -1082,44 +1088,48 @@ func _on_attack() -> void:
 	_main_action_done = true
 	_is_defending = false
 
-	var dmg := 20
-	if _player_weak > 0:      dmg = max(0, dmg - 5)
-	if _enemy_vulnerable > 0: dmg += 5
+	# Base 24 + 20% Void Resonance passive
+	var base: int = CHARACTER["atk_base"]
+	var bonus: float = CHARACTER["passive_bonus"]
+	var dmg := int(ceil(base * (1.0 + bonus)))   # 24 × 1.20 = 28.8 → 29
 
 	_enemy_hp -= dmg
 	_add_gauge(10)
-	_msg("⚔ Attack — โจมตี %d ดาเมจ" % dmg)
+	_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)" % [dmg, bonus * 100])
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
 
+# ── Null Barrier — Defend (ไม่เสียเทิร์น) ────────────────
 func _on_defend() -> void:
-	if not _player_turn or _main_action_done or _battle_over: return
-	if _ap < 1: _msg("❌ AP ไม่พอ"); return
+	if not _player_turn or _battle_over: return   # ไม่เช็ค _main_action_done
 
-	_ap -= 1
-	_main_action_done = true
 	_is_defending = true
-	_add_gauge(10)
-	_msg("🛡 Defend — ลดดาเมจที่ได้รับ")
+	_add_gauge(5)
+	_msg("🛡 Null Barrier — ลดดาเมจ 50%  ยังใช้ Skill/Ult ได้ในเทิร์นนี้")
 	_refresh_ui()
 
+# ── Aether Pulse — Skill ─────────────────────────────────
 func _on_skill() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
-	if _ap < 2:       _msg("❌ AP ไม่พอ (ต้องการ 2 AP)"); return
-	if _skill_cd > 0: _msg("⏳ Skill Cooldown เหลือ %d เทิร์น" % _skill_cd); return
+	if _skill_cd > 0: _msg("⏳ Aether Pulse CD เหลือ %d เทิร์น" % _skill_cd); return
 
-	_ap -= 2
 	_main_action_done = true
-	_skill_cd = CHARACTER["skill_cd"]
-	_skill_ap_boost = true  # recover full AP next turn
+	_skill_cd = CHARACTER["skill_cd"]   # 3 turns
 
-	_draw_one()
-	_add_gauge(8)
-	_msg("⚡ %s — จั๋ว 1 ใบ · AP เต็มเทิร์นหน้า" % CHARACTER["skill_name"])
+	# ฟื้น HP 15%
+	var heal := int(CHARACTER["max_hp"] * 0.15)
+	_player_hp = mini(_player_hp + heal, CHARACTER["max_hp"])
+
+	# สร้าง Void Shield
+	_void_shield = true
+
+	_add_gauge(12)
+	_msg("✨ Aether Pulse — ฟื้น HP +%d  |  Void Shield พร้อม (รับดาเมจแทน HP 1 ครั้ง)" % heal)
 	_flash_msg()
 	_refresh_ui()
 
+# ── Absolute Zero Formula — Ultimate ─────────────────────
 func _on_ultimate() -> void:
 	if not _player_turn or _battle_over: return
 	if _ult_gauge < MAX_GAUGE: _msg("❌ Gauge ยังไม่เต็ม (%d/%d)" % [_ult_gauge, MAX_GAUGE]); return
@@ -1128,37 +1138,20 @@ func _on_ultimate() -> void:
 	_ult_used  = true
 	_ult_gauge = 0
 
-	# Draw 2 element cards that form a valid reaction pair
-	var pair_drawn := 0
-	var tried: Array[String] = []
-	for recipe_key in RECIPES.keys():
-		var parts: PackedStringArray = (recipe_key as String).split("+")
-		if parts.size() == 2 and pair_drawn == 0:
-			var ea: String = parts[0]; var eb: String = parts[1]
-			if ea in _deck or ea in _discard:
-				_hand.append(ea)
-				if ea in _deck:
-					_deck.erase(ea)
-				else:
-					_discard.erase(ea)
-				var draw_b := eb if (eb in _deck or eb in _discard) else ea
-				_hand.append(draw_b)
-				if eb in _deck:
-					_deck.erase(eb)
-				elif eb in _discard:
-					_discard.erase(eb)
-				pair_drawn = 2
-				tried = [ea, eb]
-				break
-	# fallback: draw any 2 element cards
-	if pair_drawn == 0:
-		for _i in 2:
-			_draw_one()
+	# 55 DMG + Void Resonance 20%
+	var base_dmg: int = CHARACTER["ult_dmg"]
+	var dmg := int(ceil(base_dmg * (1.0 + CHARACTER["passive_bonus"])))   # 55 × 1.20 = 66
 
-	_msg("💥 %s — จั๋ว%s ขึ้นมือ!" % [CHARACTER["ult_name"],
-		(" %s+%s" % [tried[0], tried[1]]) if tried.size() == 2 else " 2 ใบ"])
+	_enemy_hp -= dmg
+
+	# debuff: ลด ATK ศัตรู 30% เป็นเวลา 2 เทิร์น
+	_enemy_atk_debuff   = 30
+	_enemy_debuff_turns = 2
+
+	_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว  |  ลด ATK ศัตรู 30%% × 2 เทิร์น" % dmg)
 	_flash_msg()
 	_refresh_ui()
+	_check_battle()
 
 func _on_end_turn() -> void:
 	if not _player_turn or _battle_over: return
@@ -1184,20 +1177,39 @@ func _enemy_turn() -> void:
 		if not is_instance_valid(self): return
 
 	# Enemy attacks
-	var dmg: int = _enemy_data.get("attack", 10)
+	var raw_dmg: int = _enemy_data.get("attack", 10)
 
+	# Absolute Zero debuff — ลด ATK ศัตรู
+	if _enemy_atk_debuff > 0:
+		raw_dmg = max(1, int(raw_dmg * (1.0 - _enemy_atk_debuff / 100.0)))
+
+	var dmg := raw_dmg
+
+	# Null Barrier — ลดดาเมจ 50%
 	if _is_defending:
-		dmg = max(0, dmg - 10)
+		dmg = max(0, dmg / 2)
 
-	if _player_shield > 0:
+	# Void Shield — รับดาเมจแทน HP 1 ครั้ง (ดาเมจหายทั้งหมด)
+	if _void_shield and dmg > 0:
+		_void_shield = false
+		_msg("💠 Void Shield — ดูดซับดาเมจ %d ทั้งหมด!" % dmg)
+		_refresh_ui()
+		await get_tree().create_timer(0.5).timeout
+		if not is_instance_valid(self): return
+		# เทิร์นยังดำเนินต่อ แต่ HP ไม่หาย
+		dmg = 0
+
+	# Salt shield
+	if _player_shield > 0 and dmg > 0:
 		var blocked := mini(_player_shield, dmg)
 		_player_shield -= blocked
 		dmg -= blocked
 
 	_player_hp -= dmg
-	_add_gauge(5)  # taking damage gives +5 gauge
+	if dmg > 0: _add_gauge(5)
 
-	_msg("👾 %s โจมตี — เสีย %d HP" % [_enemy_data.get("name","ศัตรู"), dmg])
+	var def_txt := "  [Null Barrier -50%]" if _is_defending and raw_dmg > dmg else ""
+	_msg("👾 %s โจมตี — เสีย %d HP%s" % [_enemy_data.get("name","ศัตรู"), max(0,dmg), def_txt])
 	_refresh_ui()
 
 	await get_tree().create_timer(0.7).timeout
@@ -1207,12 +1219,16 @@ func _enemy_turn() -> void:
 		_check_battle(); return
 
 	# Decay status
-	_is_defending = false
-	if _skill_cd         > 0: _skill_cd -= 1
-	if _enemy_weak       > 0: _enemy_weak -= 1
-	if _enemy_vulnerable > 0: _enemy_vulnerable -= 1
-	if _player_weak      > 0: _player_weak -= 1
+	_is_defending = false   # Null Barrier expires after taking 1 hit
+	if _skill_cd          > 0: _skill_cd -= 1
+	if _enemy_weak        > 0: _enemy_weak -= 1
+	if _enemy_vulnerable  > 0: _enemy_vulnerable -= 1
+	if _player_weak       > 0: _player_weak -= 1
 	if _player_vulnerable > 0: _player_vulnerable -= 1
+	if _enemy_debuff_turns > 0:
+		_enemy_debuff_turns -= 1
+		if _enemy_debuff_turns == 0:
+			_enemy_atk_debuff = 0
 
 	_start_player_turn()
 
@@ -1454,6 +1470,9 @@ func _next_stage() -> void:
 	_ult_used             = false
 	_reaction_gauge_used  = false
 	_is_defending         = false
+	_void_shield          = false
+	_enemy_atk_debuff     = 0
+	_enemy_debuff_turns   = 0
 	_selected_elem        = ""
 	_ap                   = START_AP
 	_player_shield        = 0
@@ -1525,7 +1544,11 @@ func _refresh_ui() -> void:
 	var max_hp: float = float(CHARACTER["max_hp"])
 	if _player_hp_bar: _player_hp_bar.size.x = 288.0 * (maxi(0, _player_hp) / max_hp)
 	if _player_hp_lbl: _player_hp_lbl.text = "%d" % maxi(0, _player_hp)
-	if _shield_lbl:    _shield_lbl.text = "🛡 %d" % _player_shield if _player_shield > 0 else ""
+	var shield_parts: Array[String] = []
+	if _player_shield > 0: shield_parts.append("🛡 %d" % _player_shield)
+	if _void_shield:        shield_parts.append("💠 Void Shield")
+	if _is_defending:       shield_parts.append("🌀 Barrier")
+	if _shield_lbl: _shield_lbl.text = "  ".join(shield_parts)
 
 	# Enemy
 	var emax: float = float(_enemy_data.get("hp", 100))
@@ -1534,8 +1557,9 @@ func _refresh_ui() -> void:
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
 	if _enemy_status_lbl:
 		var s: Array[String] = []
-		if _enemy_poison > 0: s.append("☠ พิษ %d/เทิร์น" % _enemy_poison)
-		if _enemy_weak   > 0: s.append("💔 อ่อนแอ %d" % _enemy_weak)
+		if _enemy_poison      > 0: s.append("☠ พิษ %d/t" % _enemy_poison)
+		if _enemy_weak        > 0: s.append("💔 อ่อนแอ %d" % _enemy_weak)
+		if _enemy_atk_debuff  > 0: s.append("⬇ ATK -%d%% (%dt)" % [_enemy_atk_debuff, _enemy_debuff_turns])
 		_enemy_status_lbl.text = "  ".join(s)
 
 	# Deck/Discard
@@ -1545,11 +1569,12 @@ func _refresh_ui() -> void:
 	# Buttons
 	var pt := _player_turn and not _battle_over
 	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _ap < 1
-	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done or _ap < 1
+	# Null Barrier — ไม่เช็ค _main_action_done (ไม่เสียเทิร์น)
+	if _btn_defend: _btn_defend.disabled = not pt or _is_defending
 	if _btn_skill:
-		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n2AP"
-		_btn_skill.text = "⚡\nSKL%s" % cd
-		_btn_skill.disabled = not pt or _main_action_done or _ap < 2 or _skill_cd > 0
+		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n0AP"
+		_btn_skill.text = "✨\nSKL%s" % cd
+		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0
 	if _btn_ult:
 		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used
 	if _btn_end:
