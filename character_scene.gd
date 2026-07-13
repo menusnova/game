@@ -210,6 +210,8 @@ func _build_right(char_name: String, data: Dictionary, base: Dictionary) -> void
 			"name": passive.get("name", "Passive"),
 			"type": "Passive",
 			"img":  "",
+			"icon": passive.get("icon", ""),
+			"desc_short": passive.get("desc_short", ""),
 			"desc": passive.get("desc", ""),
 		}
 		_build_skill_row(Vector2(RIGHT_X + 14, sk_y + 12), Vector2(RIGHT_W - 28, sk_h), passive_sk, elem_col, {"Passive": "🔮"})
@@ -230,7 +232,7 @@ func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, _elem_col: Colo
 	card.position     = pos
 	card.size         = sz
 	card.clip_contents = true
-	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var sk_type: String = str(sk.get("type", ""))
 	var type_col: Color = _skill_type_color(sk_type)
@@ -239,20 +241,39 @@ func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, _elem_col: Colo
 			Color(type_col.r, type_col.g, type_col.b, 0.15), 6, 1))
 	add_child(card)
 
-	# Left icon column — type emoji only
+	# Left icon column — uploaded icon art if available, else type emoji
 	var icon_w := sz.y - 8
-	var em_bg := ColorRect.new()
-	em_bg.size     = Vector2(icon_w, icon_w)
-	em_bg.position = Vector2(4, 4)
-	em_bg.color    = Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95)
-	em_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(em_bg)
-	var em := _lbl(icon_map.get(sk_type, "✦"), 22, Color(type_col.r, type_col.g, type_col.b, 0.90))
-	em.size = Vector2(icon_w, icon_w)
-	em.position = Vector2(4, 4)
-	em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	em.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	card.add_child(em)
+	var icon_path: String = str(sk.get("icon", ""))
+	if icon_path != "" and ResourceLoader.exists(icon_path):
+		var icon_bg := Panel.new()
+		icon_bg.size     = Vector2(icon_w, icon_w)
+		icon_bg.position = Vector2(4, 4)
+		icon_bg.clip_contents = true
+		icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_bg.add_theme_stylebox_override("panel",
+			_flat(Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95),
+				Color(type_col.r, type_col.g, type_col.b, 0.35), 6, 1))
+		card.add_child(icon_bg)
+		var ico := TextureRect.new()
+		ico.texture      = load(icon_path)
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ico.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_bg.add_child(ico)
+	else:
+		var em_bg := ColorRect.new()
+		em_bg.size     = Vector2(icon_w, icon_w)
+		em_bg.position = Vector2(4, 4)
+		em_bg.color    = Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95)
+		em_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(em_bg)
+		var em := _lbl(icon_map.get(sk_type, "✦"), 22, Color(type_col.r, type_col.g, type_col.b, 0.90))
+		em.size = Vector2(icon_w, icon_w)
+		em.position = Vector2(4, 4)
+		em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		em.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		card.add_child(em)
 
 	# Type tag (small pill)
 	var tag_w := 62.0
@@ -276,14 +297,30 @@ func _build_skill_row(pos: Vector2, sz: Vector2, sk: Dictionary, _elem_col: Colo
 	name_lbl.size = Vector2(sz.x - icon_w - 18, 18)
 	card.add_child(name_lbl)
 
-	# Description (small, wrapping)
-	var desc: String = str(sk.get("desc", ""))
-	if desc != "":
-		var desc_lbl := _lbl(desc, 9, Color(0.72, 0.82, 0.95, 0.70))
+	# Description — short, single line, tap card for full text
+	var desc_short: String = str(sk.get("desc_short", ""))
+	if desc_short == "":
+		desc_short = str(sk.get("desc", "")).split("\n")[0]
+	if desc_short != "":
+		var desc_lbl := _lbl(desc_short, 9, Color(0.72, 0.82, 0.95, 0.70))
 		desc_lbl.position = Vector2(icon_w + 10, 42)
-		desc_lbl.size = Vector2(sz.x - icon_w - 18, sz.y - 44)
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.size = Vector2(sz.x - icon_w - 18 - 88, 16)
+		desc_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		desc_lbl.clip_text = true
 		card.add_child(desc_lbl)
+
+	# "ดูเพิ่มเติม" hint, bottom-right
+	var more_lbl := _lbl("ดูรายละเอียด ›", 8, Color(type_col.r, type_col.g, type_col.b, 0.65))
+	more_lbl.position = Vector2(sz.x - 90, sz.y - 16)
+	more_lbl.size = Vector2(84, 14)
+	more_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	more_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(more_lbl)
+
+	card.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			_show_skill_detail(sk, type_col, icon_path)
+	)
 
 # ── Helper: "+" button ────────────────────────────────────────────────────────
 func _plus_btn(pos: Vector2, col: Color) -> Panel:
@@ -383,6 +420,89 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	sb.border_width_left = bw; sb.border_width_right  = bw
 	sb.border_width_top  = bw; sb.border_width_bottom = bw
 	return sb
+
+# ── Skill detail popup (tap a skill card to see the full description) ──
+func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> void:
+	if get_node_or_null("_SkillDetailOv") != null:
+		return
+
+	var dim := ColorRect.new()
+	dim.name = "_SkillDetailOv"
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.0)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.z_index = 60
+	add_child(dim)
+	dim.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			dim.queue_free()
+	)
+
+	var bw := 420.0; var bh := 260.0
+	var box := Panel.new()
+	box.size = Vector2(bw, bh)
+	box.position = Vector2((VW - bw) * 0.5, (VH - bh) * 0.5)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP
+	box.add_theme_stylebox_override("panel",
+		_flat(Color(0.05, 0.06, 0.12, 0.98), Color(type_col.r, type_col.g, type_col.b, 0.5), 14, 1))
+	dim.add_child(box)
+	box.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			get_viewport().set_input_as_handled()
+	)
+
+	var icon_sz := 56.0
+	if icon_path != "" and ResourceLoader.exists(icon_path):
+		var icon_bg := Panel.new()
+		icon_bg.size = Vector2(icon_sz, icon_sz)
+		icon_bg.position = Vector2(20, 20)
+		icon_bg.clip_contents = true
+		icon_bg.add_theme_stylebox_override("panel",
+			_flat(Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95),
+				Color(type_col.r, type_col.g, type_col.b, 0.45), 8, 1))
+		box.add_child(icon_bg)
+		var ico := TextureRect.new()
+		ico.texture      = load(icon_path)
+		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ico.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_bg.add_child(ico)
+
+	var name_lbl := _lbl(str(sk.get("name", "")), 18, C_TEXT)
+	name_lbl.position = Vector2(20 + icon_sz + 14, 22)
+	name_lbl.size = Vector2(bw - icon_sz - 54, 24)
+	box.add_child(name_lbl)
+
+	var type_lbl := _lbl(str(sk.get("type", "")), 11, Color(type_col.r, type_col.g, type_col.b, 0.9))
+	type_lbl.position = Vector2(20 + icon_sz + 14, 50)
+	type_lbl.size = Vector2(bw - icon_sz - 54, 18)
+	box.add_child(type_lbl)
+
+	box.add_child(_crect(Vector2(20, 20 + icon_sz + 14), Vector2(bw - 40, 1),
+		Color(type_col.r, type_col.g, type_col.b, 0.2)))
+
+	var desc_lbl := _lbl(str(sk.get("desc", "")), 12, Color(0.85, 0.90, 1.0, 0.90))
+	desc_lbl.position = Vector2(20, 20 + icon_sz + 26)
+	desc_lbl.size = Vector2(bw - 40, bh - icon_sz - 90)
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(desc_lbl)
+
+	var close_btn := Button.new()
+	close_btn.text = "ปิด"
+	close_btn.size = Vector2(90, 34)
+	close_btn.position = Vector2((bw - 90) * 0.5, bh - 46)
+	close_btn.focus_mode = Control.FOCUS_NONE
+	close_btn.add_theme_font_size_override("font_size", 12)
+	close_btn.add_theme_color_override("font_color", Color(type_col.r + 0.1, type_col.g + 0.1, type_col.b + 0.1, 1.0))
+	var close_sb := _flat(Color(type_col.r * 0.18, type_col.g * 0.18, type_col.b * 0.30, 0.95),
+		Color(type_col.r, type_col.g, type_col.b, 0.55), 8, 1)
+	for s in ["normal", "hover", "pressed"]:
+		close_btn.add_theme_stylebox_override(s, close_sb)
+	close_btn.pressed.connect(func(): dim.queue_free())
+	box.add_child(close_btn)
+
+	var t := dim.create_tween()
+	t.tween_property(dim, "color:a", 0.65, 0.15)
 
 func _crect(pos: Vector2, sz: Vector2, col: Color) -> ColorRect:
 	var cr := ColorRect.new()

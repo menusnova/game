@@ -548,8 +548,8 @@ func _warp_btn(count: int) -> Button:
 		ico.texture      = card_tex
 		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		ico.size         = Vector2(34, 34)
-		ico.position     = Vector2(12, 6)
+		ico.size         = Vector2(28, 28)
+		ico.position     = Vector2(16, 10)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var ico_mat := CanvasItemMaterial.new()
 		ico_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD

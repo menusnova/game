@@ -144,7 +144,7 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		ptex.size         = Vector2(CARD_W, portrait_h + 20)
-		ptex.position     = Vector2(0, 20)
+		ptex.position     = Vector2(0, 38)
 		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(ptex)
 	else:
