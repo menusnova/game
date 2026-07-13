@@ -15,14 +15,15 @@ const STAGE_ENEMIES := [
 	],
 ]
 
-# ── Team slots ──
-const MAX_CHARS := 4
-const MAX_ELEMS := 3
-const MAX_SUPP  := 2
+# ── Team / deck limits ──
+const MAX_CHARS      := 4
+const MAX_ELEM_COPY  := 3   # copies of one element card
+const MAX_SUPP_TYPES := 2   # distinct support types
+const MAX_SUPP_COPY  := 2   # copies per support type
 
-var _selected_chars: Array[String] = ["Lyra", "Kael", "", ""]
-var _selected_elems: Array[String] = ["H", "O", ""]
-var _selected_supp:  Array[String] = ["Acid Flask", ""]
+var _selected_chars: Array[String] = ["Lyra", "", "", ""]
+var _elem_deck: Dictionary = {}   # elem  → count (0–3)
+var _supp_deck: Dictionary = {}   # supp  → count (0–2)
 
 var _current_stage := 0          # 0 or 1
 var _edit_open     := false
@@ -143,8 +144,8 @@ func _refresh_team_display() -> void:
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		card.add_child(name_lbl)
 
-		# element badge
-		var elem: String = _selected_elems[0] if _selected_elems.size() > 0 and _selected_elems[0] != "" else ""
+		# element badge (show first elem in deck)
+		var elem: String = _elem_deck.keys()[0] if _elem_deck.size() > 0 else ""
 		if elem != "" and i == 0:
 			var eb := Panel.new()
 			eb.position = Vector2(slot_w - 28, 6)
@@ -324,42 +325,49 @@ func _build_edit_panel() -> void:
 	bg.add_child(char_header)
 	_lbl("เลือกตัวละคร", 12, Color(0.6, 0.8, 1.0, 0.9), char_header, Vector2(12, 8))
 
+	# char grid: 3 cols × 110px + gap, up to 2 rows = 236px
 	var char_panel := Control.new()
 	char_panel.position = Vector2(8, 36)
-	char_panel.size = Vector2(EDIT_W - 16, 220)
+	char_panel.size = Vector2(EDIT_W - 16, 236)
 	bg.add_child(char_panel)
 	_build_char_grid(char_panel)
 
 	# ── BOTTOM: cards ──
-	var sep_y := 266.0
+	var sep_y := 278.0
 	var sep := Panel.new()
 	sep.position = Vector2(0, sep_y)
 	sep.size = Vector2(EDIT_W, 1)
 	sep.add_theme_stylebox_override("panel", _sb(Color(0.3, 0.5, 1.0, 0.15)))
 	bg.add_child(sep)
 
-	# Element cards sub-section
+	# Element cards sub-section (discovered only)
+	var elem_count := max(PlayerData.discovered_elements.size(), 2)
+	var elem_rows  := ceili(float(elem_count) / 5.0)
+	var elem_h     := elem_rows * (64 + 6) + 4
+
 	var elem_header := Panel.new()
 	elem_header.position = Vector2(0, sep_y + 2)
 	elem_header.size = Vector2(EDIT_W, 24)
-	elem_header.add_theme_stylebox_override("panel", _sb(Color(0.06, 0.10, 0.22, 1.0)))
+	elem_header.add_theme_stylebox_override("panel", _sb(Color(0.04, 0.10, 0.20, 1.0)))
 	bg.add_child(elem_header)
-	_lbl("การ์ดธาตุ", 11, Color(0.5, 0.8, 1.0, 0.8), elem_header, Vector2(12, 5))
+	_lbl("การ์ดธาตุ  (แตะซ้ำเพื่อเพิ่ม ×1–×3)", 10,
+		Color(0.4, 0.8, 1.0, 0.85), elem_header, Vector2(12, 5))
 
 	var elem_panel := Control.new()
 	elem_panel.position = Vector2(8, sep_y + 28)
-	elem_panel.size = Vector2(EDIT_W - 16, 120)
+	elem_panel.size = Vector2(EDIT_W - 16, elem_h)
 	bg.add_child(elem_panel)
 	_build_elem_grid(elem_panel)
 
 	# Support cards sub-section
-	var supp_sep_y := sep_y + 152.0
+	var supp_sep_y := sep_y + 28 + elem_h + 6
 	var supp_header := Panel.new()
 	supp_header.position = Vector2(0, supp_sep_y)
 	supp_header.size = Vector2(EDIT_W, 24)
-	supp_header.add_theme_stylebox_override("panel", _sb(Color(0.06, 0.10, 0.22, 1.0)))
+	supp_header.add_theme_stylebox_override("panel", _sb(Color(0.08, 0.04, 0.18, 1.0)))
 	bg.add_child(supp_header)
-	_lbl("การ์ดสนับสนุน", 11, Color(0.8, 0.6, 1.0, 0.8), supp_header, Vector2(12, 5))
+	_lbl("การ์ดสนับสนุน  (สูงสุด 2 ชนิด × 2 ใบ)", 10,
+		Color(0.8, 0.55, 1.0, 0.85), supp_header, Vector2(12, 5))
 
 	var supp_panel := Control.new()
 	supp_panel.position = Vector2(8, supp_sep_y + 28)
@@ -378,35 +386,123 @@ func _build_edit_panel() -> void:
 		bg, Vector2(8, SH - 56), Vector2(110, 40))
 	cancel_b.pressed.connect(_on_edit_close)
 
+# ── rarity border color ──
+func _rarity_color(r: int) -> Color:
+	match r:
+		5: return Color(1.00, 0.80, 0.20)
+		4: return Color(0.70, 0.40, 1.00)
+		_: return Color(0.35, 0.65, 1.00)
+
+# ── count badge (top-right corner) ──
+func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
+	var badge := Panel.new()
+	badge.size = Vector2(20, 20)
+	badge.position = Vector2(parent.size.x - 22, 2)
+	badge.z_index = 2
+	var bs := StyleBoxFlat.new()
+	bs.bg_color = badge_col
+	bs.set_corner_radius_all(10)
+	badge.add_theme_stylebox_override("panel", bs)
+	parent.add_child(badge)
+	var bl := Label.new()
+	bl.text = "×%d" % count
+	bl.add_theme_font_size_override("font_size", 8)
+	bl.add_theme_color_override("font_color", Color.WHITE)
+	bl.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	bl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_child(bl)
+
+# ── character grid ──
 func _build_char_grid(parent: Control) -> void:
 	var avail: Array = []
 	for entry in CharacterManager.get_roster():
 		if entry.get("owned", false):
-			avail.append(entry["name"])
+			avail.append({"name": entry["name"], "rarity": entry.get("rarity", 3),
+				"elem_col": entry.get("element_color", Color(0.4, 0.7, 1.0))})
 	if avail.is_empty():
-		avail = ["Lyra", "Kael"]
+		avail = [{"name": "Lyra", "rarity": 5, "elem_col": Color(0.5, 0.3, 1.0)}]
 
-	var cols := 4
-	var cw := 76.0; var ch_h := 90.0; var gap := 6.0
+	var cols := 3
+	var cw := 86.0; var ch_h := 110.0; var gap := 8.0
 	for i in range(avail.size()):
-		if i >= 8:
-			break
+		var entry: Dictionary = avail[i]
+		var name_str: String  = entry["name"]
 		var row := i / cols; var col := i % cols
-		var cx := col * (cw + gap); var cy := row * (ch_h + gap)
-		var name_str: String = avail[i]
+		var is_sel := _selected_chars.has(name_str)
+		var rcol: Color = _rarity_color(entry["rarity"])
+		var ecol: Color = entry["elem_col"]
 
 		var card := Panel.new()
-		card.position = Vector2(cx, cy)
-		card.size = Vector2(cw, ch_h)
-		var is_sel := _selected_chars.has(name_str)
-		var sb := _sb(Color(0.15, 0.25, 0.5, 0.8) if is_sel else Color(0.08, 0.12, 0.22, 0.8),
-			Color(0.4, 0.7, 1.0, 0.8) if is_sel else Color(0.3, 0.4, 0.6, 0.3), 8)
+		card.position = Vector2(col * (cw + gap), row * (ch_h + gap))
+		card.size     = Vector2(cw, ch_h)
+		card.clip_contents = true
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.05, 0.08, 0.18, 0.95)
+		sb.border_color = rcol if is_sel else Color(rcol.r, rcol.g, rcol.b, 0.25)
+		for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+			sb.set_border_width(side, 2 if is_sel else 1)
+		sb.set_corner_radius_all(8)
+		if is_sel:
+			sb.shadow_color = Color(ecol.r, ecol.g, ecol.b, 0.5)
+			sb.shadow_size  = 6
 		card.add_theme_stylebox_override("panel", sb)
 		parent.add_child(card)
 
-		_lbl("🧑", 28, Color.WHITE, card, Vector2(cw/2 - 16, 8))
-		var nl := _lbl(name_str, 9, Color(0.8, 0.9, 1.0), card, Vector2(2, 62), Vector2(cw - 4, 14))
+		# portrait image
+		var portrait_path := "res://image/%s_1.png" % name_str.to_lower()
+		if ResourceLoader.exists(portrait_path):
+			var tex_rect := TextureRect.new()
+			tex_rect.texture = load(portrait_path)
+			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			tex_rect.position = Vector2(0, 0)
+			tex_rect.size = Vector2(cw, ch_h - 22)
+			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(tex_rect)
+		else:
+			_lbl("🧑", 36, Color.WHITE, card, Vector2(cw / 2 - 18, 10))
+
+		# rarity stars bottom strip
+		var strip := Panel.new()
+		strip.position = Vector2(0, ch_h - 22)
+		strip.size = Vector2(cw, 22)
+		var strip_sb := StyleBoxFlat.new()
+		strip_sb.bg_color = Color(0.02, 0.04, 0.12, 0.92)
+		strip.add_theme_stylebox_override("panel", strip_sb)
+		card.add_child(strip)
+
+		var nl := Label.new()
+		nl.text = name_str
+		nl.add_theme_font_size_override("font_size", 9)
+		nl.add_theme_color_override("font_color", Color(0.85, 0.92, 1.0))
+		nl.position = Vector2(2, 2)
+		nl.size = Vector2(cw - 4, 12)
 		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.add_child(nl)
+
+		var stars_lbl := Label.new()
+		var star_count: int = entry.get("rarity", 3) if entry.has("rarity") else 3
+		stars_lbl.text = "★".repeat(star_count)
+		stars_lbl.add_theme_font_size_override("font_size", 7)
+		stars_lbl.add_theme_color_override("font_color", rcol)
+		stars_lbl.position = Vector2(2, 12)
+		stars_lbl.size = Vector2(cw - 4, 10)
+		stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.add_child(stars_lbl)
+
+		if is_sel:
+			var sel_mark := Label.new()
+			sel_mark.text = "✓"
+			sel_mark.add_theme_font_size_override("font_size", 14)
+			sel_mark.add_theme_color_override("font_color", Color(0.4, 1.0, 0.5, 0.9))
+			sel_mark.position = Vector2(cw - 20, 4)
+			sel_mark.size = Vector2(16, 16)
+			sel_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(sel_mark)
 
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var n := name_str
@@ -430,32 +526,76 @@ func _toggle_char(name_str: String) -> void:
 		if empty_idx >= 0:
 			_selected_chars[empty_idx] = name_str
 
+# ── element deck grid ──
 func _build_elem_grid(parent: Control) -> void:
-	var owned_elems: Array = ["H", "O", "Na", "C", "Fe", "N", "S", "Ca", "Mg", "Cl"]
+	# pull only discovered elements from PlayerData
+	var owned_elems: Array = []
+	if PlayerData.discovered_elements.size() > 0:
+		owned_elems.assign(PlayerData.discovered_elements)
+	else:
+		owned_elems = ["H", "O"]  # fallback for fresh save
+	var elem_colors: Dictionary = {
+		"H": Color(0.3, 0.7, 1.0), "O": Color(1.0, 0.35, 0.35),
+		"Na": Color(1.0, 0.75, 0.2), "C": Color(0.6, 0.6, 0.6),
+		"Fe": Color(0.85, 0.5, 0.2), "N": Color(0.5, 0.8, 1.0),
+		"S":  Color(0.9, 0.85, 0.1), "Ca": Color(0.9, 0.9, 0.9),
+		"Mg": Color(0.55, 0.9, 0.6), "Cl": Color(0.4, 1.0, 0.5),
+	}
 
-	var cw := 52.0; var ch_h := 52.0; var gap := 6.0; var cols := 5
+	var cw := 54.0; var ch_h := 64.0; var gap := 6.0; var cols := 5
 	for i in range(owned_elems.size()):
-		if i >= 10:
-			break
-		var row := i / cols; var col := i % cols
 		var elem: String = owned_elems[i]
-		var is_sel := _selected_elems.has(elem)
+		var count: int   = _elem_deck.get(elem, 0)
+		var ecol: Color  = elem_colors.get(elem, Color(0.5, 0.8, 1.0))
+		var row := i / cols; var col := i % cols
 
 		var card := Panel.new()
 		card.position = Vector2(col * (cw + gap), row * (ch_h + gap))
-		card.size = Vector2(cw, ch_h)
-		card.add_theme_stylebox_override("panel", _sb(
-			Color(0.1, 0.3, 0.6, 0.8) if is_sel else Color(0.06, 0.12, 0.22, 0.8),
-			Color(0.3, 0.7, 1.0, 0.8) if is_sel else Color(0.2, 0.4, 0.6, 0.3), 6))
+		card.size     = Vector2(cw, ch_h)
+		card.clip_contents = false
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(ecol.r * 0.12, ecol.g * 0.12, ecol.b * 0.18, 0.95) if count > 0 \
+					else Color(0.05, 0.08, 0.16, 0.9)
+		sb.border_color = Color(ecol.r, ecol.g, ecol.b, 0.85) if count > 0 \
+						else Color(ecol.r, ecol.g, ecol.b, 0.2)
+		for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+			sb.set_border_width(side, 2 if count > 0 else 1)
+		sb.set_corner_radius_all(8)
+		if count > 0:
+			sb.shadow_color = Color(ecol.r, ecol.g, ecol.b, 0.4)
+			sb.shadow_size  = 5
+		card.add_theme_stylebox_override("panel", sb)
 		parent.add_child(card)
 
-		_lbl(elem, 18, Color(0.6, 0.9, 1.0) if is_sel else Color(0.7, 0.85, 1.0, 0.8), card, Vector2(cw/2 - 12, 6))
+		var sym_lbl := Label.new()
+		sym_lbl.text = elem
+		sym_lbl.add_theme_font_size_override("font_size", 20)
+		sym_lbl.add_theme_color_override("font_color",
+			Color(ecol.r + 0.2, ecol.g + 0.2, ecol.b + 0.2) if count > 0 else Color(ecol.r, ecol.g, ecol.b, 0.5))
+		sym_lbl.position = Vector2(0, 8)
+		sym_lbl.size = Vector2(cw, 28)
+		sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(sym_lbl)
+
+		# copy count indicator dots
+		var dot_y := ch_h - 14.0
+		for d in range(MAX_ELEM_COPY):
+			var dot := Panel.new()
+			dot.size = Vector2(8, 8)
+			dot.position = Vector2(cw / 2.0 - (MAX_ELEM_COPY * 10.0) / 2.0 + d * 10.0, dot_y)
+			var ds := StyleBoxFlat.new()
+			ds.bg_color = Color(ecol.r, ecol.g, ecol.b, 0.9) if d < count else Color(0.2, 0.2, 0.3, 0.6)
+			ds.set_corner_radius_all(4)
+			dot.add_theme_stylebox_override("panel", ds)
+			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(dot)
 
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var e := elem
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_toggle_elem(e)
+				_cycle_elem(e)
 				_rebuild_elem_grid(parent))
 
 func _rebuild_elem_grid(parent: Control) -> void:
@@ -463,41 +603,68 @@ func _rebuild_elem_grid(parent: Control) -> void:
 		c.queue_free()
 	_build_elem_grid(parent)
 
-func _toggle_elem(elem: String) -> void:
-	if _selected_elems.has(elem):
-		var idx := _selected_elems.find(elem)
-		_selected_elems[idx] = ""
+func _cycle_elem(elem: String) -> void:
+	var cur: int = _elem_deck.get(elem, 0)
+	var next := (cur + 1) % (MAX_ELEM_COPY + 1)
+	if next == 0:
+		_elem_deck.erase(elem)
 	else:
-		var empty_idx := _selected_elems.find("")
-		if empty_idx >= 0:
-			_selected_elems[empty_idx] = elem
+		_elem_deck[elem] = next
 
+# ── support deck grid ──
 func _build_supp_grid(parent: Control) -> void:
 	var owned_supp: Array = ["Acid Flask", "Iron Shield", "Ember Seal"]
 
-	var cw := 100.0; var ch_h := 52.0; var gap := 8.0
+	var cw := 100.0; var ch_h := 68.0; var gap := 8.0
 	for i in range(owned_supp.size()):
-		if i >= MAX_SUPP * 2:
-			break
 		var supp: String = owned_supp[i]
-		var is_sel := _selected_supp.has(supp)
+		var count: int   = _supp_deck.get(supp, 0)
+		var is_sel       := count > 0
 
 		var card := Panel.new()
 		card.position = Vector2(i * (cw + gap), 0)
-		card.size = Vector2(cw, ch_h)
-		card.add_theme_stylebox_override("panel", _sb(
-			Color(0.25, 0.12, 0.45, 0.85) if is_sel else Color(0.08, 0.06, 0.16, 0.8),
-			Color(0.8, 0.5, 1.0, 0.8) if is_sel else Color(0.4, 0.3, 0.6, 0.3), 6))
+		card.size     = Vector2(cw, ch_h)
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.18, 0.08, 0.32, 0.95) if is_sel else Color(0.06, 0.04, 0.14, 0.9)
+		sb.border_color = Color(0.85, 0.55, 1.0, 0.9) if is_sel else Color(0.5, 0.35, 0.7, 0.25)
+		for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+			sb.set_border_width(side, 2 if is_sel else 1)
+		sb.set_corner_radius_all(8)
+		if is_sel:
+			sb.shadow_color = Color(0.7, 0.3, 1.0, 0.45)
+			sb.shadow_size  = 5
+		card.add_theme_stylebox_override("panel", sb)
 		parent.add_child(card)
 
-		_lbl(supp, 9, Color(0.85, 0.7, 1.0) if is_sel else Color(0.7, 0.65, 0.85, 0.8),
-			card, Vector2(4, 16), Vector2(cw - 8, 18))
+		var nl := Label.new()
+		nl.text = supp
+		nl.add_theme_font_size_override("font_size", 9)
+		nl.add_theme_color_override("font_color",
+			Color(0.9, 0.75, 1.0) if is_sel else Color(0.65, 0.6, 0.8, 0.7))
+		nl.position = Vector2(4, 14)
+		nl.size = Vector2(cw - 8, 28)
+		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(nl)
+
+		# copy dots
+		for d in range(MAX_SUPP_COPY):
+			var dot := Panel.new()
+			dot.size = Vector2(10, 10)
+			dot.position = Vector2(cw / 2.0 - (MAX_SUPP_COPY * 12.0) / 2.0 + d * 12.0, ch_h - 16.0)
+			var ds := StyleBoxFlat.new()
+			ds.bg_color = Color(0.85, 0.55, 1.0, 0.9) if d < count else Color(0.2, 0.15, 0.3, 0.6)
+			ds.set_corner_radius_all(5)
+			dot.add_theme_stylebox_override("panel", ds)
+			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(dot)
 
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var s := supp
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_toggle_supp(s)
+				_cycle_supp(s)
 				_rebuild_supp_grid(parent))
 
 func _rebuild_supp_grid(parent: Control) -> void:
@@ -505,14 +672,22 @@ func _rebuild_supp_grid(parent: Control) -> void:
 		c.queue_free()
 	_build_supp_grid(parent)
 
-func _toggle_supp(supp: String) -> void:
-	if _selected_supp.has(supp):
-		var idx := _selected_supp.find(supp)
-		_selected_supp[idx] = ""
+func _cycle_supp(supp: String) -> void:
+	var cur: int = _supp_deck.get(supp, 0)
+	if cur == 0:
+		# only allow adding if fewer than MAX_SUPP_TYPES active
+		var active_types := 0
+		for k in _supp_deck:
+			if _supp_deck[k] > 0:
+				active_types += 1
+		if active_types >= MAX_SUPP_TYPES:
+			return
+	var next := (cur + 1) % (MAX_SUPP_COPY + 1)
+	if next == 0:
+		_supp_deck.erase(supp)
 	else:
-		var empty_idx := _selected_supp.find("")
-		if empty_idx >= 0:
-			_selected_supp[empty_idx] = supp
+		_supp_deck[supp] = next
+
 
 # ── edit open/close ──
 func _on_edit() -> void:
