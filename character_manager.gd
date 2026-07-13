@@ -2,8 +2,8 @@ extends Node
 
 # ── Master character list ────────────────────────────────────────
 const ALL_CHARACTERS: Array[Dictionary] = [
-	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
 	{"name": "Lyra",      "element": "🌀", "rarity": 5, "element_color": Color(0.5, 0.3, 1.0),   "owned": true},
+	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
 ]
 
 # Extended stat/lore data per character

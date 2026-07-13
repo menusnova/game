@@ -50,6 +50,96 @@ const ELEMENTS: Array = [
 		"recipes": ["Cl + Na → เกลือ (Salt)"],
 	},
 	{
+		"id": "Carbon", "symbol": "C", "number": 6,
+		"name_th": "คาร์บอน", "name_en": "Carbon",
+		"color": Color(0.55, 0.55, 0.60),
+		"type": "Nonmetal",
+		"real_desc": "รากฐานของสารอินทรีย์ทั้งหมด พบได้ทั้งในรูปเพชรและถ่านหิน",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["C + O → คาร์บอนไดออกไซด์", "C + H → มีเทน"],
+	},
+	{
+		"id": "Nitrogen", "symbol": "N", "number": 7,
+		"name_th": "ไนโตรเจน", "name_en": "Nitrogen",
+		"color": Color(0.35, 0.50, 0.95),
+		"type": "Nonmetal",
+		"real_desc": "ก๊าซที่มากที่สุดในบรรยากาศ (78%) สำคัญต่อการสร้างโปรตีนและ DNA",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["N + O → ไนตริกออกไซด์", "N + Na → โซเดียมไนไตรด์"],
+	},
+	{
+		"id": "Sulfur", "symbol": "S", "number": 16,
+		"name_th": "กำมะถัน", "name_en": "Sulfur",
+		"color": Color(1.00, 0.85, 0.10),
+		"type": "Nonmetal",
+		"real_desc": "ของแข็งสีเหลือง กลิ่นฉุน พบในภูเขาไฟ ใช้ผลิตกรดซัลฟิวริก",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["S + O → ซัลเฟอร์ไดออกไซด์", "Fe + S → ไอรอนซัลไฟด์"],
+	},
+	{
+		"id": "Calcium", "symbol": "Ca", "number": 20,
+		"name_th": "แคลเซียม", "name_en": "Calcium",
+		"color": Color(0.80, 0.75, 0.65),
+		"type": "Alkaline Earth Metal",
+		"real_desc": "โลหะที่พบมากที่สุดในร่างกายมนุษย์ สร้างกระดูกและฟัน",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["Ca + O → แคลเซียมออกไซด์", "Ca + H → แคลเซียมไฮไดรด์"],
+	},
+	{
+		"id": "Magnesium", "symbol": "Mg", "number": 12,
+		"name_th": "แมกนีเซียม", "name_en": "Magnesium",
+		"color": Color(0.60, 0.85, 0.60),
+		"type": "Alkaline Earth Metal",
+		"real_desc": "โลหะเบาที่ติดไฟได้ สำคัญต่อคลอโรฟิลล์และการสังเคราะห์แสง",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["Mg + O → แมกนีเซียมออกไซด์"],
+	},
+	{
+		"id": "Potassium", "symbol": "K", "number": 19,
+		"name_th": "โพแทสเซียม", "name_en": "Potassium",
+		"color": Color(0.75, 0.30, 0.70),
+		"type": "Alkali Metal",
+		"real_desc": "แร่ธาตุที่ควบคุมความดันโลหิตและการทำงานของกล้ามเนื้อหัวใจ",
+		"how_to_get": "อยู่ในสำรับเริ่มต้น",
+		"recipes": ["K + O → โพแทสเซียมออกไซด์"],
+	},
+	{
+		"id": "Copper", "symbol": "Cu", "number": 29,
+		"name_th": "ทองแดง", "name_en": "Copper",
+		"color": Color(0.20, 0.65, 0.40),
+		"type": "Transition Metal",
+		"real_desc": "โลหะนำไฟฟ้าดีเยี่ยม มนุษย์ใช้มากว่า 10,000 ปี สีแดง-ส้มเป็นเอกลักษณ์",
+		"how_to_get": "ปลดล็อคพิเศษ",
+		"recipes": ["Cu + O → คอปเปอร์ออกไซด์"],
+	},
+	{
+		"id": "Zinc", "symbol": "Zn", "number": 30,
+		"name_th": "สังกะสี", "name_en": "Zinc",
+		"color": Color(0.55, 0.70, 0.75),
+		"type": "Transition Metal",
+		"real_desc": "โลหะสีขาวอมฟ้า ป้องกันสนิม สำคัญต่อระบบภูมิคุ้มกันของร่างกาย",
+		"how_to_get": "ปลดล็อคพิเศษ",
+		"recipes": ["Zn + O → ซิงค์ออกไซด์"],
+	},
+	{
+		"id": "Phosphorus", "symbol": "P", "number": 15,
+		"name_th": "ฟอสฟอรัส", "name_en": "Phosphorus",
+		"color": Color(0.90, 0.50, 0.15),
+		"type": "Nonmetal",
+		"real_desc": "ธาตุสำคัญใน DNA และ ATP แหล่งพลังงานของเซลล์สิ่งมีชีวิตทุกชนิด",
+		"how_to_get": "ปลดล็อคพิเศษ",
+		"recipes": [],
+	},
+	{
+		"id": "Silicon", "symbol": "Si", "number": 14,
+		"name_th": "ซิลิคอน", "name_en": "Silicon",
+		"color": Color(0.45, 0.55, 0.65),
+		"type": "Metalloid",
+		"real_desc": "กึ่งตัวนำพื้นฐานของยุคดิจิทัล ทรายแก้วและชิปคอมพิวเตอร์ล้วนมาจาก Si",
+		"how_to_get": "ปลดล็อคพิเศษ",
+		"recipes": ["Si + O → ซิลิคอนไดออกไซด์"],
+	},
+	{
 		"id": "Water", "symbol": "H₂O", "number": 0,
 		"name_th": "น้ำ", "name_en": "Water",
 		"color": Color(0.3, 0.7, 1.0),
@@ -116,26 +206,28 @@ func _ready() -> void:
 	)
 
 	const SYM_TO_ID := {
-		"H": "Hydrogen", "O": "Oxygen",  "Na": "Sodium",
+		"H": "Hydrogen", "O": "Oxygen",   "Na": "Sodium",
 		"Cl": "Chlorine", "Fe": "Iron",   "C":  "Carbon",
+		"N": "Nitrogen",  "S": "Sulfur",  "Ca": "Calcium",
+		"Mg": "Magnesium", "K": "Potassium",
+		"Cu": "Copper", "Zn": "Zinc", "P": "Phosphorus", "Si": "Silicon",
 	}
-	# Map lab compound keys → codex element ids
+	# Map lab compound keys → codex element ids (only for compounds the
+	# codex tracks separately as their own "element" card, e.g. Water)
 	const COMPOUND_TO_ELEM := {
 		"water": "Water", "salt": "Salt", "rust": "Rust",
 	}
+	# Discovery is driven purely by PlayerData — mixing in the lab is the
+	# only way an element/compound appears here. No free unlocks.
 	_discovered = []
 	for entry in PlayerData.discovered_elements:
 		var mapped: String = SYM_TO_ID.get(entry, entry)
 		if mapped not in _discovered:
 			_discovered.append(mapped)
-	# Unlock compound-elements when discovered in lab
 	for comp_key in PlayerData.discovered_compounds:
 		var elem_id: String = COMPOUND_TO_ELEM.get(comp_key, "")
 		if elem_id != "" and elem_id not in _discovered:
 			_discovered.append(elem_id)
-	for base in ["Hydrogen","Oxygen","Sodium","Chlorine","Iron"]:
-		if base not in _discovered:
-			_discovered.append(base)
 
 	if ResourceLoader.exists("res://image/bgac.png"):
 		var bg := TextureRect.new()
@@ -429,9 +521,10 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 			8, 132, CW - 16, CH - 136,
 			8, Color(0.68, 0.80, 0.92, 0.62))
 
-		# g1 frame overlay
+		# Tier frame overlay — g1.jpg (tier 1) / g2.jpg (tier 2)
+		var comp_tier: int = clampi(int(compound.get("tier", 1)), 1, 2)
 		var cftex := TextureRect.new()
-		cftex.texture      = preload("res://image/g1.jpg")
+		cftex.texture      = preload("res://image/g1.jpg") if comp_tier == 1 else preload("res://image/g2.jpg")
 		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		cftex.stretch_mode = TextureRect.STRETCH_SCALE
 		cftex.size         = Vector2(CW + 4, CH + 4)

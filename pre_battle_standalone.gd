@@ -39,6 +39,7 @@ var _char_slots:   Array    = []
 var _elem_slots:   Array    = []
 var _supp_slots:   Array    = []
 var _stage_dots:   Array    = []
+var _deck_total_lbl: Label  = null
 
 # ── helpers ──
 func _sb(col: Color, border: Color = Color(1,1,1,0), radius: int = 0) -> StyleBoxFlat:
@@ -112,56 +113,95 @@ func _refresh_team_display() -> void:
 	if count == 0:
 		return
 
-	var slot_w := 110.0
-	var total_w := count * slot_w + (count - 1) * 16.0
-	var start_x := (SW - total_w) / 2.0
 	var center_y := SH / 2.0 - 20.0
 
-	for i in range(count):
-		var ch: String = chars[i]
-		var cx := start_x + i * (slot_w + 16.0)
+	if count == 1:
+		# Single selected character — stand full-body, centered on screen
+		var ch: String = chars[0]
+		var pw := 220.0; var ph := 340.0
+		var cx := (SW - pw) / 2.0
+		var cy := center_y - ph * 0.55
 
-		var card := Panel.new()
-		card.position = Vector2(cx, center_y - 110.0)
-		card.size = Vector2(slot_w, 150.0)
-		card.add_theme_stylebox_override("panel", _sb(Color(0.08, 0.12, 0.26, 0.7), Color(0.4, 0.6, 1.0, 0.25), 12))
-		_char_display_root.add_child(card)
+		var portrait_path := "res://image/%s_1.png" % ch.to_lower()
+		if ResourceLoader.exists(portrait_path):
+			var tex_rect := TextureRect.new()
+			tex_rect.texture = load(portrait_path)
+			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tex_rect.position = Vector2(cx, cy)
+			tex_rect.size = Vector2(pw, ph)
+			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_char_display_root.add_child(tex_rect)
 
-		var icon_lbl := Label.new()
-		icon_lbl.text = "🧑" if i % 2 == 0 else "⚔"
-		icon_lbl.add_theme_font_size_override("font_size", 48)
-		icon_lbl.position = Vector2(0, 12)
-		icon_lbl.size = Vector2(slot_w, 70)
-		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		card.add_child(icon_lbl)
+			# Ground shadow under the standing character
+			var shadow := ColorRect.new()
+			shadow.color = Color(0, 0, 0, 0.35)
+			shadow.size = Vector2(pw * 0.6, 16)
+			shadow.position = Vector2(cx + pw * 0.2, cy + ph - 6)
+			shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_char_display_root.add_child(shadow)
+			_char_display_root.move_child(shadow, 0)
 
-		var name_lbl := Label.new()
-		name_lbl.text = ch
-		name_lbl.add_theme_font_size_override("font_size", 11)
-		name_lbl.add_theme_color_override("font_color", Color(0.8, 0.9, 1.0, 0.9))
-		name_lbl.position = Vector2(4, 90)
-		name_lbl.size = Vector2(slot_w - 8, 20)
+			_char_slots.append(tex_rect)
+		else:
+			var icon_lbl := Label.new()
+			icon_lbl.text = "🧑"
+			icon_lbl.add_theme_font_size_override("font_size", 96)
+			icon_lbl.position = Vector2(cx, cy + ph * 0.3)
+			icon_lbl.size = Vector2(pw, 140)
+			icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			_char_display_root.add_child(icon_lbl)
+			_char_slots.append(icon_lbl)
+
+		var name_lbl := _lbl(ch, 14, Color(0.85, 0.92, 1.0, 0.95), _char_display_root,
+			Vector2(cx, cy + ph + 6), Vector2(pw, 22))
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		card.add_child(name_lbl)
+	else:
+		# Multiple characters — smaller cards side by side
+		var slot_w := 110.0
+		var total_w := count * slot_w + (count - 1) * 16.0
+		var start_x := (SW - total_w) / 2.0
 
-		# element badge (show first elem in deck)
-		var elem: String = _elem_deck.keys()[0] if _elem_deck.size() > 0 else ""
-		if elem != "" and i == 0:
-			var eb := Panel.new()
-			eb.position = Vector2(slot_w - 28, 6)
-			eb.size = Vector2(24, 18)
-			eb.add_theme_stylebox_override("panel", _sb(Color(0.2, 0.6, 1.0, 0.8), Color(0,0,0,0), 4))
-			card.add_child(eb)
-			var el := Label.new()
-			el.text = elem
-			el.add_theme_font_size_override("font_size", 9)
-			el.add_theme_color_override("font_color", Color.WHITE)
-			el.position = Vector2(2, 2)
-			el.size = Vector2(20, 14)
-			el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			eb.add_child(el)
+		for i in range(count):
+			var ch: String = chars[i]
+			var cx := start_x + i * (slot_w + 16.0)
 
-		_char_slots.append(card)
+			var card := Panel.new()
+			card.position = Vector2(cx, center_y - 110.0)
+			card.size = Vector2(slot_w, 150.0)
+			card.clip_contents = true
+			card.add_theme_stylebox_override("panel", _sb(Color(0.08, 0.12, 0.26, 0.7), Color(0.4, 0.6, 1.0, 0.25), 12))
+			_char_display_root.add_child(card)
+
+			var portrait_path := "res://image/%s_1.png" % ch.to_lower()
+			if ResourceLoader.exists(portrait_path):
+				var tex_rect := TextureRect.new()
+				tex_rect.texture = load(portrait_path)
+				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				tex_rect.position = Vector2(0, 4)
+				tex_rect.size = Vector2(slot_w, 84)
+				tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(tex_rect)
+			else:
+				var icon_lbl := Label.new()
+				icon_lbl.text = "🧑" if i % 2 == 0 else "⚔"
+				icon_lbl.add_theme_font_size_override("font_size", 48)
+				icon_lbl.position = Vector2(0, 12)
+				icon_lbl.size = Vector2(slot_w, 70)
+				icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				card.add_child(icon_lbl)
+
+			var name_lbl := Label.new()
+			name_lbl.text = ch
+			name_lbl.add_theme_font_size_override("font_size", 11)
+			name_lbl.add_theme_color_override("font_color", Color(0.8, 0.9, 1.0, 0.9))
+			name_lbl.position = Vector2(4, 90)
+			name_lbl.size = Vector2(slot_w - 8, 20)
+			name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			card.add_child(name_lbl)
+
+			_char_slots.append(card)
 
 	# Mission title (bottom center)
 	var mission_lbl := _lbl("MISSION 1-1  ·  ห้องปฏิบัติการต้องห้าม",
@@ -325,23 +365,25 @@ func _build_edit_panel() -> void:
 	bg.add_child(char_header)
 	_lbl("เลือกตัวละคร", 12, Color(0.6, 0.8, 1.0, 0.9), char_header, Vector2(12, 8))
 
-	# char grid: 3 cols × 110px + gap, up to 2 rows = 236px
+	# char grid: 3 cols × 110px — roster is small (2 chars = 1 row)
+	var char_rows := ceili(float(CharacterManager.get_roster().size()) / 3.0)
+	var char_h    := maxi(char_rows, 1) * (110 + 8) + 4
 	var char_panel := Control.new()
 	char_panel.position = Vector2(8, 36)
-	char_panel.size = Vector2(EDIT_W - 16, 236)
+	char_panel.size = Vector2(EDIT_W - 16, char_h)
 	bg.add_child(char_panel)
 	_build_char_grid(char_panel)
 
 	# ── BOTTOM: cards ──
-	var sep_y := 278.0
+	var sep_y := 36.0 + char_h + 6.0
 	var sep := Panel.new()
 	sep.position = Vector2(0, sep_y)
 	sep.size = Vector2(EDIT_W, 1)
 	sep.add_theme_stylebox_override("panel", _sb(Color(0.3, 0.5, 1.0, 0.15)))
 	bg.add_child(sep)
 
-	# Element cards sub-section (discovered only)
-	var elem_count := maxi(PlayerData.discovered_elements.size(), 2)
+	# Element cards sub-section — pool = lab's unlocked elements + discovered
+	var elem_count := _elem_pool().size()
 	var elem_rows  := ceili(float(elem_count) / 5.0)
 	var elem_h     := elem_rows * (64 + 6) + 4
 
@@ -350,7 +392,7 @@ func _build_edit_panel() -> void:
 	elem_header.size = Vector2(EDIT_W, 24)
 	elem_header.add_theme_stylebox_override("panel", _sb(Color(0.04, 0.10, 0.20, 1.0)))
 	bg.add_child(elem_header)
-	_lbl("การ์ดธาตุ  (แตะซ้ำเพื่อเพิ่ม ×1–×3)", 10,
+	_lbl("การ์ดธาตุ  (×1–×3 ต่อชนิด · สูงสุด 16 ใบ)", 10,
 		Color(0.4, 0.8, 1.0, 0.85), elem_header, Vector2(12, 5))
 
 	var elem_panel := Control.new()
@@ -374,6 +416,11 @@ func _build_edit_panel() -> void:
 	supp_panel.size = Vector2(EDIT_W - 16, 80)
 	bg.add_child(supp_panel)
 	_build_supp_grid(supp_panel)
+
+	# live deck total counter
+	_deck_total_lbl = _lbl("เด็ค: %d / 20" % (_elem_deck_total() + _supp_deck_total()),
+		11, Color(0.75, 0.85, 1.0, 0.85), bg, Vector2(8, supp_sep_y + 28 + 80 + 4), Vector2(EDIT_W - 16, 18))
+	_deck_total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	# confirm + close buttons
 	var conf_sb := _sb(Color(0.12, 0.35, 0.85, 1.0), Color(0.4,0.6,1.0,0.3), 10)
@@ -416,31 +463,28 @@ func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
 
 # ── character grid ──
 func _build_char_grid(parent: Control) -> void:
-	var avail: Array = []
-	for entry in CharacterManager.get_roster():
-		if entry.get("owned", false):
-			avail.append({"name": entry["name"], "rarity": entry.get("rarity", 3),
-				"elem_col": entry.get("element_color", Color(0.4, 0.7, 1.0))})
-	if avail.is_empty():
-		avail = [{"name": "Lyra", "rarity": 5, "elem_col": Color(0.5, 0.3, 1.0)}]
+	# Show the FULL roster (owned first, in CharacterManager.ALL_CHARACTERS
+	# order — Lyra first). Locked characters render as dimmed empty slots.
+	var roster: Array[Dictionary] = CharacterManager.get_roster()
 
 	var cols := 3
 	var cw := 86.0; var ch_h := 110.0; var gap := 8.0
-	for i in range(avail.size()):
-		var entry: Dictionary = avail[i]
+	for i in range(roster.size()):
+		var entry: Dictionary = roster[i]
 		var name_str: String  = entry["name"]
+		var owned: bool = entry.get("owned", false)
 		var row := i / cols; var col := i % cols
-		var is_sel := _selected_chars.has(name_str)
-		var rcol: Color = _rarity_color(entry["rarity"])
-		var ecol: Color = entry["elem_col"]
+		var is_sel := owned and _selected_chars.has(name_str)
+		var rcol: Color = _rarity_color(entry.get("rarity", 3))
+		var ecol: Color = entry.get("element_color", Color(0.4, 0.7, 1.0))
 
 		var card := Panel.new()
 		card.position = Vector2(col * (cw + gap), row * (ch_h + gap))
 		card.size     = Vector2(cw, ch_h)
 		card.clip_contents = true
 		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.05, 0.08, 0.18, 0.95)
-		sb.border_color = rcol if is_sel else Color(rcol.r, rcol.g, rcol.b, 0.25)
+		sb.bg_color = Color(0.05, 0.08, 0.18, 0.95) if owned else Color(0.04, 0.04, 0.06, 0.85)
+		sb.border_color = rcol if is_sel else Color(rcol.r, rcol.g, rcol.b, 0.25 if owned else 0.12)
 		for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 			sb.set_border_width(side, 2 if is_sel else 1)
 		sb.set_corner_radius_all(8)
@@ -450,21 +494,38 @@ func _build_char_grid(parent: Control) -> void:
 		card.add_theme_stylebox_override("panel", sb)
 		parent.add_child(card)
 
-		# portrait image
-		var portrait_path := "res://image/%s_1.png" % name_str.to_lower()
-		if ResourceLoader.exists(portrait_path):
-			var tex_rect := TextureRect.new()
-			tex_rect.texture = load(portrait_path)
-			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			tex_rect.position = Vector2(0, 0)
-			tex_rect.size = Vector2(cw, ch_h - 22)
-			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(tex_rect)
+		if owned:
+			# portrait image — KEEP_ASPECT_CENTERED so the whole portrait
+			# (including the head) is visible, never cropped
+			var portrait_path := "res://image/%s_1.png" % name_str.to_lower()
+			if ResourceLoader.exists(portrait_path):
+				var tex_rect := TextureRect.new()
+				tex_rect.texture = load(portrait_path)
+				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				tex_rect.position = Vector2(0, 0)
+				tex_rect.size = Vector2(cw, ch_h - 22)
+				tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(tex_rect)
+			else:
+				_lbl("🧑", 36, Color.WHITE, card, Vector2(cw / 2 - 18, 10))
 		else:
-			_lbl("🧑", 36, Color.WHITE, card, Vector2(cw / 2 - 18, 10))
+			# Locked / not-owned — empty placeholder with lock icon
+			var lock_path := "res://image/lock_chain_x.png"
+			if ResourceLoader.exists(lock_path):
+				var lock_tex := TextureRect.new()
+				lock_tex.texture = load(lock_path)
+				lock_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				lock_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				lock_tex.size = Vector2(32, 32)
+				lock_tex.position = Vector2((cw - 32) * 0.5, (ch_h - 22 - 32) * 0.5)
+				lock_tex.modulate = Color(1, 1, 1, 0.55)
+				lock_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(lock_tex)
+			else:
+				_lbl("🔒", 28, Color(1, 1, 1, 0.4), card, Vector2(cw / 2 - 14, (ch_h - 22) * 0.5 - 14))
 
-		# rarity stars bottom strip
+		# rarity stars / lock label bottom strip
 		var strip := Panel.new()
 		strip.position = Vector2(0, ch_h - 22)
 		strip.size = Vector2(cw, 22)
@@ -474,25 +535,26 @@ func _build_char_grid(parent: Control) -> void:
 		card.add_child(strip)
 
 		var nl := Label.new()
-		nl.text = name_str
-		nl.add_theme_font_size_override("font_size", 9)
-		nl.add_theme_color_override("font_color", Color(0.85, 0.92, 1.0))
+		nl.text = name_str if owned else "ยังไม่ปลดล็อค"
+		nl.add_theme_font_size_override("font_size", 9 if owned else 7)
+		nl.add_theme_color_override("font_color", Color(0.85, 0.92, 1.0) if owned else Color(0.5, 0.5, 0.6))
 		nl.position = Vector2(2, 2)
 		nl.size = Vector2(cw - 4, 12)
 		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		strip.add_child(nl)
 
-		var stars_lbl := Label.new()
-		var star_count: int = entry.get("rarity", 3) if entry.has("rarity") else 3
-		stars_lbl.text = "★".repeat(star_count)
-		stars_lbl.add_theme_font_size_override("font_size", 7)
-		stars_lbl.add_theme_color_override("font_color", rcol)
-		stars_lbl.position = Vector2(2, 12)
-		stars_lbl.size = Vector2(cw - 4, 10)
-		stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		strip.add_child(stars_lbl)
+		if owned:
+			var stars_lbl := Label.new()
+			var star_count: int = entry.get("rarity", 3)
+			stars_lbl.text = "★".repeat(star_count)
+			stars_lbl.add_theme_font_size_override("font_size", 7)
+			stars_lbl.add_theme_color_override("font_color", rcol)
+			stars_lbl.position = Vector2(2, 12)
+			stars_lbl.size = Vector2(cw - 4, 10)
+			stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			strip.add_child(stars_lbl)
 
 		if is_sel:
 			var sel_mark := Label.new()
@@ -504,12 +566,15 @@ func _build_char_grid(parent: Control) -> void:
 			sel_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(sel_mark)
 
-		card.mouse_filter = Control.MOUSE_FILTER_STOP
-		var n := name_str
-		card.gui_input.connect(func(ev):
-			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-				_toggle_char(n)
-				_rebuild_char_grid(parent))
+		if owned:
+			card.mouse_filter = Control.MOUSE_FILTER_STOP
+			var n := name_str
+			card.gui_input.connect(func(ev):
+				if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+					_toggle_char(n)
+					_rebuild_char_grid(parent))
+		else:
+			card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _rebuild_char_grid(parent: Control) -> void:
 	for c in parent.get_children():
@@ -527,37 +592,56 @@ func _toggle_char(name_str: String) -> void:
 			_selected_chars[empty_idx] = name_str
 
 # ── element deck grid ──
-func _build_elem_grid(parent: Control) -> void:
-	# pull only discovered elements from PlayerData
-	var owned_elems: Array = []
-	if PlayerData.discovered_elements.size() > 0:
-		owned_elems.assign(PlayerData.discovered_elements)
-	else:
-		owned_elems = ["H", "O"]  # fallback for fresh save
-	var elem_colors: Dictionary = {
-		"H": Color(0.3, 0.7, 1.0), "O": Color(1.0, 0.35, 0.35),
-		"Na": Color(1.0, 0.75, 0.2), "C": Color(0.6, 0.6, 0.6),
-		"Fe": Color(0.85, 0.5, 0.2), "N": Color(0.5, 0.8, 1.0),
-		"S":  Color(0.9, 0.85, 0.1), "Ca": Color(0.9, 0.9, 0.9),
-		"Mg": Color(0.55, 0.9, 0.6), "Cl": Color(0.4, 1.0, 0.5),
-	}
+# ── element pool: whatever the lab offers, plus anything discovered ──
+func _elem_pool() -> Array:
+	var pool: Array = []
+	for e in ReactionDB.ELEMENTS:
+		if e.get("unlocked", false):
+			pool.append(e["symbol"])
+	for sym in PlayerData.discovered_elements:
+		if sym not in pool:
+			pool.append(sym)
+	if pool.is_empty():
+		pool = ["H", "O"]
+	return pool
 
+# ── deck total helpers ──
+func _elem_deck_total() -> int:
+	var t := 0
+	for v in _elem_deck.values(): t += v
+	return t
+
+func _supp_deck_total() -> int:
+	var t := 0
+	for v in _supp_deck.values(): t += v
+	return t
+
+func _build_elem_grid(parent: Control) -> void:
+	# Element pool = whatever the lab offers (ReactionDB.ELEMENTS, unlocked)
+	# plus anything additionally discovered — same source of truth as lab.
+	var elem_colors: Dictionary = {}
+	for e in ReactionDB.ELEMENTS:
+		elem_colors[e["symbol"]] = e["color"]
+	var owned_elems: Array = _elem_pool()
+
+	var deck_total := _elem_deck_total()
 	var cw := 54.0; var ch_h := 64.0; var gap := 6.0; var cols := 5
 	for i in range(owned_elems.size()):
 		var elem: String = owned_elems[i]
 		var count: int   = _elem_deck.get(elem, 0)
 		var ecol: Color  = elem_colors.get(elem, Color(0.5, 0.8, 1.0))
 		var row := i / cols; var col := i % cols
+		var at_cap := deck_total >= 16 and count == 0
 
 		var card := Panel.new()
 		card.position = Vector2(col * (cw + gap), row * (ch_h + gap))
 		card.size     = Vector2(cw, ch_h)
-		card.clip_contents = false
+		card.clip_contents = true
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(ecol.r * 0.12, ecol.g * 0.12, ecol.b * 0.18, 0.95) if count > 0 \
 					else Color(0.05, 0.08, 0.16, 0.9)
 		sb.border_color = Color(ecol.r, ecol.g, ecol.b, 0.85) if count > 0 \
-						else Color(ecol.r, ecol.g, ecol.b, 0.2)
+						else Color(ecol.r, ecol.g, ecol.b, 0.2 if not at_cap else 0.08)
 		for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 			sb.set_border_width(side, 2 if count > 0 else 1)
 		sb.set_corner_radius_all(8)
@@ -565,6 +649,7 @@ func _build_elem_grid(parent: Control) -> void:
 			sb.shadow_color = Color(ecol.r, ecol.g, ecol.b, 0.4)
 			sb.shadow_size  = 5
 		card.add_theme_stylebox_override("panel", sb)
+		card.modulate = Color(1, 1, 1, 0.4) if at_cap else Color(1, 1, 1, 1)
 		parent.add_child(card)
 
 		var sym_lbl := Label.new()
@@ -591,6 +676,19 @@ func _build_elem_grid(parent: Control) -> void:
 			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(dot)
 
+		# tier frame — elements are always tier 1 (base substances)
+		var eframe := TextureRect.new()
+		eframe.texture      = preload("res://image/g1.jpg")
+		eframe.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		eframe.stretch_mode = TextureRect.STRETCH_SCALE
+		eframe.size         = Vector2(cw + 4, ch_h + 4)
+		eframe.position     = Vector2(-2, -2)
+		eframe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var efmat := CanvasItemMaterial.new()
+		efmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		eframe.material = efmat
+		card.add_child(eframe)
+
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var e := elem
 		card.gui_input.connect(func(ev):
@@ -602,14 +700,17 @@ func _rebuild_elem_grid(parent: Control) -> void:
 	for c in parent.get_children():
 		c.queue_free()
 	_build_elem_grid(parent)
+	_refresh_deck_total_lbl()
 
 func _cycle_elem(elem: String) -> void:
 	var cur: int = _elem_deck.get(elem, 0)
-	var next := (cur + 1) % (MAX_ELEM_COPY + 1)
-	if next == 0:
+	if cur >= MAX_ELEM_COPY:
 		_elem_deck.erase(elem)
-	else:
-		_elem_deck[elem] = next
+		return
+	# Deck-wide caps: elements ≤16 total, whole deck ≤20 total
+	if _elem_deck_total() >= 16: return
+	if _elem_deck_total() + _supp_deck_total() >= 20: return
+	_elem_deck[elem] = cur + 1
 
 # ── support deck grid ──
 func _build_supp_grid(parent: Control) -> void:
@@ -624,6 +725,7 @@ func _build_supp_grid(parent: Control) -> void:
 		var card := Panel.new()
 		card.position = Vector2(i * (cw + gap), 0)
 		card.size     = Vector2(cw, ch_h)
+		card.clip_contents = true
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(0.18, 0.08, 0.32, 0.95) if is_sel else Color(0.06, 0.04, 0.14, 0.9)
 		sb.border_color = Color(0.85, 0.55, 1.0, 0.9) if is_sel else Color(0.5, 0.35, 0.7, 0.25)
@@ -660,6 +762,19 @@ func _build_supp_grid(parent: Control) -> void:
 			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(dot)
 
+		# tier frame — support cards are tier 2
+		var sframe := TextureRect.new()
+		sframe.texture      = preload("res://image/g2.jpg")
+		sframe.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		sframe.stretch_mode = TextureRect.STRETCH_SCALE
+		sframe.size         = Vector2(cw + 4, ch_h + 4)
+		sframe.position     = Vector2(-2, -2)
+		sframe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var sfmat := CanvasItemMaterial.new()
+		sfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		sframe.material = sfmat
+		card.add_child(sframe)
+
 		card.mouse_filter = Control.MOUSE_FILTER_STOP
 		var s := supp
 		card.gui_input.connect(func(ev):
@@ -671,22 +786,28 @@ func _rebuild_supp_grid(parent: Control) -> void:
 	for c in parent.get_children():
 		c.queue_free()
 	_build_supp_grid(parent)
+	_refresh_deck_total_lbl()
+
+func _refresh_deck_total_lbl() -> void:
+	if is_instance_valid(_deck_total_lbl):
+		_deck_total_lbl.text = "เด็ค: %d / 20" % (_elem_deck_total() + _supp_deck_total())
 
 func _cycle_supp(supp: String) -> void:
 	var cur: int = _supp_deck.get(supp, 0)
+	if cur >= MAX_SUPP_COPY:
+		_supp_deck.erase(supp)
+		return
 	if cur == 0:
-		# only allow adding if fewer than MAX_SUPP_TYPES active
+		# only allow adding a new type if fewer than MAX_SUPP_TYPES active
 		var active_types := 0
 		for k in _supp_deck:
 			if _supp_deck[k] > 0:
 				active_types += 1
 		if active_types >= MAX_SUPP_TYPES:
 			return
-	var next := (cur + 1) % (MAX_SUPP_COPY + 1)
-	if next == 0:
-		_supp_deck.erase(supp)
-	else:
-		_supp_deck[supp] = next
+	# Deck-wide cap: whole deck (elements + support) ≤20 total
+	if _elem_deck_total() + _supp_deck_total() >= 20: return
+	_supp_deck[supp] = cur + 1
 
 
 # ── edit open/close ──
