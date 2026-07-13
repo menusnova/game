@@ -115,7 +115,7 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 		sb.add_child(val_lbl)
 
 	# Name + title
-	var name_y := VH - 70.0
+	var name_y := VH - 82.0
 	var name_lbl := _lbl(char_name.to_upper(), 28, C_TEXT)
 	name_lbl.position = Vector2(14, name_y)
 	name_lbl.size = Vector2(LEFT_W - 28, 34)
