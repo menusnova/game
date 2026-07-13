@@ -40,6 +40,10 @@ var _elem_slots:   Array    = []
 var _supp_slots:   Array    = []
 var _stage_dots:   Array    = []
 var _deck_total_lbl: Label  = null
+var _deck_preview_panel: Control = null
+var _deck_preview_list:  Control = null
+var _elem_grid_ref: Control = null
+var _supp_grid_ref: Control = null
 
 # ── helpers ──
 func _sb(col: Color, border: Color = Color(1,1,1,0), radius: int = 0) -> StyleBoxFlat:
@@ -101,6 +105,7 @@ func _ready() -> void:
 	$BottomBar/EditBtn.pressed.connect(_on_edit)
 	$BottomBar/StartBtn.pressed.connect(_on_start)
 	_build_edit_panel()
+	_build_deck_preview()
 	_refresh_enemy_panel()
 	_refresh_team_display()
 
@@ -404,6 +409,7 @@ func _build_edit_panel() -> void:
 	elem_panel.position = Vector2(8, sep_y + 28)
 	elem_panel.size = Vector2(EDIT_W - 16, elem_h)
 	bg.add_child(elem_panel)
+	_elem_grid_ref = elem_panel
 	_build_elem_grid(elem_panel)
 
 	# Support cards sub-section
@@ -420,6 +426,7 @@ func _build_edit_panel() -> void:
 	supp_panel.position = Vector2(8, supp_sep_y + 28)
 	supp_panel.size = Vector2(EDIT_W - 16, 80)
 	bg.add_child(supp_panel)
+	_supp_grid_ref = supp_panel
 	_build_supp_grid(supp_panel)
 
 	# live deck total counter
@@ -706,6 +713,7 @@ func _rebuild_elem_grid(parent: Control) -> void:
 		c.queue_free()
 	_build_elem_grid(parent)
 	_refresh_deck_total_lbl()
+	_refresh_deck_preview()
 
 func _cycle_elem(elem: String) -> void:
 	var cur: int = _elem_deck.get(elem, 0)
@@ -792,6 +800,7 @@ func _rebuild_supp_grid(parent: Control) -> void:
 		c.queue_free()
 	_build_supp_grid(parent)
 	_refresh_deck_total_lbl()
+	_refresh_deck_preview()
 
 func _refresh_deck_total_lbl() -> void:
 	if is_instance_valid(_deck_total_lbl):
@@ -814,6 +823,132 @@ func _cycle_supp(supp: String) -> void:
 	if _elem_deck_total() + _supp_deck_total() >= 20: return
 	_supp_deck[supp] = cur + 1
 
+# ── deck preview strip (right side) — shows picked cards, tap to remove ──
+const DECK_PREVIEW_W := 260.0
+
+func _build_deck_preview() -> void:
+	_deck_preview_panel = Control.new()
+	_deck_preview_panel.position = Vector2(SW - DECK_PREVIEW_W - 16, 0)
+	_deck_preview_panel.size = Vector2(DECK_PREVIEW_W, SH)
+	_deck_preview_panel.visible = false
+	_deck_preview_panel.z_index = 5
+	add_child(_deck_preview_panel)
+
+	var bg := Panel.new()
+	bg.position = Vector2.ZERO
+	bg.size = Vector2(DECK_PREVIEW_W, SH)
+	bg.add_theme_stylebox_override("panel", _sb(Color(0.05, 0.07, 0.16, 0.97), Color(0.3, 0.5, 1.0, 0.2), 0))
+	_deck_preview_panel.add_child(bg)
+
+	var header := Panel.new()
+	header.position = Vector2(0, 0)
+	header.size = Vector2(DECK_PREVIEW_W, 36)
+	header.add_theme_stylebox_override("panel", _sb(Color(0.08, 0.12, 0.28, 1.0)))
+	bg.add_child(header)
+	_lbl("เด็คของคุณ (แตะเพื่อเอาออก)", 12, Color(0.75, 0.85, 1.0, 0.9), header, Vector2(12, 10))
+
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(0, 40)
+	scroll.size = Vector2(DECK_PREVIEW_W, SH - 40)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	bg.add_child(scroll)
+
+	_deck_preview_list = VBoxContainer.new()
+	_deck_preview_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_deck_preview_list.add_theme_constant_override("separation", 6)
+	scroll.add_child(_deck_preview_list)
+
+func _refresh_deck_preview() -> void:
+	if not is_instance_valid(_deck_preview_list):
+		return
+	for c in _deck_preview_list.get_children():
+		c.queue_free()
+
+	var elem_colors: Dictionary = {}
+	for e in ReactionDB.ELEMENTS:
+		elem_colors[e["symbol"]] = e["color"]
+
+	var any_cards := false
+	for elem in _elem_deck.keys():
+		var count: int = _elem_deck[elem]
+		if count <= 0: continue
+		any_cards = true
+		var ecol: Color = elem_colors.get(elem, Color(0.5, 0.8, 1.0))
+		_deck_preview_list.add_child(_make_deck_preview_row(elem, "ธาตุ", count, ecol,
+			func(): _elem_deck.erase(elem); _rebuild_elem_grid(_elem_grid_ref); _refresh_deck_preview()))
+
+	for supp in _supp_deck.keys():
+		var count: int = _supp_deck[supp]
+		if count <= 0: continue
+		any_cards = true
+		_deck_preview_list.add_child(_make_deck_preview_row(supp, "สนับสนุน", count, Color(0.85, 0.55, 1.0),
+			func(): _supp_deck.erase(supp); _rebuild_supp_grid(_supp_grid_ref); _refresh_deck_preview()))
+
+	if not any_cards:
+		var empty_lbl := Label.new()
+		empty_lbl.text = "ยังไม่ได้เลือกการ์ด"
+		empty_lbl.add_theme_font_size_override("font_size", 11)
+		empty_lbl.add_theme_color_override("font_color", Color(0.5, 0.55, 0.7, 0.6))
+		empty_lbl.position = Vector2(12, 8)
+		_deck_preview_list.add_child(empty_lbl)
+
+func _make_deck_preview_row(name_str: String, tag: String, count: int, col: Color, on_remove: Callable) -> Panel:
+	var row := Panel.new()
+	row.custom_minimum_size = Vector2(DECK_PREVIEW_W - 16, 40)
+	row.mouse_filter = Control.MOUSE_FILTER_STOP
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(col.r * 0.14, col.g * 0.14, col.b * 0.20, 0.9)
+	sb.border_color = Color(col.r, col.g, col.b, 0.5)
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+		sb.set_border_width(side, 1)
+	sb.set_corner_radius_all(6)
+	row.add_theme_stylebox_override("panel", sb)
+
+	var name_lbl := Label.new()
+	name_lbl.text = name_str
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", Color(col.r + 0.15, col.g + 0.15, col.b + 0.15, 1.0))
+	name_lbl.position = Vector2(10, 5)
+	name_lbl.size = Vector2(140, 16)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(name_lbl)
+
+	var tag_lbl := Label.new()
+	tag_lbl.text = tag
+	tag_lbl.add_theme_font_size_override("font_size", 8)
+	tag_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.6))
+	tag_lbl.position = Vector2(10, 21)
+	tag_lbl.size = Vector2(100, 12)
+	tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(tag_lbl)
+
+	var count_lbl := Label.new()
+	count_lbl.text = "×%d" % count
+	count_lbl.add_theme_font_size_override("font_size", 13)
+	count_lbl.add_theme_color_override("font_color", Color.WHITE)
+	count_lbl.position = Vector2(row.custom_minimum_size.x - 60, 5)
+	count_lbl.size = Vector2(30, 30)
+	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	count_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(count_lbl)
+
+	var remove_lbl := Label.new()
+	remove_lbl.text = "✕"
+	remove_lbl.add_theme_font_size_override("font_size", 14)
+	remove_lbl.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 0.85))
+	remove_lbl.position = Vector2(row.custom_minimum_size.x - 26, 5)
+	remove_lbl.size = Vector2(20, 30)
+	remove_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	remove_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	remove_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(remove_lbl)
+
+	row.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			on_remove.call())
+
+	return row
 
 # ── edit open/close ──
 func _on_edit() -> void:
@@ -825,15 +960,35 @@ func _on_edit() -> void:
 	t.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	t.tween_property(_edit_panel, "position:x", 0.0, 0.3)
 
+	if is_instance_valid(_deck_preview_panel):
+		_deck_preview_panel.visible = true
+		_deck_preview_panel.modulate.a = 0.0
+		_refresh_deck_preview()
+		var t2 := create_tween()
+		t2.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		t2.tween_property(_deck_preview_panel, "modulate:a", 1.0, 0.3)
+	# Deck preview occupies the same screen region as the enemy panel —
+	# hide it while editing to avoid overlap
+	if is_instance_valid(_enemy_panel):
+		_enemy_panel.visible = false
+
 func _on_edit_close() -> void:
 	if not _edit_open:
 		return
 	var t := create_tween()
 	t.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 	t.tween_property(_edit_panel, "position:x", -EDIT_W, 0.25)
+	if is_instance_valid(_deck_preview_panel):
+		var t2 := create_tween()
+		t2.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+		t2.tween_property(_deck_preview_panel, "modulate:a", 0.0, 0.25)
 	await t.finished
 	_edit_open = false
 	_edit_panel.visible = false
+	if is_instance_valid(_deck_preview_panel):
+		_deck_preview_panel.visible = false
+	if is_instance_valid(_enemy_panel):
+		_enemy_panel.visible = true
 	_refresh_team_display()
 
 # ── start ──
