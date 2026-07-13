@@ -20,6 +20,7 @@ var _points: float = 0.0
 var _last_reset_day: int = -1
 
 func _ready() -> void:
+	_load()
 	_check_daily_reset()
 
 func add_points(source: String) -> void:
