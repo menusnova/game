@@ -12,12 +12,14 @@ const CHAR_SIDE := {
 
 # ── บทสนทนา: Array ของ {speaker, text} ──
 const LINES: Array = [
-	{"speaker": "Lyra",  "text": "สูตรนี้... มันไม่ธรรมดาเลย"},
-	{"speaker": "Lyra",  "text": "ใครบางคนแอบแก้สมการหลักไว้ก่อนที่ฉันจะมาถึง"},
-	{"speaker": "Lyra",  "text": "รู้จักฝีมือพวกนั้นดี ต้องเป็น Void Syndicate แน่ๆ"},
-	{"speaker": "Lyra",  "text": "ถ้าปล่อยไว้อีกคืนเดียว ห้องทดลองทั้งหมดจะระเบิด"},
-	{"speaker": "Lyra",  "text": "งั้นเราต้องหยุดพวกเขาที่นี่และตอนนี้เลย"},
-	{"speaker": "Lyra",  "text": "...เตรียมพร้อม"},
+	{"speaker": "Lyra",  "text": "สายไปแล้ว..."},
+	{"speaker": "Lyra",  "text": "เข้าไปได้แล้ว"},
+	{"speaker": "Lyra",  "text": "เร็วกว่าที่คิด"},
+	{"speaker": "Lyra",  "text": "ของยังอยู่ไหม..."},
+	{"speaker": "Lyra",  "text": "ยังทัน"},
+	{"speaker": "Lyra",  "text": "แค่นิดเดียว"},
+	{"speaker": "Lyra",  "text": "พวกเขายังอยู่ในนี้"},
+	{"speaker": "Lyra",  "text": "ไปไหนไม่ได้แล้ว"},
 ]
 
 var _current    := 0
