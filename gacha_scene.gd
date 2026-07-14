@@ -450,18 +450,8 @@ func _build_top_bar() -> void:
 	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(title_lbl)
 
-	# Back/close button — top-right (X style like reference)
-	var close_btn := Button.new()
-	close_btn.text = "✕"
-	close_btn.size     = Vector2(40, 40)
-	close_btn.position = Vector2(W - 48, (TOP_H - 40) * 0.5)
-	close_btn.add_theme_font_size_override("font_size", 16)
-	close_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.65))
-	close_btn.add_theme_stylebox_override("normal",  _sb(Color(1,1,1,0.06), Color(1,1,1,0.12), 8, 1))
-	close_btn.add_theme_stylebox_override("hover",   _sb(Color(1,1,1,0.12), Color(1,1,1,0.22), 8, 1))
-	close_btn.add_theme_stylebox_override("pressed", _sb(Color(1,1,1,0.06), Color(1,1,1,0.12), 8, 1))
-	close_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-	close_btn.pressed.connect(_go_back)
+	# Back/close button — top-right (shared style used across other screens)
+	var close_btn := _make_back_btn(Vector2(W - 50, (TOP_H - 45) * 0.5), Vector2(42, 45), _go_back)
 	bar.add_child(close_btn)
 
 	# Currency row (top-right, left of close button)
@@ -553,7 +543,7 @@ func _warp_btn(count: int) -> Button:
 		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		ico.size         = Vector2(28, 28)
-		ico.position     = Vector2(24, 10)
+		ico.position     = Vector2(34, 10)
 		ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var ico_mat := CanvasItemMaterial.new()
 		ico_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
@@ -799,6 +789,11 @@ func _show_confirm_dialog(count: int) -> void:
 	cost_pre.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	cost_row.add_child(cost_pre)
 
+	var gem_spacer := Control.new()
+	gem_spacer.custom_minimum_size = Vector2(6, 0)
+	gem_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cost_row.add_child(gem_spacer)
+
 	var gem_ico := TextureRect.new()
 	var gem_tex := _load_png("res://image/crystal_gem.png")
 	if gem_tex: gem_ico.texture = gem_tex
@@ -853,9 +848,9 @@ func _show_confirm_dialog(count: int) -> void:
 	confirm_btn.position = Vector2((bw * 0.5) + 8, btn_y)
 	confirm_btn.add_theme_font_size_override("font_size", 13)
 	confirm_btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	confirm_btn.add_theme_stylebox_override("normal",  _sb(Color(0.15, 0.35, 0.80, 1.0), Color(0.40, 0.65, 1.0, 0.7), 10, 1))
-	confirm_btn.add_theme_stylebox_override("hover",   _sb(Color(0.20, 0.42, 0.90, 1.0), Color(0.50, 0.75, 1.0, 0.9), 10, 1))
-	confirm_btn.add_theme_stylebox_override("pressed", _sb(Color(0.15, 0.35, 0.80, 1.0), Color(0.40, 0.65, 1.0, 0.7), 10, 1))
+	confirm_btn.add_theme_stylebox_override("normal",  _sb(Color(0.45, 0.15, 0.80, 1.0), Color(0.70, 0.45, 1.0, 0.7), 10, 1))
+	confirm_btn.add_theme_stylebox_override("hover",   _sb(Color(0.55, 0.20, 0.90, 1.0), Color(0.80, 0.55, 1.0, 0.9), 10, 1))
+	confirm_btn.add_theme_stylebox_override("pressed", _sb(Color(0.45, 0.15, 0.80, 1.0), Color(0.70, 0.45, 1.0, 0.7), 10, 1))
 	confirm_btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
 	confirm_btn.pressed.connect(func():
 		dim.queue_free()
