@@ -108,7 +108,7 @@ var _msg_lbl:          Label
 var _turn_lbl:         Label
 var _ap_lbl:           Label
 var _ap_orbs:          Array = []
-var _gauge_bar:        ColorRect
+var _gauge_bar:        TextureProgressBar
 var _gauge_lbl:        Label
 var _player_hp_bar:    ColorRect
 var _player_hp_lbl:    Label
@@ -222,6 +222,22 @@ func _load_png(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
 	return null
+
+## Soft-edged filled disc, used as the ULT gauge's radial progress texture (no rectangular corners).
+func _make_disc_texture(diameter: int, color: Color) -> ImageTexture:
+	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
+	var center := Vector2(diameter * 0.5, diameter * 0.5)
+	var r := diameter * 0.5 - 2.0
+	for y in diameter:
+		for x in diameter:
+			var d := Vector2(x, y).distance_to(center)
+			var a := 0.0
+			if d <= r - 3.0:
+				a = 0.85
+			elif d <= r:
+				a = 0.85 * (r - d) / 3.0
+			img.set_pixel(x, y, Color(color.r, color.g, color.b, a))
+	return ImageTexture.create_from_image(img)
 
 func _mk_label(txt: String, fs: int, col: Color, parent: Control,
 		pos: Vector2, sz: Vector2 = Vector2.ZERO, center: bool = false) -> Label:
@@ -715,11 +731,15 @@ func _build_ult_button() -> void:
 	circ.z_index = 4
 	add_child(circ)
 
-	# Gauge fill (fills from bottom as gauge increases)
-	_gauge_bar = ColorRect.new()
-	_gauge_bar.color    = Color(col.r, col.g, col.b, 0.28)
-	_gauge_bar.size     = Vector2(ULT_R * 2, 0)
-	_gauge_bar.position = Vector2(0, ULT_R * 2)
+	# Gauge fill — radial reveal, stays inside the circular frame (no square corners)
+	_gauge_bar = TextureProgressBar.new()
+	_gauge_bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_gauge_bar.texture_progress = _make_disc_texture(int(ULT_R * 2.0), col)
+	_gauge_bar.fill_mode      = TextureProgressBar.FILL_CLOCKWISE
+	_gauge_bar.radial_initial_angle = -90.0
+	_gauge_bar.min_value = 0.0
+	_gauge_bar.max_value = 100.0
+	_gauge_bar.value     = 0.0
 	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circ.add_child(_gauge_bar)
 
@@ -1759,12 +1779,9 @@ func _refresh_ui() -> void:
 			orb.position.y  = 17.0
 		orb.add_theme_stylebox_override("panel", sb)
 
-	# Ultimate gauge circle (fills from bottom)
+	# Ultimate gauge — radial fill inside the circle
 	var ult_ratio := _ult_gauge / float(MAX_GAUGE)
-	var fill_h    := ULT_R * 2.0 * ult_ratio
-	if _gauge_bar:
-		_gauge_bar.size.y     = fill_h
-		_gauge_bar.position.y = ULT_R * 2.0 - fill_h
+	if _gauge_bar: _gauge_bar.value = ult_ratio * 100.0
 	if _gauge_lbl:  _gauge_lbl.text = "%d%%" % int(ult_ratio * 100.0)
 
 	# Deck / Discard circles
