@@ -910,9 +910,7 @@ func _execute_pull(count: int) -> void:
 		if rarities[i] >= 4:
 			CharacterManager.unlock(results[i])
 		var etype: String
-		if rarities[i] == 3:
-			etype = "Element Card"
-		elif CARD_TYPE.get(results[i], "") == "SUPPORT":
+		if CARD_TYPE.get(results[i], "") == "SUPPORT":
 			etype = "Formula Card"
 		else:
 			etype = "Character"
