@@ -272,7 +272,6 @@ func _build_ui() -> void:
 	_build_action_ring()
 	_build_ult_button()
 	_build_card_info_panel()
-	_build_message_bar()
 
 # ── Top bar ───────────────────────────────────────────────
 func _build_topbar() -> void:
@@ -560,16 +559,16 @@ func _build_action_ring() -> void:
 	# Angles: spread around bottom-right arc (right side)
 	# 0=Attack(top), 1=Skill, 2=EndTurn(bottom), 3=Defend, 4=Ult (center-right)
 	const DEFS := [
-		["Attack",  "⚔",  "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],
-		["Skill",   "⚡",  "SKL\n2AP",  Color(0.80,0.50,1.00),   -8.0],
-		["EndTurn", "▶",  "END",        Color(0.55,0.75,0.55),   74.0],
-		["Defend",  "🛡",  "DEF\n1AP",  Color(0.35,0.65,1.00),  156.0],
+		["Attack",  "res://image/skill_void_strike.jpg",           "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],
+		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL\n2AP",  Color(0.80,0.50,1.00),   -8.0],
+		["EndTurn", "",                                            "▶\nEND",    Color(0.55,0.75,0.55),   74.0],
+		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF\n1AP",  Color(0.35,0.65,1.00),  156.0],
 	]
 	const BTN_R := 34.0  # button half-size
 
 	for d in DEFS:
 		var id: String  = d[0]
-		var icon: String = d[1]
+		var icon_path: String = d[1]
 		var lbl_txt: String = d[2]
 		var col: Color  = d[3]
 		var angle_deg: float = d[4]
@@ -578,7 +577,7 @@ func _build_action_ring() -> void:
 		var by := RING_CY + RING_R * sin(rad) - BTN_R
 
 		var btn := Button.new()
-		btn.text     = icon + "\n" + lbl_txt
+		btn.text     = "" if icon_path != "" else lbl_txt
 		btn.size     = Vector2(BTN_R * 2.0, BTN_R * 2.0)
 		btn.position = Vector2(bx, by)
 		btn.add_theme_font_size_override("font_size", 11)
@@ -591,28 +590,39 @@ func _build_action_ring() -> void:
 		btn.add_theme_color_override("font_color",          C_TEXT)
 		btn.add_theme_color_override("font_color_disabled", Color(0.30,0.33,0.42))
 		add_child(btn)
+
+		if icon_path != "":
+			var clip := Control.new()
+			clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			clip.clip_contents = true
+			clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			btn.add_child(clip)
+			var itex := TextureRect.new()
+			itex.texture = load(icon_path)
+			itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			itex.stretch_mode = TextureRect.STRETCH_SCALE
+			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			itex.modulate = Color(1, 1, 1, 0.85)
+			clip.add_child(itex)
+			var caption := Label.new()
+			caption.text = lbl_txt
+			caption.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+			caption.offset_top = -20
+			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			caption.add_theme_font_size_override("font_size", 10)
+			caption.add_theme_color_override("font_color", C_TEXT)
+			caption.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+			caption.add_theme_constant_override("shadow_offset_x", 1)
+			caption.add_theme_constant_override("shadow_offset_y", 1)
+			caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			clip.add_child(caption)
+
 		match id:
 			"Attack":  _btn_attack = btn; btn.pressed.connect(_on_attack)
 			"Defend":  _btn_defend = btn; btn.pressed.connect(_on_defend)
 			"Skill":   _btn_skill  = btn; btn.pressed.connect(_on_skill)
 			"EndTurn": _btn_end    = btn; btn.pressed.connect(_on_end_turn)
-
-# ── Message bar ────────────────────────────────────────────
-func _build_message_bar() -> void:
-	var mb := Panel.new()
-	mb.size = Vector2(1152, 24)
-	mb.position = Vector2(0, 624)
-	mb.add_theme_stylebox_override("panel", _flat(Color(0.03,0.04,0.08,0.97)))
-	add_child(mb)
-
-	_msg_lbl = Label.new()
-	_msg_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_msg_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_msg_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	_msg_lbl.add_theme_font_size_override("font_size", 13)
-	_msg_lbl.add_theme_color_override("font_color", C_TEXT)
-	_msg_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	mb.add_child(_msg_lbl)
 
 # ── Deck / Discard circles ────────────────────────────────
 func _build_deck_discard_circles() -> void:
@@ -685,24 +695,20 @@ func _build_ult_button() -> void:
 	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circ.add_child(_gauge_bar)
 
-	# TextureRect placeholder for ULT art
+	# Ultimate art (Absolute Zero Formula)
+	var clip := Control.new()
+	clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	clip.clip_contents = true
+	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(clip)
 	var tex := TextureRect.new()
-	tex.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	tex.offset_left  = -20; tex.offset_right  = 20
-	tex.offset_top   = -20; tex.offset_bottom = 20
-	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tex.texture = load("res://image/skill_absolute_zero_formula.jpg")
+	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_SCALE
 	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	circ.add_child(tex)
-
-	# Center icon 💥
-	var icon_lbl := Label.new()
-	icon_lbl.text = "💥"
-	icon_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.add_theme_font_size_override("font_size", 32)
-	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	circ.add_child(icon_lbl)
+	tex.modulate = Color(1, 1, 1, 0.85)
+	clip.add_child(tex)
 
 	# Gauge % label (bottom of circle)
 	_gauge_lbl = _mk_label("0%", 9, C_GOLD, circ,
