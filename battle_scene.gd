@@ -608,6 +608,9 @@ func _build_action_ring() -> void:
 			itex.stretch_mode = TextureRect.STRETCH_SCALE
 			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			itex.modulate = Color(1, 1, 1, 0.85)
+			var itex_mat := CanvasItemMaterial.new()
+			itex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+			itex.material = itex_mat
 			clip.add_child(itex)
 			var caption := Label.new()
 			caption.text = lbl_txt
@@ -712,6 +715,9 @@ func _build_ult_button() -> void:
 	tex.stretch_mode = TextureRect.STRETCH_SCALE
 	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tex.modulate = Color(1, 1, 1, 0.85)
+	var tex_mat := CanvasItemMaterial.new()
+	tex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	tex.material = tex_mat
 	clip.add_child(tex)
 
 	# Gauge % label (bottom of circle)
