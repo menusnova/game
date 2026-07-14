@@ -758,17 +758,25 @@ func _open_element_detail(elem: Dictionary) -> void:
 	rec_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(rec_title)
 
-	var ry := 328.0
+	var rec_clip := Panel.new()
+	rec_clip.position = Vector2(20, 328)
+	rec_clip.size = Vector2(IW, CH - 328 - 12)
+	rec_clip.clip_contents = true
+	rec_clip.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0)))
+	rec_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(rec_clip)
+
+	var ry := 0.0
 	for r in elem["recipes"]:
 		var rl := Label.new()
 		rl.text = "• " + r
-		rl.position = Vector2(20, ry)
+		rl.position = Vector2(0, ry)
 		rl.size = Vector2(IW, 18)
 		rl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		rl.add_theme_font_size_override("font_size", 11)
 		rl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 		rl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(rl)
+		rec_clip.add_child(rl)
 		ry += 20
 
 	# Close button

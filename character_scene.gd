@@ -209,6 +209,9 @@ func _fill_skill_row(card: Panel, sk: Dictionary, icon_map: Dictionary) -> void:
 	var icon_path: String = str(sk.get("icon", ""))
 	if icon_path != "" and ResourceLoader.exists(icon_path):
 		icon_tex.texture = load(icon_path)
+		var icon_mat := CanvasItemMaterial.new()
+		icon_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		icon_tex.material = icon_mat
 		icon_bg.add_theme_stylebox_override("panel",
 			_flat(Color(type_col.r * 0.15, type_col.g * 0.15, type_col.b * 0.25, 0.95),
 				Color(type_col.r, type_col.g, type_col.b, 0.35), 6, 1))
@@ -297,7 +300,7 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 			dim.queue_free()
 	)
 
-	var bw := 420.0; var bh := 260.0
+	var bw := 440.0; var bh := 340.0
 	var box := Panel.new()
 	box.size = Vector2(bw, bh)
 	box.position = Vector2((VW - bw) * 0.5, (VH - bh) * 0.5)
@@ -325,6 +328,9 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 		ico.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		ico.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		var ico_mat := CanvasItemMaterial.new()
+		ico_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		ico.material = ico_mat
 		icon_bg.add_child(ico)
 
 	var name_lbl := _lbl(str(sk.get("name", "")), 18, C_TEXT)
@@ -340,11 +346,18 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 	box.add_child(_crect(Vector2(20, 20 + icon_sz + 14), Vector2(bw - 40, 1),
 		Color(type_col.r, type_col.g, type_col.b, 0.2)))
 
+	var desc_clip := Control.new()
+	desc_clip.position = Vector2(20, 20 + icon_sz + 26)
+	desc_clip.size = Vector2(bw - 40, bh - icon_sz - 100)
+	desc_clip.clip_contents = true
+	desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(desc_clip)
+
 	var desc_lbl := _lbl(str(sk.get("desc", "")), 12, Color(0.85, 0.90, 1.0, 0.90))
-	desc_lbl.position = Vector2(20, 20 + icon_sz + 26)
-	desc_lbl.size = Vector2(bw - 40, bh - icon_sz - 90)
+	desc_lbl.position = Vector2(0, 0)
+	desc_lbl.size = Vector2(bw - 40, desc_clip.size.y + 60)
 	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(desc_lbl)
+	desc_clip.add_child(desc_lbl)
 
 	var close_btn := Button.new()
 	close_btn.text = "ปิด"
