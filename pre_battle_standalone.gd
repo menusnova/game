@@ -166,10 +166,6 @@ func _refresh_team_display() -> void:
 			icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			_char_display_root.add_child(icon_lbl)
 			_char_slots.append(icon_lbl)
-
-		var name_lbl := _lbl(ch, 14, Color(0.85, 0.92, 1.0, 0.95), _char_display_root,
-			Vector2(cx, cy + ph + 6), Vector2(pw, 22))
-		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	else:
 		# Multiple characters — smaller cards side by side
 		var slot_w := 110.0
