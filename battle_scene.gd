@@ -1050,16 +1050,11 @@ func _build_element_fx() -> void:
 	_element_fx = fx
 
 func _create_enemy() -> void:
-	if _current_stage % 5 == 0:
-		_enemy_data = {"name":"Void Dragon","hp":300,"attack":25,"type":"boss","img":"res://image/void_dragon.png"}
+	# Matches the enemy-info popup shown before battle: Stage 1 = Void Beast, Stage 2 (final) = Void Dragon
+	if _current_stage >= FINAL_STAGE:
+		_enemy_data = {"name":"Void Dragon","hp":1000,"attack":50,"type":"boss","img":"res://image/void_dragon.png"}
 	else:
-		var pool := [
-			{"name":"Slime",     "hp":100,"attack":10,"type":"poison"},
-			{"name":"Goblin",    "hp":80, "attack":20,"type":"attack"},
-			{"name":"Knight",    "hp":150,"attack":12,"type":"tank"},
-			{"name":"Void Beast","hp":120,"attack":16,"type":"attack","img":"res://image/void_beast.png"},
-		]
-		_enemy_data = pool.pick_random()
+		_enemy_data = {"name":"Void Beast","hp":1000,"attack":50,"type":"attack","img":"res://image/void_beast.png"}
 	_enemy_hp = _enemy_data["hp"]
 	_refresh_enemy_sprite()
 

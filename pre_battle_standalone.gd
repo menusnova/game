@@ -7,10 +7,10 @@ const SH := 648.0
 # ── Enemy data: 2 stages ──
 const STAGE_ENEMIES := [
 	[
-		{"name": "Bone Golem",  "hp": 4200, "weak": ["ไฟ", "กรด"],      "icon": "💀", "img": "res://image/void_beast.png"},
+		{"name": "Void Beast",  "hp": 1000, "weak": ["ไฟ", "กรด"],      "icon": "💀", "img": "res://image/void_beast.png"},
 	],
 	[
-		{"name": "Null Core",   "hp": 8800, "weak": ["น้ำ", "ไฟฟ้า"],   "icon": "☢", "img": "res://image/void_dragon.png"},
+		{"name": "Void Dragon", "hp": 1000, "weak": ["น้ำ", "ไฟฟ้า"],   "icon": "☢", "img": "res://image/void_dragon.png"},
 	],
 ]
 
