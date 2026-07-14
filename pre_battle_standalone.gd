@@ -470,16 +470,18 @@ func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
 
 # ── character grid ──
 func _build_char_grid(parent: Control) -> void:
-	# Show the FULL roster (owned first, in CharacterManager.ALL_CHARACTERS
-	# order — Lyra first). Locked characters render as dimmed empty slots.
-	var roster: Array[Dictionary] = CharacterManager.get_roster()
+	# Show only characters the player actually owns.
+	var roster: Array[Dictionary] = []
+	for entry in CharacterManager.get_roster():
+		if entry.get("owned", false):
+			roster.append(entry)
 
 	var cols := 3
 	var cw := 86.0; var ch_h := 110.0; var gap := 8.0
 	for i in range(roster.size()):
 		var entry: Dictionary = roster[i]
 		var name_str: String  = entry["name"]
-		var owned: bool = entry.get("owned", false)
+		var owned: bool = true
 		var row := i / cols; var col := i % cols
 		var is_sel := owned and _selected_chars.has(name_str)
 		var rcol: Color = _rarity_color(entry.get("rarity", 3))
@@ -871,14 +873,22 @@ func _refresh_deck_preview() -> void:
 		any_cards = true
 		var ecol: Color = elem_colors.get(elem, Color(0.5, 0.8, 1.0))
 		_deck_preview_list.add_child(_make_deck_preview_row(elem, "ธาตุ", count, ecol,
-			func(): _elem_deck.erase(elem); _rebuild_elem_grid(_elem_grid_ref); _refresh_deck_preview()))
+			func():
+				var cur: int = _elem_deck.get(elem, 0) - 1
+				if cur <= 0: _elem_deck.erase(elem)
+				else: _elem_deck[elem] = cur
+				_rebuild_elem_grid(_elem_grid_ref); _refresh_deck_preview()))
 
 	for supp in _supp_deck.keys():
 		var count: int = _supp_deck[supp]
 		if count <= 0: continue
 		any_cards = true
 		_deck_preview_list.add_child(_make_deck_preview_row(supp, "สนับสนุน", count, Color(0.85, 0.55, 1.0),
-			func(): _supp_deck.erase(supp); _rebuild_supp_grid(_supp_grid_ref); _refresh_deck_preview()))
+			func():
+				var cur: int = _supp_deck.get(supp, 0) - 1
+				if cur <= 0: _supp_deck.erase(supp)
+				else: _supp_deck[supp] = cur
+				_rebuild_supp_grid(_supp_grid_ref); _refresh_deck_preview()))
 
 	if not any_cards:
 		var empty_lbl := Label.new()
