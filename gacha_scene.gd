@@ -84,6 +84,7 @@ var _pull_history: Array = []   # [{name, entity_type, banner, time, rarity}]
 
 var _revealing   := false
 var _skip_to_end := false
+var _advance_requested := false
 
 var _new_gem_lbl:    Label       = null  # kept for compat — shows free crystal
 var _paid_gem_lbl:   Label       = null
@@ -266,7 +267,7 @@ func _rebuild_art() -> void:
 	frame.position = art_rect.position
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.z_index  = 1
-	frame.add_theme_stylebox_override("panel", _sb(Color(0, 0, 0, 0), Color(1, 1, 1, 0.14), 0, 1))
+	frame.add_theme_stylebox_override("panel", _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0.35), 0, 2))
 	add_child(frame)
 
 # ── Info card (left panel, HSR-style white/translucent card) ─────
@@ -614,8 +615,6 @@ func _lbl(text: String, font_sz: int, col: Color) -> Label:
 func _blue_glow_sb(alpha: float = 1.0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color     = Color(0.02, 0.06, 0.18, alpha)
-	sb.border_color = Color(0.25, 0.60, 1.0, 0.70 * alpha)
-	sb.set_border_width_all(1)
 	sb.set_corner_radius_all(8)
 	sb.shadow_color = Color(0.20, 0.55, 1.0, 0.45 * alpha)
 	sb.shadow_size  = 6
@@ -729,14 +728,23 @@ func _add_stars(parent: Node) -> void:
 		td.tween_property(dot, "modulate:a", 1.0, rng.randf_range(1.2, 3.5)).set_ease(Tween.EASE_IN_OUT)
 
 # ── Input / skip ──────────────────────────────────────────────────
+# Tapping anywhere advances one card at a time; the Skip button reveals everything at once.
 func _input(ev: InputEvent) -> void:
 	if not _revealing: return
 	if ev is InputEventMouseButton and ev.pressed:
-		_skip_to_end = true
+		_advance_requested = true
 
 func _on_skip() -> void:
 	if _revealing: _skip_to_end = true
 	else:          _result_ov.visible = false
+
+# Waits up to `seconds`, cut short by a screen tap (advance one) or Skip (skip all).
+func _interruptible_wait(seconds: float) -> void:
+	var elapsed := 0.0
+	while elapsed < seconds:
+		if _skip_to_end or _advance_requested: return
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
 
 func _refresh_ui() -> void:
 	var gems := CurrencyManager.total_crystal()
@@ -959,9 +967,11 @@ func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 
 	for i in names.size():
 		if _skip_to_end: break
+		_advance_requested = false
 		await _reveal_one(names[i], rarities[i])
 		if not _skip_to_end:
-			await get_tree().create_timer(0.55 if rarities[i] == 5 else 0.28).timeout
+			_advance_requested = false
+			await _interruptible_wait(0.55 if rarities[i] == 5 else 0.28)
 
 	dim.queue_free()
 	_result_con.visible = true
@@ -992,7 +1002,7 @@ func _reveal_normal(char_name: String, rarity: int) -> void:
 	t.tween_property(card, "scale:x", 1.0, 0.22)
 	await t.finished
 	if rarity == 4: _shake(card)
-	await get_tree().create_timer(0.7).timeout
+	await _interruptible_wait(0.7)
 	var tf := card.create_tween()
 	tf.tween_property(card, "modulate:a", 0.0, 0.25)
 	await tf.finished
@@ -1043,7 +1053,7 @@ func _reveal_5star(char_name: String) -> void:
 	var tn := name_big.create_tween()
 	tn.tween_property(name_big, "theme_override_colors/font_color", Color(1.0, 0.92, 0.4, 1.0), 0.6)
 	await tn.finished
-	await get_tree().create_timer(1.0).timeout
+	await _interruptible_wait(1.0)
 	var tf2 := create_tween().set_parallel(true)
 	tf2.tween_property(card,     "modulate:a", 0.0, 0.3)
 	tf2.tween_property(glow,     "modulate:a", 0.0, 0.3)
@@ -1149,9 +1159,9 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 			var ptex := TextureRect.new()
 			ptex.texture      = load(portrait_path)
 			ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-			ptex.size         = Vector2(CW, portrait_h + 16)
-			ptex.position     = Vector2(0, 10)
+			ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			ptex.size         = Vector2(CW, portrait_h)
+			ptex.position     = Vector2(0, 0)
 			ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(ptex)
 		else:
@@ -1190,29 +1200,16 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	stars.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card.add_child(stars)
 
-	# 6) Name at bottom
+	# 6) Name at bottom — centered when it fits, left-aligned (with ellipsis) when it overflows
 	var display_name: String = str(ELEM_NAME.get(char_name, char_name)) if rarity == 3 else char_name
 	var nm := _lbl(display_name, 8, Color(0.92, 0.94, 1.0, 1.0))
-	nm.size     = Vector2(CW, 18)
-	nm.position = Vector2(0, CH - 20)
-	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nm.size     = Vector2(CW - 6, 18)
+	nm.position = Vector2(3, CH - 20)
+	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if display_name.length() > 14 else HORIZONTAL_ALIGNMENT_CENTER
 	nm.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	nm.clip_text = true
 	card.add_child(nm)
-
-	# 7) Card frame — g1.jpg BLEND_MODE_ADD (last child, renders on top)
-	var frame_tex := _load_png("res://image/g1.jpg")
-	if frame_tex:
-		var frame := TextureRect.new()
-		frame.texture      = frame_tex
-		frame.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		frame.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var mat := CanvasItemMaterial.new()
-		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		frame.material = mat
-		card.add_child(frame)
 
 	card.modulate.a = 0.0
 	var t := card.create_tween()
