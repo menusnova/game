@@ -7,10 +7,10 @@ const SH := 648.0
 # ── Enemy data: 2 stages ──
 const STAGE_ENEMIES := [
 	[
-		{"name": "Bone Golem",  "hp": 4200, "weak": ["ไฟ", "กรด"],      "icon": "💀"},
+		{"name": "Bone Golem",  "hp": 4200, "weak": ["ไฟ", "กรด"],      "icon": "💀", "img": "res://image/void_beast.png"},
 	],
 	[
-		{"name": "Null Core",   "hp": 8800, "weak": ["น้ำ", "ไฟฟ้า"],   "icon": "☢"},
+		{"name": "Null Core",   "hp": 8800, "weak": ["น้ำ", "ไฟฟ้า"],   "icon": "☢", "img": "res://image/void_dragon.png"},
 	],
 ]
 
@@ -337,8 +337,33 @@ func _toggle_enemy_expand() -> void:
 		chip.add_theme_stylebox_override("panel", _sb(Color(0.12, 0.04, 0.06, 0.85), Color(0.8,0.25,0.25,0.2), 10))
 		pop.add_child(chip)
 
-		_lbl(en["icon"], 32, Color.WHITE, chip, Vector2(12, 12))
-		_lbl(en["name"].to_upper(), 14, Color(1.0, 0.7, 0.7), chip, Vector2(58, 10))
+		var icon_box := Control.new()
+		icon_box.position = Vector2(10, 10)
+		icon_box.size = Vector2(62, 62)
+		icon_box.clip_contents = true
+		icon_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(icon_box)
+		var icon_sb := StyleBoxFlat.new()
+		icon_sb.bg_color = Color(0.03, 0.02, 0.05, 0.6)
+		icon_sb.set_corner_radius_all(10)
+		var icon_bg := Panel.new()
+		icon_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon_bg.add_theme_stylebox_override("panel", icon_sb)
+		icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_box.add_child(icon_bg)
+		var img_path: String = str(en.get("img", ""))
+		var img_tex: Texture2D = load(img_path) if img_path != "" and ResourceLoader.exists(img_path) else null
+		if img_tex:
+			var itex := TextureRect.new()
+			itex.texture = img_tex
+			itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			itex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			icon_box.add_child(itex)
+		else:
+			_lbl(en["icon"], 32, Color.WHITE, icon_box, Vector2(15, 13))
+		_lbl(en["name"].to_upper(), 14, Color(1.0, 0.7, 0.7), chip, Vector2(80, 10))
 		_lbl("Stage %d%s" % [stage_of + 1, " · FINAL" if stage_of == STAGE_ENEMIES.size()-1 else ""],
 			10, Color(1.0, 0.75, 0.3, 0.8), chip, Vector2(58, 28))
 		_lbl("HP: %d" % en["hp"], 11, Color(0.6, 1.0, 0.6, 0.85), chip, Vector2(58, 46))
