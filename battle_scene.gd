@@ -225,6 +225,13 @@ func _load_png(path: String) -> Texture2D:
 		return load(path) as Texture2D
 	return null
 
+## Keys out a near-white background (uploaded character art has no real alpha channel).
+func _make_white_key_material() -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	var sh: Shader = load("res://shaders/white_key.gdshader")
+	mat.shader = sh
+	return mat
+
 ## Soft-edged filled disc, used as the ULT gauge's radial progress texture (no rectangular corners).
 func _make_disc_texture(diameter: int, color: Color) -> ImageTexture:
 	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
@@ -494,6 +501,7 @@ func _build_player_sprite() -> void:
 	_player_sprite.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	_player_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_player_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_player_sprite.material = _make_white_key_material()
 	var ptex: Texture2D = _load_png(PLAYER_POSE["idle"])
 	if ptex:
 		_player_sprite.texture = ptex
