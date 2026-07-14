@@ -263,6 +263,7 @@ func _get_keyed_texture(path: String) -> Texture2D:
 		queue.append(Vector2i(w - 1, y))
 
 	var qi := 0
+	var cleared := 0
 	while qi < queue.size():
 		var p: Vector2i = queue[qi]
 		qi += 1
@@ -273,10 +274,19 @@ func _get_keyed_texture(path: String) -> Texture2D:
 		if not is_bg.call(p.x, p.y): continue
 		var c := img.get_pixel(p.x, p.y)
 		img.set_pixel(p.x, p.y, Color(c.r, c.g, c.b, 0.0))
+		cleared += 1
 		queue.append(Vector2i(p.x + 1, p.y))
 		queue.append(Vector2i(p.x - 1, p.y))
 		queue.append(Vector2i(p.x, p.y + 1))
 		queue.append(Vector2i(p.x, p.y - 1))
+
+	# Safety net: a flat/dark-themed subject with no hard edge against the background can let
+	# the flood-fill leak straight through it and wipe the whole image. If more than 70% of the
+	# pixels got cleared, that's almost certainly a leak, not a real background — bail out and
+	# keep the original art intact rather than showing nothing.
+	if float(cleared) / float(w * h) > 0.70:
+		_keyed_tex_cache[path] = src
+		return src
 
 	var tex := ImageTexture.create_from_image(img)
 	_keyed_tex_cache[path] = tex
@@ -1960,26 +1970,41 @@ func _flash_msg() -> void:
 # ════════════════════════════════════════════════════════════
 #  NAVIGATION
 # ════════════════════════════════════════════════════════════
+## Circular "more options" (⋮) button — opens the surrender/continue menu.
 func _make_back_btn(pos: Vector2, _sz: Vector2, callback: Callable) -> Control:
+	const D := 44.0
 	var btn := Panel.new()
 	btn.position = pos
 	btn.z_index = 20
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.0, 0.05, 0.15, 0.55)
-	sb.border_color = Color(0.45, 0.72, 1.0, 0.90)
+	sb.bg_color = Color(0.03, 0.07, 0.18, 0.68)
+	sb.border_color = Color(0.55, 0.80, 1.0, 0.85)
 	sb.set_border_width_all(2)
-	sb.set_corner_radius_all(22)
+	sb.set_corner_radius_all(int(D / 2.0))
+	sb.shadow_color = Color(0.35, 0.65, 1.0, 0.35)
+	sb.shadow_size  = 6
 	btn.add_theme_stylebox_override("panel", sb)
-	btn.size        = Vector2(42, 45)
-	btn.pivot_offset = Vector2(21, 22)
+	btn.size         = Vector2(D, D)
+	btn.pivot_offset = Vector2(D / 2.0, D / 2.0)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var icon := TextureRect.new()
-	icon.texture      = preload("res://image/back.png")
-	icon.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(icon)
+
+	# Soft ambient pulse on the glow so the button reads as alive, not flat/static
+	var pulse := btn.create_tween().set_loops()
+	pulse.tween_property(sb, "shadow_color:a", 0.60, 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	pulse.tween_property(sb, "shadow_color:a", 0.30, 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# Three dots, vertically stacked and centered
+	for i in 3:
+		var dot := Panel.new()
+		dot.size = Vector2(6, 6)
+		dot.position = Vector2((D - 6.0) / 2.0, D / 2.0 - 11.0 + i * 9.0)
+		var dsb := StyleBoxFlat.new()
+		dsb.bg_color = Color(0.75, 0.90, 1.0, 0.95)
+		dsb.set_corner_radius_all(3)
+		dot.add_theme_stylebox_override("panel", dsb)
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(dot)
+
 	btn.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
 			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
@@ -1989,7 +2014,7 @@ func _make_back_btn(pos: Vector2, _sz: Vector2, callback: Callable) -> Control:
 	)
 	btn.mouse_entered.connect(func():
 		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
+		tw.tween_property(btn, "modulate", Color(1.2, 1.25, 1.35, 1.0), 0.10)
 	)
 	btn.mouse_exited.connect(func():
 		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
