@@ -159,10 +159,10 @@ const C_GAUGE  := Color(1.00, 0.75,  0.25, 1.0)
 const ENEMY_CX := 560.0
 const ENEMY_CY := 200.0
 # Player sprite — bottom-left foreground (back view, large)
-const PLAYER_X := 40.0
-const PLAYER_Y := 290.0
-const PLAYER_W := 240.0
-const PLAYER_H := 300.0
+const PLAYER_X := 20.0
+const PLAYER_Y := 250.0
+const PLAYER_W := 290.0
+const PLAYER_H := 350.0
 # Action ring center (bottom-right)
 const RING_CX  := 990.0
 const RING_CY  := 497.0
@@ -179,10 +179,10 @@ const CARD_W       := 84.0
 const CARD_H       := 110.0
 # Deck / Discard circles
 const DECK_CX  := 830.0
-const DECK_CY  := 558.0
+const DECK_CY  := 578.0
 const DISC_CX  := 738.0
-const DISC_CY  := 558.0
-const CIRC_R   := 36.0
+const DISC_CY  := 578.0
+const CIRC_R   := 28.0
 # Ultimate circle — center of action ring
 const ULT_CX   := RING_CX
 const ULT_CY   := RING_CY
@@ -599,7 +599,7 @@ func _set_player_pose(pose: String, hold: float = 0.5) -> void:
 func _build_player_hud() -> void:
 	var pp := Panel.new()
 	pp.size     = Vector2(312, 120)
-	pp.position = Vector2(8, HAND_Y - 132.0)
+	pp.position = Vector2(8, HAND_Y - 118.0)
 	pp.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	add_child(pp)
 
