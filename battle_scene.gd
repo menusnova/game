@@ -110,6 +110,7 @@ var _ap_lbl:           Label
 var _ap_orbs:          Array = []
 var _gauge_bar:        TextureProgressBar
 var _ult_circle:       Panel
+var _ult_glow_ring:    Panel
 var _ult_glow_on:      bool = false
 var _ult_glow_tween:   Tween
 var _player_hp_bar:    ColorRect
@@ -731,6 +732,24 @@ func _build_deck_discard_circles() -> void:
 # ── Ultimate standalone circle ────────────────────────────
 func _build_ult_button() -> void:
 	var col := C_GAUGE
+
+	# Ready-glow ring — sits outside the circle's own bounds so it never dims/washes out the icon art
+	var glow_pad := 10.0
+	_ult_glow_ring = Panel.new()
+	_ult_glow_ring.size     = Vector2(ULT_R * 2 + glow_pad * 2, ULT_R * 2 + glow_pad * 2)
+	_ult_glow_ring.position = Vector2(ULT_CX - ULT_R - glow_pad, ULT_CY - ULT_R - glow_pad)
+	_ult_glow_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ult_glow_ring.z_index = 3
+	var glow_sb := StyleBoxFlat.new()
+	glow_sb.bg_color     = Color(0, 0, 0, 0)
+	glow_sb.border_color = Color(col.r, col.g, col.b, 0.0)
+	glow_sb.set_border_width_all(3)
+	glow_sb.set_corner_radius_all(int(ULT_R + glow_pad))
+	glow_sb.shadow_color = Color(col.r, col.g, col.b, 0.0)
+	glow_sb.shadow_size  = 10
+	_ult_glow_ring.add_theme_stylebox_override("panel", glow_sb)
+	add_child(_ult_glow_ring)
+
 	var circ := Panel.new()
 	circ.size     = Vector2(ULT_R * 2, ULT_R * 2)
 	circ.position = Vector2(ULT_CX - ULT_R, ULT_CY - ULT_R)
@@ -772,7 +791,6 @@ func _build_ult_button() -> void:
 	clip.add_child(tex)
 
 	_ult_circle = circ
-	_ult_circle.modulate = Color(1, 1, 1, 1)
 
 	# Clickable button overlay
 	var btn := Button.new()
@@ -803,15 +821,19 @@ func _build_ult_button() -> void:
 func _set_ult_glow(on: bool) -> void:
 	if on == _ult_glow_on: return
 	_ult_glow_on = on
-	if not is_instance_valid(_ult_circle): return
+	if not is_instance_valid(_ult_glow_ring): return
+	var sb: StyleBoxFlat = _ult_glow_ring.get_theme_stylebox("panel")
 	if is_instance_valid(_ult_glow_tween): _ult_glow_tween.kill()
 	if on:
-		_ult_glow_tween = _ult_circle.create_tween().set_loops()
-		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1.35, 1.3, 1.05, 1.0), 0.5).set_trans(Tween.TRANS_SINE)
-		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween = _ult_glow_ring.create_tween().set_loops()
+		_ult_glow_tween.tween_property(sb, "border_color:a", 0.55, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.parallel().tween_property(sb, "shadow_color:a", 0.35, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.chain().tween_property(sb, "border_color:a", 0.15, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.parallel().tween_property(sb, "shadow_color:a", 0.08, 0.5).set_trans(Tween.TRANS_SINE)
 	else:
-		_ult_glow_tween = _ult_circle.create_tween()
-		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1, 1, 1, 1), 0.25)
+		_ult_glow_tween = _ult_glow_ring.create_tween().set_parallel(true)
+		_ult_glow_tween.tween_property(sb, "border_color:a", 0.0, 0.25)
+		_ult_glow_tween.tween_property(sb, "shadow_color:a", 0.0, 0.25)
 
 # ── Card info panel (slide in from right on hold) ─────────
 func _build_card_info_panel() -> void:
