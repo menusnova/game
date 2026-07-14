@@ -233,6 +233,14 @@ func _make_white_key_material() -> ShaderMaterial:
 	mat.shader = sh
 	return mat
 
+## Keys out a near-black background using normal blending, so the art properly occludes
+## whatever sits behind it (unlike BLEND_MODE_ADD, which lets background bleed through).
+func _make_black_key_material() -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	var sh: Shader = load("res://shaders/black_key.gdshader")
+	mat.shader = sh
+	return mat
+
 ## Soft-edged filled disc, used as the ULT gauge's radial progress texture (no rectangular corners).
 func _make_disc_texture(diameter: int, color: Color) -> ImageTexture:
 	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
@@ -760,6 +768,8 @@ func _build_ult_button() -> void:
 	circ.z_index = 4
 	add_child(circ)
 
+	circ.clip_contents = true
+
 	# Gauge fill — radial reveal, stays inside the circular frame (no square corners)
 	_gauge_bar = TextureProgressBar.new()
 	_gauge_bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -770,13 +780,16 @@ func _build_ult_button() -> void:
 	_gauge_bar.max_value = 100.0
 	_gauge_bar.value     = 0.0
 	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_gauge_bar.z_index = 0
 	circ.add_child(_gauge_bar)
 
-	# Ultimate art (Absolute Zero Formula)
+	# Ultimate art (Absolute Zero Formula) — normal-blended with a black-key shader so it
+	# actually occludes the gauge fill behind it, instead of BLEND_MODE_ADD bleeding through
 	var clip := Control.new()
 	clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	clip.clip_contents = true
 	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip.z_index = 1
 	circ.add_child(clip)
 	var tex := TextureRect.new()
 	tex.texture = load("res://image/skill_absolute_zero_formula.jpg")
@@ -784,10 +797,7 @@ func _build_ult_button() -> void:
 	tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_SCALE
 	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tex.modulate = Color(1, 1, 1, 0.85)
-	var tex_mat := CanvasItemMaterial.new()
-	tex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	tex.material = tex_mat
+	tex.material = _make_black_key_material()
 	clip.add_child(tex)
 
 	_ult_circle = circ
@@ -806,16 +816,17 @@ func _build_ult_button() -> void:
 	circ.add_child(btn)
 	_btn_ult = btn
 
-	# "ULT" label centered below the circle
+	# "ULT" label centered below the circle — sibling of circ (not a child) since circ now clips
+	# its contents to the circular gauge/icon area and this label sits outside that rect
 	var lbl := Label.new()
 	lbl.text = "ULT"
 	lbl.size = Vector2(ULT_R * 2, 14)
-	lbl.position = Vector2(0, ULT_R * 2 + 3)
+	lbl.position = circ.position + Vector2(0, ULT_R * 2 + 3)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.add_theme_font_size_override("font_size", 9)
 	lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	circ.add_child(lbl)
+	add_child(lbl)
 
 ## Brightens (and gently pulses) the ULT circle once the gauge is fully charged, in place of a % readout.
 func _set_ult_glow(on: bool) -> void:
