@@ -26,6 +26,7 @@ const CARDS: Array[String] = [
 
 func _ready() -> void:
 	_setup_ambient_fx()
+	_setup_profile_avatar()
 	var _adv: Control = get_node_or_null("AdventureCard") as Control
 	if _adv: _adv.gui_input.connect(_on_adv_input)
 	var _arena: Control = get_node_or_null("ArenaCard") as Control
@@ -42,6 +43,19 @@ func _ready() -> void:
 	_refresh_hud()
 	if not CurrencyManager.currency_changed.is_connected(_refresh_hud):
 		CurrencyManager.currency_changed.connect(_refresh_hud)
+
+## Crops just the head/face out of Lyra's full-body art for the small profile-card avatar.
+func _setup_profile_avatar() -> void:
+	var avatar := get_node_or_null("ProfileCard/Avatar") as TextureRect
+	if not avatar: return
+	var full_tex: Texture2D = load("res://image/lyra_guard.png") if ResourceLoader.exists("res://image/lyra_guard.png") else null
+	if not full_tex: return
+	var atlas := AtlasTexture.new()
+	atlas.atlas  = full_tex
+	# lyra_guard.png is 512x1024 (full body); head sits near the top, roughly centered.
+	atlas.region = Rect2(136, 12, 240, 240)
+	avatar.texture = atlas
+	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 
 func _load_icon_textures() -> void:
 	var icons := [
