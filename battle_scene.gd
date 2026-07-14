@@ -109,7 +109,9 @@ var _turn_lbl:         Label
 var _ap_lbl:           Label
 var _ap_orbs:          Array = []
 var _gauge_bar:        TextureProgressBar
-var _gauge_lbl:        Label
+var _ult_circle:       Panel
+var _ult_glow_on:      bool = false
+var _ult_glow_tween:   Tween
 var _player_hp_bar:    ColorRect
 var _player_hp_lbl:    Label
 var _shield_lbl:       Label
@@ -761,9 +763,8 @@ func _build_ult_button() -> void:
 	tex.material = tex_mat
 	clip.add_child(tex)
 
-	# Gauge % label (bottom of circle)
-	_gauge_lbl = _mk_label("0%", 9, C_GOLD, circ,
-		Vector2(0, ULT_R * 2 - 14), Vector2(ULT_R * 2, 14), true)
+	_ult_circle = circ
+	_ult_circle.modulate = Color(1, 1, 1, 1)
 
 	# Clickable button overlay
 	var btn := Button.new()
@@ -789,6 +790,20 @@ func _build_ult_button() -> void:
 	lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	circ.add_child(lbl)
+
+## Brightens (and gently pulses) the ULT circle once the gauge is fully charged, in place of a % readout.
+func _set_ult_glow(on: bool) -> void:
+	if on == _ult_glow_on: return
+	_ult_glow_on = on
+	if not is_instance_valid(_ult_circle): return
+	if is_instance_valid(_ult_glow_tween): _ult_glow_tween.kill()
+	if on:
+		_ult_glow_tween = _ult_circle.create_tween().set_loops()
+		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1.35, 1.3, 1.05, 1.0), 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.5).set_trans(Tween.TRANS_SINE)
+	else:
+		_ult_glow_tween = _ult_circle.create_tween()
+		_ult_glow_tween.tween_property(_ult_circle, "modulate", Color(1, 1, 1, 1), 0.25)
 
 # ── Card info panel (slide in from right on hold) ─────────
 func _build_card_info_panel() -> void:
@@ -1779,10 +1794,10 @@ func _refresh_ui() -> void:
 			orb.position.y  = 17.0
 		orb.add_theme_stylebox_override("panel", sb)
 
-	# Ultimate gauge — radial fill inside the circle
+	# Ultimate gauge — radial fill inside the circle; brightens when fully charged
 	var ult_ratio := _ult_gauge / float(MAX_GAUGE)
 	if _gauge_bar: _gauge_bar.value = ult_ratio * 100.0
-	if _gauge_lbl:  _gauge_lbl.text = "%d%%" % int(ult_ratio * 100.0)
+	_set_ult_glow(_ult_gauge >= MAX_GAUGE and not _ult_used)
 
 	# Deck / Discard circles
 	if _deck_cnt_lbl: _deck_cnt_lbl.text = str(_deck.size())
