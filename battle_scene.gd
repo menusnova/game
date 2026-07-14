@@ -471,7 +471,10 @@ func _on_surrender() -> void:
 	_close_back_menu()
 	if _battle_over: return
 	_battle_over = true
+	_refresh_ui()
 	_set_buttons_enabled(false)
+	await get_tree().create_timer(0.6).timeout
+	if not is_instance_valid(self): return
 	_show_result_screen(false)
 
 # ── Enemy — center-top, smaller (distance perspective) ───
