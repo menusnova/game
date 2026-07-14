@@ -8,36 +8,31 @@ const PITY_SOFT    := 75
 const RATE_5 := 0.016
 const RATE_4 := 0.051
 
-# 5★ characters
-const POOL_5: Array[String] = ["Lyra", "Seraph"]
-# 4★ characters + support cards
-const POOL_4: Array[String] = [
-	"Kael", "Mira", "Voss",
-	"Acid Flask", "Iron Shield", "Ember Seal",
-]
-# 3★ element cards
-const POOL_3: Array[String] = [
-	"H", "O", "Na", "Cl", "C",
-	"Fe", "N", "S", "Ca", "Mg",
-	"K", "Cu", "Zn", "P", "Si",
-]
+# 5★ pool — banner-exclusive, resolved per-warp via WARP_TYPES[i]["pool5"]
+const POOL_5: Array[String] = ["Caelum Voss", "Void Gauntlet"]
+# 4★ — shared across all banners
+const POOL_4: Array[String] = ["Signal Earpiece", "Void Compass"]
+# 3★ — shared across all banners
+const POOL_3: Array[String] = ["Field Badge", "Utility Belt Pouch"]
 
 const PORTRAITS: Dictionary = {
-	"Alchemist": "res://image/lyra_1.png",
-	"Lyra":      "res://image/lyra_2.png",
+	"Caelum Voss":         "res://image/caelum_voss.png",
+	"Void Gauntlet":       "res://image/formula.png",
+	"Signal Earpiece":     "res://image/signal_earpiece.jpg",
+	"Void Compass":        "res://image/void_compass.jpg",
+	"Field Badge":         "res://image/field_badge.jpg",
+	"Utility Belt Pouch":  "res://image/utility_belt_pouch.jpg",
 }
 
 const CARD_TYPE: Dictionary = {
-	"Lyra": "CHARACTER", "Seraph": "CHARACTER",
-	"Kael": "CHARACTER", "Mira": "CHARACTER", "Voss": "CHARACTER",
-	"Acid Flask": "SUPPORT", "Iron Shield": "SUPPORT", "Ember Seal": "SUPPORT",
+	"Caelum Voss":   "CHARACTER",
+	"Void Gauntlet": "SUPPORT",
+	"Signal Earpiece":    "SUPPORT",
+	"Void Compass":       "SUPPORT",
+	"Field Badge":        "SUPPORT",
+	"Utility Belt Pouch": "SUPPORT",
 }
-const ELEM_NAME: Dictionary = {
-	"H": "Hydrogen", "O": "Oxygen",    "Na": "Sodium",   "Cl": "Chlorine",
-	"C": "Carbon",   "Fe": "Iron",     "N":  "Nitrogen",  "S":  "Sulfur",
-	"Ca": "Calcium", "Mg": "Magnesium","K":  "Potassium", "Cu": "Copper",
-	"Zn": "Zinc",    "P":  "Phosphorus","Si": "Silicon",
-}
+const ELEM_NAME: Dictionary = {}
 
 const WARP_TYPES := [
 	{
@@ -52,6 +47,7 @@ const WARP_TYPES := [
 		"art_col":      Color(1.0, 0.40, 0.15),
 		"art_img":      "res://image/caelum_voss.png",
 		"thumb_img":    "res://image/caelum_voss.png",
+		"pool5":        ["Caelum Voss"],
 		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
@@ -71,6 +67,7 @@ const WARP_TYPES := [
 		"art_col":      Color(1.0, 0.80, 0.25),
 		"art_img":      "res://image/formula.png",
 		"thumb_img":    "res://image/formula.png",
+		"pool5":        ["Void Gauntlet"],
 		"feat_imgs":    ["res://image/lyra_2.png", "res://image/lyra_1.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
@@ -919,11 +916,12 @@ func _execute_pull(count: int) -> void:
 	_run_reveal(results, rarities)
 
 func _roll() -> Array:
+	var pool5: Array = WARP_TYPES[_active_warp].get("pool5", POOL_5)
 	_pity   += 1
 	_pity_4 += 1
 	if _pity >= PITY_HARD:
 		_pity = 0; _pity_4 = 0
-		return [POOL_5[randi() % POOL_5.size()], 5]
+		return [pool5[randi() % pool5.size()], 5]
 	if _pity_4 >= 10:
 		_pity_4 = 0
 		return [POOL_4[randi() % POOL_4.size()], 4]
@@ -934,7 +932,7 @@ func _roll() -> Array:
 	var roll := randf()
 	if roll < rate5:
 		_pity = 0
-		return [POOL_5[randi() % POOL_5.size()], 5]
+		return [pool5[randi() % pool5.size()], 5]
 	if roll < rate5 + RATE_4:
 		_pity_4 = 0
 		return [POOL_4[randi() % POOL_4.size()], 4]
@@ -1109,7 +1107,7 @@ func _build_reveal_card(char_name: String, rarity: int,
 
 	var rlbl := Label.new()
 	var ctype: String = CARD_TYPE.get(char_name, "")
-	if rarity == 3: ctype = "ELEMENT CARD"
+	if ctype == "SUPPORT": ctype = "FORMULA CARD"
 	elif ctype == "": ctype = "CHARACTER"
 	rlbl.text = "%d★  %s" % [rarity, ctype]
 	rlbl.add_theme_font_size_override("font_size", 10)
@@ -1145,7 +1143,7 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	card.add_child(pbg)
 
 	# 2) Content (portrait or element symbol)
-	if rarity >= 4:
+	if PORTRAITS.has(char_name):
 		var portrait_path: String = PORTRAITS.get(char_name, "")
 		if portrait_path != "" and ResourceLoader.exists(portrait_path):
 			var ptex := TextureRect.new()
