@@ -231,6 +231,8 @@ func _make_selector_card(wd: Dictionary, active: bool, idx: int,
 func _rebuild_art() -> void:
 	var old := get_node_or_null("_ArtRect")
 	if old: old.queue_free()
+	var old_frame := get_node_or_null("_ArtFrame")
+	if old_frame: old_frame.queue_free()
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var art_tex: Texture2D = _load_png(str(d.get("art_img", "")))
 	if not art_tex: return
@@ -246,6 +248,15 @@ func _rebuild_art() -> void:
 	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art_rect.z_index      = 0
 	add_child(art_rect)
+
+	var frame := Panel.new()
+	frame.name     = "_ArtFrame"
+	frame.size     = art_rect.size
+	frame.position = art_rect.position
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.z_index  = 1
+	frame.add_theme_stylebox_override("panel", _sb(Color(0, 0, 0, 0), Color(1, 1, 1, 0.14), 0, 1))
+	add_child(frame)
 
 # ── Info card (left panel, HSR-style white/translucent card) ─────
 func _build_info_card() -> void:
@@ -472,7 +483,7 @@ func _build_top_bar() -> void:
 
 # ── Bottom bar (Warp ×1 and Warp ×10 buttons) ───────────────────
 func _build_bottom_bar() -> void:
-	var bar_sb := _sb(Color(0.03, 0.04, 0.12, 0.92), Color(1,1,1, 0.07), 0, 1)
+	var bar_sb := _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0)
 	var bar := Panel.new()
 	bar.name     = "_BottomBar"
 	bar.size     = Vector2(W, BOT_H)
