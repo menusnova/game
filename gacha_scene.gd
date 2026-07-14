@@ -374,14 +374,14 @@ func _build_info_card() -> void:
 	_new_pity_bar.show_percentage = false
 	_new_pity_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
-	_new_pity_bar.add_theme_stylebox_override("background", _sb(Color(0.15, 0.13, 0.05, 0.8), Color(0,0,0,0), 3, 0))
+	_new_pity_bar.add_theme_stylebox_override("background", _sb(Color(0.5, 0.5, 0.5, 0.18), Color(0,0,0,0), 3, 0))
 	_new_pity_bar.add_theme_stylebox_override("fill", _sb(Color(1.0, 0.82, 0.25, 1.0), Color(0,0,0,0), 3, 0))
 	pity5_row.add_child(_new_pity_bar)
 
 	_new_pity_lbl = Label.new()
 	_new_pity_lbl.text = "%d / %d" % [_pity, PITY_HARD]
 	_new_pity_lbl.add_theme_font_size_override("font_size", 11)
-	_new_pity_lbl.add_theme_color_override("font_color", Color(0.72, 0.88, 1.0, 0.90))
+	_new_pity_lbl.add_theme_color_override("font_color", Color(0.05, 0.05, 0.08, 1.0))
 	_new_pity_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pity5_row.add_child(_new_pity_lbl)
 	cy += 22
@@ -409,14 +409,14 @@ func _build_info_card() -> void:
 	_new_pity4_bar.show_percentage = false
 	_new_pity4_bar.custom_minimum_size = Vector2(iw - pad * 2 - 80, 6)
 	_new_pity4_bar.mouse_filter    = Control.MOUSE_FILTER_IGNORE
-	_new_pity4_bar.add_theme_stylebox_override("background", _sb(Color(0.13, 0.06, 0.18, 0.8), Color(0,0,0,0), 3, 0))
+	_new_pity4_bar.add_theme_stylebox_override("background", _sb(Color(0.5, 0.5, 0.5, 0.18), Color(0,0,0,0), 3, 0))
 	_new_pity4_bar.add_theme_stylebox_override("fill", _sb(Color(0.75, 0.40, 1.0, 1.0), Color(0,0,0,0), 3, 0))
 	pity4_row.add_child(_new_pity4_bar)
 
 	_new_pity4_lbl = Label.new()
 	_new_pity4_lbl.text = "%d / 10" % _pity_4
 	_new_pity4_lbl.add_theme_font_size_override("font_size", 11)
-	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.78, 0.55, 1.0, 0.90))
+	_new_pity4_lbl.add_theme_color_override("font_color", Color(0.05, 0.05, 0.08, 1.0))
 	_new_pity4_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pity4_row.add_child(_new_pity4_lbl)
 	cy += 28
