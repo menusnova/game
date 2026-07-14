@@ -66,6 +66,7 @@ var _deck:    Array = []
 var _hand:    Array = []
 var _discard: Array = []
 var _element_fx: Node2D
+var _stage_clear_fx: Node
 var _reshuffle_count := 0
 
 var _player_hp:          int = 0
@@ -193,6 +194,7 @@ func _ready() -> void:
 	_player_hp = CHARACTER["max_hp"]
 	_build_ui()
 	_build_element_fx()
+	_build_stage_clear_fx()
 	_create_enemy()
 	_build_deck()
 	_draw_n(START_HAND)
@@ -872,6 +874,12 @@ func _on_card_tap(id: String, _idx: int) -> void:
 # ════════════════════════════════════════════════════════════
 #  GAME SETUP
 # ════════════════════════════════════════════════════════════
+func _build_stage_clear_fx() -> void:
+	var fx := preload("res://stage_clear_screen.gd").new()
+	add_child(fx)
+	fx.return_to_menu_requested.connect(func(): SceneTransition.fade_to(SC_MAIN))
+	_stage_clear_fx = fx
+
 func _build_element_fx() -> void:
 	var fx := preload("res://element_card_system.gd").new()
 	fx.player_pos = Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + PLAYER_H * 0.5)
@@ -1406,7 +1414,16 @@ func _check_battle() -> void:
 		DomainManager.add_points("battle")
 		await get_tree().create_timer(0.6).timeout
 		if not is_instance_valid(self): return
-		_show_result_screen(true)
+		_grant_stage_reward()
+		if _current_stage >= FINAL_STAGE:
+			_stage_clear_fx.show_victory()
+		else:
+			await _stage_clear_fx.show_stage_clear(_current_stage)
+			await get_tree().create_timer(2.0).timeout
+			if not is_instance_valid(self): return
+			await _stage_clear_fx.hide_stage_clear()
+			if not is_instance_valid(self): return
+			_next_stage()
 		return
 
 	if _player_hp <= 0:
@@ -1419,6 +1436,12 @@ func _check_battle() -> void:
 		_show_result_screen(false)
 
 const FINAL_STAGE := 2   # only 2 stages exist — winning stage 2 ends the run
+
+func _grant_stage_reward() -> void:
+	var gold_gain: int = 100 + _current_stage * 50
+	var crystal_gain: int = 5 if (_current_stage % 3 == 0 or _current_stage >= FINAL_STAGE) else 0
+	CurrencyManager.add_gold(gold_gain)
+	CurrencyManager.add_free_crystal(crystal_gain)
 
 func _show_result_screen(won: bool) -> void:
 	var is_final_win := won and _current_stage >= FINAL_STAGE
