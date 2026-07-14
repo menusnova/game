@@ -65,6 +65,7 @@ const CHARACTER := {
 var _deck:    Array = []
 var _hand:    Array = []
 var _discard: Array = []
+var _element_fx: Node2D
 var _reshuffle_count := 0
 
 var _player_hp:          int = 0
@@ -191,6 +192,7 @@ func _ready() -> void:
 	# CurrencyManager.spend_energy(ENERGY_COST)
 	_player_hp = CHARACTER["max_hp"]
 	_build_ui()
+	_build_element_fx()
 	_create_enemy()
 	_build_deck()
 	_draw_n(START_HAND)
@@ -870,6 +872,14 @@ func _on_card_tap(id: String, _idx: int) -> void:
 # ════════════════════════════════════════════════════════════
 #  GAME SETUP
 # ════════════════════════════════════════════════════════════
+func _build_element_fx() -> void:
+	var fx := preload("res://element_card_system.gd").new()
+	fx.player_pos = Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + PLAYER_H * 0.5)
+	fx.enemy_pos  = Vector2(ENEMY_CX, ENEMY_CY)
+	fx.z_index    = 25
+	add_child(fx)
+	_element_fx = fx
+
 func _create_enemy() -> void:
 	if _current_stage % 5 == 0:
 		_enemy_data = {"name":"Boss Chimera","hp":300,"attack":25,"type":"boss"}
@@ -1132,9 +1142,11 @@ func _try_reaction(a: String, b: String) -> void:
 		_msg("⚗ %s + %s → %s! ✨" % [CARD_DB[a]["name"], CARD_DB[b]["name"], result])
 		_refresh_hand()
 		_refresh_ui()
+		if _element_fx: _element_fx.play_reaction(result)
 	else:
 		_msg("❌ %s + %s ไม่เกิดปฏิกิริยา" % [CARD_DB[a]["name"], CARD_DB[b]["name"]])
 		_refresh_hand()
+		if _element_fx: _element_fx.play_no_reaction()
 
 func _use_reaction_card(id: String) -> void:
 	var data: Dictionary = CARD_DB.get(id, {})
