@@ -1003,8 +1003,10 @@ func _on_edit_close() -> void:
 	_refresh_team_display()
 
 # ── start ──
+const DECK_REQUIRED := 20
+
 func _on_start() -> void:
-	if _elem_deck_total() + _supp_deck_total() <= 0:
+	if _elem_deck_total() + _supp_deck_total() < DECK_REQUIRED:
 		_show_deck_required_msg()
 		return
 	PlayerData.battle_elem_deck = _elem_deck.duplicate()
@@ -1037,7 +1039,8 @@ func _show_deck_required_msg() -> void:
 	ov.add_child(panel)
 
 	var lbl := Label.new()
-	lbl.text = "กรุณาจัดเด็คก่อนเข้าสู่การต่อสู้!\nเลือกธาตุหรือการ์ดสนับสนุนอย่างน้อย 1 ใบ"
+	var cur_total := _elem_deck_total() + _supp_deck_total()
+	lbl.text = "กรุณาจัดเด็คให้ครบ %d ใบก่อนเข้าสู่การต่อสู้!\nตอนนี้มี %d / %d ใบ" % [DECK_REQUIRED, cur_total, DECK_REQUIRED]
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
