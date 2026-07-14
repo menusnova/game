@@ -3,8 +3,8 @@ extends Control
 const SC_ROSTER := "res://character_roster.tscn"
 
 const PORTRAITS := {
-	"Alchemist": "res://image/lyra_1.png",
-	"Lyra":      "res://image/lyra_2.png",
+	"Caelum Voss": "res://image/caelum_voss.png",
+	"Lyra":        "res://image/lyra_2.png",
 }
 
 const VW      := 1152.0
@@ -46,7 +46,7 @@ func _ready() -> void:
 	var char_name := CharacterManager.selected_character
 	var data := CharacterManager.get_character_data(char_name)
 	if data.is_empty():
-		char_name = "Alchemist"
+		char_name = "Caelum Voss"
 		data = CharacterManager.get_character_data(char_name)
 
 	var base: Dictionary = {}

@@ -3,12 +3,12 @@ extends Node
 # ── Master character list ────────────────────────────────────────
 const ALL_CHARACTERS: Array[Dictionary] = [
 	{"name": "Lyra",      "element": "🌀", "rarity": 5, "element_color": Color(0.5, 0.3, 1.0),   "owned": true},
-	{"name": "Alchemist", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
+	{"name": "Caelum Voss", "element": "⚗",  "rarity": 5, "element_color": Color(0.35, 0.75, 1.0),  "owned": false},
 ]
 
 # Extended stat/lore data per character
 const CHAR_DATA: Dictionary = {
-	"Alchemist": {
+	"Caelum Voss": {
 		"title": "Master of Reactions",
 		"faction": "Alchemist Guild",
 		"roles": ["DPS", "Support"],
@@ -17,13 +17,13 @@ const CHAR_DATA: Dictionary = {
 		"bond": 12,
 		"dialogue": "วันนี้อากาศดีนะ... เหมาะกับการทดลอง",
 		"skills": [
-			{"name": "Alchemical Strike", "type": "Basic ATK", "img": "res://image/lyra_1.png",
+			{"name": "Alchemical Strike", "type": "Basic ATK", "img": "res://image/caelum_voss.png",
 			 "desc": "โจมตีศัตรู 1 เป้าหมายด้วยพลังธาตุ สร้างความเสียหาย 20 DMG และชาร์จ Ultimate +15"},
-			{"name": "Barrier Compound",  "type": "Defend",    "img": "res://image/lyra_2.png",
+			{"name": "Barrier Compound",  "type": "Defend",    "img": "res://image/caelum_voss.png",
 			 "desc": "สร้างเกราะป้องกันให้ตัวเอง ลดความเสียหายที่ได้รับ 30% เป็นเวลา 1 รอบ"},
-			{"name": "Chain Reaction",    "type": "Skill",     "img": "res://image/lyra_3.png",
+			{"name": "Chain Reaction",    "type": "Skill",     "img": "res://image/caelum_voss.png",
 			 "desc": "จั๋วการ์ดธาตุ 1 ใบขึ้นมือ และฟื้นฟู AP เต็มในเทิร์นถัดไป (ใช้ได้ 1 ครั้งต่อการกด)"},
-			{"name": "Element Burst",     "type": "Ultimate",  "img": "res://image/lyra_1.png",
+			{"name": "Element Burst",     "type": "Ultimate",  "img": "res://image/caelum_voss.png",
 			 "desc": "จั๋วการ์ดธาตุที่ผสมกันได้ 2 ใบขึ้นมือทันที เพิ่มโอกาสสร้าง Reaction ในเทิร์นนั้น"},
 		],
 		"passive": {

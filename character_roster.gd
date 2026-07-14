@@ -24,8 +24,8 @@ const C_LINE  := Color(1.0,   1.0,   1.0,   0.06)
 
 # ── Portrait map ──────────────────────────────────────────────
 const PORTRAITS := {
-	"Alchemist": "res://image/lyra_1.png",
-	"Lyra":      "res://image/lyra_2.png",
+	"Caelum Voss": "res://image/caelum_voss.png",
+	"Lyra":        "res://image/lyra_2.png",
 
 }
 
