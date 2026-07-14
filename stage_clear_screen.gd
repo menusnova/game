@@ -202,7 +202,7 @@ func _add_fade_animations(anim_player: AnimationPlayer, root_name: String) -> vo
 
 	var fade_in := Animation.new()
 	var t_in := fade_in.add_track(Animation.TYPE_VALUE)
-	fade_in.set_track_path(t_in, NodePath("%s:modulate:a" % root_name))
+	fade_in.track_set_path(t_in, NodePath("%s:modulate:a" % root_name))
 	fade_in.track_insert_key(t_in, 0.0, 0.0)
 	fade_in.track_insert_key(t_in, 0.5, 1.0)
 	fade_in.length = 0.5
@@ -210,7 +210,7 @@ func _add_fade_animations(anim_player: AnimationPlayer, root_name: String) -> vo
 
 	var fade_out := Animation.new()
 	var t_out := fade_out.add_track(Animation.TYPE_VALUE)
-	fade_out.set_track_path(t_out, NodePath("%s:modulate:a" % root_name))
+	fade_out.track_set_path(t_out, NodePath("%s:modulate:a" % root_name))
 	fade_out.track_insert_key(t_out, 0.0, 1.0)
 	fade_out.track_insert_key(t_out, 0.5, 0.0)
 	fade_out.length = 0.5

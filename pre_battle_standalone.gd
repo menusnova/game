@@ -56,23 +56,23 @@ func _sb(col: Color, border: Color = Color(1,1,1,0), radius: int = 0) -> StyleBo
 		s.set(r, radius)
 	return s
 
-func _lbl(txt: String, sz: int, col: Color, parent: Control, pos: Vector2, size: Vector2 = Vector2.ZERO) -> Label:
+func _lbl(txt: String, sz: int, col: Color, parent: Control, pos: Vector2, dims: Vector2 = Vector2.ZERO) -> Label:
 	var l := Label.new()
 	l.text = txt
 	l.add_theme_font_size_override("font_size", sz)
 	l.add_theme_color_override("font_color", col)
 	l.position = pos
-	if size != Vector2.ZERO:
-		l.size = size
+	if dims != Vector2.ZERO:
+		l.size = dims
 		l.clip_text = true
 	parent.add_child(l)
 	return l
 
-func _btn(txt: String, sz: int, txt_col: Color, bg: StyleBoxFlat, parent: Control, pos: Vector2, size: Vector2) -> Button:
+func _btn(txt: String, sz: int, txt_col: Color, bg: StyleBoxFlat, parent: Control, pos: Vector2, dims: Vector2) -> Button:
 	var b := Button.new()
 	b.text = txt
 	b.position = pos
-	b.size = size
+	b.size = dims
 	b.add_theme_font_size_override("font_size", sz)
 	b.add_theme_color_override("font_color", txt_col)
 	b.add_theme_stylebox_override("normal", bg)
@@ -250,7 +250,7 @@ func _refresh_enemy_panel() -> void:
 		dots_row.add_child(dot)
 		_stage_dots.append(dot)
 
-	var stage_lbl := _lbl("STAGE %d" % (_current_stage + 1) + (" · FINAL" if _current_stage == STAGE_ENEMIES.size() - 1 else ""),
+	_lbl("STAGE %d" % (_current_stage + 1) + (" · FINAL" if _current_stage == STAGE_ENEMIES.size() - 1 else ""),
 		10, Color(1.0, 0.7, 0.3, 0.8), bg, Vector2(50, 5))
 
 	for i in range(enemies.size()):

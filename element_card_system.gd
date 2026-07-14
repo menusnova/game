@@ -139,7 +139,7 @@ func _build_formula_circle() -> void:
 	rotate_anim.name = "RotateAnim"
 	var anim := Animation.new()
 	var track := anim.add_track(Animation.TYPE_VALUE)
-	anim.set_track_path(track, NodePath("CircleSprite:rotation"))
+	anim.track_set_path(track, NodePath("CircleSprite:rotation"))
 	anim.track_insert_key(track, 0.0, 0.0)
 	anim.track_insert_key(track, 2.0, TAU)
 	anim.loop_mode = Animation.LOOP_LINEAR
