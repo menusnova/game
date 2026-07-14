@@ -50,7 +50,8 @@ const WARP_TYPES := [
 		"banner_sub":   "LIMITED",
 		"art_icon":     "🔥",
 		"art_col":      Color(1.0, 0.40, 0.15),
-		"art_img":      "res://image/lyra_1.png",
+		"art_img":      "res://image/caelum_voss.png",
+		"thumb_img":    "res://image/caelum_voss.png",
 		"feat_imgs":    ["res://image/lyra_1.png", "res://image/lyra_2.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
@@ -68,7 +69,8 @@ const WARP_TYPES := [
 		"banner_sub":   "LIMITED",
 		"art_icon":     "📖",
 		"art_col":      Color(1.0, 0.80, 0.25),
-		"art_img":      "res://image/lyra_2.png",
+		"art_img":      "res://image/formula.png",
+		"thumb_img":    "res://image/formula.png",
 		"feat_imgs":    ["res://image/lyra_2.png", "res://image/lyra_1.png", "res://image/lyra_3.png"],
 		"duration":     "อีก 21 วัน",
 		"desc_lines": [
@@ -186,13 +188,25 @@ func _make_selector_card(wd: Dictionary, active: bool, idx: int,
 		sb.shadow_size  = 8
 	card.add_theme_stylebox_override("panel", sb)
 
-	# Icon centered (no portrait art)
-	var ico := _lbl(str(wd["icon"]), 22, Color(acc.r, acc.g, acc.b, 0.85))
-	ico.size = Vector2(cw, ch - 28)
-	ico.position = Vector2(0, 8)
-	ico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ico.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	card.add_child(ico)
+	var thumb_tex: Texture2D = _load_png(str(wd.get("thumb_img", "")))
+	if thumb_tex:
+		var thumb := TextureRect.new()
+		thumb.texture      = thumb_tex
+		thumb.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		thumb.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		thumb.size     = Vector2(cw, ch - 20)
+		thumb.position = Vector2(0, 0)
+		thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		thumb.modulate = Color(1, 1, 1, 1.0 if active else 0.55)
+		card.add_child(thumb)
+	else:
+		# Icon fallback when no portrait art is set
+		var ico := _lbl(str(wd["icon"]), 22, Color(acc.r, acc.g, acc.b, 0.85))
+		ico.size = Vector2(cw, ch - 28)
+		ico.position = Vector2(0, 8)
+		ico.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ico.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		card.add_child(ico)
 
 	var stripe := ColorRect.new()
 	stripe.color = Color(acc.r, acc.g, acc.b, 0.85 if active else 0.35)
