@@ -226,12 +226,59 @@ func _load_png(path: String) -> Texture2D:
 		return load(path) as Texture2D
 	return null
 
-## Keys out a near-white background (uploaded character art has no real alpha channel).
-func _make_white_key_material() -> ShaderMaterial:
-	var mat := ShaderMaterial.new()
-	var sh: Shader = load("res://shaders/white_key.gdshader")
-	mat.shader = sh
-	return mat
+var _pose_tex_cache: Dictionary = {}   # path -> ImageTexture (white-keyed, cached once)
+
+## Loads a Lyra pose PNG and removes its white background via a border flood-fill, so only
+## background pixels connected to the image edge get keyed out — enclosed near-white areas
+## like her hair/highlights are left untouched. Result is cached per path.
+func _get_keyed_pose_texture(path: String) -> Texture2D:
+	if _pose_tex_cache.has(path):
+		return _pose_tex_cache[path]
+	var src: Texture2D = _load_png(path)
+	if not src:
+		return null
+	var img: Image = src.get_image()
+	if img == null:
+		_pose_tex_cache[path] = src
+		return src
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	const NEAR_WHITE := 0.86
+	var visited := PackedByteArray()
+	visited.resize(w * h)
+	var queue: Array[Vector2i] = []
+
+	var is_bg := func(x: int, y: int) -> bool:
+		var c := img.get_pixel(x, y)
+		return minf(c.r, minf(c.g, c.b)) >= NEAR_WHITE
+
+	for x in w:
+		queue.append(Vector2i(x, 0))
+		queue.append(Vector2i(x, h - 1))
+	for y in h:
+		queue.append(Vector2i(0, y))
+		queue.append(Vector2i(w - 1, y))
+
+	var qi := 0
+	while qi < queue.size():
+		var p: Vector2i = queue[qi]
+		qi += 1
+		if p.x < 0 or p.x >= w or p.y < 0 or p.y >= h: continue
+		var idx := p.y * w + p.x
+		if visited[idx] == 1: continue
+		visited[idx] = 1
+		if not is_bg.call(p.x, p.y): continue
+		var c := img.get_pixel(p.x, p.y)
+		img.set_pixel(p.x, p.y, Color(c.r, c.g, c.b, 0.0))
+		queue.append(Vector2i(p.x + 1, p.y))
+		queue.append(Vector2i(p.x - 1, p.y))
+		queue.append(Vector2i(p.x, p.y + 1))
+		queue.append(Vector2i(p.x, p.y - 1))
+
+	var tex := ImageTexture.create_from_image(img)
+	_pose_tex_cache[path] = tex
+	return tex
 
 ## Keys out a near-black background using normal blending, so the art properly occludes
 ## whatever sits behind it (unlike BLEND_MODE_ADD, which lets background bleed through).
@@ -510,8 +557,7 @@ func _build_player_sprite() -> void:
 	_player_sprite.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	_player_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_player_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_player_sprite.material = _make_white_key_material()
-	var ptex: Texture2D = _load_png(PLAYER_POSE["idle"])
+	var ptex: Texture2D = _get_keyed_pose_texture(PLAYER_POSE["idle"])
 	if ptex:
 		_player_sprite.texture = ptex
 	body.add_child(_player_sprite)
@@ -525,13 +571,13 @@ func _build_player_sprite() -> void:
 ## Swaps Lyra's battle pose (attack/defend/skill/ultimate/hit), then returns to idle after a beat.
 func _set_player_pose(pose: String, hold: float = 0.5) -> void:
 	if not _player_sprite: return
-	var tex: Texture2D = _load_png(PLAYER_POSE.get(pose, PLAYER_POSE["idle"]))
+	var tex: Texture2D = _get_keyed_pose_texture(PLAYER_POSE.get(pose, PLAYER_POSE["idle"]))
 	if not tex: return
 	_player_sprite.texture = tex
 	if pose == "idle": return
 	await get_tree().create_timer(hold).timeout
 	if is_instance_valid(_player_sprite):
-		var idle_tex: Texture2D = _load_png(PLAYER_POSE["idle"])
+		var idle_tex: Texture2D = _get_keyed_pose_texture(PLAYER_POSE["idle"])
 		if idle_tex: _player_sprite.texture = idle_tex
 
 # ── Player HUD — floats above hand strip, left side ───────
