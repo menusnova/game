@@ -424,11 +424,6 @@ func _build_edit_panel() -> void:
 	_supp_grid_ref = supp_panel
 	_build_supp_grid(supp_panel)
 
-	# live deck total counter
-	_deck_total_lbl = _lbl("เด็ค: %d / 20" % (_elem_deck_total() + _supp_deck_total()),
-		11, Color(0.75, 0.85, 1.0, 0.85), bg, Vector2(8, supp_sep_y + 28 + 80 + 4), Vector2(EDIT_W - 16, 18))
-	_deck_total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-
 	# confirm + close buttons
 	var conf_sb := _sb(Color(0.12, 0.35, 0.85, 1.0), Color(0.4,0.6,1.0,0.3), 10)
 	var conf_b := _btn("✓  ยืนยัน", 13, Color.WHITE, conf_sb,
@@ -844,6 +839,11 @@ func _build_deck_preview() -> void:
 	header.add_theme_stylebox_override("panel", _sb(Color(0.08, 0.12, 0.28, 1.0)))
 	bg.add_child(header)
 	_lbl("เด็คของคุณ (แตะเพื่อเอาออก)", 12, Color(0.75, 0.85, 1.0, 0.9), header, Vector2(12, 10))
+
+	# live deck total counter — top-right of the deck preview panel
+	_deck_total_lbl = _lbl("เด็ค: %d / 20" % (_elem_deck_total() + _supp_deck_total()),
+		11, Color(0.75, 0.85, 1.0, 0.85), header, Vector2(DECK_PREVIEW_W - 90, 10), Vector2(80, 18))
+	_deck_total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(0, 40)
