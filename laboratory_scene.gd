@@ -547,8 +547,8 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		var r_vals := Label.new()
 		var safe_tier := clampi(tier, 1, 3)
 		var exp_r: int  = ([50, 150, 300] as Array[int])[safe_tier - 1]
-		var gold_r: int = ([30, 100, 250] as Array[int])[safe_tier - 1]
-		var cry_r: int  = ([10,  30,  80] as Array[int])[safe_tier - 1]
+		var gold_r: int = ([1000, 5000, 10000] as Array[int])[safe_tier - 1]
+		var cry_r: int  = ([10,  20,  80] as Array[int])[safe_tier - 1]
 		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [exp_r, gold_r, cry_r]
 		r_vals.position = Vector2(24, y + 26)
 		r_vals.size = Vector2(W - 48, 22)

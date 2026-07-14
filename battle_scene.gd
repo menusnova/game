@@ -25,6 +25,11 @@ const CARD_DB := {
 	"Cl": {"type":"element","symbol":"Cl","name":"Chlorine","color":Color(0.70,1.00,0.40)},
 	"Fe": {"type":"element","symbol":"Fe","name":"Iron",    "color":Color(0.75,0.65,0.55)},
 	"C":  {"type":"element","symbol":"C", "name":"Carbon",  "color":Color(0.60,0.60,0.75)},
+	"N":  {"type":"element","symbol":"N", "name":"Nitrogen","color":Color(0.35,0.50,0.95)},
+	"S":  {"type":"element","symbol":"S", "name":"Sulfur",  "color":Color(1.00,0.85,0.10)},
+	"Ca": {"type":"element","symbol":"Ca","name":"Calcium", "color":Color(0.80,0.75,0.65)},
+	"Mg": {"type":"element","symbol":"Mg","name":"Magnesium","color":Color(0.60,0.85,0.60)},
+	"K":  {"type":"element","symbol":"K", "name":"Potassium","color":Color(0.75,0.30,0.70)},
 	# Support cards — cost AP, go to Discard after use
 	"Draw2":     {"type":"support","name":"Draw 2",    "desc":"จั่วการ์ด 2 ใบ","ap":1,"color":Color(0.60,0.40,1.00)},
 	"RecoverAP": {"type":"support","name":"Recover AP","desc":"ฟื้นฟู AP +2",  "ap":1,"color":Color(0.30,0.80,1.00)},
@@ -157,7 +162,7 @@ const RING_R   := 88.0
 const HAND_Y   := 556.0
 const HAND_H   := 88.0
 # Fan hand layout
-const FAN_CENTER_X := 165.0
+const FAN_CENTER_X := 540.0
 const FAN_BASE_Y   := 636.0
 const FAN_ARC_R    := 520.0
 const FAN_SPREAD   := 6.5
@@ -872,15 +877,25 @@ func _create_enemy() -> void:
 	_enemy_hp = _enemy_data["hp"]
 
 func _build_deck() -> void:
-	# Default 20-card deck: 16 elements + 4 supports
 	_deck = []
-	for _i in 4: _deck.append("H")
-	for _i in 4: _deck.append("O")
-	for _i in 3: _deck.append("Na")
-	for _i in 3: _deck.append("Cl")
-	for _i in 2: _deck.append("Fe")
-	for _i in 2: _deck.append("Draw2")
-	for _i in 2: _deck.append("RecoverAP")
+	if PlayerData.battle_deck_ready:
+		for sym in PlayerData.battle_elem_deck:
+			if not CARD_DB.has(sym): continue
+			var cnt: int = PlayerData.battle_elem_deck[sym]
+			for _i in cnt: _deck.append(sym)
+		for sname in PlayerData.battle_supp_deck:
+			if not CARD_DB.has(sname): continue
+			var cnt2: int = PlayerData.battle_supp_deck[sname]
+			for _i in cnt2: _deck.append(sname)
+	if _deck.is_empty():
+		# Fallback default 20-card deck: 16 elements + 4 supports
+		for _i in 4: _deck.append("H")
+		for _i in 4: _deck.append("O")
+		for _i in 3: _deck.append("Na")
+		for _i in 3: _deck.append("Cl")
+		for _i in 2: _deck.append("Fe")
+		for _i in 2: _deck.append("Draw2")
+		for _i in 2: _deck.append("RecoverAP")
 	_deck.shuffle()
 	_discard = []
 	_reshuffle_count = 0
@@ -941,6 +956,11 @@ const ELEM_INFO := {
 	"Cl": {"desc":"แก๊สพิษสีเหลือง-เขียว เคยใช้เป็นอาวุธในสงครามโลก ปัจจุบันใช้ฆ่าเชื้อ",       "type":"Halogen"},
 	"Fe": {"desc":"โลหะที่พบมากที่สุดในโลก เป็นส่วนประกอบหลักของแกนโลก ใช้ในการก่อสร้าง",       "type":"Transition Metal"},
 	"C":  {"desc":"พบในสิ่งมีชีวิตทุกชนิด รากฐานของสารอินทรีย์ มีทั้งรูปกราไฟต์และเพชร",         "type":"Nonmetal"},
+	"N":  {"desc":"ก๊าซ 78% ของบรรยากาศโลก จำเป็นต่อโปรตีนและ DNA",                          "type":"Nonmetal"},
+	"S":  {"desc":"ธาตุสีเหลือง พบใกล้ภูเขาไฟ ใช้ผลิตกรดกำมะถันและยาง",                        "type":"Nonmetal"},
+	"Ca": {"desc":"โลหะที่พบมากในกระดูกและฟัน จำเป็นต่อการหดตัวของกล้ามเนื้อ",                  "type":"Alkaline Earth Metal"},
+	"Mg": {"desc":"โลหะเบา จำเป็นต่อคลอโรฟิลล์ในพืชและการทำงานของกล้ามเนื้อ",                   "type":"Alkaline Earth Metal"},
+	"K":  {"desc":"โลหะอ่อนสีเงิน ควบคุมสัญญาณประสาทและการเต้นของหัวใจ",                        "type":"Alkali Metal"},
 }
 
 func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Control:
@@ -1096,6 +1116,8 @@ func _try_reaction(a: String, b: String) -> void:
 		var result: String = RECIPES[key]
 		_remove_from_hand(a)
 		_remove_from_hand(b)
+		_discard.append(a)
+		_discard.append(b)
 		_hand.append(result)
 		# First successful reaction per turn gives +20 gauge
 		if not _reaction_gauge_used:

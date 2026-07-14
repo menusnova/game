@@ -719,8 +719,13 @@ func _cycle_elem(elem: String) -> void:
 	_elem_deck[elem] = cur + 1
 
 # ── support deck grid ──
+const SUPP_LABELS := {
+	"Draw2":     "จั่วการ์ด 2",
+	"RecoverAP": "ฟื้นฟู AP",
+}
+
 func _build_supp_grid(parent: Control) -> void:
-	var owned_supp: Array = ["Acid Flask", "Iron Shield", "Ember Seal"]
+	var owned_supp: Array = ["Draw2", "RecoverAP"]
 
 	var cw := 100.0; var ch_h := 68.0; var gap := 8.0
 	for i in range(owned_supp.size()):
@@ -745,7 +750,7 @@ func _build_supp_grid(parent: Control) -> void:
 		parent.add_child(card)
 
 		var nl := Label.new()
-		nl.text = supp
+		nl.text = SUPP_LABELS.get(supp, supp)
 		nl.add_theme_font_size_override("font_size", 9)
 		nl.add_theme_color_override("font_color",
 			Color(0.9, 0.75, 1.0) if is_sel else Color(0.65, 0.6, 0.8, 0.7))
@@ -999,5 +1004,54 @@ func _on_edit_close() -> void:
 
 # ── start ──
 func _on_start() -> void:
+	if _elem_deck_total() + _supp_deck_total() <= 0:
+		_show_deck_required_msg()
+		return
+	PlayerData.battle_elem_deck = _elem_deck.duplicate()
+	PlayerData.battle_supp_deck = _supp_deck.duplicate()
+	var chars: Array[String] = []
+	for n in _selected_chars:
+		if n != "": chars.append(n)
+	PlayerData.battle_chars = chars
+	PlayerData.battle_deck_ready = true
 	DomainManager.add_points("battle")
 	SceneTransition.fade_to(SC_BATTLE)
+
+func _show_deck_required_msg() -> void:
+	var ov := ColorRect.new()
+	ov.color = Color(0, 0, 0, 0.6)
+	ov.anchor_right = 1.0; ov.anchor_bottom = 1.0
+	ov.mouse_filter = Control.MOUSE_FILTER_STOP
+	ov.z_index = 100
+	add_child(ov)
+
+	var panel := Panel.new()
+	panel.size = Vector2(320, 140)
+	panel.position = (get_viewport_rect().size - panel.size) / 2.0
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.08, 0.05, 0.14, 0.97)
+	sb.border_color = Color(1.0, 0.4, 0.4, 0.8)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(12)
+	panel.add_theme_stylebox_override("panel", sb)
+	ov.add_child(panel)
+
+	var lbl := Label.new()
+	lbl.text = "กรุณาจัดเด็คก่อนเข้าสู่การต่อสู้!\nเลือกธาตุหรือการ์ดสนับสนุนอย่างน้อย 1 ใบ"
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
+	lbl.add_theme_font_size_override("font_size", 15)
+	lbl.position = Vector2(16, 12)
+	lbl.size = Vector2(288, 80)
+	panel.add_child(lbl)
+
+	var btn := Button.new()
+	btn.text = "ตกลง"
+	btn.size = Vector2(120, 34)
+	btn.position = Vector2((panel.size.x - 120) / 2.0, 96)
+	panel.add_child(btn)
+	btn.pressed.connect(func():
+		ov.queue_free()
+	)

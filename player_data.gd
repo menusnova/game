@@ -13,6 +13,12 @@ var discovered_compounds:  Array[String] = []
 var discovered_elements:   Array[String] = []
 var discovered_recipes:    Array[String] = []
 
+# Battle deck bridge: populated by pre_battle_standalone.gd, consumed by battle_scene.gd
+var battle_elem_deck: Dictionary = {}   # symbol -> count
+var battle_supp_deck: Dictionary = {}   # name -> count
+var battle_chars:     Array[String] = []
+var battle_deck_ready: bool = false
+
 func _ready() -> void:
 	# Design choice: start fresh every launch, don't restore old saves.
 	_save()
