@@ -67,6 +67,10 @@ var _hand:    Array = []
 var _discard: Array = []
 var _element_fx: Node2D
 var _stage_clear_fx: Node
+var _player_sprite: TextureRect
+var _player_body:   Control
+var _enemy_sprite_tex: TextureRect
+var _enemy_sprite_lbl: Label
 var _reshuffle_count := 0
 
 var _player_hp:          int = 0
@@ -213,6 +217,11 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	sb.border_width_left = bw; sb.border_width_right  = bw
 	sb.border_width_top  = bw; sb.border_width_bottom = bw
 	return sb
+
+func _load_png(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	return null
 
 func _mk_label(txt: String, fs: int, col: Color, parent: Control,
 		pos: Vector2, sz: Vector2 = Vector2.ZERO, center: bool = false) -> Label:
@@ -382,22 +391,31 @@ func _build_enemy_panel() -> void:
 	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shadow)
 
-	# Enemy sprite placeholder — smaller than player (far away)
+	# Enemy sprite — smaller than player (far away)
 	var circle := Panel.new()
 	circle.size = Vector2(140, 140)
 	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
+	circle.clip_contents = true
 	circle.add_theme_stylebox_override("panel",
 		_flat(Color(0.18,0.04,0.04,0.88), Color(0.90,0.25,0.25,0.60), 70, 2))
 	add_child(circle)
 
-	var sp_lbl := Label.new()
-	sp_lbl.text = "👾"
-	sp_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	sp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sp_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	sp_lbl.add_theme_font_size_override("font_size", 56)
-	sp_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	circle.add_child(sp_lbl)
+	_enemy_sprite_lbl = Label.new()
+	_enemy_sprite_lbl.text = "👾"
+	_enemy_sprite_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_enemy_sprite_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_enemy_sprite_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_enemy_sprite_lbl.add_theme_font_size_override("font_size", 56)
+	_enemy_sprite_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circle.add_child(_enemy_sprite_lbl)
+
+	_enemy_sprite_tex = TextureRect.new()
+	_enemy_sprite_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_enemy_sprite_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	_enemy_sprite_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_enemy_sprite_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_enemy_sprite_tex.visible = false
+	circle.add_child(_enemy_sprite_tex)
 
 	# Idle bob animation
 	var t := circle.create_tween().set_loops()
@@ -428,6 +446,15 @@ func _build_enemy_panel() -> void:
 	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
 	_enemy_status_lbl = _mk_label("", 10, Color(0.9,0.6,0.3), ep, Vector2(140, 36))
 
+const PLAYER_POSE := {
+	"idle":  "res://image/lyra_guard.png",
+	"atk":   "res://image/lyra_attack.png",
+	"def":   "res://image/lyra_guard.png",
+	"skl":   "res://image/lyra_skill.png",
+	"ult":   "res://image/lyra_ultimate.png",
+	"hit":   "res://image/lyra_hit.png",
+}
+
 # ── Player sprite — back view, large, bottom-left ─────────
 func _build_player_sprite() -> void:
 	# Ground shadow
@@ -438,45 +465,39 @@ func _build_player_sprite() -> void:
 	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shadow)
 
-	# Player placeholder — tall silhouette (back view)
-	var body := Panel.new()
+	var body := Control.new()
 	body.size     = Vector2(PLAYER_W, PLAYER_H)
 	body.position = Vector2(PLAYER_X, PLAYER_Y)
-	body.add_theme_stylebox_override("panel",
-		_flat(Color(0.08,0.10,0.24,0.90), Color(0.35,0.60,1.00,0.40), 18, 1))
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(body)
 
-	# Cape / cloak shape overlay
-	var cape := ColorRect.new()
-	cape.size     = Vector2(PLAYER_W - 20.0, PLAYER_H * 0.65)
-	cape.position = Vector2(10.0, PLAYER_H * 0.30)
-	cape.color    = Color(0.12, 0.06, 0.22, 0.70)
-	cape.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_child(cape)
-
-	# Head circle
-	var head := Panel.new()
-	head.size     = Vector2(56, 56)
-	head.position = Vector2((PLAYER_W - 56.0) / 2.0, 18.0)
-	head.add_theme_stylebox_override("panel",
-		_flat(Color(0.14,0.16,0.32,1.0), Color(0.45,0.65,1.00,0.50), 28, 1))
-	body.add_child(head)
+	_player_sprite = TextureRect.new()
+	_player_sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_player_sprite.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	_player_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_player_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var ptex: Texture2D = _load_png(PLAYER_POSE["idle"])
+	if ptex:
+		_player_sprite.texture = ptex
+	body.add_child(_player_sprite)
 
 	# Subtle idle breathe tween
 	var t := body.create_tween().set_loops()
 	t.tween_property(body, "position:y", PLAYER_Y - 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	t.tween_property(body, "position:y", PLAYER_Y + 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_player_body = body
 
-	# "PLAYER" label inside — will be replaced by real sprite
-	var ph := Label.new()
-	ph.text = "← ตัวละคร\n(placeholder)"
-	ph.size = Vector2(PLAYER_W, 40)
-	ph.position = Vector2(0, PLAYER_H * 0.72)
-	ph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ph.add_theme_font_size_override("font_size", 10)
-	ph.add_theme_color_override("font_color", Color(0.45,0.55,0.80,0.55))
-	ph.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_child(ph)
+## Swaps Lyra's battle pose (attack/defend/skill/ultimate/hit), then returns to idle after a beat.
+func _set_player_pose(pose: String, hold: float = 0.5) -> void:
+	if not _player_sprite: return
+	var tex: Texture2D = _load_png(PLAYER_POSE.get(pose, PLAYER_POSE["idle"]))
+	if not tex: return
+	_player_sprite.texture = tex
+	if pose == "idle": return
+	await get_tree().create_timer(hold).timeout
+	if is_instance_valid(_player_sprite):
+		var idle_tex: Texture2D = _load_png(PLAYER_POSE["idle"])
+		if idle_tex: _player_sprite.texture = idle_tex
 
 # ── Player HUD — floats above hand strip, left side ───────
 func _build_player_hud() -> void:
@@ -896,15 +917,29 @@ func _build_element_fx() -> void:
 
 func _create_enemy() -> void:
 	if _current_stage % 5 == 0:
-		_enemy_data = {"name":"Boss Chimera","hp":300,"attack":25,"type":"boss"}
+		_enemy_data = {"name":"Void Dragon","hp":300,"attack":25,"type":"boss","img":"res://image/void_dragon.png"}
 	else:
 		var pool := [
-			{"name":"Slime",  "hp":100,"attack":10,"type":"poison"},
-			{"name":"Goblin", "hp":80, "attack":20,"type":"attack"},
-			{"name":"Knight", "hp":150,"attack":12,"type":"tank"},
+			{"name":"Slime",     "hp":100,"attack":10,"type":"poison"},
+			{"name":"Goblin",    "hp":80, "attack":20,"type":"attack"},
+			{"name":"Knight",    "hp":150,"attack":12,"type":"tank"},
+			{"name":"Void Beast","hp":120,"attack":16,"type":"attack","img":"res://image/void_beast.png"},
 		]
 		_enemy_data = pool.pick_random()
 	_enemy_hp = _enemy_data["hp"]
+	_refresh_enemy_sprite()
+
+func _refresh_enemy_sprite() -> void:
+	if not _enemy_sprite_tex: return
+	var img_path: String = str(_enemy_data.get("img", ""))
+	var tex: Texture2D = _load_png(img_path) if img_path != "" else null
+	if tex:
+		_enemy_sprite_tex.texture  = tex
+		_enemy_sprite_tex.visible  = true
+		_enemy_sprite_lbl.visible  = false
+	else:
+		_enemy_sprite_tex.visible  = false
+		_enemy_sprite_lbl.visible  = true
 
 func _build_deck() -> void:
 	_deck = []
@@ -1230,6 +1265,7 @@ func _on_attack() -> void:
 	_ap -= 1
 	_main_action_done = true
 	_is_defending = false
+	_set_player_pose("atk")
 
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
@@ -1253,6 +1289,7 @@ func _on_defend() -> void:
 	_ap -= 1
 	_main_action_done = true
 	_is_defending = true
+	_set_player_pose("def", 0.8)
 	_add_gauge(5)
 	_msg("🛡 Null Barrier — ลดดาเมจ 50%")
 	_refresh_ui()
@@ -1266,6 +1303,7 @@ func _on_skill() -> void:
 	_ap -= 2
 	_main_action_done = true
 	_skill_cd = CHARACTER["skill_cd"]   # 3 turns
+	_set_player_pose("skl", 0.7)
 
 	# ฟื้น HP 15%
 	var heal := int(CHARACTER["max_hp"] * 0.15)
@@ -1287,6 +1325,7 @@ func _on_ultimate() -> void:
 
 	_ult_used  = true
 	_ult_gauge = 0
+	_set_player_pose("ult", 0.9)
 
 	# 55 DMG, + Void Resonance 20% only if already primed (reaction card
 	# used this turn, or enemy already carries a debuff from a prior cast)
@@ -1361,7 +1400,9 @@ func _enemy_turn() -> void:
 		dmg -= blocked
 
 	_player_hp -= dmg
-	if dmg > 0: _add_gauge(5)
+	if dmg > 0:
+		_add_gauge(5)
+		_set_player_pose("hit", 0.4)
 
 	var def_txt := "  [Null Barrier -50%]" if _is_defending and raw_dmg > dmg else ""
 	_msg("👾 %s โจมตี — เสีย %d HP%s" % [_enemy_data.get("name","ศัตรู"), max(0,dmg), def_txt])
