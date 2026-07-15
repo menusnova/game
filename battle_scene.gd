@@ -2219,7 +2219,7 @@ func _refresh_ui() -> void:
 	var emax: float = float(_enemy_data.get("hp", 100))
 	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
 	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
-	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
+	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "%d" % maxi(0, _enemy_hp)
 
 	# Deck/Discard
 	if _deck_lbl:    _deck_lbl.text    = "Deck: %d" % _deck.size()
