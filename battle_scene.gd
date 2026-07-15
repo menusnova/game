@@ -594,7 +594,7 @@ func _on_surrender() -> void:
 	_set_buttons_enabled(false)
 	await get_tree().create_timer(0.6).timeout
 	if not is_instance_valid(self): return
-	_show_result_screen(false)
+	_stage_clear_fx.show_defeat("ยอมแพ้")
 
 # ── Enemy — center-top, smaller (distance perspective) ───
 func _build_enemy_panel() -> void:
@@ -1916,7 +1916,7 @@ func _check_battle() -> void:
 		_set_buttons_enabled(false)
 		await get_tree().create_timer(0.6).timeout
 		if not is_instance_valid(self): return
-		_show_result_screen(false)
+		_stage_clear_fx.show_defeat("Stage %d — พ่ายแพ้" % _current_stage)
 
 const FINAL_STAGE := 2   # only 2 stages exist — winning stage 2 ends the run
 
@@ -1926,207 +1926,6 @@ func _grant_stage_reward() -> void:
 	CurrencyManager.add_gold(gold_gain)
 	CurrencyManager.add_free_crystal(crystal_gain)
 
-func _show_result_screen(won: bool) -> void:
-	var is_final_win := won and _current_stage >= FINAL_STAGE
-
-	# Rewards
-	var exp_gain    := 30 + _current_stage * 20
-	var gold_gain   := 100 + _current_stage * 50
-	var crystal_gain := 5 if (_current_stage % 3 == 0 or won) else 0
-	if not won:
-		exp_gain  = int(exp_gain  * 0.3)
-		gold_gain = int(gold_gain * 0.2)
-		crystal_gain = 0
-	CurrencyManager.add_gold(gold_gain)
-	CurrencyManager.add_free_crystal(crystal_gain)
-
-	# Full-screen overlay
-	var ov := ColorRect.new()
-	ov.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ov.color   = Color(0.0, 0.0, 0.0, 0.0)
-	ov.z_index = 50
-	ov.mouse_filter = Control.MOUSE_FILTER_STOP
-	add_child(ov)
-
-	var tw_bg := ov.create_tween()
-	tw_bg.tween_property(ov, "color", Color(0.02, 0.02, 0.06, 0.92), 0.35)
-
-	var main_col: Color = Color(0.98, 0.88, 0.30, 1.0) if won else Color(0.95, 0.35, 0.35, 1.0)
-
-	# Big centered result text, upper-middle of screen
-	var title_lbl := Label.new()
-	title_lbl.text = "ชนะ" if won else "แพ้"
-	title_lbl.position = Vector2(0, 90)
-	title_lbl.size     = Vector2(1152.0, 110)
-	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	title_lbl.add_theme_font_size_override("font_size", 80)
-	title_lbl.add_theme_color_override("font_color", main_col)
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_lbl.modulate = Color(1, 1, 1, 0.0)
-	ov.add_child(title_lbl)
-	var tw_t := title_lbl.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw_t.tween_property(title_lbl, "modulate:a", 1.0, 0.45)
-
-	var sub_lbl := Label.new()
-	if is_final_win:
-		sub_lbl.text = "ผ่านทุกด่านแล้ว! (Stage %d/%d)" % [_current_stage, FINAL_STAGE]
-	elif won:
-		sub_lbl.text = "Stage %d — ผ่านแล้ว!" % _current_stage
-	else:
-		sub_lbl.text = "Stage %d — พ่ายแพ้" % _current_stage
-	sub_lbl.position = Vector2(0, 200)
-	sub_lbl.size     = Vector2(1152.0, 26)
-	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub_lbl.add_theme_font_size_override("font_size", 15)
-	sub_lbl.add_theme_color_override("font_color", Color(0.75, 0.83, 1.0, 0.80))
-	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	sub_lbl.modulate = Color(1, 1, 1, 0.0)
-	ov.add_child(sub_lbl)
-	var tw_s := sub_lbl.create_tween()
-	tw_s.tween_property(sub_lbl, "modulate:a", 1.0, 0.4).set_delay(0.15)
-
-	# Rewards — centered column below the title
-	const RW := 360.0
-	var rx := (1152.0 - RW) * 0.5
-	var ry := 250.0
-
-	var rew_hdr := Label.new()
-	rew_hdr.text     = "รางวัลที่ได้รับ" if won else "สิ่งที่ได้รับ"
-	rew_hdr.position = Vector2(rx, ry)
-	rew_hdr.size     = Vector2(RW, 20)
-	rew_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	rew_hdr.add_theme_font_size_override("font_size", 12)
-	rew_hdr.add_theme_color_override("font_color", Color(0.6, 0.7, 0.9, 0.7))
-	rew_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rew_hdr.modulate = Color(1, 1, 1, 0.0)
-	ov.add_child(rew_hdr)
-	ry += 30.0
-
-	const ROWS: Array = [
-		["⚔", "EXP",      Color(0.50, 0.90, 1.00)],
-		["💰", "Gold",     Color(0.95, 0.78, 0.20)],
-		["💎", "Crystal",  Color(0.55, 0.75, 1.00)],
-	]
-	var row_vals := [exp_gain, gold_gain, crystal_gain]
-	var reward_nodes: Array = [rew_hdr]
-	for i in ROWS.size():
-		var row_data: Array = ROWS[i]
-		var val: int = row_vals[i]
-		var row_bg := Panel.new()
-		row_bg.position = Vector2(rx, ry)
-		row_bg.size     = Vector2(RW, 44)
-		row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var rsb := StyleBoxFlat.new()
-		rsb.bg_color = Color(1, 1, 1, 0.05)
-		rsb.set_corner_radius_all(8)
-		row_bg.add_theme_stylebox_override("panel", rsb)
-		row_bg.modulate = Color(1, 1, 1, 0.0)
-		ov.add_child(row_bg)
-		reward_nodes.append(row_bg)
-
-		var icon_lbl := Label.new()
-		icon_lbl.text     = str(row_data[0])
-		icon_lbl.position = Vector2(12, 0)
-		icon_lbl.size     = Vector2(32, 44)
-		icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		icon_lbl.add_theme_font_size_override("font_size", 18)
-		icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row_bg.add_child(icon_lbl)
-
-		var name_lbl := Label.new()
-		name_lbl.text     = str(row_data[1])
-		name_lbl.position = Vector2(48, 0)
-		name_lbl.size     = Vector2(160, 44)
-		name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		name_lbl.add_theme_font_size_override("font_size", 13)
-		name_lbl.add_theme_color_override("font_color", Color(0.85, 0.90, 1.0, 0.90))
-		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row_bg.add_child(name_lbl)
-
-		var val_lbl := Label.new()
-		val_lbl.text     = "+%d" % val if val > 0 else "—"
-		val_lbl.position = Vector2(0, 0)
-		val_lbl.size     = Vector2(RW - 16, 44)
-		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		val_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		val_lbl.add_theme_font_size_override("font_size", 18)
-		val_lbl.add_theme_color_override("font_color", row_data[2] as Color)
-		val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row_bg.add_child(val_lbl)
-
-		ry += 52.0
-
-	for i in reward_nodes.size():
-		var n: CanvasItem = reward_nodes[i]
-		var tw_r := n.create_tween()
-		tw_r.tween_property(n, "modulate:a", 1.0, 0.3).set_delay(0.20 + i * 0.06)
-
-	# Button(s) — bottom center. Non-final win shows both "ต่อไป" and
-	# "กลับหน้าหลัก" side by side; every other outcome shows a single
-	# centered "กลับหน้าหลัก" button.
-	var show_continue := won and not is_final_win
-	var btn_h := 50.0
-	var by := 648.0 - 90.0
-
-	if show_continue:
-		var bw := 180.0; var gap := 16.0
-		var total_w := bw * 2 + gap
-		var bx0 := (1152.0 - total_w) * 0.5
-		_make_result_btn(ov, Vector2(bx0, by), Vector2(bw, btn_h),
-			"ต่อไป →", Color(0.95, 0.78, 0.20, 1.0), Color(0.10, 0.06, 0.02, 1.0), 0.45,
-			func():
-				ov.queue_free()
-				if is_instance_valid(self): _next_stage()
-		)
-		_make_result_btn(ov, Vector2(bx0 + bw + gap, by), Vector2(bw, btn_h),
-			"กลับหน้าหลัก", Color(0.14, 0.16, 0.26, 1.0), Color(0.85, 0.88, 1.0, 1.0), 0.52,
-			func():
-				ov.queue_free()
-				if is_instance_valid(self): _go_back()
-		)
-	else:
-		var bw := 240.0
-		_make_result_btn(ov, Vector2((1152.0 - bw) * 0.5, by), Vector2(bw, btn_h),
-			"กลับหน้าหลัก",
-			Color(0.95, 0.78, 0.20, 1.0) if won else Color(0.55, 0.12, 0.12, 1.0),
-			Color(0.10, 0.06, 0.02, 1.0) if won else Color(1.0, 0.80, 0.80, 1.0), 0.45,
-			func():
-				ov.queue_free()
-				if is_instance_valid(self): _go_back()
-		)
-
-func _make_result_btn(parent: Control, pos: Vector2, sz: Vector2, txt: String,
-		bg_col: Color, txt_col: Color, delay: float, on_press: Callable) -> void:
-	var btn := Panel.new()
-	btn.position = pos
-	btn.size     = sz
-	var bsb := StyleBoxFlat.new()
-	bsb.bg_color = bg_col
-	bsb.set_corner_radius_all(12)
-	btn.add_theme_stylebox_override("panel", bsb)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	btn.modulate = Color(1, 1, 1, 0.0)
-	parent.add_child(btn)
-	var tw_b := btn.create_tween()
-	tw_b.tween_property(btn, "modulate:a", 1.0, 0.3).set_delay(delay)
-
-	var btn_lbl := Label.new()
-	btn_lbl.text = txt
-	btn_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	btn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	btn_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn_lbl.add_theme_font_size_override("font_size", 15)
-	btn_lbl.add_theme_color_override("font_color", txt_col)
-	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(btn_lbl)
-
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw_out := parent.create_tween()
-			tw_out.tween_property(parent, "modulate:a", 0.0, 0.25)
-			tw_out.tween_callback(on_press)
-	)
 
 func _next_stage() -> void:
 	_current_stage += 1

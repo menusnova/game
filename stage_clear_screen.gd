@@ -50,6 +50,24 @@ func hide_stage_clear() -> void:
 
 
 func show_victory() -> void:
+	show_result("VICTORY", "All Stages Cleared", COL_CYAN)
+
+
+## Same visual style as the Victory screen (dark overlay, big outlined
+## title, subtitle, single centered return button) — used for both a
+## battle loss and surrendering. No reward rows, unlike the win screen.
+func show_defeat(sub: String) -> void:
+	show_result("DEFEAT", sub, Color("#FF3CAC"))
+
+
+## Shared driver: sets the title/subtitle text and accent color, then
+## fades the (reused) VictoryScreen layer in.
+func show_result(title: String, sub: String, accent: Color) -> void:
+	victory_label.text = title
+	victory_label.add_theme_color_override("font_shadow_color", Color(accent.r, accent.g, accent.b, 0.65))
+	victory_label.add_theme_color_override("font_outline_color", Color(accent.r, accent.g, accent.b, 0.85))
+	sub_label.text = sub
+	sub_label.add_theme_color_override("font_color", accent)
 	victory_layer.visible = true
 	v_anim.play("fade_in")
 
