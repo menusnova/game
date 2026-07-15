@@ -162,6 +162,17 @@ func _position_curve(impact_pos: Vector2) -> void:
 # ════════════════════════════════════════════════════════════
 #  b) SlashTrail — thin glowing streaks along the blade, not blocks
 # ════════════════════════════════════════════════════════════
+## ParticleProcessMaterial has no directly-settable point-array property —
+## EMISSION_SHAPE_POINTS reads positions from a texture (1px tall, one pixel
+## per point, RGB channels = XYZ offset).
+func _make_emission_point_texture(pts: PackedVector3Array) -> ImageTexture:
+	var w := maxi(pts.size(), 1)
+	var img := Image.create(w, 1, false, Image.FORMAT_RGBF)
+	for i in pts.size():
+		var v: Vector3 = pts[i]
+		img.set_pixel(i, 0, Color(v.x, v.y, v.z))
+	return ImageTexture.create_from_image(img)
+
 func _build_slash_trail() -> void:
 	slash_trail = GPUParticles2D.new()
 	slash_trail.name = "SlashTrail"
@@ -183,7 +194,7 @@ func _build_slash_trail() -> void:
 	for p in baked:
 		pts.append(Vector3(p.x, p.y, 0.0))
 	mat.emission_point_count = pts.size()
-	mat.emission_points = pts
+	mat.emission_point_texture = _make_emission_point_texture(pts)
 	mat.direction = Vector3(1, 0.15, 0)
 	mat.spread = 18.0
 	mat.initial_velocity_min = 30.0
