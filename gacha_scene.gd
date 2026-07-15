@@ -275,7 +275,10 @@ func _rebuild_art() -> void:
 	art_rect.name         = "_ArtRect"
 	art_rect.texture      = art_tex
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# COVERED (not CENTERED) so the art fills the whole showcase frame edge to
+	# edge instead of leaving letterbox margins when its aspect ratio doesn't
+	# exactly match the frame's.
+	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	art_rect.size         = Vector2(area_w, area_h)
 	art_rect.position     = Vector2(area_x, area_y)
 	art_rect.clip_contents = true
