@@ -103,7 +103,11 @@ var _current_stage:       int  = 1
 var _battle_over:         bool = false
 
 # Reaction element selection (click-to-select, no drag)
+# _selected_elem drives which cards glow (all copies of the same element);
+# _selected_card_idx is the exact hand slot that was tapped — only that one
+# lifts/scales, so duplicate cards don't all "jump" together.
 var _selected_elem: String = ""
+var _selected_card_idx: int = -1
 
 # ── UI node refs ──────────────────────────────────────────
 var _msg_lbl:          Label
@@ -127,7 +131,6 @@ var _hand_container:   HBoxContainer
 var _deck_lbl:         Label
 var _discard_lbl:      Label
 var _stage_lbl:        Label
-var _react_hint:       Label
 var _btn_attack:       Button
 var _btn_defend:       Button
 var _btn_skill:        Button
@@ -389,7 +392,6 @@ func _build_ui() -> void:
 	_build_enemy_panel()
 	_build_player_sprite()
 	_build_player_hud()
-	_build_react_hint()
 	_build_hand_panel()
 	_build_deck_discard_circles()
 	_build_action_ring()
@@ -678,17 +680,6 @@ func _build_player_hud() -> void:
 	# hidden refs for _refresh_ui (still needed)
 	_deck_lbl    = Label.new(); _deck_lbl.visible    = false; pp.add_child(_deck_lbl)
 	_discard_lbl = Label.new(); _discard_lbl.visible = false; pp.add_child(_discard_lbl)
-
-# ── Reaction hint bar ──────────────────────────────────────
-func _build_react_hint() -> void:
-	var rb := Panel.new()
-	rb.size     = Vector2(700, 28)
-	rb.position = Vector2(226, 524)
-	rb.add_theme_stylebox_override("panel",
-		_flat(Color(0.12,0.10,0.04,0.95), Color(C_GOLD.r,C_GOLD.g,C_GOLD.b,0.4), 6, 1))
-	rb.visible = false
-	add_child(rb)
-	_react_hint = _mk_label("", 11, C_GOLD, rb, Vector2(0,6), Vector2(700,16), true)
 
 # ── Hand area — bottom strip ───────────────────────────────
 func _build_hand_panel() -> void:
@@ -1059,11 +1050,11 @@ func _hide_card_info() -> void:
 	t.tween_property(_info_panel, "position:x", 1160.0, 0.15)
 
 # ── Card tap handler (replaces old _on_card_click) ────────
-func _on_card_tap(id: String, _idx: int) -> void:
+func _on_card_tap(id: String, idx: int) -> void:
 	if not _player_turn or _battle_over: return
 	var data: Dictionary = CARD_DB.get(id, {})
 	match data.get("type", "element"):
-		"element":  _handle_element_select(id)
+		"element":  _handle_element_select(id, idx)
 		"reaction": _use_reaction_card(id)
 		"support":  _use_support_card(id)
 
@@ -1228,7 +1219,11 @@ const ELEM_INFO := {
 func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Control:
 	var ctype: String = data.get("type", "element")
 	var col:   Color  = data.get("color", Color(0.5,0.5,0.6))
-	var selected := (_selected_elem == id and ctype == "element")
+	# "glowing": every card of the selected element lights up (border/tint).
+	# "lifted": only the exact card that was tapped rises/scales up — duplicate
+	# copies of the same element just glow in place instead of jumping too.
+	var glowing := (_selected_elem == id and ctype == "element")
+	var lifted  := (glowing and _selected_card_idx == idx)
 
 	# Fan position on arc — spacing tightens (cards overlap more) once the hand
 	# grows past the point where FAN_SPREAD would push the fan off-screen.
@@ -1240,9 +1235,9 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var bx        := FAN_CENTER_X + FAN_ARC_R * sin(angle_rad)
 	var by        := FAN_BASE_Y   + FAN_ARC_R * (1.0 - cos(angle_rad))
 
-	var border_a := 0.9 if selected else 0.35
-	var bg_r     := 0.28 if selected else 0.10
-	var bw       := 2   if selected else 1
+	var border_a := 0.9 if glowing else 0.35
+	var bg_r     := 0.28 if glowing else 0.10
+	var bw       := 2   if glowing else 1
 	var panel    := Panel.new()
 	panel.size          = Vector2(CARD_W, CARD_H)
 	panel.position      = Vector2(bx - CARD_W * 0.5, by - CARD_H)
@@ -1313,8 +1308,9 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_lbl)
 
-	# Selection glow
-	if selected:
+	# Selection glow — every card sharing the selected element lights up,
+	# even the ones that aren't physically lifted.
+	if glowing:
 		var glow := ColorRect.new()
 		glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		glow.color = Color(col.r, col.g, col.b, 0.12)
@@ -1324,14 +1320,15 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	# Frame on top of all content (BLEND_MODE_ADD: dark center = transparent)
 	panel.add_child(frame_tex)
 
-	# Hover / selected: lift up, scale up slightly, and bring to front so the
-	# active card is never obscured by its overlapping neighbors.
+	# Hover / lifted: rise up, scale up slightly, and bring to front so the
+	# active card is never obscured by its overlapping neighbors. Only the
+	# exact tapped card lifts — duplicates of the same element just glow.
 	var base_y   := by - CARD_H
 	var base_z   := 8 + idx
 	const HOVER_LIFT  := 18.0
 	const HOVER_SCALE := 1.10
 	panel.scale = Vector2.ONE
-	if selected:
+	if lifted:
 		panel.position.y = base_y - HOVER_LIFT
 		panel.scale       = Vector2(HOVER_SCALE, HOVER_SCALE)
 		panel.z_index     = 100
@@ -1343,11 +1340,11 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE), 0.14)
 	)
 	panel.mouse_exited.connect(func():
-		var still_selected := _selected_elem == id and ctype == "element"
+		var still_lifted := _selected_elem == id and ctype == "element" and _selected_card_idx == idx
 		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
-		t.tween_property(panel, "position:y", base_y - HOVER_LIFT if still_selected else base_y, 0.12)
-		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_selected else Vector2.ONE, 0.12)
-		if not still_selected:
+		t.tween_property(panel, "position:y", base_y - HOVER_LIFT if still_lifted else base_y, 0.12)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_lifted else Vector2.ONE, 0.12)
+		if not still_lifted:
 			t.chain().tween_callback(func(): panel.z_index = base_z)
 		else:
 			panel.z_index = 100
@@ -1374,15 +1371,15 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 # ════════════════════════════════════════════════════════════
 #  CARD INTERACTION
 # ════════════════════════════════════════════════════════════
-func _handle_element_select(id: String) -> void:
+func _handle_element_select(id: String, idx: int) -> void:
 	if _selected_elem == "":
 		_selected_elem = id
-		_show_react_hint("เลือก [%s] — กดธาตุที่ 2 เพื่อผสม  (กดซ้ำเพื่อยกเลิก)" % CARD_DB[id]["name"])
+		_selected_card_idx = idx
 		_refresh_hand()
 	elif _selected_elem == id:
 		# Deselect — same element type tapped again
 		_selected_elem = ""
-		_hide_react_hint()
+		_selected_card_idx = -1
 		_refresh_hand()
 		_msg("ยกเลิกการเลือก")
 	else:
@@ -1394,7 +1391,7 @@ func _try_reaction(a: String, b: String) -> void:
 	var key: String = pair[0] + "+" + pair[1]
 
 	_selected_elem = ""
-	_hide_react_hint()
+	_selected_card_idx = -1
 
 	if RECIPES.has(key):
 		var result: String = RECIPES[key]
@@ -1609,7 +1606,7 @@ func _on_end_turn() -> void:
 	if not _player_turn or _battle_over: return
 	_player_turn = false
 	_selected_elem = ""
-	_hide_react_hint()
+	_selected_card_idx = -1
 	_set_buttons_enabled(false)
 	_refresh_ui()
 	get_tree().create_timer(0.4).timeout.connect(_enemy_turn)
@@ -1962,6 +1959,7 @@ func _next_stage() -> void:
 	_reaction_gauge_used  = false
 	_is_defending         = false
 	_selected_elem        = ""
+	_selected_card_idx    = -1
 	_ap                   = START_AP
 	_player_shield        = 0
 	_p_unit.shield_hp          = 0
@@ -2069,15 +2067,6 @@ func _set_buttons_enabled(on: bool) -> void:
 # ════════════════════════════════════════════════════════════
 #  HELPERS
 # ════════════════════════════════════════════════════════════
-func _show_react_hint(text: String) -> void:
-	if _react_hint:
-		_react_hint.text = text
-		_react_hint.get_parent().visible = true
-
-func _hide_react_hint() -> void:
-	if _react_hint:
-		_react_hint.get_parent().visible = false
-
 func _msg(text: String) -> void:
 	if _msg_lbl: _msg_lbl.text = text
 
