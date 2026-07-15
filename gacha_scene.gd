@@ -1018,8 +1018,8 @@ func _reveal_normal(char_name: String, rarity: int) -> void:
 	match rarity:
 		4: cb=Color(0.72,0.45,1.0,1.0); cg=Color(0.55,0.25,1.0,0.55); cs=Color(0.78,0.55,1.0)
 		_: cb=Color(0.35,0.62,1.0,0.7); cg=Color(0.2,0.5,1.0,0.3);    cs=Color(0.5,0.72,1.0)
-	var card := _build_reveal_card(char_name, rarity, cb, cg, cs, 220, 310)
-	card.pivot_offset = Vector2(110, 155)
+	var card := _build_reveal_card(char_name, rarity, cb, cg, cs, 220, 280)
+	card.pivot_offset = Vector2(110, 140)
 	card.scale = Vector2(0.0, 1.0)
 	_result_ov.add_child(card)
 	var t := card.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
@@ -1045,14 +1045,14 @@ func _reveal_5star(char_name: String) -> void:
 	await tf.finished
 
 	var card := _build_reveal_card(char_name, 5,
-		Color(1.0,0.82,0.2,1.0), Color(1.0,0.7,0.1,0.6), Color(1.0,0.88,0.25), 280, 380)
-	card.pivot_offset = Vector2(140, 190)
+		Color(1.0,0.82,0.2,1.0), Color(1.0,0.7,0.1,0.6), Color(1.0,0.88,0.25), 260, 340)
+	card.pivot_offset = Vector2(130, 170)
 	card.scale = Vector2(0.0, 1.0)
 	_result_ov.add_child(card)
 
 	var glow := ColorRect.new()
 	glow.color = Color(1.0, 0.78, 0.1, 0.0)
-	glow.size = Vector2(340, 440)
+	glow.size = Vector2(320, 400)
 	glow.position = Vector2(card.position.x - 30, card.position.y - 30)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glow.z_index = card.z_index - 1
@@ -1103,41 +1103,59 @@ func _build_reveal_card(char_name: String, rarity: int,
 		_: sb.bg_color = Color(0.05, 0.09, 0.18, 0.97)
 	card.add_theme_stylebox_override("panel", sb)
 
-	var stars := Label.new()
-	stars.text = "★".repeat(rarity)
-	stars.add_theme_font_size_override("font_size", 16)
-	stars.add_theme_color_override("font_color", star_color)
-	stars.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stars.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	stars.offset_top=12; stars.offset_bottom=34
-	card.add_child(stars)
-
-	if rarity == 3 and ELEM_NAME.has(char_name):
+	# Portrait fills almost the entire card (like reference layout) — clipped to the
+	# rounded card shape, sitting behind the top/bottom label overlays.
+	var art_clip := Control.new()
+	art_clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	art_clip.clip_contents = true
+	art_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(art_clip)
+	var portrait_tex: Texture2D = AssetLoader.tex(str(PORTRAITS.get(char_name, "")))
+	if portrait_tex:
+		var ptex := TextureRect.new()
+		ptex.texture = portrait_tex
+		ptex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art_clip.add_child(ptex)
+	elif rarity == 3 and ELEM_NAME.has(char_name):
 		var sym_lbl := Label.new()
 		sym_lbl.text = char_name
 		sym_lbl.add_theme_font_size_override("font_size", 54)
 		sym_lbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.9))
 		sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sym_lbl.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-		sym_lbl.offset_top=50; sym_lbl.offset_bottom=130; sym_lbl.offset_left=-80; sym_lbl.offset_right=80
-		card.add_child(sym_lbl)
-		var name_lbl := Label.new()
-		name_lbl.text = ELEM_NAME.get(char_name, char_name)
-		name_lbl.add_theme_font_size_override("font_size", 13)
-		name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.85))
-		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-		name_lbl.offset_top=-36; name_lbl.offset_bottom=-10
-		card.add_child(name_lbl)
-	else:
-		var name_lbl := Label.new()
-		name_lbl.text = char_name
-		name_lbl.add_theme_font_size_override("font_size", 15)
-		name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
-		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-		name_lbl.offset_top=-36; name_lbl.offset_bottom=-10
-		card.add_child(name_lbl)
+		sym_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		sym_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		art_clip.add_child(sym_lbl)
+
+	# Top-left rarity badge overlay (small, over the art, like the reference cards)
+	var badge := Panel.new()
+	badge.size = Vector2(46, 22)
+	badge.position = Vector2(8, 8)
+	var badge_sb := StyleBoxFlat.new()
+	badge_sb.bg_color = Color(0.02, 0.02, 0.05, 0.75)
+	badge_sb.border_color = border
+	badge_sb.set_border_width_all(1)
+	badge_sb.set_corner_radius_all(6)
+	badge.add_theme_stylebox_override("panel", badge_sb)
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(badge)
+	var stars := Label.new()
+	stars.text = "★".repeat(rarity)
+	stars.add_theme_font_size_override("font_size", 12)
+	stars.add_theme_color_override("font_color", star_color)
+	stars.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stars.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	stars.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	badge.add_child(stars)
+
+	# Bottom overlay strip: type + name
+	var bot := ColorRect.new()
+	bot.color = Color(0.01, 0.01, 0.04, 0.88)
+	bot.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	bot.offset_top = -56
+	card.add_child(bot)
 
 	var rlbl := Label.new()
 	var ctype: String = CARD_TYPE.get(char_name, "")
@@ -1148,8 +1166,17 @@ func _build_reveal_card(char_name: String, rarity: int,
 	rlbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.8))
 	rlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rlbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	rlbl.offset_top=-56; rlbl.offset_bottom=-38
+	rlbl.offset_top=-52; rlbl.offset_bottom=-34
 	card.add_child(rlbl)
+
+	var name_lbl := Label.new()
+	name_lbl.text = str(ELEM_NAME.get(char_name, char_name)) if rarity == 3 else char_name
+	name_lbl.add_theme_font_size_override("font_size", 15)
+	name_lbl.add_theme_color_override("font_color", Color(1,1,1,0.95))
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	name_lbl.offset_top=-30; name_lbl.offset_bottom=-6
+	card.add_child(name_lbl)
 	return card
 
 func _make_summary_card(char_name: String, rarity: int) -> Panel:
@@ -1166,6 +1193,9 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 	var card := Panel.new()
 	card.custom_minimum_size = Vector2(CW, CH)
 	card.size = Vector2(CW, CH)
+	# Without this the parent HBoxContainer stretches the card to fill its full
+	# height (leaving a huge blank gap below the art) — keep it at its own size.
+	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	card.clip_contents = true
 	card.add_theme_stylebox_override("panel", _blue_glow_sb())
 
@@ -1178,12 +1208,12 @@ func _make_summary_card(char_name: String, rarity: int) -> Panel:
 
 	# 2) Content (portrait or element symbol)
 	if PORTRAITS.has(char_name):
-		var portrait_path: String = PORTRAITS.get(char_name, "")
-		if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		var portrait_tex: Texture2D = AssetLoader.tex(str(PORTRAITS.get(char_name, "")))
+		if portrait_tex:
 			var ptex := TextureRect.new()
-			ptex.texture      = load(portrait_path)
+			ptex.texture      = portrait_tex
 			ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			ptex.size         = Vector2(CW, portrait_h)
 			ptex.position     = Vector2(0, 0)
 			ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
