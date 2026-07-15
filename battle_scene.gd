@@ -79,14 +79,15 @@ var _reshuffle_count := 0
 
 var _player_hp:          int = 0
 var _player_shield:      int = 0
-var _player_weak:        int = 0
-var _player_vulnerable:  int = 0
 
 var _enemy_data:          Dictionary = {}
 var _enemy_hp:            int = 0
-var _enemy_poison:        int = 0
-var _enemy_weak:          int = 0
-var _enemy_vulnerable:    int = 0
+
+# ── Buff / Debuff / Status (see battle_stats.gd) ──
+# _player_hp/_enemy_hp above stay the display-facing source of truth for HP;
+# these Units hold everything buff/debuff/status-related for the damage formula.
+var _p_unit: BattleStats.Unit
+var _e_unit: BattleStats.Unit
 
 var _ap:                  int = START_AP
 var _ult_gauge:           int = 0
@@ -98,9 +99,6 @@ var _skill_ap_boost:   bool = false  # recover full AP next turn after skill
 var _player_turn:      bool = true
 var _skill_cd:         int  = 0
 var _is_defending:        bool = false   # Null Barrier active (50% reduction)
-var _void_shield:         bool = false   # Aether Pulse — absorbs 1 hit
-var _enemy_atk_debuff:    int  = 0       # Absolute Zero — enemy ATK reduction %
-var _enemy_debuff_turns:  int  = 0       # turns remaining on ATK debuff
 var _current_stage:       int  = 1
 var _battle_over:         bool = false
 
@@ -120,6 +118,8 @@ var _ult_glow_tween:   Tween
 var _player_hp_bar:    ColorRect
 var _player_hp_lbl:    Label
 var _shield_lbl:       Label
+var _player_effect_row: HBoxContainer
+var _enemy_effect_row:  HBoxContainer
 var _enemy_name_lbl:   Label
 var _enemy_hp_bar:     ColorRect
 var _enemy_hp_lbl:     Label
@@ -203,6 +203,7 @@ func _ready() -> void:
 	# Energy not consumed for now — kept for later use
 	# CurrencyManager.spend_energy(ENERGY_COST)
 	_player_hp = CHARACTER["max_hp"]
+	_p_unit = BattleStats.Unit.new(CHARACTER["max_hp"], CHARACTER["atk_base"])
 	_build_ui()
 	_build_element_fx()
 	_build_battle_fx()
@@ -559,6 +560,13 @@ func _build_enemy_panel() -> void:
 	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
 	_enemy_status_lbl = _mk_label("", 10, Color(0.9,0.6,0.3), ep, Vector2(140, 36))
 
+	_enemy_effect_row = HBoxContainer.new()
+	_enemy_effect_row.position = Vector2(10, 50)
+	_enemy_effect_row.size = Vector2(260, 32)
+	_enemy_effect_row.add_theme_constant_override("separation", 4)
+	_enemy_effect_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ep.add_child(_enemy_effect_row)
+
 const PLAYER_POSE := {
 	"idle":  "res://image/lyra_guard.png",
 	"atk":   "res://image/lyra_attack.png",
@@ -617,6 +625,7 @@ func _build_player_hud() -> void:
 	var pp := Panel.new()
 	pp.size     = Vector2(312, 120)
 	pp.position = Vector2(8, HAND_Y - 118.0)
+	pp.clip_contents = false
 	pp.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
 	add_child(pp)
 
@@ -637,6 +646,13 @@ func _build_player_hud() -> void:
 
 	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 40))
 	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(180, 40))
+
+	_player_effect_row = HBoxContainer.new()
+	_player_effect_row.position = Vector2(12, 122)   # sits just below the HUD panel, not clipped
+	_player_effect_row.size = Vector2(288, 26)
+	_player_effect_row.add_theme_constant_override("separation", 4)
+	_player_effect_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(_player_effect_row)
 
 	# AP section — image slot left + dots fill remaining width
 	var ap_row := Panel.new()
@@ -1095,6 +1111,7 @@ func _create_enemy() -> void:
 	else:
 		_enemy_data = {"name":"Void Beast","hp":1000,"attack":50,"type":"attack","img":"res://image/void_beast.png","weak_reaction":"Rust"}
 	_enemy_hp = _enemy_data["hp"]
+	_e_unit = BattleStats.Unit.new(int(_enemy_data["hp"]), int(_enemy_data.get("attack", 10)))
 	_refresh_enemy_sprite()
 
 func _refresh_enemy_sprite() -> void:
@@ -1391,20 +1408,23 @@ func _use_reaction_card(id: String) -> void:
 
 	match id:
 		"Water":
-			_player_hp = min(_player_hp + 20, CHARACTER["max_hp"])
+			BattleStats.apply_effect(_p_unit, {"kind": "heal", "amount": 20}, "Water")
+			_player_hp = _p_unit.hp
 			_msg("💧 Water — ฟื้นฟู HP +20")
 		"Salt":
-			_player_shield += 20
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 20}, "Salt")
+			_player_shield = _p_unit.shield_hp
 			_msg("🧂 Salt — Shield +20")
 		"Rust":
-			_enemy_poison += 5
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 99}, "Rust")
 			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น")
 
 	# Weakness break: using the reaction this enemy is weak to exposes it,
-	# raising the damage it takes for 2 turns (drives the previously-unused _enemy_weak)
+	# raising the damage it takes for 2 turns (see BattleStats "weak" status)
 	if id == str(_enemy_data.get("weak_reaction", "")):
-		_enemy_weak = 2
+		BattleStats.apply_effect(_e_unit, {"kind": "weak", "amount": 50, "turns": 2}, id)
 		_msg("💥 จุดอ่อน! %s เปิดจุดอ่อน — รับดาเมจเพิ่ม 50%% (2 เทิร์น)" % _enemy_data.get("name","ศัตรู"))
+	_refresh_effect_rows()
 
 	_refresh_hand()
 	_refresh_ui()
@@ -1443,13 +1463,12 @@ func _remove_from_hand(id: String) -> void:
 # ── Void Resonance passive — active only after using an element/reaction
 # card this turn, or while the enemy carries an active debuff ────────────
 func _void_resonance_active() -> bool:
-	return _reaction_gauge_used or _enemy_atk_debuff > 0
+	return _reaction_gauge_used or _e_unit.has_debuff("ATK_DOWN")
 
-## Enemies exposed by a weakness break (see _use_reaction_card) take +50% damage.
-func _apply_enemy_weak(dmg: int) -> int:
-	if _enemy_weak > 0:
-		return int(ceil(dmg * 1.5))
-	return dmg
+## HP/UI-facing refresh of the buff/debuff/status chip rows (see battle_stats.gd).
+func _refresh_effect_rows() -> void:
+	if _player_effect_row: BattleStats.rebuild_effect_row(_player_effect_row, _p_unit)
+	if _enemy_effect_row:  BattleStats.rebuild_effect_row(_enemy_effect_row, _e_unit)
 
 func _on_attack() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
@@ -1468,11 +1487,12 @@ func _on_attack() -> void:
 
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
-	var dmg := int(ceil(base * (1.0 + bonus)))   # 24, or ×1.20 = 28.8 → 29 when active
-	var weak := _enemy_weak > 0
-	dmg = _apply_enemy_weak(dmg)
+	var pre_weak_dmg := int(ceil(base * (1.0 + bonus)))   # 24, or ×1.20 = 28.8 → 29 when active
+	var weak := _e_unit.has_status("weak")
+	var dmg := BattleStats.compute_damage(_p_unit, _e_unit, pre_weak_dmg)
 
-	_enemy_hp -= dmg
+	BattleStats.apply_damage_with_shields(_e_unit, dmg)
+	_enemy_hp = _e_unit.hp
 	_add_gauge(10)
 	if _battle_fx:
 		_battle_fx.play_enemy_hit()
@@ -1516,7 +1536,7 @@ func _on_skill() -> void:
 	_player_hp = mini(_player_hp + heal, CHARACTER["max_hp"])
 
 	# สร้าง Void Shield
-	_void_shield = true
+	_p_unit.void_shield_charges += 1
 	if _battle_fx:
 		_battle_fx.play_aether_pulse()
 		_battle_fx.show_void_shield(true)
@@ -1542,15 +1562,16 @@ func _on_ultimate() -> void:
 	# used this turn, or enemy already carries a debuff from a prior cast)
 	var base_dmg: int = CHARACTER["ult_dmg"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
-	var dmg := int(ceil(base_dmg * (1.0 + bonus)))   # 55, or ×1.20 = 66 when active
-	dmg = _apply_enemy_weak(dmg)
+	var pre_weak_dmg := int(ceil(base_dmg * (1.0 + bonus)))   # 55, or ×1.20 = 66 when active
+	var dmg := BattleStats.compute_damage(_p_unit, _e_unit, pre_weak_dmg)
 
-	_enemy_hp -= dmg
+	BattleStats.apply_damage_with_shields(_e_unit, dmg)
+	_enemy_hp = _e_unit.hp
 	if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), dmg, "damage")
 
 	# debuff: ลด ATK ศัตรู 30% เป็นเวลา 2 เทิร์น
-	_enemy_atk_debuff   = 30
-	_enemy_debuff_turns = 2
+	BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.30, "turns": 2}, "Absolute Zero Formula")
+	_refresh_effect_rows()
 
 	if bonus > 0.0:
 		_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว (+%.0f%% Void Resonance) | ลด ATK ศัตรู 30%% × 2 เทิร์น" % [dmg, bonus * 100])
@@ -1573,11 +1594,13 @@ func _on_end_turn() -> void:
 #  ENEMY TURN
 # ════════════════════════════════════════════════════════════
 func _enemy_turn() -> void:
-	# Poison tick first
-	if _enemy_poison > 0:
-		_enemy_hp -= _enemy_poison
-		_msg("☠ พิษ — ศัตรูเสีย %d HP" % _enemy_poison)
-		if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), _enemy_poison, "damage")
+	# ── 1. Status Damage (poison, burn, ...) ──
+	for tick in _e_unit.tick_status_damage():
+		var amt: int = tick["amount"]
+		_enemy_hp = maxi(0, _enemy_hp - amt)
+		_e_unit.hp = _enemy_hp
+		_msg("☠ %s — ศัตรูเสีย %d HP" % [tick["name"].capitalize(), amt])
+		if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), amt, "damage")
 		_refresh_ui()
 		if _enemy_hp <= 0:
 			_check_battle(); return
@@ -1588,11 +1611,7 @@ func _enemy_turn() -> void:
 	if _battle_fx: _battle_fx.play_enemy_attack()
 	await get_tree().create_timer(0.15).timeout
 	if not is_instance_valid(self): return
-	var raw_dmg: int = _enemy_data.get("attack", 10)
-
-	# Absolute Zero debuff — ลด ATK ศัตรู
-	if _enemy_atk_debuff > 0:
-		raw_dmg = max(1, int(raw_dmg * (1.0 - _enemy_atk_debuff / 100.0)))
+	var raw_dmg: int = int(round(float(_enemy_data.get("attack", 10)) * _e_unit.atk_mult()))
 
 	var dmg := raw_dmg
 
@@ -1601,8 +1620,8 @@ func _enemy_turn() -> void:
 		dmg = max(0, dmg / 2)
 
 	# Void Shield — รับดาเมจแทน HP 1 ครั้ง (ดาเมจหายทั้งหมด)
-	if _void_shield and dmg > 0:
-		_void_shield = false
+	if _p_unit.void_shield_charges > 0 and dmg > 0:
+		_p_unit.void_shield_charges -= 1
 		if _battle_fx:
 			_battle_fx.flash_shield()
 			_battle_fx.show_void_shield(false)
@@ -1614,12 +1633,9 @@ func _enemy_turn() -> void:
 		dmg = 0
 
 	# Salt shield
-	if _player_shield > 0 and dmg > 0:
-		var blocked := mini(_player_shield, dmg)
-		_player_shield -= blocked
-		dmg -= blocked
-
-	_player_hp -= dmg
+	dmg = BattleStats.apply_damage_with_shields(_p_unit, dmg) if dmg > 0 else 0
+	_player_shield = _p_unit.shield_hp
+	_player_hp = _p_unit.hp
 	if dmg > 0:
 		_add_gauge(5)
 		_set_player_pose("hit", 0.4)
@@ -1637,18 +1653,13 @@ func _enemy_turn() -> void:
 	if _player_hp <= 0:
 		_check_battle(); return
 
-	# Decay status
+	# ── 2. Buff / Debuff decay ──
 	if _is_defending and _battle_fx: _battle_fx.show_shield(false)
 	_is_defending = false   # Null Barrier expires after taking 1 hit
-	if _skill_cd          > 0: _skill_cd -= 1
-	if _enemy_weak        > 0: _enemy_weak -= 1
-	if _enemy_vulnerable  > 0: _enemy_vulnerable -= 1
-	if _player_weak       > 0: _player_weak -= 1
-	if _player_vulnerable > 0: _player_vulnerable -= 1
-	if _enemy_debuff_turns > 0:
-		_enemy_debuff_turns -= 1
-		if _enemy_debuff_turns == 0:
-			_enemy_atk_debuff = 0
+	if _skill_cd > 0: _skill_cd -= 1
+	_p_unit.decay()
+	_e_unit.decay()
+	_refresh_effect_rows()
 
 	_start_player_turn()
 
@@ -1925,19 +1936,18 @@ func _next_stage() -> void:
 	_ult_used             = false
 	_reaction_gauge_used  = false
 	_is_defending         = false
-	_void_shield          = false
-	_enemy_atk_debuff     = 0
-	_enemy_debuff_turns   = 0
 	_selected_elem        = ""
 	_ap                   = START_AP
 	_player_shield        = 0
-	_enemy_poison         = 0
-	_enemy_weak           = 0
-	_enemy_vulnerable     = 0
-	_player_weak          = 0
-	_player_vulnerable    = 0
+	_p_unit.shield_hp          = 0
+	_p_unit.void_shield_charges = 0
+	_p_unit.buffs.clear()
+	_p_unit.debuffs.clear()
+	_p_unit.status.clear()
+	# _e_unit is rebuilt fresh inside _create_enemy() above
 	_draw_n(1)
 	_set_buttons_enabled(true)
+	_refresh_effect_rows()
 	_refresh_ui()
 	_msg("📍 Stage %d — ศัตรูใหม่ปรากฎ!" % _current_stage)
 
@@ -1998,7 +2008,7 @@ func _refresh_ui() -> void:
 	if _player_hp_lbl: _player_hp_lbl.text = "%d" % maxi(0, _player_hp)
 	var shield_parts: Array[String] = []
 	if _player_shield > 0: shield_parts.append("🛡 %d" % _player_shield)
-	if _void_shield:        shield_parts.append("💠 Void Shield")
+	if _p_unit and _p_unit.void_shield_charges > 0: shield_parts.append("💠 Void Shield")
 	if _is_defending:       shield_parts.append("🌀 Barrier")
 	if _shield_lbl: _shield_lbl.text = "  ".join(shield_parts)
 
@@ -2007,11 +2017,14 @@ func _refresh_ui() -> void:
 	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
 	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
-	if _enemy_status_lbl:
+	if _enemy_status_lbl and _e_unit:
 		var s: Array[String] = []
-		if _enemy_poison      > 0: s.append("☠ พิษ %d/t" % _enemy_poison)
-		if _enemy_weak        > 0: s.append("💔 อ่อนแอ %d" % _enemy_weak)
-		if _enemy_atk_debuff  > 0: s.append("⬇ ATK -%d%% (%dt)" % [_enemy_atk_debuff, _enemy_debuff_turns])
+		if _e_unit.has_status("poison"): s.append("☠ พิษ %d/t" % _e_unit.status_amount("poison"))
+		if _e_unit.has_status("weak"):   s.append("💔 อ่อนแอ +%d%%" % _e_unit.status_amount("weak"))
+		if _e_unit.has_debuff("ATK_DOWN"):
+			for d in _e_unit.debuffs:
+				if d.stat == "ATK_DOWN":
+					s.append("⬇ ATK -%d%% (%dt)" % [int(d.value * 100), d.turns])
 		_enemy_status_lbl.text = "  ".join(s)
 
 	# Deck/Discard
