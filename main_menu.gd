@@ -115,6 +115,45 @@ func _key_out_background(src_img: Image) -> Image:
 	if float(cleared) / float(w * h) > 0.70:
 		return src_img   # likely a leak through a flat/dark subject — keep the original art
 
+	# Some art has background-colored gaps fully enclosed by the silhouette
+	# (e.g. the negative space between an arm and the body) — not connected
+	# to the image border, so the flood-fill above correctly leaves them
+	# alone (that's what keeps small enclosed details like light hair
+	# intact). But a big enclosed patch is almost always a real gap, not a
+	# detail worth keeping, and left solid it reads as a torn/broken image.
+	# Clear any such patch above a minimum size.
+	var HOLE_MIN_SIZE := 300
+	var hole_visited := PackedByteArray()
+	hole_visited.resize(w * h)
+	for y0 in h:
+		for x0 in w:
+			var idx0 := y0 * w + x0
+			if hole_visited[idx0] == 1: continue
+			if img.get_pixel(x0, y0).a <= 0.01:
+				hole_visited[idx0] = 1
+				continue
+			if not is_bg.call(x0, y0):
+				hole_visited[idx0] = 1
+				continue
+			var comp: Array[Vector2i] = [Vector2i(x0, y0)]
+			hole_visited[idx0] = 1
+			var head := 0
+			while head < comp.size():
+				var cp: Vector2i = comp[head]
+				head += 1
+				for nb in [Vector2i(cp.x + 1, cp.y), Vector2i(cp.x - 1, cp.y), Vector2i(cp.x, cp.y + 1), Vector2i(cp.x, cp.y - 1)]:
+					if nb.x < 0 or nb.x >= w or nb.y < 0 or nb.y >= h: continue
+					var nidx: int = nb.y * w + nb.x
+					if hole_visited[nidx] == 1: continue
+					hole_visited[nidx] = 1
+					if img.get_pixel(nb.x, nb.y).a <= 0.01: continue
+					if not is_bg.call(nb.x, nb.y): continue
+					comp.append(nb)
+			if comp.size() >= HOLE_MIN_SIZE:
+				for cp2 in comp:
+					var c2 := img.get_pixel(cp2.x, cp2.y)
+					img.set_pixel(cp2.x, cp2.y, Color(c2.r, c2.g, c2.b, 0.0))
+
 	var EDGE_TOLERANCE := 0.55
 	var feathered := img.duplicate() as Image
 	for y in h:
