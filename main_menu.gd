@@ -56,6 +56,11 @@ func _setup_profile_avatar() -> void:
 	atlas.region = Rect2(136, 12, 240, 240)
 	avatar.texture = atlas
 	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	# Clip the square avatar art into a circle so it fits the round AvatarRing
+	if ResourceLoader.exists("res://shaders/circle_mask.gdshader"):
+		var mat := ShaderMaterial.new()
+		mat.shader = load("res://shaders/circle_mask.gdshader")
+		avatar.material = mat
 
 func _load_icon_textures() -> void:
 	var icons := [
