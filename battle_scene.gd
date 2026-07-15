@@ -573,7 +573,9 @@ func _open_back_menu() -> void:
 	_back_menu_open = true
 	_back_menu.visible = true
 	var t := _back_menu.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	t.tween_property(_back_menu, "position:x", BACK_X + BACK_W - BACK_MENU_W, 0.22)
+	# Stop fully clear of the ⋮ button (to its left) instead of tucking
+	# underneath it, so "เล่นต่อ" doesn't look like it's covered by the dots.
+	t.tween_property(_back_menu, "position:x", BACK_X - BACK_MENU_W - 8.0, 0.22)
 
 func _close_back_menu() -> void:
 	if not _back_menu_open: return
@@ -814,10 +816,10 @@ func _build_action_ring() -> void:
 	# Angles: spread around bottom-right arc (right side)
 	# 0=Attack(top), 1=Skill, 2=EndTurn(bottom), 3=Defend, 4=Ult (center-right)
 	const DEFS := [
-		["Attack",  "res://image/skill_void_strike.jpg",           "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],
-		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL\n2AP",  Color(0.80,0.50,1.00),   -8.0],
-		["EndTurn", "res://image/endturn.jpg",                     "END",       Color(0.55,0.75,0.55),   74.0],
-		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF\n1AP",  Color(0.35,0.65,1.00),  156.0],
+		["Attack",  "res://image/skill_void_strike.jpg",           "ATK",  Color(0.95,0.35,0.35),  -90.0],
+		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL",  Color(0.80,0.50,1.00),   -8.0],
+		["EndTurn", "res://image/endturn.jpg",                     "END",  Color(0.55,0.75,0.55),   74.0],
+		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF",  Color(0.35,0.65,1.00),  156.0],
 	]
 	const BTN_R := 34.0  # button half-size
 
@@ -856,7 +858,10 @@ func _build_action_ring() -> void:
 			itex.texture = _load_png(icon_path)
 			itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-			itex.stretch_mode = TextureRect.STRETCH_SCALE
+			# EndTurn's art is a wide (non-square) image — COVERED crops it to
+			# fill the round button without squashing/distorting it the way
+			# SCALE did on a non-square source.
+			itex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED if id == "EndTurn" else TextureRect.STRETCH_SCALE
 			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			itex.modulate = Color(1, 1, 1, 0.85)
 			var itex_mat := CanvasItemMaterial.new()
@@ -866,10 +871,14 @@ func _build_action_ring() -> void:
 
 			# Caption sits snug just below the button, as a sibling (not a
 			# child of the circular clip) so it's never cut off by the mask.
+			# Attack sits at the TOP of the ring, right above the Ultimate
+			# circle, so its caption goes ABOVE the button instead — putting
+			# it below would land on top of the Ultimate circle.
 			var caption := Label.new()
 			caption.text = lbl_txt
-			caption.position = Vector2(bx - 10.0, by + BTN_R * 2.0 + 2.0)
-			caption.size = Vector2(BTN_R * 2.0 + 20.0, 26.0)
+			var cap_y := (by - 18.0) if id == "Attack" else (by + BTN_R * 2.0 + 2.0)
+			caption.position = Vector2(bx - 10.0, cap_y)
+			caption.size = Vector2(BTN_R * 2.0 + 20.0, 16.0)
 			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			caption.add_theme_font_size_override("font_size", 10)
 			caption.add_theme_color_override("font_color", C_TEXT)
@@ -1031,17 +1040,27 @@ func _build_ult_button() -> void:
 	circ.add_child(btn)
 	_btn_ult = btn
 
-	# "ULT" label centered below the circle — sibling of circ (not a child) since circ now clips
-	# its contents to the circular gauge/icon area and this label sits outside that rect
+	# "ULT" label sits as a small strip inside the circle's own bottom edge
+	# (with a dark backing bar for legibility over the art) rather than
+	# below it — the ring is tight enough that a label below the circle
+	# lands underneath the EndTurn button right below it.
+	var lbl_bg := Panel.new()
+	lbl_bg.size     = Vector2(ULT_R * 2, 15)
+	lbl_bg.position = Vector2(0, ULT_R * 2 - 15)
+	lbl_bg.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0.45), Color(0,0,0,0), 0))
+	lbl_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(lbl_bg)
+
 	var lbl := Label.new()
 	lbl.text = "ULT"
-	lbl.size = Vector2(ULT_R * 2, 14)
-	lbl.position = circ.position + Vector2(0, ULT_R * 2 + 3)
+	lbl.size = Vector2(ULT_R * 2, 15)
+	lbl.position = Vector2(0, ULT_R * 2 - 15)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 9)
-	lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 10)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(lbl)
+	circ.add_child(lbl)
 
 ## Brightens (and gently pulses) the ULT circle once the gauge is fully charged, in place of a % readout.
 func _set_ult_glow(on: bool) -> void:
