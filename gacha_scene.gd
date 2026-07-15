@@ -96,6 +96,7 @@ var _new_pull1:      Button      = null
 var _new_pull10:     Button      = null
 var _info_card_node: Panel       = null
 var _warp_btns:      Array[Control] = []
+var _art_nodes:      Array[Node]  = []
 
 @onready var _result_ov:  Control       = $ResultOverlay
 @onready var _result_con: HBoxContainer = $ResultOverlay/ResultContainer
@@ -244,34 +245,55 @@ func _make_selector_card(wd: Dictionary, active: bool, idx: int,
 	return card
 
 func _rebuild_art() -> void:
-	var old := get_node_or_null("_ArtRect")
-	if old: old.queue_free()
-	var old_frame := get_node_or_null("_ArtFrame")
-	if old_frame: old_frame.queue_free()
+	# Free previous art immediately (not queue_free) so it can't linger over the next tab
+	for n in _art_nodes:
+		if is_instance_valid(n): n.free()
+	_art_nodes.clear()
+
 	var d: Dictionary = WARP_TYPES[_active_warp]
 	var art_tex: Texture2D = _load_png(str(d.get("art_img", "")))
 	if not art_tex: return
-	var art_y  := TOP_H
-	var art_h  := H - TOP_H - BOT_H
+
+	# Showcase area — the free space to the right of the info card, nudged right a bit
+	var area_x := THUMB_W + INFO_W + 24.0
+	var area_w := W - area_x - 12.0
+	var area_y := TOP_H + 6.0
+	var area_h := H - TOP_H - BOT_H - 12.0
+
+	# Faint dark backdrop so the busy page background doesn't clash with the character art
+	var backdrop := Panel.new()
+	backdrop.name = "_ArtBackdrop"
+	backdrop.size = Vector2(area_w, area_h)
+	backdrop.position = Vector2(area_x, area_y)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backdrop.z_index = 0
+	backdrop.add_theme_stylebox_override("panel", _sb(Color(0.02, 0.02, 0.06, 0.55), Color(0, 0, 0, 0), 14, 0))
+	add_child(backdrop)
+	_art_nodes.append(backdrop)
+
 	var art_rect := TextureRect.new()
 	art_rect.name         = "_ArtRect"
 	art_rect.texture      = art_tex
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art_rect.size         = Vector2(W - THUMB_W, art_h)
-	art_rect.position     = Vector2(THUMB_W, art_y)
+	art_rect.size         = Vector2(area_w, area_h)
+	art_rect.position     = Vector2(area_x, area_y)
+	art_rect.clip_contents = true
 	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_rect.z_index      = 0
+	art_rect.z_index      = 1
 	add_child(art_rect)
+	_art_nodes.append(art_rect)
 
+	# Faint dark frame border to make the art read as a framed showcase
 	var frame := Panel.new()
 	frame.name     = "_ArtFrame"
-	frame.size     = art_rect.size
-	frame.position = art_rect.position
+	frame.size     = Vector2(area_w, area_h)
+	frame.position = Vector2(area_x, area_y)
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.z_index  = 1
-	frame.add_theme_stylebox_override("panel", _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0.35), 0, 2))
+	frame.z_index  = 2
+	frame.add_theme_stylebox_override("panel", _sb(Color(0, 0, 0, 0), Color(0, 0, 0, 0.30), 14, 2))
 	add_child(frame)
+	_art_nodes.append(frame)
 
 # ── Info card (left panel, HSR-style white/translucent card) ─────
 func _build_info_card() -> void:
