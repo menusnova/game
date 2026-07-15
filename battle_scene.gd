@@ -1275,7 +1275,7 @@ const ENEMY_BASE_SIZE       := 140.0
 const ENEMY_SCALE_STAGE1    := 1.0
 const ENEMY_SCALE_FINAL     := 1.6    # final-stage boss reads even bigger/more imposing
 const ENEMY_Y_OFFSET_STAGE1 := 70.0   # stage-1 monster sits further down than the boss
-const ENEMY_Y_OFFSET_FINAL  := 0.0
+const ENEMY_Y_OFFSET_FINAL  := 34.0   # clears the enemy name/HP panel above it now that the boss is bigger
 
 func _start_enemy_bob() -> void:
 	if not is_instance_valid(_enemy_circle): return
