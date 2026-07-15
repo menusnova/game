@@ -400,7 +400,7 @@ func _make_mark_tex() -> ImageTexture:
 	var steps := 140
 	for i in steps:
 		var t := float(i) / float(steps - 1)
-		var ang := lerp(-0.75, 0.75, t)   # ~86 degree arc
+		var ang: float = lerp(-0.75, 0.75, t)   # ~86 degree arc
 		var p := c + Vector2(cos(ang), sin(ang)) * r
 		var fade := sin(t * PI)           # taper both ends
 		_stamp_soft_dot(img, p, 5.0, fade)
