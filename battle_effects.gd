@@ -449,27 +449,125 @@ func break_shield() -> void:
 # ════════════════════════════════════════════════════════════
 #  3. AETHER PULSE  (heal + void shield)
 # ════════════════════════════════════════════════════════════
+## Aether Pulse — full Charge -> Release -> Travel -> Impact -> Fade sequence.
+## Self-targeted (heal + void shield), so "Travel/Impact" converge the energy
+## into the point in front of the caster where the void shield forms, rather
+## than flying out to the enemy. API/logic unchanged — visuals only.
 func play_aether_pulse() -> void:
-	# Rising violet particles around Lyra
-	var heal := _spawn_particles(player_pos + Vector2(0, 40), COL_VIOLET, {
-		"amount": 30, "lifetime": 1.0, "one_shot": true, "explosive": true,
-		"dir": Vector3(0, -1, 0), "spread": 40.0, "gravity": Vector3(0, -60, 0),
-		"vmin": 40.0, "vmax": 110.0, "ring": 60.0,
-		"scale_min": 0.6, "scale_max": 1.3, "texture": _tex_dot,
+	var cast_pos := player_pos + Vector2(0, -10)     # hands/chest — where energy gathers
+	var form_pos := player_pos + Vector2(34, -6)      # where the void shield forms — "impact" point
+
+	# ── 1. ENERGY CHARGE — rotating ring + rising particles at the cast point ──
+	var ring := Sprite2D.new()
+	ring.texture   = _tex_ring
+	ring.position  = cast_pos
+	ring.modulate  = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	ring.scale     = Vector2(0.15, 0.15)
+	ring.z_index   = 14
+	add_child(ring)
+	var rt := ring.create_tween().set_parallel(true)
+	rt.tween_property(ring, "modulate:a", 0.85, 0.28)
+	rt.tween_property(ring, "scale", Vector2(0.55, 0.55), 0.32)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var spin := ring.create_tween()
+	spin.tween_property(ring, "rotation", TAU, 0.9).set_trans(Tween.TRANS_LINEAR)
+
+	var charge := _spawn_particles(cast_pos, COL_VIOLET, {
+		"amount": 26, "lifetime": 0.55, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 26.0, "gravity": Vector3(0, -40, 0),
+		"ring": 46.0, "vmin": 40.0, "vmax": 90.0,
+		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_dot,
 	})
-	# Violet glow over the sprite
+
+	await get_tree().create_timer(0.32).timeout
+	if not is_instance_valid(self): return
+
+	# ── 2. SKILL RELEASE — the charge ring flares and pops ──
+	var flash_t := ring.create_tween().set_parallel(true)
+	flash_t.tween_property(ring, "modulate", Color(2.2, 2.0, 2.6, 1.0), 0.08)
+	flash_t.tween_property(ring, "scale", Vector2(0.75, 0.75), 0.12)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_spawn_particles(cast_pos, COL_VIOLET, {
+		"amount": 34, "lifetime": 0.4, "one_shot": true, "explosive": true,
+		"spread": 180.0, "vmin": 60.0, "vmax": 160.0,
+		"scale_min": 0.5, "scale_max": 1.1, "texture": _tex_dot,
+	})
+
+	# ── 3. TRAVEL EFFECT — energy arcs from the hands into the shield point ──
+	var trail := Line2D.new()
+	trail.width = 4.0
+	trail.z_index = 13
+	var trail_grad := Gradient.new()
+	trail_grad.set_color(0, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
+	trail_grad.add_point(0.5, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.9))
+	trail_grad.set_color(1, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
+	trail.gradient = trail_grad
+	trail.add_point(cast_pos)
+	trail.add_point(cast_pos.lerp(form_pos, 0.5) + Vector2(0, -30))
+	trail.add_point(form_pos)
+	add_child(trail)
+	var tt := trail.create_tween()
+	tt.tween_interval(0.18)
+	tt.tween_property(trail, "modulate:a", 0.0, 0.25)
+	tt.tween_callback(trail.queue_free)
+
+	await get_tree().create_timer(0.16).timeout
+	if not is_instance_valid(self): return
+
+	# ── 4. IMPACT — burst, shock ring, energy dust, camera punch, cyan hit flash ──
+	for col in [COL_VIOLET, Color(1, 1, 1, 1)]:
+		_spawn_particles(form_pos, col, {
+			"amount": 24, "lifetime": 0.4, "one_shot": true, "explosive": true,
+			"spread": 180.0, "vmin": 60.0, "vmax": 170.0,
+			"scale_min": 0.5, "scale_max": 1.1, "texture": _tex_dot,
+		})
+	var dust := _spawn_particles(form_pos, COL_VIOLET, {
+		"amount": 16, "lifetime": 0.7, "one_shot": true, "explosive": false,
+		"spread": 180.0, "vmin": 15.0, "vmax": 45.0, "gravity": Vector3(0, -18, 0),
+		"scale_min": 0.3, "scale_max": 0.7, "texture": _tex_dot,
+	})
+	_cleanup(dust, 1.0)
+
+	var shock := Sprite2D.new()
+	shock.texture  = _tex_ring_thin
+	shock.position = form_pos
+	shock.modulate = Color(1, 1, 1, 0.9)
+	shock.scale    = Vector2(0.15, 0.15)
+	shock.z_index  = 14
+	add_child(shock)
+	var st := shock.create_tween().set_parallel(true)
+	st.tween_property(shock, "scale", Vector2(0.8, 0.8), 0.28)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	st.tween_property(shock, "modulate:a", 0.0, 0.3)
+	st.chain().tween_callback(shock.queue_free)
+
+	_camera_zoom(form_pos, 0.05, 0.28)
+	shake(0.15, 5.0)
+	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.28), 0.12)
+
+	# Violet glow over the sprite (kept from the original effect)
 	var glow := ColorRect.new()
 	glow.color = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
 	glow.size = Vector2(200, 260)
 	glow.position = player_pos - Vector2(100, 150)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(glow)
-	var t := glow.create_tween()
-	t.tween_property(glow, "color:a", 0.20, 0.3)
-	t.tween_interval(0.5)
-	t.tween_property(glow, "color:a", 0.0, 0.3)
-	t.tween_callback(glow.queue_free)
-	_cleanup(heal, 1.2)
+	var gt := glow.create_tween()
+	gt.tween_property(glow, "color:a", 0.20, 0.2)
+	gt.tween_interval(0.4)
+	gt.tween_property(glow, "color:a", 0.0, 0.3)
+	gt.tween_callback(glow.queue_free)
+
+	# ── 5. FADE OUT — lingering embers dissolve ──
+	var aftermath := _spawn_particles(form_pos, COL_VIOLET, {
+		"amount": 26, "lifetime": 1.4, "one_shot": true, "explosive": false,
+		"spread": 180.0, "vmin": 10.0, "vmax": 50.0, "gravity": Vector3(0, -16, 0),
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_dot,
+	})
+	aftermath.modulate.a = 0.6
+	_cleanup(aftermath, 1.8)
+	_cleanup(ring, 0.6)
+	_cleanup(charge, 0.9)
 
 func show_void_shield(active: bool) -> void:
 	if not is_instance_valid(void_shield_orb): return
@@ -625,6 +723,20 @@ func shake(duration: float, intensity: float) -> void:
 		t.tween_property(root, "position",
 			base + Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity)) * damp, 0.03)
 	t.tween_property(root, "position", base, 0.03)
+
+## Brief punch-in "camera zoom" toward `pos`, approximated by scaling the
+## whole battle root (no real Camera2D exists in this Control-based scene).
+func _camera_zoom(pos: Vector2, amount: float, duration: float) -> void:
+	if not is_instance_valid(shake_root) or not (shake_root is Control): return
+	var root := shake_root as Control
+	var orig_pivot: Vector2 = root.pivot_offset
+	root.pivot_offset = pos
+	var t := root.create_tween()
+	t.tween_property(root, "scale", Vector2(1.0 + amount, 1.0 + amount), duration * 0.35)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	t.tween_property(root, "scale", Vector2.ONE, duration * 0.65)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	t.tween_callback(func(): if is_instance_valid(root): root.pivot_offset = orig_pivot)
 
 func _shake_node(node: CanvasItem, intensity: float, duration: float) -> void:
 	if not is_instance_valid(node) or not (node is Node2D or node is Control): return
