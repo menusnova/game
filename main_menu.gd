@@ -50,17 +50,91 @@ func _setup_profile_avatar() -> void:
 	if not avatar: return
 	var full_tex: Texture2D = AssetLoader.tex("res://image/lyra_guard.png")
 	if not full_tex: return
-	var atlas := AtlasTexture.new()
-	atlas.atlas  = full_tex
+	var full_img: Image = full_tex.get_image()
+	if full_img == null: return
+	full_img = full_img.duplicate()
+	full_img.convert(Image.FORMAT_RGBA8)
 	# lyra_guard.png is 512x1024 (full body); head sits near the top, roughly centered.
-	atlas.region = Rect2(136, 12, 240, 240)
-	avatar.texture = atlas
+	var region_img: Image = full_img.get_region(Rect2i(136, 12, 240, 240))
+	# The crop still has the art's flat background around Lyra's head/hair —
+	# key it out so the circle mask below shows Lyra, not a white disc with a
+	# face floating in it.
+	region_img = _key_out_background(region_img)
+	avatar.texture = ImageTexture.create_from_image(region_img)
 	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	# Clip the square avatar art into a circle so it fits the round AvatarRing
 	if ResourceLoader.exists("res://shaders/circle_mask.gdshader"):
 		var mat := ShaderMaterial.new()
 		mat.shader = load("res://shaders/circle_mask.gdshader")
 		avatar.material = mat
+
+## Border flood-fill background removal: samples the image's own corner pixel
+## as the background color, then only keys out pixels connected to the edge
+## and similar to it — enclosed same-color regions inside the subject (e.g.
+## light hair strands) are left untouched. Also feathers anti-aliased edge
+## pixels left behind by the hard flood-fill so no white fringe remains.
+func _key_out_background(src_img: Image) -> Image:
+	var img := src_img.duplicate() as Image
+	var w := img.get_width()
+	var h := img.get_height()
+	var bg_col := img.get_pixel(0, 0)
+	const TOLERANCE := 0.08
+	var visited := PackedByteArray()
+	visited.resize(w * h)
+	var queue: Array[Vector2i] = []
+
+	var is_bg := func(x: int, y: int) -> bool:
+		var c := img.get_pixel(x, y)
+		return absf(c.r - bg_col.r) <= TOLERANCE and absf(c.g - bg_col.g) <= TOLERANCE and absf(c.b - bg_col.b) <= TOLERANCE
+
+	for x in w:
+		queue.append(Vector2i(x, 0))
+		queue.append(Vector2i(x, h - 1))
+	for y in h:
+		queue.append(Vector2i(0, y))
+		queue.append(Vector2i(w - 1, y))
+
+	var qi := 0
+	var cleared := 0
+	while qi < queue.size():
+		var p: Vector2i = queue[qi]
+		qi += 1
+		if p.x < 0 or p.x >= w or p.y < 0 or p.y >= h: continue
+		var idx := p.y * w + p.x
+		if visited[idx] == 1: continue
+		visited[idx] = 1
+		if not is_bg.call(p.x, p.y): continue
+		var c := img.get_pixel(p.x, p.y)
+		img.set_pixel(p.x, p.y, Color(c.r, c.g, c.b, 0.0))
+		cleared += 1
+		queue.append(Vector2i(p.x + 1, p.y))
+		queue.append(Vector2i(p.x - 1, p.y))
+		queue.append(Vector2i(p.x, p.y + 1))
+		queue.append(Vector2i(p.x, p.y - 1))
+
+	if float(cleared) / float(w * h) > 0.70:
+		return src_img   # likely a leak through a flat/dark subject — keep the original art
+
+	const EDGE_TOLERANCE := 0.55
+	var feathered := img.duplicate() as Image
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a <= 0.01: continue
+			var touches_cleared := false
+			for d in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+				var nx := x + d.x
+				var ny := y + d.y
+				if nx < 0 or nx >= w or ny < 0 or ny >= h: continue
+				if img.get_pixel(nx, ny).a <= 0.01:
+					touches_cleared = true
+					break
+			if not touches_cleared: continue
+			var c := img.get_pixel(x, y)
+			var dist := (absf(c.r - bg_col.r) + absf(c.g - bg_col.g) + absf(c.b - bg_col.b)) / 3.0
+			if dist < EDGE_TOLERANCE:
+				var keep := clampf(dist / EDGE_TOLERANCE, 0.0, 1.0)
+				feathered.set_pixel(x, y, Color(c.r, c.g, c.b, c.a * keep))
+	return feathered
 
 func _load_icon_textures() -> void:
 	var icons := [
