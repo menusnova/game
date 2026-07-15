@@ -727,14 +727,16 @@ func _rebuild_char_grid(parent: Control) -> void:
 	_build_char_grid(parent)
 	_refresh_team_display()
 
+## Only one character can be selected at a time — tapping a card selects it
+## (clearing whatever was picked before, glow border and all, even for a
+## locked character like Caelum who's previewable but not battle-ready),
+## and tapping the already-selected card deselects it.
 func _toggle_char(name_str: String) -> void:
-	if _selected_chars.has(name_str):
-		var idx := _selected_chars.find(name_str)
-		_selected_chars[idx] = ""
-	else:
-		var empty_idx := _selected_chars.find("")
-		if empty_idx >= 0:
-			_selected_chars[empty_idx] = name_str
+	var already_selected := _selected_chars.has(name_str)
+	for i in _selected_chars.size():
+		_selected_chars[i] = ""
+	if not already_selected:
+		_selected_chars[0] = name_str
 
 # ── element deck grid ──
 # ── element pool: whatever the lab offers, plus anything discovered ──
