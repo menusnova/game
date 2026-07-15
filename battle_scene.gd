@@ -1054,10 +1054,11 @@ func _build_element_fx() -> void:
 
 func _create_enemy() -> void:
 	# Matches the enemy-info popup shown before battle: Stage 1 = Void Beast, Stage 2 (final) = Void Dragon
+	# weak_reaction = the reaction card that exploits this enemy's weakness (see _use_reaction_card)
 	if _current_stage >= FINAL_STAGE:
-		_enemy_data = {"name":"Void Dragon","hp":1000,"attack":50,"type":"boss","img":"res://image/void_dragon.png"}
+		_enemy_data = {"name":"Void Dragon","hp":1000,"attack":50,"type":"boss","img":"res://image/void_dragon.png","weak_reaction":"Water"}
 	else:
-		_enemy_data = {"name":"Void Beast","hp":1000,"attack":50,"type":"attack","img":"res://image/void_beast.png"}
+		_enemy_data = {"name":"Void Beast","hp":1000,"attack":50,"type":"attack","img":"res://image/void_beast.png","weak_reaction":"Rust"}
 	_enemy_hp = _enemy_data["hp"]
 	_refresh_enemy_sprite()
 
@@ -1351,6 +1352,12 @@ func _use_reaction_card(id: String) -> void:
 			_enemy_poison += 5
 			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น")
 
+	# Weakness break: using the reaction this enemy is weak to exposes it,
+	# raising the damage it takes for 2 turns (drives the previously-unused _enemy_weak)
+	if id == str(_enemy_data.get("weak_reaction", "")):
+		_enemy_weak = 2
+		_msg("💥 จุดอ่อน! %s เปิดจุดอ่อน — รับดาเมจเพิ่ม 50%% (2 เทิร์น)" % _enemy_data.get("name","ศัตรู"))
+
 	_refresh_hand()
 	_refresh_ui()
 	_check_battle()
@@ -1390,6 +1397,12 @@ func _remove_from_hand(id: String) -> void:
 func _void_resonance_active() -> bool:
 	return _reaction_gauge_used or _enemy_atk_debuff > 0
 
+## Enemies exposed by a weakness break (see _use_reaction_card) take +50% damage.
+func _apply_enemy_weak(dmg: int) -> int:
+	if _enemy_weak > 0:
+		return int(ceil(dmg * 1.5))
+	return dmg
+
 func _on_attack() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
 	if _ap < 1: _msg("❌ AP ไม่พอ (ต้องการ 1 AP)"); return
@@ -1402,13 +1415,16 @@ func _on_attack() -> void:
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
 	var dmg := int(ceil(base * (1.0 + bonus)))   # 24, or ×1.20 = 28.8 → 29 when active
+	var weak := _enemy_weak > 0
+	dmg = _apply_enemy_weak(dmg)
 
 	_enemy_hp -= dmg
 	_add_gauge(10)
+	var weak_txt := "  💥จุดอ่อน" if weak else ""
 	if bonus > 0.0:
-		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)" % [dmg, bonus * 100])
+		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)%s" % [dmg, bonus * 100, weak_txt])
 	else:
-		_msg("🌀 Void Strike — %d DMG" % dmg)
+		_msg("🌀 Void Strike — %d DMG%s" % [dmg, weak_txt])
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
@@ -1464,6 +1480,7 @@ func _on_ultimate() -> void:
 	var base_dmg: int = CHARACTER["ult_dmg"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
 	var dmg := int(ceil(base_dmg * (1.0 + bonus)))   # 55, or ×1.20 = 66 when active
+	dmg = _apply_enemy_weak(dmg)
 
 	_enemy_hp -= dmg
 
