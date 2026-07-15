@@ -180,10 +180,18 @@ const HAND_H   := 88.0
 const FAN_CENTER_X := 540.0
 const FAN_BASE_Y   := 636.0
 const FAN_ARC_R    := 520.0
-const FAN_SPREAD   := 6.5
-const FAN_MAX_SPAN := 96.0   # total arc span (deg) never exceeds this, so a big hand overlaps tighter instead of spilling off-screen
 const CARD_W       := 84.0
 const CARD_H       := 110.0
+# Yu-Gi-Oh-style packed hand: below HAND_FULL_COUNT cards sit near full size
+# with a light overlap; growing the hand beyond that shrinks every card and
+# tightens the overlap automatically (down to PACK_SCALE_MIN / PACK_STEP_MIN),
+# instead of spreading wider or spilling off-screen. Hover/select always pops
+# a card back up to HOVER_SCALE so it stays readable regardless of pack size.
+const HAND_FULL_COUNT := 5.0
+const HAND_MAX_COUNT  := 14.0
+const PACK_SCALE_MIN  := 0.55
+const PACK_STEP_FULL  := 0.88   # center-to-center step as a fraction of card width, light hand
+const PACK_STEP_MIN   := 0.30   # ...tight overlap, packed hand
 # Deck / Discard circles
 const DECK_CX  := 830.0
 const DECK_CY  := 578.0
@@ -1225,13 +1233,19 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var glowing := (_selected_elem == id and ctype == "element")
 	var lifted  := (glowing and _selected_card_idx == idx)
 
-	# Fan position on arc — spacing tightens (cards overlap more) once the hand
-	# grows past the point where FAN_SPREAD would push the fan off-screen.
+	# Pack factor: 0 at/under HAND_FULL_COUNT cards, 1 at/over HAND_MAX_COUNT —
+	# drives both the per-card scale and how tightly cards overlap.
+	var pack_t: float = clampf((float(total) - HAND_FULL_COUNT) / (HAND_MAX_COUNT - HAND_FULL_COUNT), 0.0, 1.0)
+	var pack_scale := lerpf(1.0, PACK_SCALE_MIN, pack_t)
+	var step_frac  := lerpf(PACK_STEP_FULL, PACK_STEP_MIN, pack_t)
+
+	# Fan position on arc — step is a pixel distance (scaled card width x
+	# overlap fraction) converted to an arc angle, so a bigger/smaller hand
+	# packs tighter automatically instead of spreading wider off-screen.
 	var half      := (total - 1) / 2.0
-	var step_deg  := FAN_SPREAD
-	if total > 1 and (total - 1) * FAN_SPREAD > FAN_MAX_SPAN:
-		step_deg = FAN_MAX_SPAN / float(total - 1)
-	var angle_rad := deg_to_rad((idx - half) * step_deg)
+	var step_px   := CARD_W * pack_scale * step_frac
+	var step_rad  := step_px / FAN_ARC_R
+	var angle_rad := (idx - half) * step_rad
 	var bx        := FAN_CENTER_X + FAN_ARC_R * sin(angle_rad)
 	var by        := FAN_BASE_Y   + FAN_ARC_R * (1.0 - cos(angle_rad))
 
@@ -1326,8 +1340,9 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var base_y   := by - CARD_H
 	var base_z   := 8 + idx
 	const HOVER_LIFT  := 18.0
-	const HOVER_SCALE := 1.10
-	panel.scale = Vector2.ONE
+	const HOVER_SCALE := 1.10   # absolute pop-up scale, independent of pack_scale
+	var base_scale := Vector2(pack_scale, pack_scale)
+	panel.scale = base_scale
 	if lifted:
 		panel.position.y = base_y - HOVER_LIFT
 		panel.scale       = Vector2(HOVER_SCALE, HOVER_SCALE)
@@ -1343,7 +1358,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		var still_lifted := _selected_elem == id and ctype == "element" and _selected_card_idx == idx
 		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
 		t.tween_property(panel, "position:y", base_y - HOVER_LIFT if still_lifted else base_y, 0.12)
-		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_lifted else Vector2.ONE, 0.12)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_lifted else base_scale, 0.12)
 		if not still_lifted:
 			t.chain().tween_callback(func(): panel.z_index = base_z)
 		else:
