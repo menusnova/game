@@ -286,7 +286,7 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	var w := img.get_width()
 	var h := img.get_height()
 	var bg_col := img.get_pixel(0, 0)
-	const TOLERANCE := 0.08
+	var TOLERANCE := 0.08
 	var visited := PackedByteArray()
 	visited.resize(w * h)
 	var queue: Array[Vector2i] = []
@@ -334,7 +334,7 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	# white/light fringe. Feather them: any opaque pixel touching a now-
 	# transparent one gets its alpha reduced by how close its color still is
 	# to the background, so the fringe fades out instead of staying solid.
-	const EDGE_TOLERANCE := 0.55
+	var EDGE_TOLERANCE := 0.55
 	var feathered := img.duplicate() as Image
 	for y in h:
 		for x in w:

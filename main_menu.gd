@@ -78,7 +78,7 @@ func _key_out_background(src_img: Image) -> Image:
 	var w := img.get_width()
 	var h := img.get_height()
 	var bg_col := img.get_pixel(0, 0)
-	const TOLERANCE := 0.08
+	var TOLERANCE := 0.08
 	var visited := PackedByteArray()
 	visited.resize(w * h)
 	var queue: Array[Vector2i] = []
@@ -115,7 +115,7 @@ func _key_out_background(src_img: Image) -> Image:
 	if float(cleared) / float(w * h) > 0.70:
 		return src_img   # likely a leak through a flat/dark subject — keep the original art
 
-	const EDGE_TOLERANCE := 0.55
+	var EDGE_TOLERANCE := 0.55
 	var feathered := img.duplicate() as Image
 	for y in h:
 		for x in w:
