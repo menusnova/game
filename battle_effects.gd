@@ -595,47 +595,143 @@ func _build_void_shield_orb() -> void:
 # ════════════════════════════════════════════════════════════
 #  4. ABSOLUTE ZERO FORMULA  (ultimate)
 # ════════════════════════════════════════════════════════════
+## Absolute Zero Formula — Charge -> Screen Darken -> Time Stop (0.08s) ->
+## Release -> Massive Impact -> After Effect -> Fade Out. Fire-and-forget,
+## same as before — the actual damage in _on_ultimate() is applied
+## immediately and independently of this animation's timing.
 func play_ultimate() -> void:
-	# a) Rotating alchemy formula circle (cyan+violet), 300x300
-	var circle := Sprite2D.new()
-	circle.texture = _tex_ring
-	circle.position = enemy_pos
-	circle.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
-	circle.z_index = 14
-	add_child(circle)
-	var spin := circle.create_tween()
-	spin.tween_property(circle, "rotation", TAU, 1.0)
-	var cfade := circle.create_tween()
-	cfade.tween_property(circle, "modulate:a", 0.9, 0.2)
-	cfade.tween_interval(0.5)
-	cfade.tween_property(circle, "modulate:a", 0.0, 0.3)
-	cfade.tween_callback(circle.queue_free)
+	# ── 1. ENERGY CHARGE — void energy gathers around the caster, a large
+	# magic circle spreads out underfoot ──
+	var floor_circle := Sprite2D.new()
+	floor_circle.texture  = _tex_ring
+	floor_circle.position = player_pos + Vector2(0, 52)
+	floor_circle.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	floor_circle.scale    = Vector2(0.05, 0.02)
+	floor_circle.z_index  = 8
+	add_child(floor_circle)
+	var fct := floor_circle.create_tween().set_parallel(true)
+	fct.tween_property(floor_circle, "modulate:a", 0.85, 0.35)
+	fct.tween_property(floor_circle, "scale", Vector2(1.3, 0.45), 0.4)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var fspin := floor_circle.create_tween().set_loops()
+	fspin.tween_property(floor_circle, "rotation", TAU, 2.2).set_trans(Tween.TRANS_LINEAR)
 
-	# c) Full-screen white flash
+	var orbit := _spawn_particles(player_pos, COL_VIOLET, {
+		"amount": 28, "lifetime": 0.8, "one_shot": false,
+		"ring": 58.0, "vmin": 8.0, "vmax": 20.0,
+		"dir": Vector3(0, -1, 0), "spread": 30.0, "gravity": Vector3(0, -16, 0),
+		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_dot,
+	})
+
+	await get_tree().create_timer(0.42).timeout
+	if not is_instance_valid(self): return
+
+	# ── 2. SCREEN DARKEN ──
+	screen_flash.color = Color(0, 0, 0, 0.0)
+	var dark_t := screen_flash.create_tween()
+	dark_t.tween_property(screen_flash, "color", Color(0, 0, 0, 0.42), 0.16)
+
+	await get_tree().create_timer(0.16).timeout
+	if not is_instance_valid(self): return
+
+	# ── 3. TIME STOP — a short held freeze-frame beat ──
+	orbit.emitting = false
+	await get_tree().create_timer(0.08).timeout
+	if not is_instance_valid(self): return
+
+	# ── 4. ULTIMATE RELEASE — the circle flares, darkness clears, energy launches ──
+	var release_t := floor_circle.create_tween()
+	release_t.tween_property(floor_circle, "modulate", Color(2.4, 2.2, 2.6, 1.0), 0.08)
+	var clear_t := screen_flash.create_tween()
+	clear_t.tween_property(screen_flash, "color:a", 0.0, 0.14)
+
+	var beam := Line2D.new()
+	beam.width   = 14.0
+	beam.z_index = 15
+	var beam_grad := Gradient.new()
+	beam_grad.set_color(0, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
+	beam_grad.add_point(0.5, Color(1, 1, 1, 0.95))
+	beam_grad.set_color(1, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0))
+	beam.gradient = beam_grad
+	beam.add_point(player_pos + Vector2(70, -20))
+	beam.add_point(enemy_pos)
+	add_child(beam)
+	var bt := beam.create_tween()
+	bt.tween_interval(0.12)
+	bt.tween_property(beam, "modulate:a", 0.0, 0.2)
+	bt.tween_callback(beam.queue_free)
+
+	_cleanup(orbit, 0.3)
+	_cleanup(floor_circle, 0.4)
+
+	await get_tree().create_timer(0.10).timeout
+	if not is_instance_valid(self): return
+
+	# ── 5. MASSIVE IMPACT — shockwave, bloom halo, explosion, heavy shake + zoom, hit flash ──
+	var shock := Sprite2D.new()
+	shock.texture  = _tex_ring_thin
+	shock.position = enemy_pos
+	shock.modulate = Color(1, 1, 1, 1.0)
+	shock.scale    = Vector2(0.1, 0.1)
+	shock.z_index  = 16
+	add_child(shock)
+	var sht := shock.create_tween().set_parallel(true)
+	sht.tween_property(shock, "scale", Vector2(3.0, 3.0), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	sht.tween_property(shock, "modulate:a", 0.0, 0.4)
+	sht.chain().tween_callback(shock.queue_free)
+
+	# Soft additive halo standing in for bloom/distortion around the blast
+	var bloom := Sprite2D.new()
+	bloom.texture  = _tex_ring_thin
+	bloom.position = enemy_pos
+	bloom.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.55)
+	bloom.scale    = Vector2(0.3, 0.3)
+	var bmat := CanvasItemMaterial.new()
+	bmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	bloom.material = bmat
+	bloom.z_index = 15
+	add_child(bloom)
+	var bmt := bloom.create_tween().set_parallel(true)
+	bmt.tween_property(bloom, "scale", Vector2(2.0, 2.0), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	bmt.tween_property(bloom, "modulate:a", 0.0, 0.55)
+	bmt.chain().tween_callback(bloom.queue_free)
+
 	screen_flash.color = Color(1, 1, 1, 0.0)
 	var sf := screen_flash.create_tween()
-	sf.tween_property(screen_flash, "color:a", 0.8, 0.12)
-	sf.tween_property(screen_flash, "color:a", 0.0, 0.3)
+	sf.tween_property(screen_flash, "color", Color(1, 1, 1, 0.85), 0.10)
+	sf.tween_property(screen_flash, "color", Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.25), 0.12)
+	sf.tween_property(screen_flash, "color:a", 0.0, 0.25)
 
-	# d) Screen shake
-	shake(0.5, 15.0)
+	shake(0.5, 16.0)
+	_camera_zoom(enemy_pos, 0.07, 0.4)
 
-	await get_tree().create_timer(0.12).timeout
-	# b) Explosion burst (cyan + magenta + white)
-	for col in [COL_CYAN, COL_MAGENTA, Color(1, 1, 1, 1)]:
+	for col in [COL_VIOLET, Color(1, 1, 1, 1)]:
 		_spawn_particles(enemy_pos, col, {
-			"amount": 70, "lifetime": 0.8, "one_shot": true, "explosive": true,
-			"spread": 180.0, "vmin": 120.0, "vmax": 460.0,
-			"scale_min": 0.6, "scale_max": 1.8, "texture": _tex_dot,
+			"amount": 55, "lifetime": 0.7, "one_shot": true, "explosive": true,
+			"spread": 180.0, "vmin": 100.0, "vmax": 420.0,
+			"scale_min": 0.6, "scale_max": 1.7, "texture": _tex_dot,
 		})
-	# e) Lingering violet aftermath
+
+	await get_tree().create_timer(0.15).timeout
+	if not is_instance_valid(self): return
+
+	# ── 6. AFTER EFFECT — lingering embers and light dust ──
 	var aftermath := _spawn_particles(enemy_pos, COL_VIOLET, {
-		"amount": 40, "lifetime": 2.0, "one_shot": true, "explosive": false,
-		"spread": 180.0, "vmin": 10.0, "vmax": 60.0, "gravity": Vector3(0, -20, 0),
-		"scale_min": 0.5, "scale_max": 1.2, "texture": _tex_dot,
+		"amount": 34, "lifetime": 2.0, "one_shot": true, "explosive": false,
+		"spread": 180.0, "vmin": 10.0, "vmax": 55.0, "gravity": Vector3(0, -18, 0),
+		"scale_min": 0.4, "scale_max": 1.1, "texture": _tex_dot,
 	})
-	aftermath.modulate.a = 0.6
+	aftermath.modulate.a = 0.55
+	var dust := _spawn_particles(enemy_pos, Color(0.9, 0.96, 1.0), {
+		"amount": 18, "lifetime": 2.4, "one_shot": true, "explosive": false,
+		"spread": 180.0, "vmin": 6.0, "vmax": 24.0, "gravity": Vector3(0, -10, 0),
+		"scale_min": 0.2, "scale_max": 0.5, "texture": _tex_dot,
+	})
+	dust.modulate.a = 0.45
+
+	# ── 7. FADE OUT ──
 	_cleanup(aftermath, 2.4)
+	_cleanup(dust, 2.8)
 
 
 # ════════════════════════════════════════════════════════════
