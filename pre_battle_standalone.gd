@@ -613,20 +613,19 @@ func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
 
 # ── character grid ──
 func _build_char_grid(parent: Control) -> void:
-	# Show only characters the player actually owns.
-	var roster: Array[Dictionary] = []
-	for entry in CharacterManager.get_roster():
-		if entry.get("owned", false):
-			roster.append(entry)
+	# Show every character, owned or not — locked ones are still tappable
+	# for a preview/selection, but can't actually be brought into battle
+	# (see _on_start()'s owned check).
+	var roster: Array[Dictionary] = CharacterManager.get_roster()
 
 	var cols := 3
 	var cw := 86.0; var ch_h := 110.0; var gap := 8.0
 	for i in range(roster.size()):
 		var entry: Dictionary = roster[i]
 		var name_str: String  = entry["name"]
-		var owned: bool = true
+		var owned: bool = entry.get("owned", false)
 		var row := i / cols; var col := i % cols
-		var is_sel := owned and _selected_chars.has(name_str)
+		var is_sel := _selected_chars.has(name_str)
 		var rcol: Color = _rarity_color(entry.get("rarity", 3))
 		var ecol: Color = entry.get("element_color", Color(0.4, 0.7, 1.0))
 
@@ -646,36 +645,40 @@ func _build_char_grid(parent: Control) -> void:
 		card.add_theme_stylebox_override("panel", sb)
 		parent.add_child(card)
 
-		if owned:
-			# portrait image — KEEP_ASPECT_CENTERED so the whole portrait
-			# (including the head) is visible, never cropped
-			var portrait_path := "res://image/%s_1.png" % name_str.to_lower()
-			if ResourceLoader.exists(portrait_path):
-				var tex_rect := TextureRect.new()
-				tex_rect.texture = load(portrait_path)
-				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				tex_rect.position = Vector2(0, 0)
-				tex_rect.size = Vector2(cw, ch_h - 22)
-				tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				card.add_child(tex_rect)
-			else:
-				_lbl("🧑", 36, Color.WHITE, card, Vector2(cw / 2 - 18, 10))
+		# Portrait — shown for every character (owned or not, dimmed when
+		# locked) so a locked character like Caelum still previews his own
+		# art here instead of a blank lock icon. Tries the "<name>_1.png"
+		# pose convention first (Lyra), then a plain "<name>.png" fallback
+		# (Caelum Voss -> caelum_voss.png).
+		var portrait_path := "res://image/%s_1.png" % name_str.to_lower()
+		if not ResourceLoader.exists(portrait_path):
+			portrait_path = "res://image/%s.png" % name_str.to_lower().replace(" ", "_")
+		if ResourceLoader.exists(portrait_path):
+			var tex_rect := TextureRect.new()
+			tex_rect.texture = load(portrait_path)
+			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tex_rect.position = Vector2(0, 0)
+			tex_rect.size = Vector2(cw, ch_h - 22)
+			tex_rect.modulate = Color(1, 1, 1, 1.0) if owned else Color(1, 1, 1, 0.55)
+			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(tex_rect)
 		else:
-			# Locked / not-owned — empty placeholder with lock icon
+			_lbl("🧑", 36, Color(1, 1, 1, 1.0 if owned else 0.5), card, Vector2(cw / 2 - 18, 10))
+
+		if not owned:
+			# Small lock badge in the corner rather than covering the portrait
 			var lock_path := "res://image/lock_chain_x.png"
 			if ResourceLoader.exists(lock_path):
 				var lock_tex := TextureRect.new()
 				lock_tex.texture = load(lock_path)
 				lock_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				lock_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				lock_tex.size = Vector2(32, 32)
-				lock_tex.position = Vector2((cw - 32) * 0.5, (ch_h - 22 - 32) * 0.5)
-				lock_tex.modulate = Color(1, 1, 1, 0.55)
+				lock_tex.size = Vector2(20, 20)
+				lock_tex.position = Vector2(cw - 24, ch_h - 46)
+				lock_tex.modulate = Color(1, 1, 1, 0.85)
 				lock_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(lock_tex)
-			else:
-				_lbl("🔒", 28, Color(1, 1, 1, 0.4), card, Vector2(cw / 2 - 14, (ch_h - 22) * 0.5 - 14))
 
 		# rarity stars / lock label bottom strip
 		var strip := Panel.new()
@@ -686,28 +689,18 @@ func _build_char_grid(parent: Control) -> void:
 		strip.add_theme_stylebox_override("panel", strip_sb)
 		card.add_child(strip)
 
-		if not owned:
-			var nl := Label.new()
-			nl.text = "ยังไม่ปลดล็อค"
-			nl.add_theme_font_size_override("font_size", 7)
-			nl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
-			nl.position = Vector2(2, 2)
-			nl.size = Vector2(cw - 4, 12)
-			nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			strip.add_child(nl)
-
-		if owned:
-			var stars_lbl := Label.new()
-			var star_count: int = entry.get("rarity", 3)
-			stars_lbl.text = "★".repeat(star_count)
-			stars_lbl.add_theme_font_size_override("font_size", 9)
-			stars_lbl.add_theme_color_override("font_color", rcol)
-			stars_lbl.position = Vector2(2, 5)
-			stars_lbl.size = Vector2(cw - 4, 12)
-			stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			strip.add_child(stars_lbl)
+		# Rarity stars — shown for everyone; the lock badge on the portrait
+		# already conveys locked status, so the strip stays stars-only.
+		var stars_lbl := Label.new()
+		var star_count: int = entry.get("rarity", 3)
+		stars_lbl.text = "★".repeat(star_count)
+		stars_lbl.add_theme_font_size_override("font_size", 9)
+		stars_lbl.add_theme_color_override("font_color", rcol if owned else Color(rcol.r, rcol.g, rcol.b, 0.5))
+		stars_lbl.position = Vector2(2, 5)
+		stars_lbl.size = Vector2(cw - 4, 12)
+		stars_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		stars_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.add_child(stars_lbl)
 
 		if is_sel:
 			var sel_mark := Label.new()
@@ -719,15 +712,14 @@ func _build_char_grid(parent: Control) -> void:
 			sel_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(sel_mark)
 
-		if owned:
-			card.mouse_filter = Control.MOUSE_FILTER_STOP
-			var n := name_str
-			card.gui_input.connect(func(ev):
-				if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-					_toggle_char(n)
-					_rebuild_char_grid(parent))
-		else:
-			card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Locked characters are still tappable for selection/preview — they
+		# just can't actually start a battle (see _on_start()).
+		card.mouse_filter = Control.MOUSE_FILTER_STOP
+		var n := name_str
+		card.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+				_toggle_char(n)
+				_rebuild_char_grid(parent))
 
 func _rebuild_char_grid(parent: Control) -> void:
 	for c in parent.get_children():
@@ -1154,6 +1146,9 @@ func _on_edit_close() -> void:
 const DECK_REQUIRED := 20
 
 func _on_start() -> void:
+	if _has_locked_char_selected():
+		_show_locked_char_msg()
+		return
 	if _elem_deck_total() + _supp_deck_total() < DECK_REQUIRED:
 		_show_deck_required_msg()
 		return
@@ -1166,6 +1161,55 @@ func _on_start() -> void:
 	PlayerData.battle_deck_ready = true
 	DomainManager.add_points("battle")
 	SceneTransition.fade_to(SC_BATTLE)
+
+## True if any selected slot holds a character the player hasn't unlocked yet
+## (tappable for preview in the grid, but not battle-ready).
+func _has_locked_char_selected() -> bool:
+	for n in _selected_chars:
+		if n == "": continue
+		for entry in CharacterManager.get_roster():
+			if entry.get("name", "") == n and not entry.get("owned", false):
+				return true
+	return false
+
+func _show_locked_char_msg() -> void:
+	var ov := ColorRect.new()
+	ov.color = Color(0, 0, 0, 0.6)
+	ov.anchor_right = 1.0; ov.anchor_bottom = 1.0
+	ov.mouse_filter = Control.MOUSE_FILTER_STOP
+	ov.z_index = 100
+	add_child(ov)
+
+	var panel := Panel.new()
+	panel.size = Vector2(320, 140)
+	panel.position = (get_viewport_rect().size - panel.size) / 2.0
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.08, 0.05, 0.14, 0.97)
+	sb.border_color = Color(1.0, 0.4, 0.4, 0.8)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(12)
+	panel.add_theme_stylebox_override("panel", sb)
+	ov.add_child(panel)
+
+	var lbl := Label.new()
+	lbl.text = "ตัวละครนี้ยังไม่ปลดล็อค ใช้เข้าต่อสู้ไม่ได้\nกรุณาเลือกตัวละครที่ปลดล็อคแล้ว"
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
+	lbl.add_theme_font_size_override("font_size", 15)
+	lbl.position = Vector2(16, 12)
+	lbl.size = Vector2(288, 80)
+	panel.add_child(lbl)
+
+	var btn := Button.new()
+	btn.text = "ตกลง"
+	btn.size = Vector2(120, 34)
+	btn.position = Vector2((panel.size.x - 120) / 2.0, 96)
+	panel.add_child(btn)
+	btn.pressed.connect(func():
+		ov.queue_free()
+	)
 
 func _show_deck_required_msg() -> void:
 	var ov := ColorRect.new()

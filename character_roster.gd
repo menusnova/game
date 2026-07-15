@@ -216,24 +216,38 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, 3),
 		Color(r_col.r * 0.35, r_col.g * 0.35, r_col.b * 0.35, 0.40)))
+
+	var portrait_h := CARD_H - 46.0
+
+	# Portrait — shown dimmed even though locked, so the player can see who
+	# the character is before unlocking them, instead of a generic mystery
+	# icon covering the whole card.
+	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, portrait_h), Color(0.03, 0.06, 0.18, 1.0)))
+	var portrait_path: String = PORTRAITS.get(name_s, "")
+	var portrait_tex: Texture2D = AssetLoader.tex(portrait_path)
+	if portrait_tex:
+		var ptex := TextureRect.new()
+		ptex.texture      = portrait_tex
+		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ptex.size         = Vector2(CARD_W, 237)
+		ptex.position     = Vector2(0, 6)
+		ptex.modulate     = Color(1, 1, 1, 0.45)
+		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(ptex)
+
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
-		Color(0.01, 0.01, 0.05, 0.55)))
+		Color(0.01, 0.01, 0.05, 0.30)))
 
-	# Center lock + label group in portrait area (portrait_h = CARD_H - 46)
-	const PORTRAIT_H := CARD_H - 46.0
-	const LOCK_SZ    := 64.0
-	const LABEL_H    := 18.0
-	const GAP        := 6.0
-	const GROUP_H    := LOCK_SZ + GAP + LABEL_H
-	var gy := (PORTRAIT_H - GROUP_H) * 0.5
-
+	# Small lock badge (top-right) instead of a big icon covering the portrait
+	const LOCK_SZ := 30.0
 	var lock := TextureRect.new()
 	lock.texture      = preload("res://image/lock_chain_x.png")
 	lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	lock.size         = Vector2(LOCK_SZ, LOCK_SZ)
-	lock.position     = Vector2((CARD_W - LOCK_SZ) * 0.5, gy)
-	lock.modulate     = Color(1, 1, 1, 0.85)
+	lock.position     = Vector2(CARD_W - LOCK_SZ - 6.0, 6.0)
+	lock.modulate     = Color(1, 1, 1, 0.9)
 	lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(lock)
 
