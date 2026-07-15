@@ -69,6 +69,7 @@ var _element_fx: Node2D
 var _stage_clear_fx: Node
 var _battle_fx: Node2D
 var _enemy_circle: Panel
+var _enemy_bob_tween: Tween
 var _player_sprite: TextureRect
 var _player_body:   Control
 var _enemy_sprite_tex: TextureRect
@@ -506,8 +507,9 @@ func _build_enemy_panel() -> void:
 	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
 	circle.clip_contents = true
 	_enemy_circle = circle
+	# Neutral dark backing, no colored ring — the art itself supplies the color
 	circle.add_theme_stylebox_override("panel",
-		_flat(Color(0.18,0.04,0.04,0.88), Color(0.90,0.25,0.25,0.60), 70, 2))
+		_flat(Color(0.05,0.06,0.10,0.55), Color(0,0,0,0), 70, 0))
 	add_child(circle)
 
 	_enemy_sprite_lbl = Label.new()
@@ -522,15 +524,14 @@ func _build_enemy_panel() -> void:
 	_enemy_sprite_tex = TextureRect.new()
 	_enemy_sprite_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_enemy_sprite_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	_enemy_sprite_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	# CENTERED (not COVERED) — the source art is a tall portrait; COVERED cropped
+	# it down to a thin horizontal slice instead of showing the whole monster.
+	_enemy_sprite_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_enemy_sprite_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_enemy_sprite_tex.visible = false
 	circle.add_child(_enemy_sprite_tex)
 
-	# Idle bob animation
-	var t := circle.create_tween().set_loops()
-	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	t.tween_property(circle, "position:y", ENEMY_CY - 70.0 + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_start_enemy_bob()
 
 	# Enemy HUD bar — floats above enemy (no frame)
 	var ep := Panel.new()
@@ -1098,6 +1099,19 @@ func _refresh_enemy_sprite() -> void:
 	else:
 		_enemy_sprite_tex.visible  = false
 		_enemy_sprite_lbl.visible  = true
+	_start_enemy_bob()
+
+## Idle bob loop for the enemy circle. Stage 1 (Void Beast) sits a bit lower than
+## the default perch height, per request.
+func _start_enemy_bob() -> void:
+	if not is_instance_valid(_enemy_circle): return
+	if is_instance_valid(_enemy_bob_tween): _enemy_bob_tween.kill()
+	var y_offset := 26.0 if _current_stage < FINAL_STAGE else 0.0
+	var base_y := ENEMY_CY - 70.0 + y_offset
+	_enemy_circle.position.y = base_y
+	_enemy_bob_tween = _enemy_circle.create_tween().set_loops()
+	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
 func _build_deck() -> void:
 	_deck = []
