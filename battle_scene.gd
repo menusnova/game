@@ -67,6 +67,8 @@ var _hand:    Array = []
 var _discard: Array = []
 var _element_fx: Node2D
 var _stage_clear_fx: Node
+var _battle_fx: Node2D
+var _enemy_circle: Panel
 var _player_sprite: TextureRect
 var _player_body:   Control
 var _enemy_sprite_tex: TextureRect
@@ -201,6 +203,7 @@ func _ready() -> void:
 	_player_hp = CHARACTER["max_hp"]
 	_build_ui()
 	_build_element_fx()
+	_build_battle_fx()
 	_build_stage_clear_fx()
 	_create_enemy()
 	_build_deck()
@@ -492,6 +495,7 @@ func _build_enemy_panel() -> void:
 	circle.size = Vector2(140, 140)
 	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
 	circle.clip_contents = true
+	_enemy_circle = circle
 	circle.add_theme_stylebox_override("panel",
 		_flat(Color(0.18,0.04,0.04,0.88), Color(0.90,0.25,0.25,0.60), 70, 2))
 	add_child(circle)
@@ -1052,6 +1056,17 @@ func _build_element_fx() -> void:
 	add_child(fx)
 	_element_fx = fx
 
+func _build_battle_fx() -> void:
+	var fx := preload("res://battle_effects.gd").new()
+	fx.player_pos  = Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + PLAYER_H * 0.5)
+	fx.enemy_pos   = Vector2(ENEMY_CX, ENEMY_CY)
+	fx.player_node = _player_sprite
+	fx.enemy_node  = _enemy_circle
+	fx.shake_root  = self
+	fx.z_index     = 26
+	add_child(fx)
+	_battle_fx = fx
+
 func _create_enemy() -> void:
 	# Matches the enemy-info popup shown before battle: Stage 1 = Void Beast, Stage 2 (final) = Void Dragon
 	# weak_reaction = the reaction card that exploits this enemy's weakness (see _use_reaction_card)
@@ -1411,6 +1426,7 @@ func _on_attack() -> void:
 	_main_action_done = true
 	_is_defending = false
 	_set_player_pose("atk")
+	if _battle_fx: _battle_fx.play_void_strike()
 
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
@@ -1420,6 +1436,9 @@ func _on_attack() -> void:
 
 	_enemy_hp -= dmg
 	_add_gauge(10)
+	if _battle_fx:
+		_battle_fx.play_enemy_hit()
+		_battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), dmg, "damage")
 	var weak_txt := "  💥จุดอ่อน" if weak else ""
 	if bonus > 0.0:
 		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)%s" % [dmg, bonus * 100, weak_txt])
@@ -1438,6 +1457,7 @@ func _on_defend() -> void:
 	_main_action_done = true
 	_is_defending = true
 	_set_player_pose("def", 0.8)
+	if _battle_fx: _battle_fx.show_shield(true)
 	_add_gauge(5)
 	_msg("🛡 Null Barrier — ลดดาเมจ 50%")
 	_refresh_ui()
@@ -1459,6 +1479,10 @@ func _on_skill() -> void:
 
 	# สร้าง Void Shield
 	_void_shield = true
+	if _battle_fx:
+		_battle_fx.play_aether_pulse()
+		_battle_fx.show_void_shield(true)
+		_battle_fx.spawn_number(Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + 40), heal, "heal")
 
 	_add_gauge(12)
 	_msg("✨ Aether Pulse — ฟื้น HP +%d  |  Void Shield พร้อม (รับดาเมจแทน HP 1 ครั้ง)" % heal)
@@ -1474,6 +1498,7 @@ func _on_ultimate() -> void:
 	_ult_used  = true
 	_ult_gauge = 0
 	_set_player_pose("ult", 0.9)
+	if _battle_fx: _battle_fx.play_ultimate()
 
 	# 55 DMG, + Void Resonance 20% only if already primed (reaction card
 	# used this turn, or enemy already carries a debuff from a prior cast)
@@ -1483,6 +1508,7 @@ func _on_ultimate() -> void:
 	dmg = _apply_enemy_weak(dmg)
 
 	_enemy_hp -= dmg
+	if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), dmg, "damage")
 
 	# debuff: ลด ATK ศัตรู 30% เป็นเวลา 2 เทิร์น
 	_enemy_atk_debuff   = 30
@@ -1513,6 +1539,7 @@ func _enemy_turn() -> void:
 	if _enemy_poison > 0:
 		_enemy_hp -= _enemy_poison
 		_msg("☠ พิษ — ศัตรูเสีย %d HP" % _enemy_poison)
+		if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), _enemy_poison, "damage")
 		_refresh_ui()
 		if _enemy_hp <= 0:
 			_check_battle(); return
@@ -1520,6 +1547,9 @@ func _enemy_turn() -> void:
 		if not is_instance_valid(self): return
 
 	# Enemy attacks
+	if _battle_fx: _battle_fx.play_enemy_attack()
+	await get_tree().create_timer(0.15).timeout
+	if not is_instance_valid(self): return
 	var raw_dmg: int = _enemy_data.get("attack", 10)
 
 	# Absolute Zero debuff — ลด ATK ศัตรู
@@ -1535,6 +1565,9 @@ func _enemy_turn() -> void:
 	# Void Shield — รับดาเมจแทน HP 1 ครั้ง (ดาเมจหายทั้งหมด)
 	if _void_shield and dmg > 0:
 		_void_shield = false
+		if _battle_fx:
+			_battle_fx.flash_shield()
+			_battle_fx.show_void_shield(false)
 		_msg("💠 Void Shield — ดูดซับดาเมจ %d ทั้งหมด!" % dmg)
 		_refresh_ui()
 		await get_tree().create_timer(0.5).timeout
@@ -1552,6 +1585,9 @@ func _enemy_turn() -> void:
 	if dmg > 0:
 		_add_gauge(5)
 		_set_player_pose("hit", 0.4)
+		if _battle_fx:
+			_battle_fx.play_player_hit()
+			_battle_fx.spawn_number(Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + 60), dmg, "damage")
 
 	var def_txt := "  [Null Barrier -50%]" if _is_defending and raw_dmg > dmg else ""
 	_msg("👾 %s โจมตี — เสีย %d HP%s" % [_enemy_data.get("name","ศัตรู"), max(0,dmg), def_txt])
@@ -1564,6 +1600,7 @@ func _enemy_turn() -> void:
 		_check_battle(); return
 
 	# Decay status
+	if _is_defending and _battle_fx: _battle_fx.show_shield(false)
 	_is_defending = false   # Null Barrier expires after taking 1 hit
 	if _skill_cd          > 0: _skill_cd -= 1
 	if _enemy_weak        > 0: _enemy_weak -= 1
