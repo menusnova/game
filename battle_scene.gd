@@ -137,6 +137,7 @@ var _btn_defend:       Button
 var _btn_skill:        Button
 var _btn_ult:          Button
 var _btn_end:          Button
+var _skill_cd_lbl:     Label
 
 var _back_menu:        Panel = null
 var _back_menu_open:   bool  = false
@@ -769,7 +770,7 @@ func _build_action_ring() -> void:
 	const DEFS := [
 		["Attack",  "res://image/skill_void_strike.jpg",           "ATK\n1AP",  Color(0.95,0.35,0.35),  -90.0],
 		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL\n2AP",  Color(0.80,0.50,1.00),   -8.0],
-		["EndTurn", "",                                            "▶\nEND",    Color(0.55,0.75,0.55),   74.0],
+		["EndTurn", "res://image/endturn.jpg",                     "END",       Color(0.55,0.75,0.55),   74.0],
 		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF\n1AP",  Color(0.35,0.65,1.00),  156.0],
 	]
 	const BTN_R := 34.0  # button half-size
@@ -806,7 +807,7 @@ func _build_action_ring() -> void:
 			clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			btn.add_child(clip)
 			var itex := TextureRect.new()
-			itex.texture = load(icon_path)
+			itex.texture = _load_png(icon_path)
 			itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			itex.stretch_mode = TextureRect.STRETCH_SCALE
@@ -816,10 +817,13 @@ func _build_action_ring() -> void:
 			itex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 			itex.material = itex_mat
 			clip.add_child(itex)
+
+			# Caption sits snug just below the button, as a sibling (not a
+			# child of the circular clip) so it's never cut off by the mask.
 			var caption := Label.new()
 			caption.text = lbl_txt
-			caption.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-			caption.offset_top = -20
+			caption.position = Vector2(bx - 10.0, by + BTN_R * 2.0 + 2.0)
+			caption.size = Vector2(BTN_R * 2.0 + 20.0, 26.0)
 			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			caption.add_theme_font_size_override("font_size", 10)
 			caption.add_theme_color_override("font_color", C_TEXT)
@@ -827,7 +831,24 @@ func _build_action_ring() -> void:
 			caption.add_theme_constant_override("shadow_offset_x", 1)
 			caption.add_theme_constant_override("shadow_offset_y", 1)
 			caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			clip.add_child(caption)
+			add_child(caption)
+
+			# Skill cooldown badge — top-left corner of the Skill button,
+			# instead of overwriting the button's own text over the icon.
+			if id == "Skill":
+				var cd_badge := Label.new()
+				cd_badge.position = Vector2(bx - 6.0, by - 6.0)
+				cd_badge.size = Vector2(48.0, 16.0)
+				cd_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				cd_badge.add_theme_font_size_override("font_size", 10)
+				cd_badge.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+				cd_badge.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+				cd_badge.add_theme_constant_override("shadow_offset_x", 1)
+				cd_badge.add_theme_constant_override("shadow_offset_y", 1)
+				cd_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				cd_badge.visible = false
+				add_child(cd_badge)
+				_skill_cd_lbl = cd_badge
 
 		match id:
 			"Attack":  _btn_attack = btn; btn.pressed.connect(_on_attack)
@@ -2144,9 +2165,10 @@ func _refresh_ui() -> void:
 	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _ap < 1
 	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done or _ap < 1
 	if _btn_skill:
-		var cd := "\nCD:%d" % _skill_cd if _skill_cd > 0 else "\n2AP"
-		_btn_skill.text = "✨\nSKL%s" % cd
 		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0 or _ap < 2
+	if _skill_cd_lbl:
+		_skill_cd_lbl.visible = _skill_cd > 0
+		_skill_cd_lbl.text = "CD:%d" % _skill_cd
 	if _btn_ult:
 		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used
 	if _btn_end:
