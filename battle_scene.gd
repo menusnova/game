@@ -51,12 +51,12 @@ const CHARACTER := {
 	"name":          "Lyra",
 	"max_hp":        1000,
 	"passive":       "Void Resonance",
-	"atk_base":      24,
+	"atk_base":      50,
 	"passive_bonus": 0.20,
 	"skill_name":    "Aether Pulse",
 	"skill_cd":      3,
 	"ult_name":      "Absolute Zero Formula",
-	"ult_dmg":       55,
+	"ult_dmg":       200,
 }
 
 # ════════════════════════════════════════════════════════════
@@ -1549,8 +1549,8 @@ func _use_reaction_card(id: String) -> void:
 			_msg("🧂 Salt — Shield +20")
 			if _element_fx: _element_fx.play_use("Salt")
 		"Rust":
-			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 99}, "Rust")
-			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น")
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 4}, "Rust")
+			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น (4 เทิร์น)")
 			if _element_fx: _element_fx.play_use("Rust")
 
 	# Weakness break: using the reaction this enemy is weak to exposes it,

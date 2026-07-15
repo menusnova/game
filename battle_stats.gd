@@ -51,10 +51,26 @@ class Unit:
 		hp = p_max_hp
 		base_atk = p_atk
 
+	## Refreshes an existing modifier of the same stat in place (value replaced,
+	## turns extended to the longer of the two) instead of appending a
+	## duplicate — re-casting the same buff keeps a single real countdown
+	## instead of stacking multiple overlapping entries.
 	func add_buff(stat: String, value: float, turns: int, source: String) -> void:
+		for b in buffs:
+			if b.stat == stat:
+				b.value = value
+				b.turns = maxi(b.turns, turns)
+				b.source = source
+				return
 		buffs.append(Modifier.new(stat, value, turns, source))
 
 	func add_debuff(stat: String, value: float, turns: int, source: String) -> void:
+		for d in debuffs:
+			if d.stat == stat:
+				d.value = value
+				d.turns = maxi(d.turns, turns)
+				d.source = source
+				return
 		debuffs.append(Modifier.new(stat, value, turns, source))
 
 	## Stacks onto an existing status of the same name (amount adds, turns refreshes
