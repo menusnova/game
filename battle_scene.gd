@@ -617,9 +617,10 @@ func _build_enemy_panel() -> void:
 	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
 	circle.clip_contents = true
 	_enemy_circle = circle
-	# Neutral dark backing, no colored ring — the art itself supplies the color
+	# No backing at all — just the monster art floating over the battle
+	# background, not a dark circle around it.
 	circle.add_theme_stylebox_override("panel",
-		_flat(Color(0.05,0.06,0.10,0.55), Color(0,0,0,0), 70, 0))
+		_flat(Color(0,0,0,0), Color(0,0,0,0), 70, 0))
 	add_child(circle)
 
 	_enemy_sprite_lbl = Label.new()
@@ -1272,8 +1273,8 @@ func _refresh_enemy_sprite() -> void:
 ## the default perch height, per request.
 const ENEMY_BASE_SIZE       := 140.0
 const ENEMY_SCALE_STAGE1    := 1.0
-const ENEMY_SCALE_FINAL     := 1.3    # final-stage boss reads bigger/more imposing
-const ENEMY_Y_OFFSET_STAGE1 := 46.0   # stage-1 monster sits further down than the boss
+const ENEMY_SCALE_FINAL     := 1.6    # final-stage boss reads even bigger/more imposing
+const ENEMY_Y_OFFSET_STAGE1 := 70.0   # stage-1 monster sits further down than the boss
 const ENEMY_Y_OFFSET_FINAL  := 0.0
 
 func _start_enemy_bob() -> void:
@@ -1286,8 +1287,9 @@ func _start_enemy_bob() -> void:
 	var y_offset     := ENEMY_Y_OFFSET_FINAL if is_final else ENEMY_Y_OFFSET_STAGE1
 
 	_enemy_circle.size = Vector2(size, size)
+	# No backing circle — stays fully transparent regardless of size.
 	_enemy_circle.add_theme_stylebox_override("panel",
-		_flat(Color(0.05,0.06,0.10,0.55), Color(0,0,0,0), int(size * 0.5), 0))
+		_flat(Color(0,0,0,0), Color(0,0,0,0), int(size * 0.5), 0))
 
 	if _enemy_shadow:
 		var shadow_w := 140.0 * scale_mult
