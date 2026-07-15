@@ -120,13 +120,13 @@ var _ult_circle:       Panel
 var _ult_glow_ring:    Panel
 var _ult_glow_on:      bool = false
 var _ult_glow_tween:   Tween
-var _player_hp_bar:    ColorRect
+var _player_hp_bar:    Panel
 var _player_hp_lbl:    Label
 var _shield_lbl:       Label
 var _player_effect_row: HBoxContainer
 var _enemy_effect_row:  HBoxContainer
 var _enemy_name_lbl:   Label
-var _enemy_hp_bar:     ColorRect
+var _enemy_hp_bar:     Panel
 var _enemy_hp_lbl:     Label
 var _hand_container:   HBoxContainer
 var _deck_lbl:         Label
@@ -194,11 +194,12 @@ const HAND_MAX_COUNT  := 14.0
 const PACK_SCALE_MIN  := 0.55
 const PACK_STEP_FULL  := 0.88   # center-to-center step as a fraction of card width, light hand
 const PACK_STEP_MIN   := 0.30   # ...tight overlap, packed hand
-# Deck / Discard circles
-const DECK_CX  := 830.0
-const DECK_CY  := 578.0
-const DISC_CX  := 738.0
-const DISC_CY  := 578.0
+# Deck / Discard circles — stacked vertically along the right edge, clear
+# of the hand, the action ring, and the top-right more-options button.
+const DECK_CX  := 1104.0
+const DECK_CY  := 160.0
+const DISC_CX  := 1104.0
+const DISC_CY  := 250.0
 const CIRC_R   := 28.0
 # Ultimate circle — center of action ring
 const ULT_CX   := RING_CX
@@ -649,16 +650,19 @@ func _build_enemy_panel() -> void:
 
 	_enemy_name_lbl = _mk_label("", 13, C_TEXT, ep, Vector2(10, 4))
 
-	var ehb_bg := ColorRect.new()
-	ehb_bg.color    = Color(1,1,1,0.10)
+	var ehb_bg := Panel.new()
 	ehb_bg.size     = Vector2(260, 9)
 	ehb_bg.position = Vector2(10, 24)
+	ehb_bg.add_theme_stylebox_override("panel",
+		_flat(Color(1,1,1,0.10), Color(C_ENEMY.r, C_ENEMY.g, C_ENEMY.b, 0.55), 5, 1))
+	ehb_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ep.add_child(ehb_bg)
 
-	_enemy_hp_bar = ColorRect.new()
-	_enemy_hp_bar.color    = C_ENEMY
+	_enemy_hp_bar = Panel.new()
 	_enemy_hp_bar.size     = Vector2(260, 9)
 	_enemy_hp_bar.position = Vector2(10, 24)
+	_enemy_hp_bar.add_theme_stylebox_override("panel", _flat(C_ENEMY, Color(0,0,0,0), 5, 0))
+	_enemy_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ep.add_child(_enemy_hp_bar)
 
 	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
@@ -736,17 +740,20 @@ func _build_player_hud() -> void:
 
 	_mk_label(CHARACTER["name"], 12, C_TEXT, pp, Vector2(12, 6))
 
-	# HP bar
-	var phb_bg := ColorRect.new()
-	phb_bg.color    = Color(1,1,1,0.08)
+	# HP bar — rounded pill shape with a colored border on the track
+	var phb_bg := Panel.new()
 	phb_bg.size     = Vector2(288, 10)
 	phb_bg.position = Vector2(12, 26)
+	phb_bg.add_theme_stylebox_override("panel",
+		_flat(Color(1,1,1,0.08), Color(C_HP.r, C_HP.g, C_HP.b, 0.55), 5, 1))
+	phb_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pp.add_child(phb_bg)
 
-	_player_hp_bar          = ColorRect.new()
-	_player_hp_bar.color    = C_HP
+	_player_hp_bar = Panel.new()
 	_player_hp_bar.size     = Vector2(288, 10)
 	_player_hp_bar.position = Vector2(12, 26)
+	_player_hp_bar.add_theme_stylebox_override("panel", _flat(C_HP, Color(0,0,0,0), 5, 0))
+	_player_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pp.add_child(_player_hp_bar)
 
 	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 40))
