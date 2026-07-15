@@ -225,9 +225,8 @@ func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) 
 	return sb
 
 func _load_png(path: String) -> Texture2D:
-	if ResourceLoader.exists(path):
-		return load(path) as Texture2D
-	return null
+	# Uses AssetLoader so freshly-uploaded images (no .import yet) still load.
+	return AssetLoader.tex(path)
 
 var _keyed_tex_cache: Dictionary = {}   # path -> ImageTexture (background-keyed, cached once)
 

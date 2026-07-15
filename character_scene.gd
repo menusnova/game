@@ -69,7 +69,7 @@ func _build_left(char_name: String, data: Dictionary, base: Dictionary) -> void:
 
 	# Portrait
 	var ppath: String = PORTRAITS.get(char_name, "")
-	var tex: Texture2D = load(ppath) if (ppath != "" and ResourceLoader.exists(ppath)) else null
+	var tex: Texture2D = AssetLoader.tex(ppath)
 	if tex:
 		_portrait.texture = tex
 		_portrait.visible  = true

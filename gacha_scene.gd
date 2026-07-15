@@ -653,9 +653,8 @@ func _fmt(n: int) -> String:
 	return str(n)
 
 func _load_png(path: String) -> Texture2D:
-	if ResourceLoader.exists(path):
-		return load(path) as Texture2D
-	return null
+	# Uses AssetLoader so freshly-uploaded images (no .import yet) still load.
+	return AssetLoader.tex(path)
 
 # Builds a main-menu-style pill (dark bg + icon + amount label + "+")
 # Returns the Label so the caller can update the value.

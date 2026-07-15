@@ -48,7 +48,7 @@ func _ready() -> void:
 func _setup_profile_avatar() -> void:
 	var avatar := get_node_or_null("ProfileCard/Avatar") as TextureRect
 	if not avatar: return
-	var full_tex: Texture2D = load("res://image/lyra_guard.png") if ResourceLoader.exists("res://image/lyra_guard.png") else null
+	var full_tex: Texture2D = AssetLoader.tex("res://image/lyra_guard.png")
 	if not full_tex: return
 	var atlas := AtlasTexture.new()
 	atlas.atlas  = full_tex

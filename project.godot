@@ -24,6 +24,7 @@ CharacterManager="*res://character_manager.gd"
 PlayerData="*res://player_data.gd"
 ReactionDB="*res://reaction_database.gd"
 SceneTransition="*res://scene_transition.gd"
+AssetLoader="*res://asset_loader.gd"
 
 [display]
 

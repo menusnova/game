@@ -352,7 +352,7 @@ func _toggle_enemy_expand() -> void:
 		icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		icon_box.add_child(icon_bg)
 		var img_path: String = str(en.get("img", ""))
-		var img_tex: Texture2D = load(img_path) if img_path != "" and ResourceLoader.exists(img_path) else null
+		var img_tex: Texture2D = AssetLoader.tex(img_path)
 		if img_tex:
 			var itex := TextureRect.new()
 			itex.texture = img_tex

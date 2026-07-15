@@ -138,9 +138,10 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 
 	# 2) Portrait image
 	var portrait_path: String = PORTRAITS.get(name_s, "")
-	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+	var portrait_tex: Texture2D = AssetLoader.tex(portrait_path)
+	if portrait_tex:
 		var ptex := TextureRect.new()
-		ptex.texture      = load(portrait_path)
+		ptex.texture      = portrait_tex
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		# Full portrait height at CARD_W scale (413x604 source → ~237 tall)
