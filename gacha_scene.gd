@@ -275,10 +275,19 @@ func _rebuild_art() -> void:
 	art_rect.name         = "_ArtRect"
 	art_rect.texture      = art_tex
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	# COVERED (not CENTERED) so the art fills the whole showcase frame edge to
-	# edge instead of leaving letterbox margins when its aspect ratio doesn't
-	# exactly match the frame's.
-	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	# COVERED fills the frame edge to edge with no letterbox margins, but for
+	# art whose aspect ratio is very different from the frame's (e.g. a tall
+	# portrait in this wide showcase box) it has to crop away a big chunk of
+	# the image — cutting off heads/hands. Only use COVERED when that crop
+	# would be modest; fall back to CENTERED (whole image visible, letterboxed)
+	# when it would be severe, so nothing important gets cut off.
+	var iw := float(art_tex.get_width())
+	var ih := float(art_tex.get_height())
+	var scale_cover  := maxf(area_w / iw, area_h / ih)
+	var scale_contain := minf(area_w / iw, area_h / ih)
+	var crop_fraction := 1.0 - (scale_contain / scale_cover)
+	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if crop_fraction > 0.35 \
+		else TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	art_rect.size         = Vector2(area_w, area_h)
 	art_rect.position     = Vector2(area_x, area_y)
 	art_rect.clip_contents = true
