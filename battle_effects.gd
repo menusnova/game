@@ -333,7 +333,9 @@ func _spawn_energy_pulse() -> void:
 	var t := r.create_tween().set_parallel(true)
 	t.tween_property(r, "scale", Vector2(1.1, 1.1), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	t.tween_property(r, "modulate:a", 0.0, 0.5)
-	t.chain().tween_callback(func(): if is_instance_valid(r): r.visible = false)
+	t.chain().tween_callback(func():
+		if is_instance_valid(r): r.visible = false
+	)
 
 func _stop_shield_idle() -> void:
 	if is_instance_valid(_shield_pulse_tween):  _shield_pulse_tween.kill()
@@ -366,7 +368,9 @@ func flash_shield() -> void:
 	var rt := ripple.create_tween().set_parallel(true)
 	rt.tween_property(ripple, "scale", Vector2(1.5, 1.5), 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	rt.tween_property(ripple, "modulate:a", 0.0, 0.35)
-	rt.chain().tween_callback(func(): if is_instance_valid(ripple): ripple.visible = false)
+	rt.chain().tween_callback(func():
+		if is_instance_valid(ripple): ripple.visible = false
+	)
 
 	# Small shock ring (slightly delayed, snappier than the ripple)
 	var shock := _next_ripple()
@@ -378,7 +382,9 @@ func flash_shield() -> void:
 	var st := shock.create_tween().set_parallel(true)
 	st.tween_property(shock, "scale", Vector2(0.7, 0.7), 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	st.tween_property(shock, "modulate:a", 0.0, 0.25)
-	st.chain().tween_callback(func(): if is_instance_valid(shock): shock.visible = false)
+	st.chain().tween_callback(func():
+		if is_instance_valid(shock): shock.visible = false
+	)
 
 	var spark := _next_spark()
 	spark.global_position = player_pos
@@ -423,7 +429,9 @@ func break_shield() -> void:
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		t.tween_property(sh, "modulate:a", 0.0, 0.4)
 		t.tween_property(sh, "scale", Vector2(0.3, 0.3), 0.4)
-		t.chain().tween_callback(func(): if is_instance_valid(sh): sh.visible = false)
+		t.chain().tween_callback(func():
+			if is_instance_valid(sh): sh.visible = false
+		)
 
 	# Shock ring
 	var shock := _next_ripple()
@@ -435,7 +443,9 @@ func break_shield() -> void:
 	var st := shock.create_tween().set_parallel(true)
 	st.tween_property(shock, "scale", Vector2(1.4, 1.4), 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	st.tween_property(shock, "modulate:a", 0.0, 0.3)
-	st.chain().tween_callback(func(): if is_instance_valid(shock): shock.visible = false)
+	st.chain().tween_callback(func():
+		if is_instance_valid(shock): shock.visible = false
+	)
 
 	# Fade the rest out
 	var ft := shield_root.create_tween().set_parallel(true)
@@ -832,7 +842,9 @@ func _camera_zoom(pos: Vector2, amount: float, duration: float) -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	t.tween_property(root, "scale", Vector2.ONE, duration * 0.65)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	t.tween_callback(func(): if is_instance_valid(root): root.pivot_offset = orig_pivot)
+	t.tween_callback(func():
+		if is_instance_valid(root): root.pivot_offset = orig_pivot
+	)
 
 func _shake_node(node: CanvasItem, intensity: float, duration: float) -> void:
 	if not is_instance_valid(node) or not (node is Node2D or node is Control): return

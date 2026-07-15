@@ -107,7 +107,9 @@ func close() -> void:
 	t.tween_property(_sheet, "scale",      Vector2(0.88, 0.88), 0.20).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	t.tween_property(_sheet, "modulate:a", 0.0,                 0.18)
 	t.tween_property(_dim,   "modulate:a", 0.0,                 0.18)
-	t.finished.connect(func(): if not _is_open and _sheet: _sheet.visible = false)
+	t.finished.connect(func():
+		if not _is_open and _sheet: _sheet.visible = false
+	)
 
 func _on_dim_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and ev.pressed: close()
