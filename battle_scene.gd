@@ -191,9 +191,9 @@ const CARD_H       := 110.0
 # a card back up to HOVER_SCALE so it stays readable regardless of pack size.
 const HAND_FULL_COUNT := 5.0
 const HAND_MAX_COUNT  := 14.0
-const PACK_SCALE_MIN  := 0.55
+const PACK_SCALE_MIN  := 0.72   # packed cards stay big enough to tap easily, not tiny
 const PACK_STEP_FULL  := 0.88   # center-to-center step as a fraction of card width, light hand
-const PACK_STEP_MIN   := 0.30   # ...tight overlap, packed hand
+const PACK_STEP_MIN   := 0.34   # ...tight overlap, packed hand
 # Deck / Discard circles — stacked vertically along the right edge, clear
 # of the hand, the action ring, and the top-right more-options button.
 const DECK_CX  := 1104.0
