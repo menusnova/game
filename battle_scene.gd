@@ -178,6 +178,7 @@ const FAN_CENTER_X := 540.0
 const FAN_BASE_Y   := 636.0
 const FAN_ARC_R    := 520.0
 const FAN_SPREAD   := 6.5
+const FAN_MAX_SPAN := 96.0   # total arc span (deg) never exceeds this, so a big hand overlaps tighter instead of spilling off-screen
 const CARD_W       := 84.0
 const CARD_H       := 110.0
 # Deck / Discard circles
@@ -1229,9 +1230,13 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var col:   Color  = data.get("color", Color(0.5,0.5,0.6))
 	var selected := (_selected_elem == id and ctype == "element")
 
-	# Fan position on arc
+	# Fan position on arc — spacing tightens (cards overlap more) once the hand
+	# grows past the point where FAN_SPREAD would push the fan off-screen.
 	var half      := (total - 1) / 2.0
-	var angle_rad := deg_to_rad((idx - half) * FAN_SPREAD)
+	var step_deg  := FAN_SPREAD
+	if total > 1 and (total - 1) * FAN_SPREAD > FAN_MAX_SPAN:
+		step_deg = FAN_MAX_SPAN / float(total - 1)
+	var angle_rad := deg_to_rad((idx - half) * step_deg)
 	var bx        := FAN_CENTER_X + FAN_ARC_R * sin(angle_rad)
 	var by        := FAN_BASE_Y   + FAN_ARC_R * (1.0 - cos(angle_rad))
 
@@ -1319,15 +1324,33 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	# Frame on top of all content (BLEND_MODE_ADD: dark center = transparent)
 	panel.add_child(frame_tex)
 
-	# Hover: lift up
-	var base_y := by - CARD_H
+	# Hover / selected: lift up, scale up slightly, and bring to front so the
+	# active card is never obscured by its overlapping neighbors.
+	var base_y   := by - CARD_H
+	var base_z   := 8 + idx
+	const HOVER_LIFT  := 18.0
+	const HOVER_SCALE := 1.10
+	panel.scale = Vector2.ONE
+	if selected:
+		panel.position.y = base_y - HOVER_LIFT
+		panel.scale       = Vector2(HOVER_SCALE, HOVER_SCALE)
+		panel.z_index     = 100
+
 	panel.mouse_entered.connect(func():
-		var t := panel.create_tween().set_ease(Tween.EASE_OUT)
-		t.tween_property(panel, "position:y", base_y - 18.0, 0.12)
+		panel.z_index = 100
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
+		t.tween_property(panel, "position:y", base_y - HOVER_LIFT, 0.14)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE), 0.14)
 	)
 	panel.mouse_exited.connect(func():
-		var t := panel.create_tween().set_ease(Tween.EASE_OUT)
-		t.tween_property(panel, "position:y", base_y if not selected else base_y - 18.0, 0.10)
+		var still_selected := _selected_elem == id and ctype == "element"
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
+		t.tween_property(panel, "position:y", base_y - HOVER_LIFT if still_selected else base_y, 0.12)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_selected else Vector2.ONE, 0.12)
+		if not still_selected:
+			t.chain().tween_callback(func(): panel.z_index = base_z)
+		else:
+			panel.z_index = 100
 	)
 
 	# Tap / Hold detection
