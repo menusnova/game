@@ -64,8 +64,25 @@ func _ready() -> void:
 #  PUBLIC API
 # ════════════════════════════════════════════════════════════
 
-## Plays the full formula-mix feedback for a successful reaction ("Water"/"Salt"/"Rust").
-func play_reaction(result: String) -> void:
+## Plays ONLY the "formula crafted" feedback (circle + label) when two element
+## cards are mixed into a reaction card. No stat effect has happened yet at
+## this point — the player still has to play the resulting card — so this
+## must NOT show the +HP/Shield/Poison numbers or particle bursts.
+func play_craft(result: String) -> void:
+	if _busy: return
+	_busy = true
+	var pos: Vector2 = enemy_pos if result == "Rust" else player_pos
+	await _show_formula_circle(pos, FORMULA_COLOR[result])
+	var label_off: Vector2 = Vector2(0, -90) if result == "Rust" else Vector2(0, -110)
+	_spawn_floating_label(FORMULA_LABEL[result], pos + label_off, FORMULA_COLOR[result], 15, 1.1)
+	await get_tree().create_timer(0.5).timeout
+	await _hide_formula_circle()
+	_busy = false
+
+
+## Plays the actual effect feedback (particles + number popup) at the moment
+## the crafted reaction card is played, when the stat change really happens.
+func play_use(result: String) -> void:
 	if _busy: return
 	_busy = true
 	match result:
@@ -82,43 +99,31 @@ func play_no_reaction() -> void:
 
 
 # ════════════════════════════════════════════════════════════
-#  PER-FORMULA SEQUENCES
+#  PER-FORMULA SEQUENCES (played when the reaction card is USED)
 # ════════════════════════════════════════════════════════════
 func _play_water() -> void:
-	await _show_formula_circle(player_pos, FORMULA_COLOR["Water"])
-	_spawn_floating_label(FORMULA_LABEL["Water"], player_pos + Vector2(0, -110), FORMULA_COLOR["Water"], 15, 1.1)
 	water_fx.global_position = player_pos
 	water_fx.restart()
 	water_fx.emitting = true
-	await get_tree().create_timer(0.35).timeout
 	_spawn_floating_label(EFFECT_TEXT["Water"], player_pos + Vector2(0, -40), EFFECT_TEXT_COLOR["Water"], 20, 1.0)
 	await get_tree().create_timer(0.65).timeout
-	await _hide_formula_circle()
 
 
 func _play_salt() -> void:
-	await _show_formula_circle(player_pos, FORMULA_COLOR["Salt"])
-	_spawn_floating_label(FORMULA_LABEL["Salt"], player_pos + Vector2(0, -110), FORMULA_COLOR["Salt"], 15, 1.1)
 	salt_fx.global_position = player_pos
 	salt_fx.restart()
 	salt_fx.emitting = true
 	_play_shield_ring(player_pos, FORMULA_COLOR["Salt"])
-	await get_tree().create_timer(0.35).timeout
 	_spawn_floating_label(EFFECT_TEXT["Salt"], player_pos + Vector2(0, -40), EFFECT_TEXT_COLOR["Salt"], 18, 1.0)
 	await get_tree().create_timer(0.65).timeout
-	await _hide_formula_circle()
 
 
 func _play_rust() -> void:
-	await _show_formula_circle(enemy_pos, FORMULA_COLOR["Rust"])
-	_spawn_floating_label(FORMULA_LABEL["Rust"], enemy_pos + Vector2(0, -90), FORMULA_COLOR["Rust"], 15, 1.1)
 	rust_fx.global_position = enemy_pos
 	rust_fx.restart()
 	rust_fx.emitting = true
-	await get_tree().create_timer(0.35).timeout
 	_spawn_floating_label(EFFECT_TEXT["Rust"], enemy_pos + Vector2(0, -20), EFFECT_TEXT_COLOR["Rust"], 16, 1.0)
 	await get_tree().create_timer(0.65).timeout
-	await _hide_formula_circle()
 
 
 # ════════════════════════════════════════════════════════════

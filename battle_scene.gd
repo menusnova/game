@@ -123,7 +123,6 @@ var _enemy_effect_row:  HBoxContainer
 var _enemy_name_lbl:   Label
 var _enemy_hp_bar:     ColorRect
 var _enemy_hp_lbl:     Label
-var _enemy_status_lbl: Label
 var _hand_container:   HBoxContainer
 var _deck_lbl:         Label
 var _discard_lbl:      Label
@@ -558,7 +557,6 @@ func _build_enemy_panel() -> void:
 	ep.add_child(_enemy_hp_bar)
 
 	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
-	_enemy_status_lbl = _mk_label("", 10, Color(0.9,0.6,0.3), ep, Vector2(140, 36))
 
 	_enemy_effect_row = HBoxContainer.new()
 	_enemy_effect_row.position = Vector2(10, 50)
@@ -1389,7 +1387,7 @@ func _try_reaction(a: String, b: String) -> void:
 		_msg("⚗ %s + %s → %s! ✨" % [CARD_DB[a]["name"], CARD_DB[b]["name"], result])
 		_refresh_hand()
 		_refresh_ui()
-		if _element_fx: _element_fx.play_reaction(result)
+		if _element_fx: _element_fx.play_craft(result)
 	else:
 		_msg("❌ %s + %s ไม่เกิดปฏิกิริยา" % [CARD_DB[a]["name"], CARD_DB[b]["name"]])
 		_refresh_hand()
@@ -1411,13 +1409,16 @@ func _use_reaction_card(id: String) -> void:
 			BattleStats.apply_effect(_p_unit, {"kind": "heal", "amount": 20}, "Water")
 			_player_hp = _p_unit.hp
 			_msg("💧 Water — ฟื้นฟู HP +20")
+			if _element_fx: _element_fx.play_use("Water")
 		"Salt":
 			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 20}, "Salt")
 			_player_shield = _p_unit.shield_hp
 			_msg("🧂 Salt — Shield +20")
+			if _element_fx: _element_fx.play_use("Salt")
 		"Rust":
 			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 99}, "Rust")
 			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น")
+			if _element_fx: _element_fx.play_use("Rust")
 
 	# Weakness break: using the reaction this enemy is weak to exposes it,
 	# raising the damage it takes for 2 turns (see BattleStats "weak" status)
@@ -1467,8 +1468,8 @@ func _void_resonance_active() -> bool:
 
 ## HP/UI-facing refresh of the buff/debuff/status chip rows (see battle_stats.gd).
 func _refresh_effect_rows() -> void:
-	if _player_effect_row: BattleStats.rebuild_effect_row(_player_effect_row, _p_unit)
-	if _enemy_effect_row:  BattleStats.rebuild_effect_row(_enemy_effect_row, _e_unit)
+	if _player_effect_row and _p_unit: BattleStats.rebuild_effect_row(_player_effect_row, _p_unit)
+	if _enemy_effect_row and _e_unit:  BattleStats.rebuild_effect_row(_enemy_effect_row, _e_unit)
 
 func _on_attack() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
@@ -1969,6 +1970,7 @@ func _process(_delta: float) -> void:
 func _refresh_ui() -> void:
 	if _stage_lbl:   _stage_lbl.text = "Stage %d" % _current_stage
 	if _turn_lbl:    _turn_lbl.text  = "เทิร์นของคุณ" if _player_turn else "เทิร์นศัตรู"
+	_refresh_effect_rows()
 
 	# AP orbs: filled = large glow circle, used = small hollow ring
 	for i in _ap_orbs.size():
@@ -2017,15 +2019,6 @@ func _refresh_ui() -> void:
 	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
 	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
 	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "HP %d/%d" % [maxi(0,_enemy_hp), int(emax)]
-	if _enemy_status_lbl and _e_unit:
-		var s: Array[String] = []
-		if _e_unit.has_status("poison"): s.append("☠ พิษ %d/t" % _e_unit.status_amount("poison"))
-		if _e_unit.has_status("weak"):   s.append("💔 อ่อนแอ +%d%%" % _e_unit.status_amount("weak"))
-		if _e_unit.has_debuff("ATK_DOWN"):
-			for d in _e_unit.debuffs:
-				if d.stat == "ATK_DOWN":
-					s.append("⬇ ATK -%d%% (%dt)" % [int(d.value * 100), d.turns])
-		_enemy_status_lbl.text = "  ".join(s)
 
 	# Deck/Discard
 	if _deck_lbl:    _deck_lbl.text    = "Deck: %d" % _deck.size()
