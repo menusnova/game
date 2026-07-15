@@ -47,7 +47,10 @@ func _ready() -> void:
 func _populate_elements() -> void:
 	if not _elem_grid: return
 	for ch in _elem_grid.get_children(): ch.queue_free()
+	# Only show unlocked elements — hide the locked (X) tiles entirely
 	for elem in ReactionDB.ELEMENTS:
+		if not elem.get("unlocked", false):
+			continue
 		_elem_grid.add_child(_make_element_tile(elem))
 
 func _make_element_tile(elem: Dictionary) -> Panel:
