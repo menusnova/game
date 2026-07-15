@@ -1642,6 +1642,7 @@ func _enemy_turn() -> void:
 	# Null Barrier — ลดดาเมจ 50%
 	if _is_defending:
 		dmg = max(0, dmg / 2)
+		if _battle_fx: _battle_fx.flash_shield()
 
 	# Void Shield — รับดาเมจแทน HP 1 ครั้ง (ดาเมจหายทั้งหมด)
 	if _p_unit.void_shield_charges > 0 and dmg > 0:
@@ -1678,7 +1679,7 @@ func _enemy_turn() -> void:
 		_check_battle(); return
 
 	# ── 2. Buff / Debuff decay ──
-	if _is_defending and _battle_fx: _battle_fx.show_shield(false)
+	if _is_defending and _battle_fx: _battle_fx.break_shield()
 	_is_defending = false   # Null Barrier expires after taking 1 hit
 	if _skill_cd > 0: _skill_cd -= 1
 	_p_unit.decay()

@@ -31,7 +31,6 @@ var enemy_node:  CanvasItem = null
 var shake_root:  Node       = null   # a Control whose position is nudged for screen shake
 
 # ── Persistent nodes ───────────────────────────────────────
-var shield_orb:      Node2D
 var void_shield_orb: Node2D
 var hit_flash:       ColorRect
 var screen_flash:    ColorRect
@@ -44,13 +43,44 @@ var _tex_ring:   ImageTexture
 
 var _shield_pulse_tween: Tween
 
+# ── Guard / Null Barrier shield visuals ────────────────────
+var shield_root:       Node2D    # container: feet ring + hex shield + ambient particles
+var shield_feet_ring:  Sprite2D
+var shield_hex:        Sprite2D
+var shield_hex_lines:  Sprite2D
+var shield_ambient:    GPUParticles2D
+var shield_sparkle:    GPUParticles2D
+var _shield_active         := false
+var _shield_lines_tween:    Tween
+var _shield_energy_tween:   Tween
+var _tex_hex:        ImageTexture
+var _tex_hex_lines:  ImageTexture
+var _tex_ring_thin:  ImageTexture
+var _tex_shard:      ImageTexture
+
+# Small object pools — reused across "shield hit" ripples/sparks and the
+# periodic idle energy pulse, instead of allocating new nodes every time.
+const RIPPLE_POOL_SIZE := 3
+const SPARK_POOL_SIZE  := 2
+const SHARD_POOL_SIZE  := 10
+var _ripple_pool: Array[Sprite2D]       = []
+var _ripple_pool_idx := 0
+var _spark_pool:  Array[GPUParticles2D] = []
+var _spark_pool_idx  := 0
+var _shard_pool:  Array[Sprite2D]       = []
+
 
 func _ready() -> void:
-	_tex_dot    = _make_dot_texture()
-	_tex_streak = _make_streak_texture()
-	_tex_ring   = _make_ring_texture(300)
+	_tex_dot       = _make_dot_texture()
+	_tex_streak    = _make_streak_texture()
+	_tex_ring      = _make_ring_texture(300)
+	_tex_hex       = _make_hex_texture(180, COL_CYAN)
+	_tex_hex_lines = _make_hex_lines_texture(180, COL_CYAN)
+	_tex_ring_thin = _make_thin_ring_texture(140)
+	_tex_shard     = _make_shard_texture()
 
-	_build_shield_orb()
+	_build_guard_shield()
+	_build_shield_pools()
 	_build_void_shield_orb()
 	_build_hit_flash()
 	_build_screen_flash()
@@ -101,60 +131,319 @@ func play_void_strike() -> void:
 
 
 # ════════════════════════════════════════════════════════════
-#  2. NULL BARRIER  (persistent shield orb while guarding)
+#  2. NULL BARRIER  (hexagon guard shield while defending)
+#     API kept identical (show_shield/flash_shield/break_shield) —
+#     only the visuals underneath changed.
 # ════════════════════════════════════════════════════════════
-func _build_shield_orb() -> void:
-	shield_orb = _make_orb(COL_CYAN, 0.40)
-	shield_orb.visible = false
-	add_child(shield_orb)
+func _build_guard_shield() -> void:
+	shield_root = Node2D.new()
+	shield_root.z_index = 9
+	shield_root.visible = false
+	add_child(shield_root)
 
+	shield_feet_ring = Sprite2D.new()
+	shield_feet_ring.texture  = _tex_ring_thin
+	shield_feet_ring.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+	shield_feet_ring.position = Vector2(0, 62)
+	shield_feet_ring.scale    = Vector2(0.15, 0.06)   # squashed flat, sits underfoot
+	shield_root.add_child(shield_feet_ring)
+
+	shield_hex = Sprite2D.new()
+	shield_hex.texture  = _tex_hex
+	shield_hex.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+	shield_hex.scale    = Vector2(0.2, 0.2)
+	shield_root.add_child(shield_hex)
+
+	shield_hex_lines = Sprite2D.new()
+	shield_hex_lines.texture  = _tex_hex_lines
+	shield_hex_lines.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+	shield_hex_lines.scale    = Vector2(0.2, 0.2)
+	var lmat := CanvasItemMaterial.new()
+	lmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	shield_hex_lines.material = lmat
+	shield_root.add_child(shield_hex_lines)
+
+	shield_ambient = GPUParticles2D.new()
+	shield_ambient.amount        = 16
+	shield_ambient.lifetime      = 1.4
+	shield_ambient.one_shot      = false
+	shield_ambient.explosiveness = 0.0
+	shield_ambient.texture       = _tex_dot
+	shield_ambient.emitting      = false
+	var amat := ParticleProcessMaterial.new()
+	amat.emission_shape             = ParticleProcessMaterial.EMISSION_SHAPE_RING
+	amat.emission_ring_radius       = 62.0
+	amat.emission_ring_inner_radius = 56.0
+	amat.emission_ring_height       = 1.0
+	amat.emission_ring_axis         = Vector3(0, 0, 1)
+	amat.direction            = Vector3(0, -1, 0)
+	amat.spread                = 20.0
+	amat.gravity                = Vector3(0, -8, 0)
+	amat.initial_velocity_min = 4.0
+	amat.initial_velocity_max = 12.0
+	amat.scale_min = 0.35
+	amat.scale_max = 0.7
+	amat.color      = COL_CYAN
+	amat.color_ramp = _make_ramp(COL_CYAN)
+	shield_ambient.process_material = amat
+	shield_root.add_child(shield_ambient)
+
+	# Faint light motes drifting upward off the shield surface
+	shield_sparkle = GPUParticles2D.new()
+	shield_sparkle.amount        = 10
+	shield_sparkle.lifetime      = 1.6
+	shield_sparkle.one_shot      = false
+	shield_sparkle.explosiveness = 0.0
+	shield_sparkle.texture       = _tex_dot
+	shield_sparkle.emitting      = false
+	var smat := ParticleProcessMaterial.new()
+	smat.emission_shape        = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	smat.emission_sphere_radius = 46.0
+	smat.direction             = Vector3(0, -1, 0)
+	smat.spread                 = 10.0
+	smat.gravity                = Vector3(0, -30, 0)
+	smat.initial_velocity_min  = 6.0
+	smat.initial_velocity_max  = 16.0
+	smat.scale_min = 0.2
+	smat.scale_max = 0.45
+	smat.color      = Color(0.85, 1.0, 1.0)
+	smat.color_ramp = _make_ramp(Color(0.85, 1.0, 1.0))
+	shield_sparkle.process_material = smat
+	shield_root.add_child(shield_sparkle)
+
+func _build_shield_pools() -> void:
+	for i in RIPPLE_POOL_SIZE:
+		var r := Sprite2D.new()
+		r.texture  = _tex_ring_thin
+		r.modulate = Color(1, 1, 1, 0.0)
+		r.visible  = false
+		r.z_index  = 10
+		add_child(r)
+		_ripple_pool.append(r)
+	for i in SPARK_POOL_SIZE:
+		var sp := GPUParticles2D.new()
+		sp.amount        = 18
+		sp.lifetime      = 0.4
+		sp.one_shot      = true
+		sp.explosiveness = 0.95
+		sp.texture       = _tex_dot
+		sp.emitting      = false
+		sp.z_index       = 12
+		var pm := ParticleProcessMaterial.new()
+		pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINT
+		pm.spread         = 180.0
+		pm.initial_velocity_min = 70.0
+		pm.initial_velocity_max = 220.0
+		pm.scale_min = 0.4
+		pm.scale_max = 1.0
+		pm.color      = COL_CYAN
+		pm.color_ramp = _make_ramp(Color(1, 1, 1))
+		sp.process_material = pm
+		add_child(sp)
+		_spark_pool.append(sp)
+	for i in SHARD_POOL_SIZE:
+		var sh := Sprite2D.new()
+		sh.texture  = _tex_shard
+		sh.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+		sh.visible  = false
+		sh.z_index  = 13
+		add_child(sh)
+		_shard_pool.append(sh)
+
+func _next_ripple() -> Sprite2D:
+	var r := _ripple_pool[_ripple_pool_idx]
+	_ripple_pool_idx = (_ripple_pool_idx + 1) % _ripple_pool.size()
+	return r
+
+func _next_spark() -> GPUParticles2D:
+	var s := _spark_pool[_spark_pool_idx]
+	_spark_pool_idx = (_spark_pool_idx + 1) % _spark_pool.size()
+	return s
+
+## active=true: form the guard shield (feet ring -> hexagon -> idle glow).
+## active=false: dismiss it with a soft fade (used outside of a "took a hit"
+## context, e.g. resetting state on a stage transition).
 func show_shield(active: bool) -> void:
-	if not is_instance_valid(shield_orb): return
-	shield_orb.position = player_pos
+	if not is_instance_valid(shield_root): return
+	shield_root.position = player_pos
 	if active:
-		shield_orb.visible = true
-		shield_orb.scale = Vector2(0.4, 0.4)
-		shield_orb.modulate.a = 0.0
-		var t := shield_orb.create_tween()
-		t.tween_property(shield_orb, "modulate:a", 1.0, 0.2)
-		t.parallel().tween_property(shield_orb, "scale", Vector2(1.0, 1.0), 0.25)\
-			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		_start_shield_pulse()
-		# small cyan particles orbiting the shield edge
-		_spawn_particles(player_pos, COL_CYAN, {
-			"amount": 20, "lifetime": 1.0, "one_shot": false,
-			"ring": 78.0, "vmin": 4.0, "vmax": 14.0,
-			"scale_min": 0.4, "scale_max": 0.8, "texture": _tex_dot,
-			"attach_to": shield_orb,
-		})
+		_shield_active = true
+		shield_root.visible = true
+		_play_guard_formation()
 	else:
-		break_shield()
+		_shield_active = false
+		_play_guard_dismiss()
 
-func _start_shield_pulse() -> void:
+func _play_guard_formation() -> void:
+	shield_feet_ring.modulate.a = 0.0
+	shield_feet_ring.scale      = Vector2(0.15, 0.06)
+	var ft := shield_feet_ring.create_tween().set_parallel(true)
+	ft.tween_property(shield_feet_ring, "modulate:a", 0.85, 0.18)
+	ft.tween_property(shield_feet_ring, "scale", Vector2(0.62, 0.24), 0.22)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	await get_tree().create_timer(0.12).timeout
+	if not _shield_active or not is_instance_valid(shield_hex): return
+
+	shield_hex.modulate.a       = 0.0
+	shield_hex.scale            = Vector2(0.2, 0.2)
+	shield_hex_lines.modulate.a = 0.0
+	shield_hex_lines.scale      = Vector2(0.2, 0.2)
+	var ht := shield_hex.create_tween().set_parallel(true)
+	ht.tween_property(shield_hex, "modulate:a", 0.95, 0.22)
+	ht.tween_property(shield_hex, "scale", Vector2(1.0, 1.0), 0.3)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var lt := shield_hex_lines.create_tween().set_parallel(true)
+	lt.tween_property(shield_hex_lines, "modulate:a", 0.55, 0.28)
+	lt.tween_property(shield_hex_lines, "scale", Vector2(1.0, 1.0), 0.34)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	shield_ambient.restart();  shield_ambient.emitting  = true
+	shield_sparkle.restart();  shield_sparkle.emitting  = true
+	_start_shield_idle()
+
+func _start_shield_idle() -> void:
 	if is_instance_valid(_shield_pulse_tween): _shield_pulse_tween.kill()
-	_shield_pulse_tween = shield_orb.create_tween().set_loops()
-	_shield_pulse_tween.tween_property(shield_orb, "scale", Vector2(1.1, 1.1), 0.6)\
+	_shield_pulse_tween = shield_hex.create_tween().set_loops()
+	_shield_pulse_tween.tween_property(shield_hex, "modulate:a", 0.68, 0.8)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_shield_pulse_tween.tween_property(shield_orb, "scale", Vector2(1.0, 1.0), 0.6)\
+	_shield_pulse_tween.tween_property(shield_hex, "modulate:a", 0.95, 0.8)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
+	# Flowing energy lines across the shield surface
+	if is_instance_valid(_shield_lines_tween): _shield_lines_tween.kill()
+	_shield_lines_tween = shield_hex_lines.create_tween().set_loops()
+	_shield_lines_tween.tween_property(shield_hex_lines, "rotation", TAU, 6.0)\
+		.set_trans(Tween.TRANS_LINEAR)
+
+	# Energy pulse ring every 0.8s
+	if is_instance_valid(_shield_energy_tween): _shield_energy_tween.kill()
+	_shield_energy_tween = shield_hex.create_tween().set_loops()
+	_shield_energy_tween.tween_interval(0.8)
+	_shield_energy_tween.tween_callback(_spawn_energy_pulse)
+
+func _spawn_energy_pulse() -> void:
+	if not _shield_active: return
+	var r := _next_ripple()
+	r.global_position = player_pos
+	r.rotation = 0.0
+	r.scale    = Vector2(0.45, 0.45)
+	r.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.45)
+	r.visible  = true
+	var t := r.create_tween().set_parallel(true)
+	t.tween_property(r, "scale", Vector2(1.1, 1.1), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	t.tween_property(r, "modulate:a", 0.0, 0.5)
+	t.chain().tween_callback(func(): if is_instance_valid(r): r.visible = false)
+
+func _stop_shield_idle() -> void:
+	if is_instance_valid(_shield_pulse_tween):  _shield_pulse_tween.kill()
+	if is_instance_valid(_shield_lines_tween):  _shield_lines_tween.kill()
+	if is_instance_valid(_shield_energy_tween): _shield_energy_tween.kill()
+
+func _play_guard_dismiss() -> void:
+	_stop_shield_idle()
+	if not is_instance_valid(shield_root): return
+	shield_ambient.emitting = false
+	shield_sparkle.emitting = false
+	var t := shield_root.create_tween().set_parallel(true)
+	t.tween_property(shield_hex, "modulate:a", 0.0, 0.2)
+	t.tween_property(shield_hex_lines, "modulate:a", 0.0, 0.2)
+	t.tween_property(shield_feet_ring, "modulate:a", 0.0, 0.2)
+	t.chain().tween_callback(func():
+		if is_instance_valid(shield_root): shield_root.visible = false)
+
+## Shield takes a hit: ripple wave from the shield, sparks, small shock ring,
+## soft white hit flash, and a light camera shake.
 func flash_shield() -> void:
-	if not is_instance_valid(shield_orb) or not shield_orb.visible: return
-	var t := shield_orb.create_tween()
-	t.tween_property(shield_orb, "modulate", Color(2.2, 2.2, 2.4, 1.0), 0.1)
-	t.tween_property(shield_orb, "modulate", Color(1, 1, 1, 1.0), 0.3)
+	if not is_instance_valid(shield_root) or not shield_root.visible: return
 
+	var ripple := _next_ripple()
+	ripple.global_position = player_pos
+	ripple.rotation = 0.0
+	ripple.scale    = Vector2(0.3, 0.3)
+	ripple.modulate = Color(1.0, 1.0, 1.0, 0.9)
+	ripple.visible  = true
+	var rt := ripple.create_tween().set_parallel(true)
+	rt.tween_property(ripple, "scale", Vector2(1.5, 1.5), 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	rt.tween_property(ripple, "modulate:a", 0.0, 0.35)
+	rt.chain().tween_callback(func(): if is_instance_valid(ripple): ripple.visible = false)
+
+	# Small shock ring (slightly delayed, snappier than the ripple)
+	var shock := _next_ripple()
+	shock.global_position = player_pos
+	shock.rotation = 0.0
+	shock.scale    = Vector2(0.18, 0.18)
+	shock.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 1.0)
+	shock.visible  = true
+	var st := shock.create_tween().set_parallel(true)
+	st.tween_property(shock, "scale", Vector2(0.7, 0.7), 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	st.tween_property(shock, "modulate:a", 0.0, 0.25)
+	st.chain().tween_callback(func(): if is_instance_valid(shock): shock.visible = false)
+
+	var spark := _next_spark()
+	spark.global_position = player_pos
+	spark.restart()
+	spark.emitting = true
+
+	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.22), 0.12)
+	shake(0.18, 6.0)
+
+	var ht := shield_hex.create_tween()
+	ht.tween_property(shield_hex, "modulate", Color(2.0, 2.0, 2.2, shield_hex.modulate.a), 0.08)
+	ht.tween_property(shield_hex, "modulate", Color(1, 1, 1, shield_hex.modulate.a), 0.25)
+
+## Shield breaks: crack flash, shatter into crystal shards, a shock ring,
+## then everything fades out.
 func break_shield() -> void:
-	if not is_instance_valid(shield_orb) or not shield_orb.visible: return
-	if is_instance_valid(_shield_pulse_tween): _shield_pulse_tween.kill()
-	_spawn_particles(player_pos, COL_CYAN, {
-		"amount": 24, "lifetime": 0.5, "one_shot": true, "explosive": true,
-		"spread": 180.0, "vmin": 80.0, "vmax": 240.0,
-		"scale_min": 0.5, "scale_max": 1.2, "texture": _tex_dot,
-	})
-	var t := shield_orb.create_tween()
-	t.tween_property(shield_orb, "modulate:a", 0.0, 0.25)
-	t.tween_callback(func(): shield_orb.visible = false)
+	if not is_instance_valid(shield_root) or not shield_root.visible: return
+	_stop_shield_idle()
+	_shield_active = false
+	shield_ambient.emitting = false
+	shield_sparkle.emitting = false
+
+	# Crack — a fast bright flash right before it shatters
+	var ct := shield_hex.create_tween()
+	ct.tween_property(shield_hex, "modulate", Color(2.4, 2.4, 2.6, 1.0), 0.06)
+
+	await get_tree().create_timer(0.06).timeout
+	if not is_instance_valid(shield_root): return
+
+	# Shatter into crystal shards flying outward
+	for i in _shard_pool.size():
+		var sh := _shard_pool[i]
+		var ang := (TAU / _shard_pool.size()) * i + randf_range(-0.2, 0.2)
+		var dist := randf_range(50.0, 110.0)
+		sh.global_position = player_pos
+		sh.rotation = ang
+		sh.scale    = Vector2(1.0, 1.0)
+		sh.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.9)
+		sh.visible  = true
+		var t := sh.create_tween().set_parallel(true)
+		t.tween_property(sh, "global_position", player_pos + Vector2(cos(ang), sin(ang)) * dist, 0.35)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		t.tween_property(sh, "modulate:a", 0.0, 0.4)
+		t.tween_property(sh, "scale", Vector2(0.3, 0.3), 0.4)
+		t.chain().tween_callback(func(): if is_instance_valid(sh): sh.visible = false)
+
+	# Shock ring
+	var shock := _next_ripple()
+	shock.global_position = player_pos
+	shock.rotation = 0.0
+	shock.scale    = Vector2(0.2, 0.2)
+	shock.modulate = Color(1, 1, 1, 1.0)
+	shock.visible  = true
+	var st := shock.create_tween().set_parallel(true)
+	st.tween_property(shock, "scale", Vector2(1.4, 1.4), 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	st.tween_property(shock, "modulate:a", 0.0, 0.3)
+	st.chain().tween_callback(func(): if is_instance_valid(shock): shock.visible = false)
+
+	# Fade the rest out
+	var ft := shield_root.create_tween().set_parallel(true)
+	ft.tween_property(shield_hex, "modulate:a", 0.0, 0.3)
+	ft.tween_property(shield_hex_lines, "modulate:a", 0.0, 0.3)
+	ft.tween_property(shield_feet_ring, "modulate:a", 0.0, 0.3)
+	ft.chain().tween_callback(func():
+		if is_instance_valid(shield_root): shield_root.visible = false)
 
 
 # ════════════════════════════════════════════════════════════
@@ -503,4 +792,81 @@ func _make_orb_texture(color: Color) -> ImageTexture:
 				var rim := _ring_band(d, r - 5.0, r)
 				a = maxf(fill, rim)
 			img.set_pixel(x, y, Color(color.r, color.g, color.b, a))
+	return ImageTexture.create_from_image(img)
+
+func _make_ramp(color: Color) -> GradientTexture1D:
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(color.r, color.g, color.b, 0.0))
+	ramp.add_point(0.15, Color(color.r, color.g, color.b, 1.0))
+	ramp.set_color(1, Color(color.r, color.g, color.b, 0.0))
+	var rt := GradientTexture1D.new()
+	rt.gradient = ramp
+	return rt
+
+## Signed-ish "inside distance" to a flat-top regular hexagon (apothem-radius).
+## Positive = inside, 0 = on the edge, negative = outside.
+func _hex_dist(p: Vector2, apothem: float) -> float:
+	var d := -1e9
+	for i in 3:
+		var ang  := deg_to_rad(60.0 * i)
+		var axis := Vector2(cos(ang), sin(ang))
+		d = maxf(d, absf(p.dot(axis)))
+	return apothem - d
+
+func _make_hex_texture(size: int, color: Color) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center  := Vector2(size * 0.5, size * 0.5)
+	var apothem := size * 0.5 - 6.0
+	for y in size:
+		for x in size:
+			var hd := _hex_dist(Vector2(x, y) - center, apothem)
+			var rim  := clampf(1.0 - absf(hd) / 5.0, 0.0, 1.0)
+			var fill := 0.0 if hd < -4.0 else clampf((hd + 4.0) / 10.0, 0.0, 0.16)
+			var a := maxf(rim, fill)
+			if hd < -8.0: a = 0.0
+			img.set_pixel(x, y, Color(color.r, color.g, color.b, a))
+	return ImageTexture.create_from_image(img)
+
+## Faint spokes + concentric rings inside the hexagon — rotated over time by
+## its owning Sprite2D to read as "energy lines flowing" across the surface.
+func _make_hex_lines_texture(size: int, color: Color) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center := Vector2(size * 0.5, size * 0.5)
+	var maxr   := size * 0.5 - 8.0
+	for y in size:
+		for x in size:
+			var p := Vector2(x, y) - center
+			var d := p.length()
+			var a := 0.0
+			if d < maxr and d > 4.0:
+				var spoke_ang  := fmod(p.angle() + PI, PI / 3.0) - PI / 6.0
+				var spoke_dist := absf(spoke_ang) * d
+				a = maxf(a, clampf(1.0 - spoke_dist / 4.0, 0.0, 1.0) * 0.35)
+				var ring_t := fmod(d, 18.0)
+				a = maxf(a, clampf(1.0 - absf(ring_t - 9.0) / 1.5, 0.0, 1.0) * 0.12)
+			img.set_pixel(x, y, Color(color.r, color.g, color.b, a))
+	return ImageTexture.create_from_image(img)
+
+func _make_thin_ring_texture(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center := Vector2(size * 0.5, size * 0.5)
+	var r := size * 0.5 - 4.0
+	for y in size:
+		for x in size:
+			var d := Vector2(x, y).distance_to(center)
+			var a := _ring_band(d, r - 3.0, r)
+			img.set_pixel(x, y, Color(1, 1, 1, a))
+	return ImageTexture.create_from_image(img)
+
+## Small tapered crystal shard, used for the shield-shatter burst.
+func _make_shard_texture() -> ImageTexture:
+	var w := 14; var h := 22
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	for y in h:
+		for x in w:
+			var fx := float(x) / w - 0.5
+			var fy := float(y) / h
+			var half_w := 0.5 * (1.0 - absf(fy - 0.5) * 1.6)
+			var a := 1.0 if absf(fx) <= half_w else 0.0
+			img.set_pixel(x, y, Color(1, 1, 1, a))
 	return ImageTexture.create_from_image(img)
