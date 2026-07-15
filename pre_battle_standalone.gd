@@ -4,6 +4,90 @@ const SC_BATTLE := "res://battle_scene.tscn"
 const SW := 1152.0
 const SH := 648.0
 
+var _keyed_enemy_tex_cache: Dictionary = {}   # path -> ImageTexture (background-keyed, cached once)
+
+## Loads an enemy PNG and removes its flat background via a border flood-fill
+## (same technique as battle_scene.gd's _get_keyed_texture): samples the
+## image's own corner pixel as the background color, then only keys out
+## pixels connected to the edge and similar to it, feathering the anti-
+## aliased edge left behind so no white fringe remains.
+func _get_keyed_enemy_texture(path: String) -> Texture2D:
+	if _keyed_enemy_tex_cache.has(path):
+		return _keyed_enemy_tex_cache[path]
+	var src: Texture2D = AssetLoader.tex(path)
+	if not src:
+		return null
+	var img: Image = src.get_image()
+	if img == null:
+		_keyed_enemy_tex_cache[path] = src
+		return src
+	img = img.duplicate()
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	var bg_col := img.get_pixel(0, 0)
+	const TOLERANCE := 0.08
+	var visited := PackedByteArray()
+	visited.resize(w * h)
+	var queue: Array[Vector2i] = []
+
+	var is_bg := func(x: int, y: int) -> bool:
+		var c := img.get_pixel(x, y)
+		return absf(c.r - bg_col.r) <= TOLERANCE and absf(c.g - bg_col.g) <= TOLERANCE and absf(c.b - bg_col.b) <= TOLERANCE
+
+	for x in w:
+		queue.append(Vector2i(x, 0))
+		queue.append(Vector2i(x, h - 1))
+	for y in h:
+		queue.append(Vector2i(0, y))
+		queue.append(Vector2i(w - 1, y))
+
+	var qi := 0
+	var cleared := 0
+	while qi < queue.size():
+		var p: Vector2i = queue[qi]
+		qi += 1
+		if p.x < 0 or p.x >= w or p.y < 0 or p.y >= h: continue
+		var idx := p.y * w + p.x
+		if visited[idx] == 1: continue
+		visited[idx] = 1
+		if not is_bg.call(p.x, p.y): continue
+		var c := img.get_pixel(p.x, p.y)
+		img.set_pixel(p.x, p.y, Color(c.r, c.g, c.b, 0.0))
+		cleared += 1
+		queue.append(Vector2i(p.x + 1, p.y))
+		queue.append(Vector2i(p.x - 1, p.y))
+		queue.append(Vector2i(p.x, p.y + 1))
+		queue.append(Vector2i(p.x, p.y - 1))
+
+	if float(cleared) / float(w * h) > 0.70:
+		_keyed_enemy_tex_cache[path] = src
+		return src
+
+	const EDGE_TOLERANCE := 0.55
+	var feathered := img.duplicate() as Image
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a <= 0.01: continue
+			var touches_cleared := false
+			for d in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+				var nx := x + d.x
+				var ny := y + d.y
+				if nx < 0 or nx >= w or ny < 0 or ny >= h: continue
+				if img.get_pixel(nx, ny).a <= 0.01:
+					touches_cleared = true
+					break
+			if not touches_cleared: continue
+			var c := img.get_pixel(x, y)
+			var dist := (absf(c.r - bg_col.r) + absf(c.g - bg_col.g) + absf(c.b - bg_col.b)) / 3.0
+			if dist < EDGE_TOLERANCE:
+				var keep := clampf(dist / EDGE_TOLERANCE, 0.0, 1.0)
+				feathered.set_pixel(x, y, Color(c.r, c.g, c.b, c.a * keep))
+
+	var tex := ImageTexture.create_from_image(feathered)
+	_keyed_enemy_tex_cache[path] = tex
+	return tex
+
 # ── Enemy data: 2 stages ──
 const STAGE_ENEMIES := [
 	[
@@ -352,7 +436,7 @@ func _toggle_enemy_expand() -> void:
 		icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		icon_box.add_child(icon_bg)
 		var img_path: String = str(en.get("img", ""))
-		var img_tex: Texture2D = AssetLoader.tex(img_path)
+		var img_tex: Texture2D = _get_keyed_enemy_texture(img_path)
 		if img_tex:
 			var itex := TextureRect.new()
 			itex.texture = img_tex
