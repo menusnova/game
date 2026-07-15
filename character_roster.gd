@@ -78,7 +78,7 @@ func _build_top_bar() -> void:
 	)
 	add_child(back)
 
-	var title := _lbl("ตัวละคร", 16, C_TEXT)
+	var title := _lbl("Alchemist", 16, C_TEXT)
 	title.position = Vector2(70, 0)
 	title.size = Vector2(260, TOP_H)
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
