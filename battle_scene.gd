@@ -1125,9 +1125,10 @@ func _show_card_info(id: String) -> void:
 		ap_lbl2.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(ap_lbl2)
 
-	# Slide in
+	# Slide in — stops well clear of the ⋮ "more options" button (top-right,
+	# x 1104-1148) instead of tucking its right edge almost underneath it.
 	var t := _info_panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	t.tween_property(_info_panel, "position:x", 820.0, 0.20)
+	t.tween_property(_info_panel, "position:x", 760.0, 0.20)
 
 func _hide_card_info() -> void:
 	if not is_instance_valid(_info_panel): return
