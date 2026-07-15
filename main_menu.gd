@@ -122,8 +122,8 @@ func _key_out_background(src_img: Image) -> Image:
 			if img.get_pixel(x, y).a <= 0.01: continue
 			var touches_cleared := false
 			for d in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
-				var nx := x + d.x
-				var ny := y + d.y
+				var nx: int = x + d.x
+				var ny: int = y + d.y
 				if nx < 0 or nx >= w or ny < 0 or ny >= h: continue
 				if img.get_pixel(nx, ny).a <= 0.01:
 					touches_cleared = true
