@@ -68,6 +68,7 @@ var _discard: Array = []
 var _element_fx: Node2D
 var _stage_clear_fx: Node
 var _battle_fx: Node2D
+var _slash_fx: Node2D
 var _enemy_circle: Panel
 var _enemy_bob_tween: Tween
 var _player_sprite: TextureRect
@@ -205,6 +206,7 @@ func _ready() -> void:
 	_build_ui()
 	_build_element_fx()
 	_build_battle_fx()
+	_build_slash_fx()
 	_build_stage_clear_fx()
 	_create_enemy()
 	_build_deck()
@@ -1078,6 +1080,13 @@ func _build_battle_fx() -> void:
 	add_child(fx)
 	_battle_fx = fx
 
+func _build_slash_fx() -> void:
+	var fx := preload("res://slash_effect.gd").new()
+	fx.shake_root = self
+	fx.z_index    = 27
+	add_child(fx)
+	_slash_fx = fx
+
 func _create_enemy() -> void:
 	# Matches the enemy-info popup shown before battle: Stage 1 = Void Beast, Stage 2 (final) = Void Dragon
 	# weak_reaction = the reaction card that exploits this enemy's weakness (see _use_reaction_card)
@@ -1450,7 +1459,12 @@ func _on_attack() -> void:
 	_main_action_done = true
 	_is_defending = false
 	_set_player_pose("atk")
-	if _battle_fx: _battle_fx.play_void_strike()
+	if _slash_fx:
+		_slash_fx.play(Vector2(ENEMY_CX, ENEMY_CY))
+		if _battle_fx and _battle_fx.screen_flash:
+			_slash_fx.flash_screen(_battle_fx.screen_flash)
+	elif _battle_fx:
+		_battle_fx.play_void_strike()
 
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
