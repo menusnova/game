@@ -70,6 +70,7 @@ var _stage_clear_fx: Node
 var _battle_fx: Node2D
 var _slash_fx: Node2D
 var _enemy_circle: Panel
+var _enemy_shadow: TextureRect
 var _enemy_bob_tween: Tween
 var _player_sprite: TextureRect
 var _player_body:   Control
@@ -243,6 +244,27 @@ func _load_png(path: String) -> Texture2D:
 	# Uses AssetLoader so freshly-uploaded images (no .import yet) still load.
 	return AssetLoader.tex(path)
 
+var _shadow_tex: ImageTexture   # shared soft round/oval ground-shadow texture, built once
+
+## Soft radial falloff disc baked at a fixed resolution — stretched to whatever
+## size/aspect a given shadow needs, so the ground shadow reads as a soft
+## circle/ellipse instead of a hard-edged rectangle.
+func _get_shadow_texture() -> ImageTexture:
+	if _shadow_tex: return _shadow_tex
+	var size := 96
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := size * 0.5
+	for y in size:
+		for x in size:
+			var nx := (x - c) / c
+			var ny := (y - c) / c
+			var d := sqrt(nx * nx + ny * ny)
+			var a := clampf(1.0 - d, 0.0, 1.0)
+			a = a * a
+			img.set_pixel(x, y, Color(1, 1, 1, a))
+	_shadow_tex = ImageTexture.create_from_image(img)
+	return _shadow_tex
+
 var _keyed_tex_cache: Dictionary = {}   # path -> ImageTexture (background-keyed, cached once)
 
 ## Loads an uploaded character/enemy PNG and removes its flat background via a border
@@ -304,6 +326,33 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	if float(cleared) / float(w * h) > 0.70:
 		_keyed_tex_cache[path] = src
 		return src
+
+	# Anti-aliased pixels along the original silhouette edge are a blend of
+	# subject + background color, so they're too different from bg_col to pass
+	# the hard flood-fill test above and are left behind as an opaque
+	# white/light fringe. Feather them: any opaque pixel touching a now-
+	# transparent one gets its alpha reduced by how close its color still is
+	# to the background, so the fringe fades out instead of staying solid.
+	const EDGE_TOLERANCE := 0.55
+	var feathered := img.duplicate() as Image
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a <= 0.01: continue
+			var touches_cleared := false
+			for d in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+				var nx := x + d.x
+				var ny := y + d.y
+				if nx < 0 or nx >= w or ny < 0 or ny >= h: continue
+				if img.get_pixel(nx, ny).a <= 0.01:
+					touches_cleared = true
+					break
+			if not touches_cleared: continue
+			var c := img.get_pixel(x, y)
+			var dist := (absf(c.r - bg_col.r) + absf(c.g - bg_col.g) + absf(c.b - bg_col.b)) / 3.0
+			if dist < EDGE_TOLERANCE:
+				var keep := clampf(dist / EDGE_TOLERANCE, 0.0, 1.0)
+				feathered.set_pixel(x, y, Color(c.r, c.g, c.b, c.a * keep))
+	img = feathered
 
 	var tex := ImageTexture.create_from_image(img)
 	_keyed_tex_cache[path] = tex
@@ -506,15 +555,20 @@ func _on_surrender() -> void:
 
 # ── Enemy — center-top, smaller (distance perspective) ───
 func _build_enemy_panel() -> void:
-	# Shadow on ground below enemy
-	var shadow := ColorRect.new()
-	shadow.size     = Vector2(140, 18)
-	shadow.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY + 118.0)
-	shadow.color    = Color(0.0, 0.0, 0.0, 0.35)
+	# Shadow on ground below enemy — soft oval, resized/repositioned per stage
+	# in _start_enemy_bob() to match the enemy's current size.
+	var shadow := TextureRect.new()
+	shadow.texture = _get_shadow_texture()
+	shadow.stretch_mode = TextureRect.STRETCH_SCALE
+	shadow.size     = Vector2(140, 34)
+	shadow.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY + 110.0)
+	shadow.modulate = Color(0, 0, 0, 0.35)
 	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shadow)
+	_enemy_shadow = shadow
 
-	# Enemy sprite — smaller than player (far away)
+	# Enemy sprite — smaller than player (far away). Size/position are set
+	# per-stage in _start_enemy_bob() (e.g. the final-stage boss is bigger).
 	var circle := Panel.new()
 	circle.size = Vector2(140, 140)
 	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
@@ -587,11 +641,13 @@ const PLAYER_POSE := {
 
 # ── Player sprite — back view, large, bottom-left ─────────
 func _build_player_sprite() -> void:
-	# Ground shadow
-	var shadow := ColorRect.new()
-	shadow.size     = Vector2(180, 22)
-	shadow.position = Vector2(PLAYER_X + 30.0, PLAYER_Y + PLAYER_H - 10.0)
-	shadow.color    = Color(0.0, 0.0, 0.0, 0.45)
+	# Ground shadow — soft oval, not a hard-edged rectangle
+	var shadow := TextureRect.new()
+	shadow.texture = _get_shadow_texture()
+	shadow.stretch_mode = TextureRect.STRETCH_SCALE
+	shadow.size     = Vector2(150, 34)
+	shadow.position = Vector2(PLAYER_X + 45.0, PLAYER_Y + PLAYER_H - 18.0)
+	shadow.modulate = Color(0, 0, 0, 0.45)
 	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shadow)
 
@@ -1127,12 +1183,33 @@ func _refresh_enemy_sprite() -> void:
 
 ## Idle bob loop for the enemy circle. Stage 1 (Void Beast) sits a bit lower than
 ## the default perch height, per request.
+const ENEMY_BASE_SIZE       := 140.0
+const ENEMY_SCALE_STAGE1    := 1.0
+const ENEMY_SCALE_FINAL     := 1.3    # final-stage boss reads bigger/more imposing
+const ENEMY_Y_OFFSET_STAGE1 := 46.0   # stage-1 monster sits further down than the boss
+const ENEMY_Y_OFFSET_FINAL  := 0.0
+
 func _start_enemy_bob() -> void:
 	if not is_instance_valid(_enemy_circle): return
 	if is_instance_valid(_enemy_bob_tween): _enemy_bob_tween.kill()
-	var y_offset := 26.0 if _current_stage < FINAL_STAGE else 0.0
-	var base_y := ENEMY_CY - 70.0 + y_offset
-	_enemy_circle.position.y = base_y
+
+	var is_final    := _current_stage >= FINAL_STAGE
+	var scale_mult  := ENEMY_SCALE_FINAL if is_final else ENEMY_SCALE_STAGE1
+	var size        := ENEMY_BASE_SIZE * scale_mult
+	var y_offset     := ENEMY_Y_OFFSET_FINAL if is_final else ENEMY_Y_OFFSET_STAGE1
+
+	_enemy_circle.size = Vector2(size, size)
+	_enemy_circle.add_theme_stylebox_override("panel",
+		_flat(Color(0.05,0.06,0.10,0.55), Color(0,0,0,0), int(size * 0.5), 0))
+
+	if _enemy_shadow:
+		var shadow_w := 140.0 * scale_mult
+		var shadow_h := 34.0 * scale_mult
+		_enemy_shadow.size     = Vector2(shadow_w, shadow_h)
+		_enemy_shadow.position = Vector2(ENEMY_CX - shadow_w * 0.5, ENEMY_CY + 110.0 + y_offset)
+
+	var base_y := ENEMY_CY - size * 0.5 + y_offset
+	_enemy_circle.position = Vector2(ENEMY_CX - size * 0.5, base_y)
 	_enemy_bob_tween = _enemy_circle.create_tween().set_loops()
 	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
