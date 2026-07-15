@@ -332,36 +332,47 @@ func _mk_label(txt: String, fs: int, col: Color, parent: Control,
 	return l
 
 func _build_ui() -> void:
-	# ── Background: sky top → ground bottom gradient ──────────
-	var sky := ColorRect.new()
-	sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	sky.color = Color(0.05, 0.06, 0.14, 1.0)
-	sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(sky)
+	# ── Background ─────────────────────────────────────────────
+	var bg_tex: Texture2D = AssetLoader.tex("res://image/tower_battle_bg.png")
+	if bg_tex:
+		var bg := TextureRect.new()
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.texture      = bg_tex
+		bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bg)
+	else:
+		# Fallback: sky top -> ground bottom gradient
+		var sky := ColorRect.new()
+		sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		sky.color = Color(0.05, 0.06, 0.14, 1.0)
+		sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(sky)
 
-	# Horizon glow — warm strip at mid-height
-	var horizon := ColorRect.new()
-	horizon.size     = Vector2(1152, 120)
-	horizon.position = Vector2(0, 260)
-	horizon.color    = Color(0.18, 0.10, 0.28, 0.55)
-	horizon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(horizon)
+		# Horizon glow — warm strip at mid-height
+		var horizon := ColorRect.new()
+		horizon.size     = Vector2(1152, 120)
+		horizon.position = Vector2(0, 260)
+		horizon.color    = Color(0.18, 0.10, 0.28, 0.55)
+		horizon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(horizon)
 
-	# Ground plane — darker, slightly purple-tinted
-	var ground := ColorRect.new()
-	ground.size     = Vector2(1152, 300)
-	ground.position = Vector2(0, 348)
-	ground.color    = Color(0.03, 0.02, 0.08, 1.0)
-	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(ground)
+		# Ground plane — darker, slightly purple-tinted
+		var ground := ColorRect.new()
+		ground.size     = Vector2(1152, 300)
+		ground.position = Vector2(0, 348)
+		ground.color    = Color(0.03, 0.02, 0.08, 1.0)
+		ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(ground)
 
-	# Ground line (horizon divider)
-	var gline := ColorRect.new()
-	gline.size     = Vector2(1152, 2)
-	gline.position = Vector2(0, 347)
-	gline.color    = Color(0.40, 0.28, 0.70, 0.35)
-	gline.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(gline)
+		# Ground line (horizon divider)
+		var gline := ColorRect.new()
+		gline.size     = Vector2(1152, 2)
+		gline.position = Vector2(0, 347)
+		gline.color    = Color(0.40, 0.28, 0.70, 0.35)
+		gline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(gline)
 
 	# Vignette overlay
 	var vig := ColorRect.new()
