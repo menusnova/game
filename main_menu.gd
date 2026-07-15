@@ -53,6 +53,11 @@ func _setup_profile_avatar() -> void:
 	var full_img: Image = full_tex.get_image()
 	if full_img == null: return
 	full_img = full_img.duplicate()
+	# Already-imported textures are usually VRAM-compressed by default —
+	# get_pixel()/get_region() silently misbehave on a compressed Image.
+	# Decompress before touching any pixels.
+	if full_img.is_compressed():
+		full_img.decompress()
 	full_img.convert(Image.FORMAT_RGBA8)
 	# lyra_guard.png is 512x1024 (full body); head sits near the top, roughly centered.
 	var region_img: Image = full_img.get_region(Rect2i(136, 12, 240, 240))

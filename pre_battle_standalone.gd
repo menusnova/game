@@ -22,6 +22,11 @@ func _get_keyed_enemy_texture(path: String) -> Texture2D:
 		_keyed_enemy_tex_cache[path] = src
 		return src
 	img = img.duplicate()
+	# Already-imported textures are usually VRAM-compressed by default —
+	# get_pixel()/set_pixel() silently fail on a compressed Image, which
+	# would corrupt this whole pass. Decompress before touching any pixels.
+	if img.is_compressed():
+		img.decompress()
 	img.convert(Image.FORMAT_RGBA8)
 	var w := img.get_width()
 	var h := img.get_height()
