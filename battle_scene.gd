@@ -338,6 +338,11 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	img.convert(Image.FORMAT_RGBA8)
 	var w := img.get_width()
 	var h := img.get_height()
+	# Already a proper cutout (corner pixel already transparent) — nothing
+	# to key out, use as-is.
+	if img.get_pixel(0, 0).a <= 0.02:
+		_keyed_tex_cache[path] = src
+		return src
 	var bg_col := img.get_pixel(0, 0)
 	var TOLERANCE := 0.08
 	var visited := PackedByteArray()
@@ -380,6 +385,31 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	if float(cleared) / float(w * h) > 0.70:
 		_keyed_tex_cache[path] = src
 		return src
+
+	# If the background isn't a simple flat/gradient color (e.g. real
+	# painted scenery bleeding into the corner), color-based keying can
+	# only clear a small sliver and leaves a hard, torn-looking edge
+	# around whatever solid background remains. Fade the art's own outer
+	# edges to transparent instead of attempting a partial, broken key —
+	# same fallback used for the main-menu avatar and pre-battle portraits.
+	if float(cleared) / float(w * h) < 0.20:
+		var faded: Image = src.get_image().duplicate()
+		if faded.is_compressed():
+			if faded.decompress() != OK:
+				_keyed_tex_cache[path] = src
+				return src
+		faded.convert(Image.FORMAT_RGBA8)
+		const EDGE_X := 0.14
+		const EDGE_Y := 0.14
+		for fy0 in h:
+			var fy: float = minf(float(fy0) / (h * EDGE_Y), minf(float(h - 1 - fy0) / (h * EDGE_Y), 1.0))
+			for fx0 in w:
+				var fx: float = minf(float(fx0) / (w * EDGE_X), minf(float(w - 1 - fx0) / (w * EDGE_X), 1.0))
+				var fc := faded.get_pixel(fx0, fy0)
+				faded.set_pixel(fx0, fy0, Color(fc.r, fc.g, fc.b, fc.a * fx * fy))
+		var faded_tex := ImageTexture.create_from_image(faded)
+		_keyed_tex_cache[path] = faded_tex
+		return faded_tex
 
 	# Some art has background-colored gaps fully enclosed by the silhouette
 	# (e.g. the negative space between an arm and the body) — not connected
