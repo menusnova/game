@@ -483,7 +483,7 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		e_lbl.size = Vector2(W - 40, 28)
 		e_lbl.add_theme_font_size_override("font_size", 10)
 		e_lbl.add_theme_color_override("font_color", Color(0.70, 0.85, 1, 0.60))
-		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		e_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(e_lbl)
 		y += 32.0
@@ -504,7 +504,7 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	desc.size = Vector2(W - 40, 48)
 	desc.add_theme_font_size_override("font_size", 11)
 	desc.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.82))
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(desc)
 	y += 52.0
@@ -528,7 +528,7 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	use.size = Vector2(W - 40, 32)
 	use.add_theme_font_size_override("font_size", 10)
 	use.add_theme_color_override("font_color", Color(0.55, 0.85, 0.65, 0.8))
-	use.autowrap_mode = TextServer.AUTOWRAP_WORD
+	use.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	use.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(use)
 	y += 36.0

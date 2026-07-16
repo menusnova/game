@@ -144,7 +144,7 @@ func _build_ui() -> void:
 	_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title_lbl.add_theme_font_size_override("font_size", 24)
 	_title_lbl.add_theme_color_override("font_color", COL_CYAN)
-	_title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(_title_lbl)
 
@@ -165,7 +165,7 @@ func _build_ui() -> void:
 	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_body_lbl.add_theme_font_size_override("font_size", 14)
 	_body_lbl.add_theme_color_override("font_color", COL_TEXT)
-	_body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(_body_lbl)
 

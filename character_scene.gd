@@ -360,7 +360,7 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 	# as its effective minimum and paint past the given rect on some lines.
 	desc_lbl.custom_minimum_size = Vector2(desc_clip.size.x, 0)
 	desc_lbl.size = Vector2(desc_clip.size.x, desc_clip.size.y + 80)
-	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc_clip.add_child(desc_lbl)
 
 	var close_btn := Button.new()

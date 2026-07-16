@@ -371,7 +371,7 @@ func _build_info_card() -> void:
 	title.custom_minimum_size = Vector2(iw - pad * 2, 0)
 	title.size     = Vector2(iw - pad * 2, 52)
 	title.position = Vector2(pad, cy)
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(title)
 	cy += 58
@@ -405,7 +405,7 @@ func _build_info_card() -> void:
 		dl.custom_minimum_size = Vector2(iw - pad * 2, 0)
 		dl.size     = Vector2(iw - pad * 2, 32)
 		dl.position = Vector2(pad, cy)
-		dl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(dl)
 		cy += 34

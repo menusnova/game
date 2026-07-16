@@ -534,7 +534,7 @@ func _setup_home_character() -> void:
 	dlg_lbl.offset_top  = 6;  dlg_lbl.offset_bottom = -6
 	dlg_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	dlg_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	dlg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	dlg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dlg_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	bubble.add_child(dlg_lbl)
 

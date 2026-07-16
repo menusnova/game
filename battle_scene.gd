@@ -1193,6 +1193,9 @@ func _build_card_info_panel() -> void:
 	_info_panel.add_theme_stylebox_override("panel",
 		_flat(Color(0.05, 0.07, 0.16, 0.97), Color(0.35, 0.62, 1.0, 0.35), 12, 1))
 	_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Hard safety net: nothing drawn inside can ever spill past the rounded
+	# frame, no matter how long a label's text is.
+	_info_panel.clip_contents = true
 	_info_panel.z_index = 20
 	add_child(_info_panel)
 
@@ -1220,10 +1223,13 @@ func _show_card_info(id: String) -> void:
 	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_info_panel.add_child(sym_lbl)
 
-	# Name + type
+	# Name + type — width-capped so long names (e.g. "Magnesium Oxide")
+	# truncate with an ellipsis instead of running past the panel edge.
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
 	name_lbl.position = Vector2(104, 18)
+	name_lbl.size = Vector2(200, 26)
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 18)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1234,6 +1240,8 @@ func _show_card_info(id: String) -> void:
 	var type_str: String = type_info.get("type", ctype.to_upper())
 	var type_lbl := Label.new()
 	type_lbl.text = type_str; type_lbl.position = Vector2(104, 42)
+	type_lbl.size = Vector2(200, 18)
+	type_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	type_lbl.add_theme_font_size_override("font_size", 11)
 	type_lbl.add_theme_color_override("font_color", Color(col.r + 0.1, col.g, col.b, 0.75))
 	type_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1260,7 +1268,9 @@ func _show_card_info(id: String) -> void:
 		desc_lbl.size = Vector2(288, 80)
 		desc_lbl.add_theme_font_size_override("font_size", 11)
 		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		# WORD_SMART, not WORD: Thai has no spaces between words, so plain
+		# WORD mode can't find a break point and the line runs off the panel.
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(desc_lbl)
 
@@ -1283,7 +1293,7 @@ func _show_card_info(id: String) -> void:
 		eff_lbl.size = Vector2(288, 40)
 		eff_lbl.add_theme_font_size_override("font_size", 12)
 		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
-		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(eff_lbl)
 
@@ -1297,9 +1307,15 @@ func _show_card_info(id: String) -> void:
 		div3.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(div3)
 		var combo_hdr := Label.new()
-		combo_hdr.text = "ผสมกับ"; combo_hdr.position = Vector2(16, combo_y)
+		# One-time hint here, so each row below can stay short (a "(ผสมที่ Lab
+		# เพื่อค้นพบ)" tail on every locked row overran the narrow panel).
+		combo_hdr.text = "ผสมกับ  (🔒 = ยังไม่ค้นพบ ผสมที่ Lab)"
+		combo_hdr.position = Vector2(16, combo_y)
+		combo_hdr.custom_minimum_size = Vector2(288, 0)
+		combo_hdr.size = Vector2(288, 14)
 		combo_hdr.add_theme_font_size_override("font_size", 10)
 		combo_hdr.add_theme_color_override("font_color", C_GOLD)
+		combo_hdr.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		combo_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(combo_hdr)
 
@@ -1318,9 +1334,10 @@ func _show_card_info(id: String) -> void:
 				combo_lbl.text = "• %s + %s → %s" % [sym, other_name, result_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 			else:
-				combo_lbl.text = "• %s + %s → ??? (ผสมที่ Lab เพื่อค้นพบ)" % [sym, other_name]
+				combo_lbl.text = "• %s + %s → 🔒" % [sym, other_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
 			combo_lbl.position = Vector2(16, cy)
+			combo_lbl.custom_minimum_size = Vector2(288, 0)
 			combo_lbl.size = Vector2(288, 16)
 			combo_lbl.add_theme_font_size_override("font_size", 10)
 			combo_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -1635,7 +1652,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 9)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_lbl)
 

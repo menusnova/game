@@ -967,7 +967,7 @@ func _build_supp_grid(parent: Control) -> void:
 		nl.custom_minimum_size = Vector2(cw - 8, 0)
 		nl.size = Vector2(cw - 8, 28)
 		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		nl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		nl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(nl)
 
@@ -1265,7 +1265,7 @@ func _show_locked_char_msg() -> void:
 	lbl.text = "ตัวละครนี้ยังไม่ปลดล็อค ใช้เข้าต่อสู้ไม่ได้\nกรุณาเลือกตัวละครที่ปลดล็อคแล้ว"
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
 	lbl.add_theme_font_size_override("font_size", 15)
 	lbl.position = Vector2(16, 12)
@@ -1306,7 +1306,7 @@ func _show_deck_required_msg() -> void:
 	lbl.text = "กรุณาจัดเด็คให้ครบ %d ใบก่อนเข้าสู่การต่อสู้!\nตอนนี้มี %d / %d ใบ" % [DECK_REQUIRED, cur_total, DECK_REQUIRED]
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
 	lbl.add_theme_font_size_override("font_size", 15)
 	lbl.position = Vector2(16, 12)
