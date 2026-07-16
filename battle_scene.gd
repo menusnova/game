@@ -43,6 +43,14 @@ const CARD_DB := {
 	"CaO":   {"type":"reaction","name":"Calcium Oxide",  "symbol":"CaO","desc":"Shield +15",                "ap":1,"tier":1,"color":Color(0.80,0.75,0.65)},
 	"MgO":   {"type":"reaction","name":"Magnesium Oxide","symbol":"MgO","desc":"ฟื้นฟู HP +15",              "ap":1,"tier":1,"color":Color(0.60,0.85,0.60)},
 	"K2O":   {"type":"reaction","name":"Potassium Oxide","symbol":"K₂O","desc":"เพิ่ม ATK 20% (2 เทิร์น)",   "ap":1,"tier":1,"color":Color(0.75,0.30,0.70)},
+	"HCl":   {"type":"reaction","name":"Hydrochloric Acid","symbol":"HCl","desc":"โจมตีศัตรู 25 ดาเมจ","ap":1,"tier":1,"color":Color(0.75,0.95,0.55)},
+	"FeS":   {"type":"reaction","name":"Iron Sulfide",     "symbol":"FeS","desc":"ลดเกราะศัตรู 15% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.48,0.40)},
+	"NaH":   {"type":"reaction","name":"Sodium Hydride",   "symbol":"NaH","desc":"เพิ่ม ATK 15% (2 เทิร์น)",   "ap":2,"tier":2,"color":Color(0.95,0.90,0.55)},
+	"CH4":   {"type":"reaction","name":"Methane",          "symbol":"CH₄","desc":"วางพิษ +3/เทิร์น (3 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.75,0.95)},
+	"H2S":   {"type":"reaction","name":"Hydrogen Sulfide", "symbol":"H₂S","desc":"วางพิษ +6/เทิร์น (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.80,0.80,0.35)},
+	"CaH2":  {"type":"reaction","name":"Calcium Hydride",  "symbol":"CaH₂","desc":"Shield +20",              "ap":2,"tier":2,"color":Color(0.85,0.80,0.70)},
+	"Na3N":  {"type":"reaction","name":"Sodium Nitride",   "symbol":"Na₃N","desc":"ลด ATK ศัตรู 15% (2 เทิร์น)","ap":2,"tier":2,"color":Color(0.55,0.60,0.95)},
+	"CaC2":  {"type":"reaction","name":"Calcium Carbide",  "symbol":"CaC₂","desc":"โจมตีศัตรู 30 ดาเมจ","ap":2,"tier":2,"color":Color(0.65,0.55,0.45)},
 }
 
 # ── Recipes ───────────────────────────────────────────────
@@ -58,6 +66,14 @@ const RECIPES := {
 	"Ca+O":  "CaO",
 	"Mg+O":  "MgO",
 	"K+O":   "K2O",
+	"Cl+H":  "HCl",
+	"Fe+S":  "FeS",
+	"H+Na":  "NaH",
+	"C+H":   "CH4",
+	"H+S":   "H2S",
+	"Ca+H":  "CaH2",
+	"N+Na":  "Na3N",
+	"C+Ca":  "CaC2",
 }
 
 # ── Character ─────────────────────────────────────────────
@@ -1675,6 +1691,41 @@ func _use_reaction_card(id: String) -> void:
 			BattleStats.apply_effect(_p_unit, {"kind": "atk_up", "value": 0.20, "turns": 2}, "K2O")
 			_msg("🔥 Potassium Oxide — เพิ่ม ATK 20% (2 เทิร์น)")
 			if _element_fx: _element_fx.play_use("K2O")
+		"HCl":
+			BattleStats.apply_damage_with_shields(_e_unit, 25)
+			_enemy_hp = _e_unit.hp
+			_msg("🧪 Hydrochloric Acid — โจมตีศัตรู 25 ดาเมจ")
+			if _element_fx: _element_fx.play_use("HCl")
+		"FeS":
+			BattleStats.apply_effect(_e_unit, {"kind": "def_down", "value": 0.15, "turns": 2}, "FeS")
+			_msg("⛏ Iron Sulfide — ลดเกราะศัตรู 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("FeS")
+		"NaH":
+			BattleStats.apply_effect(_p_unit, {"kind": "atk_up", "value": 0.15, "turns": 2}, "NaH")
+			_msg("⚡ Sodium Hydride — เพิ่ม ATK 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("NaH")
+		"CH4":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 3, "turns": 3}, "CH4")
+			_msg("🔥 Methane — ศัตรูติดพิษ +3/เทิร์น (3 เทิร์น)")
+			if _element_fx: _element_fx.play_use("CH4")
+		"H2S":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 6, "turns": 2}, "H2S")
+			_msg("☠ Hydrogen Sulfide — ศัตรูติดพิษ +6/เทิร์น (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("H2S")
+		"CaH2":
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 20}, "CaH2")
+			_player_shield = _p_unit.shield_hp
+			_msg("🛡 Calcium Hydride — Shield +20")
+			if _element_fx: _element_fx.play_use("CaH2")
+		"Na3N":
+			BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.15, "turns": 2}, "Na3N")
+			_msg("☁ Sodium Nitride — ลด ATK ศัตรู 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("Na3N")
+		"CaC2":
+			BattleStats.apply_damage_with_shields(_e_unit, 30)
+			_enemy_hp = _e_unit.hp
+			_msg("💥 Calcium Carbide — โจมตีศัตรู 30 ดาเมจ")
+			if _element_fx: _element_fx.play_use("CaC2")
 
 	# Weakness break: using the reaction this enemy is weak to exposes it,
 	# raising the damage it takes for 2 turns (see BattleStats "weak" status)

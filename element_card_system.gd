@@ -23,6 +23,14 @@ const FORMULA_COLOR := {
 	"CaO":   Color(0.80, 0.75, 0.65),
 	"MgO":   Color(0.60, 0.85, 0.60),
 	"K2O":   Color(0.75, 0.30, 0.70),
+	"HCl":   Color(0.75, 0.95, 0.55),
+	"FeS":   Color(0.55, 0.48, 0.40),
+	"NaH":   Color(0.95, 0.90, 0.55),
+	"CH4":   Color(0.55, 0.75, 0.95),
+	"H2S":   Color(0.80, 0.80, 0.35),
+	"CaH2":  Color(0.85, 0.80, 0.70),
+	"Na3N":  Color(0.55, 0.60, 0.95),
+	"CaC2":  Color(0.65, 0.55, 0.45),
 }
 const FORMULA_LABEL := {
 	"Water": "Water  H₂O",
@@ -34,6 +42,14 @@ const FORMULA_LABEL := {
 	"CaO":   "Calcium Oxide  CaO",
 	"MgO":   "Magnesium Oxide  MgO",
 	"K2O":   "Potassium Oxide  K₂O",
+	"HCl":   "Hydrochloric Acid  HCl",
+	"FeS":   "Iron Sulfide  FeS",
+	"NaH":   "Sodium Hydride  NaH",
+	"CH4":   "Methane  CH₄",
+	"H2S":   "Hydrogen Sulfide  H₂S",
+	"CaH2":  "Calcium Hydride  CaH₂",
+	"Na3N":  "Sodium Nitride  Na₃N",
+	"CaC2":  "Calcium Carbide  CaC₂",
 }
 const EFFECT_TEXT := {
 	"Water": "+20 HP",
@@ -45,6 +61,14 @@ const EFFECT_TEXT := {
 	"CaO":   "Shield +15",
 	"MgO":   "+15 HP",
 	"K2O":   "ATK +20%",
+	"HCl":   "25 DMG",
+	"FeS":   "DEF -15%",
+	"NaH":   "ATK +15%",
+	"CH4":   "Poison +3/turn",
+	"H2S":   "Poison +6/turn",
+	"CaH2":  "Shield +20",
+	"Na3N":  "ATK -15%",
+	"CaC2":  "30 DMG",
 }
 const EFFECT_TEXT_COLOR := {
 	"Water": Color(0.35, 1.0, 0.55),
@@ -56,11 +80,22 @@ const EFFECT_TEXT_COLOR := {
 	"CaO":   Color(0.95, 0.95, 1.0),
 	"MgO":   Color(0.35, 1.0, 0.55),
 	"K2O":   Color(1.0, 0.85, 0.4),
+	"HCl":   Color(1.0, 0.6, 0.6),
+	"FeS":   Color(1.0, 0.6, 0.6),
+	"NaH":   Color(1.0, 0.85, 0.4),
+	"CH4":   Color(1.0, 0.55, 0.75),
+	"H2S":   Color(1.0, 0.55, 0.75),
+	"CaH2":  Color(0.95, 0.95, 1.0),
+	"Na3N":  Color(1.0, 0.6, 0.6),
+	"CaC2":  Color(1.0, 0.6, 0.6),
 }
 
-# Reactions whose effect lands on the enemy (debuffs/poison) instead of the
-# player (heal/shield/buff) — drives where the craft/use VFX plays.
-const ENEMY_TARGETED := ["Rust", "CO2", "NO", "SO2"]
+# Reactions whose effect lands on the enemy (debuffs/poison/damage) instead
+# of the player (heal/shield/buff) — drives where the craft/use VFX plays.
+const ENEMY_TARGETED := [
+	"Rust", "CO2", "NO", "SO2",
+	"HCl", "FeS", "CH4", "H2S", "Na3N", "CaC2",
+]
 
 # ── Anchor points (battle_scene.gd screen-space, 1152×648) ──
 @export var player_pos: Vector2 = Vector2(160, 440)

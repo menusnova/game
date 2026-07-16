@@ -220,6 +220,78 @@ const ELEMENTS: Array = [
 		"how_to_get": "สังเคราะห์: K + O",
 		"recipes": ["เพิ่ม ATK 20% (2 เทิร์น)"],
 	},
+	{
+		"id": "HCl", "symbol": "HCl", "number": 0,
+		"name_th": "กรดเกลือ", "name_en": "Hydrochloric Acid",
+		"color": Color(0.75, 0.95, 0.55),
+		"type": "Compound",
+		"real_desc": "กรดแก่ที่สำคัญในอุตสาหกรรม เกิดจากไฮโดรเจนกับคลอรีน มีฤทธิ์กัดกร่อนสูง",
+		"how_to_get": "สังเคราะห์: Cl + H",
+		"recipes": ["โจมตีศัตรู 25 ดาเมจ"],
+	},
+	{
+		"id": "FeS", "symbol": "FeS", "number": 0,
+		"name_th": "เหล็กซัลไฟด์", "name_en": "Iron Sulfide",
+		"color": Color(0.55, 0.48, 0.40),
+		"type": "Compound",
+		"real_desc": "แร่ธาตุที่พบในธรรมชาติ หรือ 'ทองของคนโง่' เกิดจากเหล็กกับกำมะถัน",
+		"how_to_get": "สังเคราะห์: Fe + S",
+		"recipes": ["ลดเกราะศัตรู 15% (2 เทิร์น)"],
+	},
+	{
+		"id": "NaH", "symbol": "NaH", "number": 0,
+		"name_th": "โซเดียมไฮไดรด์", "name_en": "Sodium Hydride",
+		"color": Color(0.95, 0.90, 0.55),
+		"type": "Compound",
+		"real_desc": "สารประกอบไอออนิกที่ทำปฏิกิริยารุนแรงกับน้ำ ใช้เป็นตัวรีดิวซ์ในอุตสาหกรรมเคมี",
+		"how_to_get": "สังเคราะห์: H + Na",
+		"recipes": ["เพิ่ม ATK 15% (2 เทิร์น)"],
+	},
+	{
+		"id": "CH4", "symbol": "CH₄", "number": 0,
+		"name_th": "มีเทน", "name_en": "Methane",
+		"color": Color(0.55, 0.75, 0.95),
+		"type": "Compound",
+		"real_desc": "ก๊าซเชื้อเพลิงหลักในก๊าซธรรมชาติ เกิดจากคาร์บอนกับไฮโดรเจน ติดไฟได้ง่าย",
+		"how_to_get": "สังเคราะห์: C + H",
+		"recipes": ["วางพิษศัตรู +3/เทิร์น (3 เทิร์น)"],
+	},
+	{
+		"id": "H2S", "symbol": "H₂S", "number": 0,
+		"name_th": "ไฮโดรเจนซัลไฟด์", "name_en": "Hydrogen Sulfide",
+		"color": Color(0.80, 0.80, 0.35),
+		"type": "Compound",
+		"real_desc": "ก๊าซพิษกลิ่นไข่เน่า เกิดจากไฮโดรเจนกับกำมะถัน อันตรายแม้ในความเข้มข้นต่ำ",
+		"how_to_get": "สังเคราะห์: H + S",
+		"recipes": ["วางพิษศัตรู +6/เทิร์น (2 เทิร์น)"],
+	},
+	{
+		"id": "CaH2", "symbol": "CaH₂", "number": 0,
+		"name_th": "แคลเซียมไฮไดรด์", "name_en": "Calcium Hydride",
+		"color": Color(0.85, 0.80, 0.70),
+		"type": "Compound",
+		"real_desc": "สารดูดความชื้นที่ทรงพลัง เกิดจากแคลเซียมกับไฮโดรเจน ใช้กำจัดน้ำในตัวทำละลาย",
+		"how_to_get": "สังเคราะห์: Ca + H",
+		"recipes": ["เพิ่ม Shield +20"],
+	},
+	{
+		"id": "Na3N", "symbol": "Na₃N", "number": 0,
+		"name_th": "โซเดียมไนไตรด์", "name_en": "Sodium Nitride",
+		"color": Color(0.55, 0.60, 0.95),
+		"type": "Compound",
+		"real_desc": "สารประกอบไอออนิกที่ไม่เสถียร เกิดจากไนโตรเจนกับโซเดียม สลายตัวง่ายเมื่อสัมผัสความร้อน",
+		"how_to_get": "สังเคราะห์: N + Na",
+		"recipes": ["ลด ATK ศัตรู 15% (2 เทิร์น)"],
+	},
+	{
+		"id": "CaC2", "symbol": "CaC₂", "number": 0,
+		"name_th": "แคลเซียมคาร์ไบด์", "name_en": "Calcium Carbide",
+		"color": Color(0.65, 0.55, 0.45),
+		"type": "Compound",
+		"real_desc": "ของแข็งที่ทำปฏิกิริยากับน้ำได้ก๊าซอะเซทิลีนไวไฟ เกิดจากคาร์บอนกับแคลเซียม",
+		"how_to_get": "สังเคราะห์: C + Ca",
+		"recipes": ["โจมตีศัตรู 30 ดาเมจ"],
+	},
 ]
 
 # ── Colors ────────────────────────────────────────────────────────
@@ -239,6 +311,9 @@ const ELEM_COMPOUND_KEYS := [
 	"water", "salt", "rust",
 	"carbon_dioxide", "nitric_oxide", "sulfur_dioxide",
 	"calcium_oxide", "magnesium_oxide", "potassium_oxide",
+	"hydrochloric_acid", "iron_sulfide", "sodium_hydride",
+	"methane", "hydrogen_sulfide", "calcium_hydride",
+	"sodium_nitride", "calcium_carbide",
 ]
 var _detail_overlay: Control
 var _discovered: Array[String] = []  # element ids unlocked
@@ -277,6 +352,10 @@ func _ready() -> void:
 		"carbon_dioxide": "CO2", "nitric_oxide": "NitricOxide",
 		"sulfur_dioxide": "SO2", "calcium_oxide": "CaO",
 		"magnesium_oxide": "MgO", "potassium_oxide": "K2O",
+		"hydrochloric_acid": "HCl", "iron_sulfide": "FeS",
+		"sodium_hydride": "NaH", "methane": "CH4",
+		"hydrogen_sulfide": "H2S", "calcium_hydride": "CaH2",
+		"sodium_nitride": "Na3N", "calcium_carbide": "CaC2",
 	}
 	_discovered = []
 	# Starter elements — same set the lab gives you from the start
