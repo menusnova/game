@@ -417,8 +417,11 @@ func _get_keyed_texture(path: String) -> Texture2D:
 	# alone (that's what keeps small enclosed details like white hair
 	# intact). But a big enclosed patch is almost always a real gap, not a
 	# detail worth keeping, and left solid it reads as a torn/broken image.
-	# Clear any such patch above a minimum size.
-	const HOLE_MIN_SIZE := 300
+	# Clear any such patch above a minimum size. Real limb/body gaps run
+	# ~8,000-11,000px; a bright enclosed hair highlight can be ~2,000px and
+	# must NOT be caught here (that punched a visible hole through Lyra's
+	# hair) — 5,000 sits safely between the two.
+	const HOLE_MIN_SIZE := 5000
 	var hole_visited := PackedByteArray()
 	hole_visited.resize(w * h)
 	for y0 in h:
