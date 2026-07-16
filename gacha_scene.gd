@@ -1126,10 +1126,19 @@ func _build_reveal_card(char_name: String, rarity: int,
 	if portrait_tex:
 		var ptex := TextureRect.new()
 		ptex.texture = portrait_tex
-		ptex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		ptex.stretch_mode = TextureRect.STRETCH_SCALE
 		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Manual cover-crop biased toward the top instead of centered — a
+		# centered crop on a tall portrait cuts the head off, since there's
+		# usually more "spare" art below the waist than above the head.
+		var iw := float(portrait_tex.get_width())
+		var ih := float(portrait_tex.get_height())
+		var cover_scale := maxf(w / iw, h / ih)
+		var disp_w := iw * cover_scale
+		var disp_h := ih * cover_scale
+		ptex.size     = Vector2(disp_w, disp_h)
+		ptex.position = Vector2((w - disp_w) * 0.5, (h - disp_h) * 0.15)
 		art_clip.add_child(ptex)
 	elif rarity == 3 and ELEM_NAME.has(char_name):
 		var sym_lbl := Label.new()
