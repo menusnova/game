@@ -425,10 +425,11 @@ func _clipped_desc(parent: Control, txt: String, px: float, py: float,
 	var lbl := Label.new()
 	lbl.text = txt
 	lbl.position = Vector2(0, 0)
+	lbl.custom_minimum_size = Vector2(w, 0)
 	lbl.size = Vector2(w, h + 40)   # taller than clip so wrap has room
 	lbl.add_theme_font_size_override("font_size", font_sz)
 	lbl.add_theme_color_override("font_color", col)
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	clip.add_child(lbl)
 
@@ -844,10 +845,11 @@ func _open_element_detail(elem: Dictionary) -> void:
 	var real_desc := Label.new()
 	real_desc.text = elem["real_desc"]
 	real_desc.position = Vector2(0, 0)
+	real_desc.custom_minimum_size = Vector2(IW, 0)
 	real_desc.size = Vector2(IW, 116)
 	real_desc.add_theme_font_size_override("font_size", 11)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
-	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	real_desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	real_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desc_clip.add_child(real_desc)

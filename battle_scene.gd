@@ -1256,10 +1256,11 @@ func _show_card_info(id: String) -> void:
 		_info_panel.add_child(hdr)
 		var desc_lbl := Label.new()
 		desc_lbl.text = desc_str; desc_lbl.position = Vector2(16, 102)
+		desc_lbl.custom_minimum_size = Vector2(288, 0)
 		desc_lbl.size = Vector2(288, 80)
 		desc_lbl.add_theme_font_size_override("font_size", 11)
 		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(desc_lbl)
 
@@ -1278,10 +1279,11 @@ func _show_card_info(id: String) -> void:
 		_info_panel.add_child(eff_hdr)
 		var eff_lbl := Label.new()
 		eff_lbl.text = data["desc"]; eff_lbl.position = Vector2(16, effect_y + 16)
+		eff_lbl.custom_minimum_size = Vector2(288, 0)
 		eff_lbl.size = Vector2(288, 40)
 		eff_lbl.add_theme_font_size_override("font_size", 12)
 		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
-		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(eff_lbl)
 
@@ -1628,11 +1630,12 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	# Name
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
+	name_lbl.custom_minimum_size = Vector2(CARD_W - 6, 0)
 	name_lbl.size = Vector2(CARD_W - 6, 28); name_lbl.position = Vector2(3, 72)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 9)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
-	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_lbl)
 

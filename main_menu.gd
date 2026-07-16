@@ -444,10 +444,11 @@ func _show_tutorial_popup() -> void:
 	var body := Label.new()
 	body.text = TUTORIAL_TEXT
 	body.position = Vector2(20, 64)
+	body.custom_minimum_size = Vector2(PW - 40, 0)
 	body.size = Vector2(PW - 40, PH - 100)
 	body.add_theme_font_size_override("font_size", 13)
 	body.add_theme_color_override("font_color", Color(0.80, 0.87, 1.0, 0.90))
-	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(body)
 

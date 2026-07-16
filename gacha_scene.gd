@@ -368,9 +368,10 @@ func _build_info_card() -> void:
 	title.text = str(d["banner_title"])
 	title.add_theme_font_size_override("font_size", 20)
 	title.add_theme_color_override("font_color", Color(0.10, 0.12, 0.22, 0.95))
+	title.custom_minimum_size = Vector2(iw - pad * 2, 0)
 	title.size     = Vector2(iw - pad * 2, 52)
 	title.position = Vector2(pad, cy)
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(title)
 	cy += 58
@@ -401,9 +402,10 @@ func _build_info_card() -> void:
 		dl.text = str(desc_line)
 		dl.add_theme_font_size_override("font_size", 11)
 		dl.add_theme_color_override("font_color", Color(0.22, 0.28, 0.45, 0.85))
+		dl.custom_minimum_size = Vector2(iw - pad * 2, 0)
 		dl.size     = Vector2(iw - pad * 2, 32)
 		dl.position = Vector2(pad, cy)
-		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		dl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(dl)
 		cy += 34

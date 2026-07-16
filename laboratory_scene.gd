@@ -479,10 +479,11 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		var e_lbl := Label.new()
 		e_lbl.text = "• %s: %s" % [str(elem.get("name", "")), str(elem.get("desc", ""))]
 		e_lbl.position = Vector2(20, y)
+		e_lbl.custom_minimum_size = Vector2(W - 40, 0)
 		e_lbl.size = Vector2(W - 40, 28)
 		e_lbl.add_theme_font_size_override("font_size", 10)
 		e_lbl.add_theme_color_override("font_color", Color(0.70, 0.85, 1, 0.60))
-		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		e_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_result_panel.add_child(e_lbl)
 		y += 32.0
@@ -499,10 +500,11 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	var desc := Label.new()
 	desc.text = str(compound.get("description", ""))
 	desc.position = Vector2(20, y)
+	desc.custom_minimum_size = Vector2(W - 40, 0)
 	desc.size = Vector2(W - 40, 48)
 	desc.add_theme_font_size_override("font_size", 11)
 	desc.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.82))
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(desc)
 	y += 52.0
@@ -522,10 +524,11 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	var use := Label.new()
 	use.text = "การใช้งาน: " + str(compound.get("real_use", ""))
 	use.position = Vector2(20, y)
+	use.custom_minimum_size = Vector2(W - 40, 0)
 	use.size = Vector2(W - 40, 32)
 	use.add_theme_font_size_override("font_size", 10)
 	use.add_theme_color_override("font_color", Color(0.55, 0.85, 0.65, 0.8))
-	use.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	use.autowrap_mode = TextServer.AUTOWRAP_WORD
 	use.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_result_panel.add_child(use)
 	y += 36.0
