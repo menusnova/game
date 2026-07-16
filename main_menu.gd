@@ -44,6 +44,8 @@ func _ready() -> void:
 	_refresh_hud()
 	if not CurrencyManager.currency_changed.is_connected(_refresh_hud):
 		CurrencyManager.currency_changed.connect(_refresh_hud)
+	if not NewPlayerGuide.has_seen():
+		_open_new_player_guide.call_deferred()
 
 ## Crops just the head/face out of Lyra's full-body art for the small profile-card avatar.
 func _setup_profile_avatar() -> void:
@@ -345,17 +347,9 @@ func _spawn_orb(layer: Control, zone: Array) -> void:
 	tw_alpha.tween_property(orb, "modulate:a", 0.0,  dur * 0.35)
 	tw_alpha.tween_callback(orb.queue_free)
 
-## Top-right "สอนเล่น" (How to play) button — opens a simple tutorial popup.
-## Sits in the empty gap between the currency row and the (hidden) settings
-## button, both already anchored near the top-right corner.
-const TUTORIAL_TEXT := (
-	"เควส/Story — เล่นเนื้อเรื่องเพื่อรับไอเทมและปลดล็อคด่านใหม่\n\n" +
-	"การ์ดธาตุ — ลากธาตุ 2 ใบมาผสมกันในสนามรบ เพื่อสร้างการ์ดปฏิกิริยา (Reaction Card) ที่มีพลังมากกว่า\n\n" +
-	"ห้อง Lab — ผสมธาตุที่นี่เพื่อค้นพบสูตร ปลดล็อคข้อมูลในหน้า Achievement และปลดล็อคการใช้สูตรนั้นในสนามรบ\n\n" +
-	"Void Gate — สุ่มตัวละครและไอเทมใหม่ๆ มาเสริมทีม\n\n" +
-	"Shop — ใช้เพชร/เหรียญแลกไอเทมและของสะสม"
-)
-
+## Top-right "สอนเล่น" (How to play) button — reopens the New Player Guide
+## on demand. Sits in the empty gap between the currency row and the
+## (hidden) settings button, both already anchored near the top-right corner.
 func _setup_tutorial_button() -> void:
 	var btn := Panel.new()
 	btn.name = "BtnTutorial"
@@ -386,7 +380,7 @@ func _setup_tutorial_button() -> void:
 			var t := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 			t.tween_property(btn, "scale", Vector2(0.90, 0.90), 0.06)
 			t.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.14)
-			t.tween_callback(_show_tutorial_popup)
+			t.tween_callback(_open_new_player_guide)
 	)
 	btn.mouse_entered.connect(func():
 		btn.create_tween().tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
@@ -395,75 +389,12 @@ func _setup_tutorial_button() -> void:
 		btn.create_tween().tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 	)
 
-func _show_tutorial_popup() -> void:
-	var overlay := Control.new()
-	overlay.name = "_TutorialOverlay"
-	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay.z_index = 100
-	add_child(overlay)
-
-	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.7)
-	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.gui_input.connect(func(ev):
-		if ev is InputEventMouseButton and ev.pressed:
-			overlay.queue_free()
-	)
-	overlay.add_child(dim)
-
-	const PW := 520.0; const PH := 400.0
-	var panel := Panel.new()
-	panel.size     = Vector2(PW, PH)
-	panel.position = Vector2((1152 - PW) * 0.5, (648 - PH) * 0.5)
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	var psb := StyleBoxFlat.new()
-	psb.bg_color     = Color(0.05, 0.07, 0.16, 0.98)
-	psb.border_color = Color(0.35, 0.70, 1.0, 0.55)
-	psb.set_border_width_all(2)
-	psb.set_corner_radius_all(14)
-	panel.add_theme_stylebox_override("panel", psb)
-	overlay.add_child(panel)
-
-	var title := Label.new()
-	title.text = "วิธีเล่น"
-	title.position = Vector2(20, 16)
-	title.size = Vector2(PW - 40, 30)
-	title.add_theme_font_size_override("font_size", 20)
-	title.add_theme_color_override("font_color", Color(0.85, 0.92, 1.0, 1.0))
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(title)
-
-	var div := ColorRect.new()
-	div.color = Color(0.35, 0.70, 1.0, 0.2)
-	div.size = Vector2(PW - 40, 1)
-	div.position = Vector2(20, 52)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(div)
-
-	var body := Label.new()
-	body.text = TUTORIAL_TEXT
-	body.position = Vector2(20, 64)
-	body.custom_minimum_size = Vector2(PW - 40, 0)
-	body.size = Vector2(PW - 40, PH - 100)
-	body.add_theme_font_size_override("font_size", 13)
-	body.add_theme_color_override("font_color", Color(0.80, 0.87, 1.0, 0.90))
-	body.autowrap_mode = TextServer.AUTOWRAP_WORD
-	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(body)
-
-	var close_btn := Button.new()
-	close_btn.text = "✕"
-	close_btn.size = Vector2(32, 32)
-	close_btn.position = Vector2(PW - 44, 10)
-	close_btn.add_theme_font_size_override("font_size", 14)
-	close_btn.add_theme_color_override("font_color", Color(0.6, 0.68, 0.8, 0.9))
-	var blank_sb := StyleBoxFlat.new(); blank_sb.bg_color = Color(0, 0, 0, 0)
-	close_btn.add_theme_stylebox_override("normal", blank_sb)
-	close_btn.add_theme_stylebox_override("hover",  blank_sb)
-	close_btn.add_theme_stylebox_override("focus",  blank_sb)
-	close_btn.pressed.connect(func(): overlay.queue_free())
-	panel.add_child(close_btn)
+func _open_new_player_guide() -> void:
+	if get_node_or_null("_NewPlayerGuide") != null:
+		return
+	var guide := NewPlayerGuide.new()
+	guide.name = "_NewPlayerGuide"
+	add_child(guide)
 
 func _setup_navbar() -> void:
 	# Full-width backdrop behind NavBar to cover transparent gaps
