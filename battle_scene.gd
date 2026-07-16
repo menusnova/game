@@ -1262,17 +1262,27 @@ func _show_card_info(id: String) -> void:
 		hdr.add_theme_color_override("font_color", C_GOLD)
 		hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(hdr)
+		# Label lives inside a hard-clipped Control (same proven pattern as the
+		# codex detail popup) so a long Thai description is bounded both across
+		# and down — it can never run past the panel edge or bleed into the
+		# section below it.
+		var desc_clip := Control.new()
+		desc_clip.position = Vector2(16, 102)
+		desc_clip.size = Vector2(288, 86)
+		desc_clip.clip_contents = true
+		desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(desc_clip)
 		var desc_lbl := Label.new()
-		desc_lbl.text = desc_str; desc_lbl.position = Vector2(16, 102)
+		desc_lbl.text = desc_str; desc_lbl.position = Vector2.ZERO
 		desc_lbl.custom_minimum_size = Vector2(288, 0)
-		desc_lbl.size = Vector2(288, 80)
+		desc_lbl.size = Vector2(288, 86)
 		desc_lbl.add_theme_font_size_override("font_size", 11)
 		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
 		# WORD_SMART, not WORD: Thai has no spaces between words, so plain
 		# WORD mode can't find a break point and the line runs off the panel.
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
-		_info_panel.add_child(desc_lbl)
+		desc_clip.add_child(desc_lbl)
 
 	# Game effect
 	var effect_y := 196.0
@@ -1287,15 +1297,21 @@ func _show_card_info(id: String) -> void:
 		eff_hdr.add_theme_color_override("font_color", C_GOLD)
 		eff_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(eff_hdr)
+		var eff_clip := Control.new()
+		eff_clip.position = Vector2(16, effect_y + 16)
+		eff_clip.size = Vector2(288, 48)
+		eff_clip.clip_contents = true
+		eff_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(eff_clip)
 		var eff_lbl := Label.new()
-		eff_lbl.text = data["desc"]; eff_lbl.position = Vector2(16, effect_y + 16)
+		eff_lbl.text = data["desc"]; eff_lbl.position = Vector2.ZERO
 		eff_lbl.custom_minimum_size = Vector2(288, 0)
-		eff_lbl.size = Vector2(288, 40)
+		eff_lbl.size = Vector2(288, 48)
 		eff_lbl.add_theme_font_size_override("font_size", 12)
 		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
-		_info_panel.add_child(eff_lbl)
+		eff_clip.add_child(eff_lbl)
 
 	# What this element combines with — only shown once the resulting
 	# compound has actually been discovered in the lab minigame, so this
