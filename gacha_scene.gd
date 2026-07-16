@@ -271,30 +271,39 @@ func _rebuild_art() -> void:
 	add_child(backdrop)
 	_art_nodes.append(backdrop)
 
+	# Clip container matches the showcase frame with a small inset margin
+	# ("เว้นห่างกับกรอบนิดนึง") so the art reads as sitting inside the frame
+	# rather than glued to its edges.
+	var art_clip := Control.new()
+	art_clip.name = "_ArtClip"
+	const ART_PAD := 8.0
+	art_clip.size     = Vector2(area_w - ART_PAD * 2.0, area_h - ART_PAD * 2.0)
+	art_clip.position = Vector2(area_x + ART_PAD, area_y + ART_PAD)
+	art_clip.clip_contents = true
+	art_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	art_clip.z_index = 1
+	add_child(art_clip)
+	_art_nodes.append(art_clip)
+
+	# Manual cover-crop, biased toward the top (like the gacha reveal card)
+	# instead of a plain centered COVERED/CENTERED choice — fills the frame
+	# edge to edge with no empty margins, while still keeping heads/hands in
+	# frame instead of cropping them off centered.
+	var iw := float(art_tex.get_width())
+	var ih := float(art_tex.get_height())
+	var cover_scale := maxf(art_clip.size.x / iw, art_clip.size.y / ih)
+	var disp_w := iw * cover_scale
+	var disp_h := ih * cover_scale
+
 	var art_rect := TextureRect.new()
 	art_rect.name         = "_ArtRect"
 	art_rect.texture      = art_tex
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	# COVERED fills the frame edge to edge with no letterbox margins, but for
-	# art whose aspect ratio is very different from the frame's (e.g. a tall
-	# portrait in this wide showcase box) it has to crop away a big chunk of
-	# the image — cutting off heads/hands. Only use COVERED when that crop
-	# would be modest; fall back to CENTERED (whole image visible, letterboxed)
-	# when it would be severe, so nothing important gets cut off.
-	var iw := float(art_tex.get_width())
-	var ih := float(art_tex.get_height())
-	var scale_cover  := maxf(area_w / iw, area_h / ih)
-	var scale_contain := minf(area_w / iw, area_h / ih)
-	var crop_fraction := 1.0 - (scale_contain / scale_cover)
-	art_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if crop_fraction > 0.35 \
-		else TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	art_rect.size         = Vector2(area_w, area_h)
-	art_rect.position     = Vector2(area_x, area_y)
-	art_rect.clip_contents = true
+	art_rect.stretch_mode = TextureRect.STRETCH_SCALE
+	art_rect.size         = Vector2(disp_w, disp_h)
+	art_rect.position     = Vector2((art_clip.size.x - disp_w) * 0.5, (art_clip.size.y - disp_h) * 0.15)
 	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_rect.z_index      = 1
-	add_child(art_rect)
-	_art_nodes.append(art_rect)
+	art_clip.add_child(art_rect)
 
 	# Faint dark frame border to make the art read as a framed showcase
 	var frame := Panel.new()
