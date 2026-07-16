@@ -235,7 +235,11 @@ const C_LOCK   := Color(0.25, 0.28, 0.38, 1.0)
 var _tab := 0  # 0=elements (only tab)
 
 # Compound keys already shown in elements tab — skip in compounds tab
-const ELEM_COMPOUND_KEYS := ["water", "salt", "rust"]
+const ELEM_COMPOUND_KEYS := [
+	"water", "salt", "rust",
+	"carbon_dioxide", "nitric_oxide", "sulfur_dioxide",
+	"calcium_oxide", "magnesium_oxide", "potassium_oxide",
+]
 var _detail_overlay: Control
 var _discovered: Array[String] = []  # element ids unlocked
 
@@ -270,6 +274,9 @@ func _ready() -> void:
 	# codex tracks separately as their own "element" card, e.g. Water)
 	const COMPOUND_TO_ELEM := {
 		"water": "Water", "salt": "Salt", "rust": "Rust",
+		"carbon_dioxide": "CO2", "nitric_oxide": "NitricOxide",
+		"sulfur_dioxide": "SO2", "calcium_oxide": "CaO",
+		"magnesium_oxide": "MgO", "potassium_oxide": "K2O",
 	}
 	_discovered = []
 	# Starter elements — same set the lab gives you from the start
