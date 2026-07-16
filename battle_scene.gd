@@ -1417,9 +1417,9 @@ func _refresh_enemy_sprite() -> void:
 ## Idle bob loop for the enemy circle. Stage 1 (Void Beast) sits a bit lower than
 ## the default perch height, per request.
 const ENEMY_BASE_SIZE       := 140.0
-const ENEMY_SCALE_STAGE1    := 1.0
+const ENEMY_SCALE_STAGE1    := 1.25   # Void Beast reads a bit bigger/clearer
 const ENEMY_SCALE_FINAL     := 2.3    # final-stage boss reads even bigger/more imposing
-const ENEMY_Y_OFFSET_STAGE1 := 95.0   # stage-1 monster sits further down than the boss
+const ENEMY_Y_OFFSET_STAGE1 := 125.0  # stage-1 monster sits further down than the boss
 # Keeps the same top-edge clearance as before (below the HP panel + its buff
 # row) at the new larger scale: half-size grew from 133 to 161, so the
 # offset grows by the same 28px to keep the top edge in the same place.
