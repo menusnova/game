@@ -1432,7 +1432,7 @@ offset_right = 80.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "Gacha"
+text = "Void Gate"
 horizontal_alignment = 1
 
 [node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
