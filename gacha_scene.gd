@@ -301,7 +301,7 @@ func _rebuild_art() -> void:
 	art_rect.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	art_rect.stretch_mode = TextureRect.STRETCH_SCALE
 	art_rect.size         = Vector2(disp_w, disp_h)
-	art_rect.position     = Vector2((art_clip.size.x - disp_w) * 0.5, (art_clip.size.y - disp_h) * 0.15)
+	art_rect.position     = Vector2((art_clip.size.x - disp_w) * 0.5, (art_clip.size.y - disp_h) * 0.55)
 	art_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art_clip.add_child(art_rect)
 
