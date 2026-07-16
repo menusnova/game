@@ -1227,8 +1227,8 @@ func _show_card_info(id: String) -> void:
 	# truncate with an ellipsis instead of running past the panel edge.
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
-	name_lbl.position = Vector2(104, 18)
-	name_lbl.size = Vector2(200, 26)
+	name_lbl.position = Vector2(88, 18)
+	name_lbl.size = Vector2(216, 26)
 	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 18)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
@@ -1239,8 +1239,8 @@ func _show_card_info(id: String) -> void:
 	var type_info: Dictionary = ELEM_INFO.get(id, {})
 	var type_str: String = type_info.get("type", ctype.to_upper())
 	var type_lbl := Label.new()
-	type_lbl.text = type_str; type_lbl.position = Vector2(104, 42)
-	type_lbl.size = Vector2(200, 18)
+	type_lbl.text = type_str; type_lbl.position = Vector2(88, 42)
+	type_lbl.size = Vector2(216, 18)
 	type_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	type_lbl.add_theme_font_size_override("font_size", 11)
 	type_lbl.add_theme_color_override("font_color", Color(col.r + 0.1, col.g, col.b, 0.75))
