@@ -1589,7 +1589,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	panel.size          = Vector2(CARD_W, CARD_H)
 	panel.position      = Vector2(bx - CARD_W * 0.5, by - CARD_H)
 	panel.pivot_offset  = Vector2(CARD_W * 0.5, CARD_H)
-	panel.rotation      = angle_rad
+	# Keep the fan SPREAD (positions above still use the full angle) but tilt
+	# each card less than its arc angle, so the card face — and its name — stay
+	# closer to upright instead of leaning hard to the side.
+	panel.rotation      = angle_rad * 0.5
 	panel.z_index       = 8 + idx
 	panel.mouse_filter  = Control.MOUSE_FILTER_STOP
 	panel.add_theme_stylebox_override("panel",
