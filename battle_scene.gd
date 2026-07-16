@@ -888,9 +888,15 @@ func _build_action_ring() -> void:
 			itex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED if id == "EndTurn" else TextureRect.STRETCH_SCALE
 			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			itex.modulate = Color(1, 1, 1, 0.85)
-			var itex_mat := CanvasItemMaterial.new()
-			itex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-			itex.material = itex_mat
+			if id == "EndTurn":
+				# Mask to a circle so the square source art's corners don't
+				# poke out past the round button border.
+				itex.material = ShaderMaterial.new()
+				itex.material.shader = load("res://shaders/circle_mask.gdshader")
+			else:
+				var itex_mat := CanvasItemMaterial.new()
+				itex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+				itex.material = itex_mat
 			clip.add_child(itex)
 
 			# Caption sits snug just below the button, as a sibling (not a
