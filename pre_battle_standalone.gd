@@ -34,6 +34,11 @@ func _get_keyed_enemy_texture(path: String) -> Texture2D:
 	img.convert(Image.FORMAT_RGBA8)
 	var w := img.get_width()
 	var h := img.get_height()
+	# Already a proper cutout (corner pixel already transparent) — nothing
+	# to key out, use as-is.
+	if img.get_pixel(0, 0).a <= 0.02:
+		_keyed_enemy_tex_cache[path] = src
+		return src
 	var bg_col := img.get_pixel(0, 0)
 	var TOLERANCE := 0.08
 	var visited := PackedByteArray()
@@ -72,6 +77,31 @@ func _get_keyed_enemy_texture(path: String) -> Texture2D:
 	if float(cleared) / float(w * h) > 0.70:
 		_keyed_enemy_tex_cache[path] = src
 		return src
+
+	# Some full illustrations (a painted scene, not a flat-color cutout)
+	# only have a small matching sliver near one corner — color-based
+	# keying can't isolate the character from painted scenery and leaves
+	# a hard, torn-looking edge around whatever solid background remains.
+	# Don't attempt to key those at all; instead fade the art's own outer
+	# edges to transparent so it blends into the UI without any hard box.
+	if float(cleared) / float(w * h) < 0.20:
+		var faded: Image = src.get_image().duplicate()
+		if faded.is_compressed():
+			if faded.decompress() != OK:
+				_keyed_enemy_tex_cache[path] = src
+				return src
+		faded.convert(Image.FORMAT_RGBA8)
+		const EDGE_X := 0.14
+		const EDGE_Y := 0.10
+		for fy0 in h:
+			var fy: float = minf(float(fy0) / (h * EDGE_Y), minf(float(h - 1 - fy0) / (h * EDGE_Y), 1.0))
+			for fx0 in w:
+				var fx: float = minf(float(fx0) / (w * EDGE_X), minf(float(w - 1 - fx0) / (w * EDGE_X), 1.0))
+				var fc := faded.get_pixel(fx0, fy0)
+				faded.set_pixel(fx0, fy0, Color(fc.r, fc.g, fc.b, fc.a * fx * fy))
+		var faded_tex := ImageTexture.create_from_image(faded)
+		_keyed_enemy_tex_cache[path] = faded_tex
+		return faded_tex
 
 	# Some art has background-colored gaps fully enclosed by the silhouette
 	# (e.g. the negative space between an arm and the body) — not connected
@@ -690,16 +720,25 @@ func _build_char_grid(parent: Control) -> void:
 			_lbl("🧑", 36, Color(1, 1, 1, 1.0 if owned else 0.5), card, Vector2(cw / 2 - 18, 10))
 
 		if not owned:
-			# Small lock badge in the corner rather than covering the portrait
+			# Dark scrim + big centered lock icon so a locked card reads as
+			# clearly locked at a glance, even next to the selection
+			# checkmark (selectable for preview, but still visibly locked).
+			var scrim := ColorRect.new()
+			scrim.color = Color(0, 0, 0, 0.38)
+			scrim.size = Vector2(cw, ch_h - 22)
+			scrim.position = Vector2(0, 0)
+			scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card.add_child(scrim)
+
 			var lock_path := "res://image/lock_chain_x.png"
 			if ResourceLoader.exists(lock_path):
 				var lock_tex := TextureRect.new()
 				lock_tex.texture = load(lock_path)
 				lock_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				lock_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				lock_tex.size = Vector2(20, 20)
-				lock_tex.position = Vector2(cw - 24, ch_h - 46)
-				lock_tex.modulate = Color(1, 1, 1, 0.85)
+				lock_tex.size = Vector2(34, 34)
+				lock_tex.position = Vector2((cw - 34) * 0.5, (ch_h - 22 - 34) * 0.5)
+				lock_tex.modulate = Color(1, 1, 1, 0.95)
 				lock_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				card.add_child(lock_tex)
 
