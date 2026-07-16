@@ -55,9 +55,19 @@ func _setup_profile_avatar() -> void:
 	full_img = full_img.duplicate()
 	# Already-imported textures are usually VRAM-compressed by default —
 	# get_pixel()/get_region() silently misbehave on a compressed Image.
-	# Decompress before touching any pixels.
-	if full_img.is_compressed():
-		full_img.decompress()
+	# Decompress before touching any pixels; if that fails, fall back to a
+	# plain (un-keyed) atlas crop rather than risk a corrupted result.
+	if full_img.is_compressed() and full_img.decompress() != OK:
+		var atlas := AtlasTexture.new()
+		atlas.atlas  = full_tex
+		atlas.region = Rect2(136, 12, 240, 240)
+		avatar.texture = atlas
+		avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		if ResourceLoader.exists("res://shaders/circle_mask.gdshader"):
+			var fail_mat := ShaderMaterial.new()
+			fail_mat.shader = load("res://shaders/circle_mask.gdshader")
+			avatar.material = fail_mat
+		return
 	full_img.convert(Image.FORMAT_RGBA8)
 	# lyra_guard.png is 512x1024 (full body); head sits near the top, roughly centered.
 	var region_img: Image = full_img.get_region(Rect2i(136, 12, 240, 240))
