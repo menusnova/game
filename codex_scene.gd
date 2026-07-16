@@ -461,7 +461,7 @@ func _build_element_tab() -> void:
 	for elem in elem_found + elem_hidden:
 		grid.get_child(0).add_child(_make_element_card(elem))
 
-	# ── Compounds section — split into Tier 1 / Tier 2 sub-groups,
+	# ── Compounds section — split into Tier 1 / Tier 2 / Tier 3 sub-groups,
 	#    discovered ones sorted first within each tier ──
 	var all_keys: Array = ReactionDB.COMPOUNDS.keys()
 	var comp_keys: Array = all_keys.filter(func(k): return k not in ELEM_COMPOUND_KEYS)
@@ -469,7 +469,7 @@ func _build_element_tab() -> void:
 
 	vbox.add_child(_section_label("สารประกอบที่ค้นพบ  (%d/%d)" % [found_count, comp_keys.size()]))
 
-	for tier in [1, 2]:
+	for tier in [1, 2, 3]:
 		var tier_keys: Array = comp_keys.filter(func(k):
 			return int(ReactionDB.COMPOUNDS[k].get("tier", 1)) == tier)
 		if tier_keys.is_empty():
@@ -687,10 +687,13 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 			8, 132, CW - 16, CH - 136,
 			8, Color(0.68, 0.80, 0.92, 0.62))
 
-		# Tier frame overlay — g1.jpg (tier 1) / g2.jpg (tier 2)
-		var comp_tier: int = clampi(int(compound.get("tier", 1)), 1, 2)
+		# Tier frame overlay — g1.jpg (tier 1) / g2.jpg (tier 2) / g3.jpg (tier 3)
+		var comp_tier: int = clampi(int(compound.get("tier", 1)), 1, 3)
 		var cftex := TextureRect.new()
-		cftex.texture      = preload("res://image/g1.jpg") if comp_tier == 1 else preload("res://image/g2.jpg")
+		match comp_tier:
+			1: cftex.texture = preload("res://image/g1.jpg")
+			2: cftex.texture = preload("res://image/g2.jpg")
+			_: cftex.texture = preload("res://image/g3.jpg")
 		cftex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		cftex.stretch_mode = TextureRect.STRETCH_SCALE
 		cftex.size         = Vector2(CW + 4, CH + 4)
