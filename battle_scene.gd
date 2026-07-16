@@ -939,7 +939,20 @@ func _build_action_ring() -> void:
 			btn.add_child(clip)
 			var itex := TextureRect.new()
 			itex.texture = _load_png(icon_path)
-			itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			if id == "EndTurn":
+				# EndTurn's art is a busy sci-fi emblem that bleeds all the
+				# way to its own edges — filling the button edge-to-edge
+				# swallowed the button's own colored border ring (the
+				# normal/hover/pressed indicator), making it unclear it's
+				# tappable. Inset it so that ring stays visible around it.
+				const INSET := 10.0
+				itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				itex.offset_left   += INSET
+				itex.offset_top    += INSET
+				itex.offset_right  -= INSET
+				itex.offset_bottom -= INSET
+			else:
+				itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 			# EndTurn's art is a wide (non-square) image — COVERED crops it to
 			# fill the round button without squashing/distorting it the way
