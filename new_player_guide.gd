@@ -158,7 +158,10 @@ func _build_ui() -> void:
 	_body_lbl = Label.new()
 	_body_lbl.position = Vector2(56, 182)
 	_body_lbl.custom_minimum_size = Vector2(PW - 112, 0)
-	_body_lbl.size = Vector2(PW - 112, 190)
+	# Height stops short of the page-dots row at PH-96 (=364) so a long body
+	# can never overlap the dots/page number/nav buttons below it.
+	_body_lbl.size = Vector2(PW - 112, 170)
+	_body_lbl.clip_text = true
 	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_body_lbl.add_theme_font_size_override("font_size", 14)
 	_body_lbl.add_theme_color_override("font_color", COL_TEXT)
