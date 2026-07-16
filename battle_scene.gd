@@ -1277,6 +1277,7 @@ func _show_card_info(id: String) -> void:
 		desc_lbl.custom_minimum_size = Vector2(288, 0)
 		desc_lbl.size = Vector2(288, 86)
 		desc_lbl.add_theme_font_size_override("font_size", 11)
+		desc_lbl.add_theme_constant_override("line_spacing", 6)
 		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
 		# WORD_SMART, not WORD: Thai has no spaces between words, so plain
 		# WORD mode can't find a break point and the line runs off the panel.
@@ -1308,6 +1309,7 @@ func _show_card_info(id: String) -> void:
 		eff_lbl.custom_minimum_size = Vector2(288, 0)
 		eff_lbl.size = Vector2(288, 48)
 		eff_lbl.add_theme_font_size_override("font_size", 12)
+		eff_lbl.add_theme_constant_override("line_spacing", 5)
 		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE

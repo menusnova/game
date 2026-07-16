@@ -78,7 +78,8 @@ func _build_ui() -> void:
 	add_child(dim)
 	create_tween().tween_property(dim, "color:a", 0.72, 0.22)
 
-	const PW := 760.0; const PH := 460.0
+	const PW := 780.0; const PH := 524.0
+	const PAD := 48.0   # side padding so text never touches the frame
 	# Soft outer glow (purple) behind the glass panel
 	var glow := Panel.new()
 	glow.size = Vector2(PW + 24.0, PH + 24.0)
@@ -129,45 +130,58 @@ func _build_ui() -> void:
 	_content_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel.add_child(_content_root)
 
+	# ── Icon (centred, top) ──
 	_icon_lbl = Label.new()
-	_icon_lbl.position = Vector2(0, 40)
-	_icon_lbl.size = Vector2(PW, 70)
+	_icon_lbl.position = Vector2(0, 30)
+	_icon_lbl.size = Vector2(PW, 64)
 	_icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_icon_lbl.add_theme_font_size_override("font_size", 48)
+	_icon_lbl.add_theme_font_size_override("font_size", 46)
 	_icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(_icon_lbl)
 
+	# ── Title / heading (centred) ──
 	_title_lbl = Label.new()
-	_title_lbl.position = Vector2(40, 118)
-	_title_lbl.custom_minimum_size = Vector2(PW - 80, 0)
-	_title_lbl.size = Vector2(PW - 80, 36)
+	_title_lbl.position = Vector2(PAD, 100)
+	_title_lbl.custom_minimum_size = Vector2(PW - PAD * 2.0, 0)
+	_title_lbl.size = Vector2(PW - PAD * 2.0, 40)
 	_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_lbl.add_theme_font_size_override("font_size", 24)
+	_title_lbl.add_theme_font_size_override("font_size", 26)
 	_title_lbl.add_theme_color_override("font_color", COL_CYAN)
 	_title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(_title_lbl)
 
+	# ── Divider: clear gap between heading and body ──
 	var div := ColorRect.new()
 	div.color = Color(COL_PURPLE.r, COL_PURPLE.g, COL_PURPLE.b, 0.30)
-	div.size = Vector2(PW - 120, 1)
-	div.position = Vector2(60, 164)
+	div.size = Vector2(PW - PAD * 3.0, 1)
+	div.position = Vector2(PAD * 1.5, 150)
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content_root.add_child(div)
 
+	# ── Body: left-aligned, word-wrapped, roomy line spacing, padded so it
+	#    stays well inside the frame. Lives in a clip so it can never spill
+	#    past its area, and the area is tall enough for several paragraphs
+	#    (headroom for future/longer copy). ──
+	var body_clip := Control.new()
+	body_clip.position = Vector2(PAD, 172)
+	body_clip.size = Vector2(PW - PAD * 2.0, PH - 172.0 - 108.0)  # down to ~y392
+	body_clip.clip_contents = true
+	body_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(body_clip)
+
 	_body_lbl = Label.new()
-	_body_lbl.position = Vector2(56, 182)
-	_body_lbl.custom_minimum_size = Vector2(PW - 112, 0)
-	# Height stops short of the page-dots row at PH-96 (=364) so a long body
-	# can never overlap the dots/page number/nav buttons below it.
-	_body_lbl.size = Vector2(PW - 112, 170)
-	_body_lbl.clip_text = true
-	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_body_lbl.add_theme_font_size_override("font_size", 14)
+	_body_lbl.position = Vector2.ZERO
+	_body_lbl.custom_minimum_size = Vector2(body_clip.size.x, 0)
+	_body_lbl.size = body_clip.size
+	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_body_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_TOP
+	_body_lbl.add_theme_font_size_override("font_size", 15)
+	_body_lbl.add_theme_constant_override("line_spacing", 8)
 	_body_lbl.add_theme_color_override("font_color", COL_TEXT)
 	_body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(_body_lbl)
+	body_clip.add_child(_body_lbl)
 
 	# Page dots
 	_dots_row = HBoxContainer.new()

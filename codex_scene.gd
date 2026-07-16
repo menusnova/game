@@ -428,6 +428,7 @@ func _clipped_desc(parent: Control, txt: String, px: float, py: float,
 	lbl.custom_minimum_size = Vector2(w, 0)
 	lbl.size = Vector2(w, h + 40)   # taller than clip so wrap has room
 	lbl.add_theme_font_size_override("font_size", font_sz)
+	lbl.add_theme_constant_override("line_spacing", 5)
 	lbl.add_theme_color_override("font_color", col)
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -848,6 +849,7 @@ func _open_element_detail(elem: Dictionary) -> void:
 	real_desc.custom_minimum_size = Vector2(IW, 0)
 	real_desc.size = Vector2(IW, 116)
 	real_desc.add_theme_font_size_override("font_size", 11)
+	real_desc.add_theme_constant_override("line_spacing", 6)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
 	# No TRIM_ELLIPSIS here: combined with autowrap it forces the label back to
 	# a single trimmed line (the bug that made this run off the frame). The
