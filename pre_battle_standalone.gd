@@ -265,7 +265,12 @@ func _refresh_team_display() -> void:
 		var cx := (SW - pw) / 2.0
 		var cy := center_y - ph * 0.55 + 50.0   # nudged down
 
+		# Same "<name>_1.png" pose convention first (Lyra), falling back to a
+		# plain "<name>.png" for names that don't fit it (Caelum Voss ->
+		# caelum_voss.png), same as the team-select grid cards.
 		var portrait_path := "res://image/%s_1.png" % ch.to_lower()
+		if not ResourceLoader.exists(portrait_path):
+			portrait_path = "res://image/%s.png" % ch.to_lower().replace(" ", "_")
 		if ResourceLoader.exists(portrait_path):
 			# Soft elliptical ground shadow right at the feet
 			var shadow := Panel.new()
@@ -280,11 +285,20 @@ func _refresh_team_display() -> void:
 			_char_display_root.add_child(shadow)
 
 			var tex_rect := TextureRect.new()
-			tex_rect.texture = load(portrait_path)
+			# Background-keyed (same border flood-fill technique used for the
+			# enemy sprites) so the art's flat background doesn't show as a
+			# solid box behind the standing character.
+			tex_rect.texture = _get_keyed_enemy_texture(portrait_path)
 			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			tex_rect.position = Vector2(cx, cy)
 			tex_rect.size = Vector2(pw, ph)
+			var is_char_owned := false
+			for entry in CharacterManager.get_roster():
+				if entry.get("name", "") == ch and entry.get("owned", false):
+					is_char_owned = true
+					break
+			tex_rect.modulate = Color(1, 1, 1, 1.0) if is_char_owned else Color(1, 1, 1, 0.6)
 			tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_char_display_root.add_child(tex_rect)
 
