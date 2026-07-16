@@ -87,7 +87,7 @@ offset_bottom = 44.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.55, 0.60, 0.74, 0.80)
-text = "Store"
+text = "Shop"
 vertical_alignment = 1
 
 [node name="BackBtn" type="Panel" parent="."]
