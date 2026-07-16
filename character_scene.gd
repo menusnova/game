@@ -300,7 +300,7 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 			dim.queue_free()
 	)
 
-	var bw := 440.0; var bh := 340.0
+	var bw := 520.0; var bh := 400.0
 	var box := Panel.new()
 	box.size = Vector2(bw, bh)
 	box.position = Vector2((VW - bw) * 0.5, (VH - bh) * 0.5)
@@ -355,8 +355,12 @@ func _show_skill_detail(sk: Dictionary, type_col: Color, icon_path: String) -> v
 
 	var desc_lbl := _lbl(str(sk.get("desc", "")), 12, Color(0.85, 0.90, 1.0, 0.90))
 	desc_lbl.position = Vector2(0, 0)
-	desc_lbl.size = Vector2(bw - 40, desc_clip.size.y + 60)
-	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# Fixed width forces the wrap point; custom_minimum_size must match or a
+	# Label outside a Container can still report its unwrapped natural size
+	# as its effective minimum and paint past the given rect on some lines.
+	desc_lbl.custom_minimum_size = Vector2(desc_clip.size.x, 0)
+	desc_lbl.size = Vector2(desc_clip.size.x, desc_clip.size.y + 80)
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_clip.add_child(desc_lbl)
 
 	var close_btn := Button.new()
