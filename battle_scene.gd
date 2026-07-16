@@ -76,6 +76,19 @@ const RECIPES := {
 	"C+Ca":  "CaC2",
 }
 
+# Reaction-card id -> the lab minigame's compound key for PlayerData
+# .discovered_compounds, so the card-info popup can gate the recipe hint
+# behind actually having discovered it in the lab (not just having it as a
+# working battle reaction).
+const RESULT_TO_LAB_KEY := {
+	"Water": "water", "Salt": "salt", "Rust": "rust",
+	"CO2": "carbon_dioxide", "NO": "nitric_oxide", "SO2": "sulfur_dioxide",
+	"CaO": "calcium_oxide", "MgO": "magnesium_oxide", "K2O": "potassium_oxide",
+	"HCl": "hydrochloric_acid", "FeS": "iron_sulfide", "NaH": "sodium_hydride",
+	"CH4": "methane", "H2S": "hydrogen_sulfide", "CaH2": "calcium_hydride",
+	"Na3N": "sodium_nitride", "CaC2": "calcium_carbide",
+}
+
 # ── Character ─────────────────────────────────────────────
 const CHARACTER := {
 	"name":          "Lyra",
@@ -1225,6 +1238,47 @@ func _show_card_info(id: String) -> void:
 		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(eff_lbl)
+
+	# What this element combines with — only shown once the resulting
+	# compound has actually been discovered in the lab minigame, so this
+	# doesn't just hand out every recipe for free from the battle screen.
+	if ctype == "element":
+		var combo_y := 196.0
+		var div3 := ColorRect.new()
+		div3.color = Color(1,1,1,0.08); div3.size = Vector2(288,1); div3.position = Vector2(16, combo_y - 8)
+		div3.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(div3)
+		var combo_hdr := Label.new()
+		combo_hdr.text = "ผสมกับ"; combo_hdr.position = Vector2(16, combo_y)
+		combo_hdr.add_theme_font_size_override("font_size", 10)
+		combo_hdr.add_theme_color_override("font_color", C_GOLD)
+		combo_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(combo_hdr)
+
+		var cy := combo_y + 18.0
+		for key in RECIPES.keys():
+			var parts: PackedStringArray = key.split("+")
+			if id not in parts: continue
+			var other: String = parts[0] if parts[1] == id else parts[1]
+			var result: String = RECIPES[key]
+			var lab_key: String = RESULT_TO_LAB_KEY.get(result, "")
+			var discovered: bool = lab_key != "" and PlayerData.discovered_compounds.has(lab_key)
+			var combo_lbl := Label.new()
+			var other_name: String = CARD_DB.get(other, {}).get("name", other)
+			if discovered:
+				var result_name: String = CARD_DB.get(result, {}).get("name", result)
+				combo_lbl.text = "• %s + %s → %s" % [sym, other_name, result_name]
+				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
+			else:
+				combo_lbl.text = "• %s + %s → ??? (ผสมที่ Lab เพื่อค้นพบ)" % [sym, other_name]
+				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
+			combo_lbl.position = Vector2(16, cy)
+			combo_lbl.size = Vector2(288, 16)
+			combo_lbl.add_theme_font_size_override("font_size", 10)
+			combo_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			combo_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_info_panel.add_child(combo_lbl)
+			cy += 18.0
 
 	# AP cost
 	if data.has("ap"):
