@@ -700,6 +700,11 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 		cfmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		cftex.material = cfmat
 		card.add_child(cftex)
+
+		card.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed:
+				_open_compound_detail(compound)
+		)
 	else:
 		card.add_theme_stylebox_override("panel", _flat(
 			Color(0.06, 0.07, 0.12, 1.0), Color(0.15, 0.18, 0.25, 0.35), 10, 1))
@@ -920,6 +925,120 @@ func _open_element_detail(elem: Dictionary) -> void:
 		ry += 20
 
 	# Close button
+	var close_btn := Button.new()
+	close_btn.text = "✕"
+	close_btn.size = Vector2(32, 32)
+	close_btn.position = Vector2(CW - 44, 10)
+	close_btn.add_theme_font_size_override("font_size", 14)
+	close_btn.add_theme_color_override("font_color", C_SUB)
+	close_btn.add_theme_stylebox_override("normal",  _flat(Color(0,0,0,0), Color(0,0,0,0)))
+	close_btn.add_theme_stylebox_override("hover",   _flat(Color(1,1,1,0.08), Color(0,0,0,0)))
+	close_btn.add_theme_stylebox_override("focus",   _flat(Color(0,0,0,0), Color(0,0,0,0)))
+	close_btn.pressed.connect(func(): _detail_overlay.visible = false)
+	card.add_child(close_btn)
+
+	_detail_overlay.visible = true
+
+## Detail popup for a discovered "compounds tab" entry — compounds made from
+## elements not yet unlocked for battle (Cu, Zn, P, Si), so unlike the
+## elements-tab cards there's no in-game "recipes/effect" section; shown
+## instead is the compound's real-world use, which the card grid itself
+## never had room to display.
+func _open_compound_detail(compound: Dictionary) -> void:
+	for c in _detail_overlay.get_children():
+		if c is Panel:
+			c.queue_free()
+
+	const CW := 480.0; const CH := 360.0
+	var col := Color(0.35, 0.60, 1.0)
+	var card := Panel.new()
+	card.size = Vector2(CW, CH)
+	card.position = Vector2((1152 - CW) * 0.5, (648 - CH) * 0.5)
+	card.clip_contents = true
+	card.add_theme_stylebox_override("panel", _flat(
+		Color(0.06, 0.08, 0.16, 1.0), Color(col.r, col.g, col.b, 0.7), 12, 2))
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	_detail_overlay.add_child(card)
+
+	const IW := 440.0
+
+	var fml := Label.new()
+	fml.text = str(compound.get("formula", ""))
+	fml.position = Vector2(20, 14)
+	fml.size = Vector2(100, 64)
+	fml.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	fml.add_theme_font_size_override("font_size", 40)
+	fml.add_theme_color_override("font_color", Color(0.48, 0.84, 1, 0.92))
+	fml.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(fml)
+
+	var name_lbl := Label.new()
+	name_lbl.text = str(compound.get("name", ""))
+	name_lbl.position = Vector2(130, 16)
+	name_lbl.size = Vector2(IW - 110, 30)
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	name_lbl.add_theme_font_size_override("font_size", 22)
+	name_lbl.add_theme_color_override("font_color", C_TEXT)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(name_lbl)
+
+	var sub := Label.new()
+	sub.text = "%s · %s" % [str(compound.get("type", "")), str(compound.get("state", ""))]
+	sub.position = Vector2(130, 48)
+	sub.size = Vector2(IW - 110, 20)
+	sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	sub.add_theme_font_size_override("font_size", 12)
+	sub.add_theme_color_override("font_color", C_SUB)
+	sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(sub)
+
+	var div := ColorRect.new()
+	div.color = Color(col.r, col.g, col.b, 0.2)
+	div.size = Vector2(IW, 1)
+	div.position = Vector2(20, 100)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(div)
+
+	var real_title := Label.new()
+	real_title.text = "ข้อมูลจริง"
+	real_title.position = Vector2(20, 110)
+	real_title.size = Vector2(IW, 16)
+	real_title.add_theme_font_size_override("font_size", 11)
+	real_title.add_theme_color_override("font_color", C_GOLD)
+	real_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(real_title)
+
+	_clipped_desc(card, str(compound.get("description", "")),
+		20, 128, IW, 90, 11, Color(0.8, 0.87, 1.0, 0.85))
+
+	var div2 := ColorRect.new()
+	div2.color = Color(col.r, col.g, col.b, 0.12)
+	div2.size = Vector2(IW, 1)
+	div2.position = Vector2(20, 226)
+	div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(div2)
+
+	var use_title := Label.new()
+	use_title.text = "การใช้งานจริง"
+	use_title.position = Vector2(20, 234)
+	use_title.size = Vector2(IW, 16)
+	use_title.add_theme_font_size_override("font_size", 11)
+	use_title.add_theme_color_override("font_color", C_GOLD)
+	use_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(use_title)
+
+	_clipped_desc(card, str(compound.get("real_use", "")),
+		20, 252, IW, 60, 11, Color(0.8, 0.87, 1.0, 0.85))
+
+	var rarity_lbl := Label.new()
+	rarity_lbl.text = "★".repeat(clampi(int(compound.get("rarity", 1)), 1, 5))
+	rarity_lbl.position = Vector2(20, CH - 44)
+	rarity_lbl.size = Vector2(IW, 22)
+	rarity_lbl.add_theme_font_size_override("font_size", 14)
+	rarity_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3, 0.9))
+	rarity_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(rarity_lbl)
+
 	var close_btn := Button.new()
 	close_btn.text = "✕"
 	close_btn.size = Vector2(32, 32)
