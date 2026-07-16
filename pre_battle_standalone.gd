@@ -666,10 +666,12 @@ func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
 
 # ── character grid ──
 func _build_char_grid(parent: Control) -> void:
-	# Show every character, owned or not — locked ones are still tappable
-	# for a preview/selection, but can't actually be brought into battle
-	# (see _on_start()'s owned check).
-	var roster: Array[Dictionary] = CharacterManager.get_roster()
+	# Only owned characters are offered here — not-yet-obtained characters
+	# (e.g. Caelum Voss) are left out entirely instead of being shown as a
+	# locked preview.
+	var roster: Array[Dictionary] = CharacterManager.get_roster().filter(
+		func(e): return e.get("owned", false)
+	)
 
 	var cols := 3
 	var cw := 86.0; var ch_h := 110.0; var gap := 8.0
