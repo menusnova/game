@@ -130,6 +130,23 @@ func _key_out_background(src_img: Image) -> Image:
 	if float(cleared) / float(w * h) > 0.70:
 		return src_img   # likely a leak through a flat/dark subject — keep the original art
 
+	# If the background isn't a simple flat/gradient color (e.g. real
+	# scenery bleeding into the crop corner), color-based keying can only
+	# clear a small sliver and leaves a hard, torn-looking edge around
+	# whatever solid background remains. Fade the crop's own outer edges to
+	# transparent instead of attempting a partial, broken key.
+	if float(cleared) / float(w * h) < 0.20:
+		var faded := src_img.duplicate() as Image
+		const EDGE_X := 0.16
+		const EDGE_Y := 0.16
+		for fy0 in h:
+			var fy: float = minf(float(fy0) / (h * EDGE_Y), minf(float(h - 1 - fy0) / (h * EDGE_Y), 1.0))
+			for fx0 in w:
+				var fx: float = minf(float(fx0) / (w * EDGE_X), minf(float(w - 1 - fx0) / (w * EDGE_X), 1.0))
+				var fc := faded.get_pixel(fx0, fy0)
+				faded.set_pixel(fx0, fy0, Color(fc.r, fc.g, fc.b, fc.a * fx * fy))
+		return faded
+
 	# Some art has background-colored gaps fully enclosed by the silhouette
 	# (e.g. the negative space between an arm and the body) — not connected
 	# to the image border, so the flood-fill above correctly leaves them
