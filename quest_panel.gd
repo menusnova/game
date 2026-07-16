@@ -393,7 +393,7 @@ class _QuestRow extends Control:
 		# Reward cards — vertical style
 		const REWARDS := [
 			["exp",     "⭐", "res://image/icon_exp.png",     Color(1.00, 0.82, 0.25), "EXP"],
-			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20), "Gold"],
+			["gold",    "",   "res://image/icon_gold.png",    Color(0.95, 0.72, 0.20), "Aether Credit"],
 			["tp",      "",   "res://image/TP.jpg",           Color(0.40, 0.90, 0.65), "TP"],
 			["crystal", "",   "res://image/crystal_gem.png",  Color(0.40, 0.88, 1.00), "Crystal"],
 			["upgrade", "",   "res://image/icon_upgrade.png", Color(0.55, 0.80, 1.00), "Upgrade"],

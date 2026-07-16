@@ -555,9 +555,10 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		var exp_r: int  = ([50, 150, 300] as Array[int])[safe_tier - 1]
 		var gold_r: int = ([1000, 5000, 10000] as Array[int])[safe_tier - 1]
 		var cry_r: int  = ([10,  20,  80] as Array[int])[safe_tier - 1]
-		r_vals.text = "+%d EXP   +%d Gold   +%d Crystal" % [exp_r, gold_r, cry_r]
+		r_vals.text = "+%d EXP   +%d Aether Credit   +%d Crystal" % [exp_r, gold_r, cry_r]
 		r_vals.position = Vector2(24, y + 26)
 		r_vals.size = Vector2(W - 48, 22)
+		r_vals.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		r_vals.add_theme_font_size_override("font_size", 13)
 		r_vals.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35, 0.95))
 		r_vals.mouse_filter = Control.MOUSE_FILTER_IGNORE
