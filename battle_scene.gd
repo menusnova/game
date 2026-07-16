@@ -37,13 +37,27 @@ const CARD_DB := {
 	"Water": {"type":"reaction","name":"Water","symbol":"H₂O","desc":"ฟื้นฟู HP +20",    "ap":1,"tier":1,"color":Color(0.30,0.70,1.00)},
 	"Salt":  {"type":"reaction","name":"Salt", "symbol":"NaCl","desc":"Shield +20",       "ap":1,"tier":1,"color":Color(0.95,0.95,0.65)},
 	"Rust":  {"type":"reaction","name":"Rust", "symbol":"Fe₂O₃","desc":"วางพิษ +5/เทิร์น","ap":2,"tier":2,"color":Color(0.75,0.45,0.20)},
+	"CO2":   {"type":"reaction","name":"Carbon Dioxide", "symbol":"CO₂","desc":"ลดเกราะศัตรู 20% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.55,0.60)},
+	"NO":    {"type":"reaction","name":"Nitric Oxide",   "symbol":"NO", "desc":"ลด ATK ศัตรู 20% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.35,0.50,0.95)},
+	"SO2":   {"type":"reaction","name":"Sulfur Dioxide", "symbol":"SO₂","desc":"วางพิษ +4/เทิร์น (4 เทิร์น)","ap":2,"tier":2,"color":Color(1.00,0.85,0.10)},
+	"CaO":   {"type":"reaction","name":"Calcium Oxide",  "symbol":"CaO","desc":"Shield +15",                "ap":1,"tier":1,"color":Color(0.80,0.75,0.65)},
+	"MgO":   {"type":"reaction","name":"Magnesium Oxide","symbol":"MgO","desc":"ฟื้นฟู HP +15",              "ap":1,"tier":1,"color":Color(0.60,0.85,0.60)},
+	"K2O":   {"type":"reaction","name":"Potassium Oxide","symbol":"K₂O","desc":"เพิ่ม ATK 20% (2 เทิร์น)",   "ap":1,"tier":1,"color":Color(0.75,0.30,0.70)},
 }
 
 # ── Recipes ───────────────────────────────────────────────
+# Every element card has at least one working recipe so nothing in the deck
+# is a dead draw.
 const RECIPES := {
 	"H+O":   "Water",
 	"Na+Cl": "Salt",
 	"Fe+O":  "Rust",
+	"C+O":   "CO2",
+	"N+O":   "NO",
+	"O+S":   "SO2",
+	"Ca+O":  "CaO",
+	"Mg+O":  "MgO",
+	"K+O":   "K2O",
 }
 
 # ── Character ─────────────────────────────────────────────
@@ -1629,6 +1643,32 @@ func _use_reaction_card(id: String) -> void:
 			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 4}, "Rust")
 			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น (4 เทิร์น)")
 			if _element_fx: _element_fx.play_use("Rust")
+		"CO2":
+			BattleStats.apply_effect(_e_unit, {"kind": "def_down", "value": 0.20, "turns": 2}, "CO2")
+			_msg("💨 Carbon Dioxide — ลดเกราะศัตรู 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("CO2")
+		"NO":
+			BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.20, "turns": 2}, "NO")
+			_msg("☁ Nitric Oxide — ลด ATK ศัตรู 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("NO")
+		"SO2":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 4, "turns": 4}, "SO2")
+			_msg("☠ Sulfur Dioxide — ศัตรูติดพิษ +4/เทิร์น (4 เทิร์น)")
+			if _element_fx: _element_fx.play_use("SO2")
+		"CaO":
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 15}, "CaO")
+			_player_shield = _p_unit.shield_hp
+			_msg("🛡 Calcium Oxide — Shield +15")
+			if _element_fx: _element_fx.play_use("CaO")
+		"MgO":
+			BattleStats.apply_effect(_p_unit, {"kind": "heal", "amount": 15}, "MgO")
+			_player_hp = _p_unit.hp
+			_msg("💊 Magnesium Oxide — ฟื้นฟู HP +15")
+			if _element_fx: _element_fx.play_use("MgO")
+		"K2O":
+			BattleStats.apply_effect(_p_unit, {"kind": "atk_up", "value": 0.20, "turns": 2}, "K2O")
+			_msg("🔥 Potassium Oxide — เพิ่ม ATK 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("K2O")
 
 	# Weakness break: using the reaction this enemy is weak to exposes it,
 	# raising the damage it takes for 2 turns (see BattleStats "weak" status)

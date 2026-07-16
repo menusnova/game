@@ -17,22 +17,50 @@ const FORMULA_COLOR := {
 	"Water": Color("#00EAFF"),
 	"Salt":  Color("#7F5AF0"),
 	"Rust":  Color("#FF3CAC"),
+	"CO2":   Color(0.55, 0.55, 0.60),
+	"NO":    Color(0.35, 0.50, 0.95),
+	"SO2":   Color(1.00, 0.85, 0.10),
+	"CaO":   Color(0.80, 0.75, 0.65),
+	"MgO":   Color(0.60, 0.85, 0.60),
+	"K2O":   Color(0.75, 0.30, 0.70),
 }
 const FORMULA_LABEL := {
 	"Water": "Water  H₂O",
 	"Salt":  "Salt  NaCl",
 	"Rust":  "Rust  Fe₂O₃",
+	"CO2":   "Carbon Dioxide  CO₂",
+	"NO":    "Nitric Oxide  NO",
+	"SO2":   "Sulfur Dioxide  SO₂",
+	"CaO":   "Calcium Oxide  CaO",
+	"MgO":   "Magnesium Oxide  MgO",
+	"K2O":   "Potassium Oxide  K₂O",
 }
 const EFFECT_TEXT := {
 	"Water": "+20 HP",
 	"Salt":  "Shield +20",
 	"Rust":  "Poison +5/turn",
+	"CO2":   "DEF -20%",
+	"NO":    "ATK -20%",
+	"SO2":   "Poison +4/turn",
+	"CaO":   "Shield +15",
+	"MgO":   "+15 HP",
+	"K2O":   "ATK +20%",
 }
 const EFFECT_TEXT_COLOR := {
 	"Water": Color(0.35, 1.0, 0.55),
 	"Salt":  Color(0.95, 0.95, 1.0),
 	"Rust":  Color(1.0, 0.55, 0.75),
+	"CO2":   Color(1.0, 0.6, 0.6),
+	"NO":    Color(1.0, 0.6, 0.6),
+	"SO2":   Color(1.0, 0.55, 0.75),
+	"CaO":   Color(0.95, 0.95, 1.0),
+	"MgO":   Color(0.35, 1.0, 0.55),
+	"K2O":   Color(1.0, 0.85, 0.4),
 }
+
+# Reactions whose effect lands on the enemy (debuffs/poison) instead of the
+# player (heal/shield/buff) — drives where the craft/use VFX plays.
+const ENEMY_TARGETED := ["Rust", "CO2", "NO", "SO2"]
 
 # ── Anchor points (battle_scene.gd screen-space, 1152×648) ──
 @export var player_pos: Vector2 = Vector2(160, 440)
@@ -71,9 +99,9 @@ func _ready() -> void:
 func play_craft(result: String) -> void:
 	if _busy: return
 	_busy = true
-	var pos: Vector2 = enemy_pos if result == "Rust" else player_pos
+	var pos: Vector2 = enemy_pos if result in ENEMY_TARGETED else player_pos
 	await _show_formula_circle(pos, FORMULA_COLOR[result])
-	var label_off: Vector2 = Vector2(0, -90) if result == "Rust" else Vector2(0, -110)
+	var label_off: Vector2 = Vector2(0, -90) if result in ENEMY_TARGETED else Vector2(0, -110)
 	_spawn_floating_label(FORMULA_LABEL[result], pos + label_off, FORMULA_COLOR[result], 15, 1.1)
 	await get_tree().create_timer(0.5).timeout
 	await _hide_formula_circle()
@@ -89,6 +117,7 @@ func play_use(result: String) -> void:
 		"Water": await _play_water()
 		"Salt":  await _play_salt()
 		"Rust":  await _play_rust()
+		_:       await _play_generic(result)
 	_busy = false
 
 
@@ -124,6 +153,22 @@ func _play_rust() -> void:
 	rust_fx.emitting = true
 	_spawn_floating_label(EFFECT_TEXT["Rust"], enemy_pos + Vector2(0, -20), EFFECT_TEXT_COLOR["Rust"], 16, 1.0)
 	await get_tree().create_timer(0.65).timeout
+
+
+## Fallback used-effect feedback for any reaction without a bespoke sequence
+## above — a particle burst in the formula's own color plus its EFFECT_TEXT
+## popup, built on demand instead of a dedicated persistent emitter.
+func _play_generic(result: String) -> void:
+	var pos: Vector2 = enemy_pos if result in ENEMY_TARGETED else player_pos
+	var col: Color = FORMULA_COLOR.get(result, COL_CYAN)
+	var fx := _build_particles("GenericEffect", col)
+	add_child(fx)
+	fx.global_position = pos
+	fx.restart()
+	fx.emitting = true
+	_spawn_floating_label(EFFECT_TEXT.get(result, ""), pos + Vector2(0, -30), EFFECT_TEXT_COLOR.get(result, col), 17, 1.0)
+	await get_tree().create_timer(0.65).timeout
+	fx.queue_free()
 
 
 # ════════════════════════════════════════════════════════════
