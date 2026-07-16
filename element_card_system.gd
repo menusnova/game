@@ -127,19 +127,18 @@ func _ready() -> void:
 #  PUBLIC API
 # ════════════════════════════════════════════════════════════
 
-## Plays ONLY the "formula crafted" feedback (circle + label) when two element
-## cards are mixed into a reaction card. No stat effect has happened yet at
-## this point — the player still has to play the resulting card — so this
-## must NOT show the +HP/Shield/Poison numbers or particle bursts.
+## Plays ONLY the "formula crafted" feedback — a small label over the hand —
+## when two element cards are mixed into a reaction card. No stat effect has
+## happened yet at this point — the player still has to play the resulting
+## card — so this must NOT show the +HP/Shield/Poison numbers, particle
+## bursts, or the glowing formula ring (that's reserved for play_use() so
+## crafting can never look like the same effect firing twice in a row).
 func play_craft(result: String) -> void:
 	if _busy: return
 	_busy = true
-	var pos: Vector2 = enemy_pos if result in ENEMY_TARGETED else player_pos
-	await _show_formula_circle(pos, FORMULA_COLOR[result])
-	var label_off: Vector2 = Vector2(0, -90) if result in ENEMY_TARGETED else Vector2(0, -110)
-	_spawn_floating_label(FORMULA_LABEL[result], pos + label_off, FORMULA_COLOR[result], 15, 1.1)
+	var hand_pos := Vector2(576, 500)
+	_spawn_floating_label("✨ ผสมสำเร็จ: %s" % FORMULA_LABEL[result], hand_pos, FORMULA_COLOR[result], 14, 0.9)
 	await get_tree().create_timer(0.5).timeout
-	await _hide_formula_circle()
 	_busy = false
 
 
