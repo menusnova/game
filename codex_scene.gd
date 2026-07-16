@@ -573,22 +573,22 @@ func _make_element_card(elem: Dictionary) -> Control:
 		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(name_lbl)
 
-		# English · type
+		# English · type — smaller font so even long type names (e.g.
+		# "Alkaline Earth Metal") fit the card width and stay centred instead
+		# of overflowing and getting ellipsis-trimmed off-centre.
 		var sub := Label.new()
 		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
 		sub.position = Vector2(4, 112)
 		sub.size = Vector2(CW - 8, 16)
 		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		sub.add_theme_font_size_override("font_size", 8)
+		sub.add_theme_font_size_override("font_size", 7)
 		sub.add_theme_color_override("font_color", C_SUB)
 		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(sub)
 
-		# Description — clipped to card bottom
-		_clipped_desc(card, elem["real_desc"],
-			8, 132, CW - 16, CH - 136,
-			8, Color(0.68, 0.80, 0.90, 0.62))
+		# (No description on the small grid card — the name/type is enough;
+		# the full description shows in the detail popup when tapped.)
 
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed:
@@ -849,8 +849,10 @@ func _open_element_detail(elem: Dictionary) -> void:
 	real_desc.size = Vector2(IW, 116)
 	real_desc.add_theme_font_size_override("font_size", 11)
 	real_desc.add_theme_color_override("font_color", Color(0.8, 0.87, 1.0, 0.85))
+	# No TRIM_ELLIPSIS here: combined with autowrap it forces the label back to
+	# a single trimmed line (the bug that made this run off the frame). The
+	# desc_clip above already bounds it vertically, so let it wrap freely.
 	real_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	real_desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	real_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desc_clip.add_child(real_desc)
 
