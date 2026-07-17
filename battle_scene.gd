@@ -1487,6 +1487,14 @@ func _start_enemy_bob() -> void:
 	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
+## Screen position of the monster's visual centre — damage numbers and the
+## slash land here. The enemy is drawn at ENEMY_CY plus its per-stage Y offset
+## (same offset used in _start_enemy_bob), so hits must use the same value or
+## they float up above the monster's head.
+func _enemy_hit_pos() -> Vector2:
+	var yo := ENEMY_Y_OFFSET_FINAL if _current_stage >= FINAL_STAGE else ENEMY_Y_OFFSET_STAGE1
+	return Vector2(ENEMY_CX, ENEMY_CY + yo)
+
 func _build_deck() -> void:
 	_deck = []
 	if PlayerData.battle_deck_ready:
@@ -1930,7 +1938,7 @@ func _on_attack() -> void:
 	_is_defending = false
 	_set_player_pose("atk")
 	if _slash_fx:
-		_slash_fx.play(Vector2(ENEMY_CX, ENEMY_CY))
+		_slash_fx.play(_enemy_hit_pos())
 		if _battle_fx and _battle_fx.screen_flash:
 			_slash_fx.flash_screen(_battle_fx.screen_flash)
 	elif _battle_fx:
@@ -1947,7 +1955,7 @@ func _on_attack() -> void:
 	_add_gauge(10)
 	if _battle_fx:
 		_battle_fx.play_enemy_hit()
-		_battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), dmg, "damage")
+		_battle_fx.spawn_number(_enemy_hit_pos(), dmg, "damage")
 	var weak_txt := "  💥จุดอ่อน" if weak else ""
 	if bonus > 0.0:
 		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)%s" % [dmg, bonus * 100, weak_txt])
@@ -2018,7 +2026,7 @@ func _on_ultimate() -> void:
 
 	BattleStats.apply_damage_with_shields(_e_unit, dmg)
 	_enemy_hp = _e_unit.hp
-	if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), dmg, "damage")
+	if _battle_fx: _battle_fx.spawn_number(_enemy_hit_pos(), dmg, "damage")
 
 	# debuff: ลด ATK ศัตรู 30% เป็นเวลา 2 เทิร์น
 	BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.30, "turns": 2}, "Absolute Zero Formula")
@@ -2051,7 +2059,7 @@ func _enemy_turn() -> void:
 		_enemy_hp = maxi(0, _enemy_hp - amt)
 		_e_unit.hp = _enemy_hp
 		_msg("☠ %s — ศัตรูเสีย %d HP" % [tick["name"].capitalize(), amt])
-		if _battle_fx: _battle_fx.spawn_number(Vector2(ENEMY_CX, ENEMY_CY), amt, "damage")
+		if _battle_fx: _battle_fx.spawn_number(_enemy_hit_pos(), amt, "damage")
 		_refresh_ui()
 		if _enemy_hp <= 0:
 			_check_battle(); return
