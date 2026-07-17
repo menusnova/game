@@ -1157,7 +1157,7 @@ func _build_reveal_card(char_name: String, rarity: int,
 		var disp_w := iw * cover_scale
 		var disp_h := ih * cover_scale
 		ptex.size     = Vector2(disp_w, disp_h)
-		ptex.position = Vector2((w - disp_w) * 0.5, (h - disp_h) * 0.15)
+		ptex.position = Vector2((w - disp_w) * 0.5, (h - disp_h) * 0.08)
 		art_clip.add_child(ptex)
 	elif rarity == 3 and ELEM_NAME.has(char_name):
 		var sym_lbl := Label.new()
@@ -1200,8 +1200,8 @@ func _build_reveal_card(char_name: String, rarity: int,
 	var rlbl := Label.new()
 	var ctype: String = CARD_TYPE.get(char_name, "")
 	if ctype == "SUPPORT": ctype = "FORMULA CARD"
-	elif ctype == "": ctype = "CHARACTER"
-	rlbl.text = "%d★  %s" % [rarity, ctype]
+	elif ctype == "CHARACTER": ctype = ""   # don't print the "CHARACTER" tag
+	rlbl.text = "%d★  %s" % [rarity, ctype] if ctype != "" else "%d★" % rarity
 	rlbl.add_theme_font_size_override("font_size", 10)
 	rlbl.add_theme_color_override("font_color", Color(border.r, border.g, border.b, 0.8))
 	rlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

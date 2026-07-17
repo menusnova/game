@@ -195,8 +195,9 @@ func _play_rust() -> void:
 func _play_generic(result: String) -> void:
 	var pos: Vector2 = enemy_pos if result in ENEMY_TARGETED else player_pos
 	var col: Color = FORMULA_COLOR.get(result, COL_CYAN)
+	# _build_particles already add_child()s the node — don't add it again
+	# (that raised "already has a parent" every time a generic reaction fired).
 	var fx := _build_particles("GenericEffect", col)
-	add_child(fx)
 	fx.global_position = pos
 	fx.restart()
 	fx.emitting = true
