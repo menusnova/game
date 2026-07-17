@@ -575,14 +575,14 @@ func _make_element_card(elem: Dictionary) -> Control:
 		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(name_lbl)
 
-		# English · type — centred on the full card width. At font 7 even the
-		# longest type ("Alkaline Earth Metal") fits, so centring reads evenly
-		# under the Thai name instead of sitting off to one side.
+		# English · type — left-aligned so a long type (e.g. "Alkaline Earth
+		# Metal") reads from the start and trims at the end with an ellipsis
+		# instead of being cut off on the right when centred.
 		var sub := Label.new()
 		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(4, 112)
-		sub.size = Vector2(CW - 8, 16)
-		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sub.position = Vector2(10, 112)
+		sub.size = Vector2(CW - 18, 16)
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		sub.add_theme_font_size_override("font_size", 7)
 		sub.add_theme_color_override("font_color", C_SUB)
@@ -676,9 +676,9 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 
 		var tp := Label.new()
 		tp.text = str(compound.get("type", ""))
-		tp.position = Vector2(4, 112)
-		tp.size = Vector2(CW - 8, 16)
-		tp.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tp.position = Vector2(10, 112)
+		tp.size = Vector2(CW - 18, 16)
+		tp.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		tp.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		tp.add_theme_font_size_override("font_size", 8)
 		tp.add_theme_color_override("font_color", Color(0.55, 0.75, 1, 0.55))
