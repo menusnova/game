@@ -1672,18 +1672,27 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(div)
 
-	# Name — centred (aligned to the card centre, same style as the codex
-	# cards). A long name trims at the end with an ellipsis, single line.
+	# Name — centred inside a hard clip so a long name (e.g. "Hydrogen
+	# Sulfide") can never spill past the card edges: the clip bounds it, a
+	# smaller font helps it fit, and autowrap lets it break onto a 2nd line
+	# rather than overflow. (A free Label's .size alone doesn't constrain its
+	# width, so a plain ellipsis wasn't trimming it.)
+	var name_clip := Control.new()
+	name_clip.position = Vector2(3, 70)
+	name_clip.size = Vector2(CARD_W - 6, 32)
+	name_clip.clip_contents = true
+	name_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(name_clip)
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
-	name_lbl.size = Vector2(CARD_W - 6, 28); name_lbl.position = Vector2(3, 72)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	name_lbl.add_theme_font_size_override("font_size", 9)
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_lbl.add_theme_font_size_override("font_size", 8)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(name_lbl)
+	name_clip.add_child(name_lbl)
+	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	# Selection glow — every card sharing the selected element lights up,
 	# even the ones that aren't physically lifted.
