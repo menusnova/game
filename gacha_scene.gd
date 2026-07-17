@@ -745,16 +745,6 @@ func _sb(bg: Color, bdr: Color, radius: int, bw: int) -> StyleBoxFlat:
 	s.corner_radius_bottom_left  = radius
 	return s
 
-func _pull_btn(label: String, col: Color, col_h: Color) -> Button:
-	var btn := Button.new()
-	btn.text = label
-	btn.add_theme_font_size_override("font_size", 13)
-	btn.add_theme_color_override("font_color", Color(1,1,1,1))
-	btn.add_theme_stylebox_override("normal",  _sb(col,   col,   12, 0))
-	btn.add_theme_stylebox_override("hover",   _sb(col_h, col_h, 12, 0))
-	btn.add_theme_stylebox_override("pressed", _sb(col,   col,   12, 0))
-	btn.add_theme_stylebox_override("focus",   StyleBoxFlat.new())
-	return btn
 
 func _ghost_btn(label: String, fsize: int) -> Button:
 	var btn := Button.new()
@@ -1354,8 +1344,6 @@ func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
 	)
 	return btn
 
-func _make_visible_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	return _make_back_btn(pos, sz, callback)
 
 func _show_history_overlay() -> void:
 	if get_node_or_null("_HistoryOv") != null: return

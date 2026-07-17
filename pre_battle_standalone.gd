@@ -394,11 +394,6 @@ func _refresh_team_display() -> void:
 
 
 # ── enemy panel (top-right, compact → expandable) ──
-func _build_enemy_panel() -> void:
-	_enemy_panel = Control.new()
-	_enemy_panel.position = Vector2(SW - 280, 10)
-	_enemy_panel.size = Vector2(270, 200)
-	add_child(_enemy_panel)
 
 func _refresh_enemy_panel() -> void:
 	for c in _enemy_panel.get_children():
@@ -649,30 +644,6 @@ func _rarity_color(r: int) -> Color:
 		_: return Color(0.35, 0.65, 1.00)
 
 # ── count badge (top-right corner) ──
-func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
-	var badge := Panel.new()
-	badge.size = Vector2(20, 20)
-	badge.position = Vector2(parent.size.x - 22, 2)
-	badge.z_index = 2
-	var bs := StyleBoxFlat.new()
-	bs.bg_color = badge_col
-	bs.set_corner_radius_all(10)
-	badge.add_theme_stylebox_override("panel", bs)
-	parent.add_child(badge)
-	var bl := Label.new()
-	bl.text = "×%d" % count
-	bl.add_theme_font_size_override("font_size", 8)
-	bl.add_theme_color_override("font_color", Color.WHITE)
-	bl.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	bl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_child(bl)
-
-# ── character grid ──
-# Characters that exist for collection/showcase but are NOT playable in battle,
-# so they must never appear in the pre-battle team select — even once obtained
-# from the gacha.
 const NON_PLAYABLE_CHARS := ["Caelum Voss"]
 
 func _build_char_grid(parent: Control) -> void:

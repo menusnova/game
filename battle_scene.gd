@@ -2360,6 +2360,3 @@ func _make_back_btn(pos: Vector2, _sz: Vector2, callback: Callable) -> Control:
 		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 	)
 	return btn
-
-func _go_back() -> void:
-	SceneTransition.fade_to(SC_MAIN)

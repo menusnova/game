@@ -1074,42 +1074,6 @@ func _section_label(txt: String) -> Control:
 	wrap.add_child(lbl)
 	return wrap
 
-func _make_back_btn(pos: Vector2, sz: Vector2, callback: Callable) -> Control:
-	var btn := Panel.new()
-	btn.position = pos
-	btn.z_index = 20
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.0, 0.05, 0.15, 0.55)
-	sb.border_color = Color(0.45, 0.72, 1.0, 0.90)
-	sb.set_border_width_all(2)
-	sb.set_corner_radius_all(22)
-	btn.add_theme_stylebox_override("panel", sb)
-	btn.size        = Vector2(42, 45)
-	btn.pivot_offset = Vector2(21, 22)
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	var icon := TextureRect.new()
-	icon.texture      = preload("res://image/back.png")
-	icon.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(icon)
-	btn.gui_input.connect(func(ev: InputEvent):
-		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
-			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
-			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
-			tw.tween_callback(callback)
-	)
-	btn.mouse_entered.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.15, 1.15, 1.2, 1.0), 0.10)
-	)
-	btn.mouse_exited.connect(func():
-		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
-		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
-	)
-	return btn
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)

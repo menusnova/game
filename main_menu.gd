@@ -732,21 +732,6 @@ func _on_arena_input(ev: InputEvent) -> void:
 		_show_coming_soon("โหมดต่อสู้ยังไม่เปิดให้บริการ")
 
 
-func _setup_event_banner() -> void:
-	var banner: Control = get_node_or_null("EventBanner")
-	if banner == null:
-		return
-	# Hide all existing children (text, art, dots, overlay)
-	for c in banner.get_children():
-		c.visible = false
-	# Swap in evenbanner.jpg as full-cover image
-	var img := TextureRect.new()
-	img.texture      = load("res://image/evenbanner.jpg")
-	img.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	img.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	banner.add_child(img)
 
 func _show_coming_soon(msg: String = "ระบบนี้ยังไม่เปิดให้บริการ") -> void:
 	# ถ้ามี toast อยู่แล้ว ไม่ซ้อน

@@ -285,16 +285,6 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	nm.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	slot.add_child(nm)
 
-func _fill_empty(slot: Panel) -> void:
-	slot.add_theme_stylebox_override("panel",
-		_flat(C_EMPTY, Color(1, 1, 1, 0.07), 8, 1))
-	var plus := _lbl("+", 36, Color(1, 1, 1, 0.16))
-	plus.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	plus.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	slot.add_child(plus)
-
-# ── Helpers ───────────────────────────────────────────────────
 
 func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
@@ -330,16 +320,3 @@ func _lbl(text: String, font_sz: int, col: Color) -> Label:
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return l
 
-func _icon_btn(pos: Vector2, sz: Vector2, icon: String) -> Panel:
-	var btn := Panel.new()
-	btn.position = pos; btn.size = sz
-	btn.pivot_offset = sz / 2.0
-	btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	btn.add_theme_stylebox_override("panel",
-		_flat(Color(0, 0, 0, 0), Color(0.35, 0.55, 1.0, 0.30), 20, 1))
-	var l := _lbl(icon, 16, Color(0.80, 0.90, 1.0, 0.90))
-	l.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-	btn.add_child(l)
-	return btn
