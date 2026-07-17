@@ -143,16 +143,20 @@ func _build_ui() -> void:
 	_content_root.add_child(_icon_lbl)
 
 	# ── Title / heading (centred) ──
+	var title_clip := Control.new()
+	title_clip.position = Vector2(PAD, 100)
+	title_clip.size = Vector2(PW - PAD * 2.0, 40)
+	title_clip.clip_contents = true
+	title_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_root.add_child(title_clip)
 	_title_lbl = Label.new()
-	_title_lbl.position = Vector2(PAD, 100)
-	_title_lbl.custom_minimum_size = Vector2(PW - PAD * 2.0, 0)
-	_title_lbl.size = Vector2(PW - PAD * 2.0, 40)
 	_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title_lbl.add_theme_font_size_override("font_size", 26)
 	_title_lbl.add_theme_color_override("font_color", COL_CYAN)
 	_title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content_root.add_child(_title_lbl)
+	title_clip.add_child(_title_lbl)
+	_title_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	# ── Divider: clear gap between heading and body ──
 	var div := ColorRect.new()
