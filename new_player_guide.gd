@@ -174,9 +174,6 @@ func _build_ui() -> void:
 	_content_root.add_child(body_clip)
 
 	_body_lbl = Label.new()
-	_body_lbl.position = Vector2.ZERO
-	_body_lbl.custom_minimum_size = Vector2(body_clip.size.x, 0)
-	_body_lbl.size = body_clip.size
 	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_body_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_TOP
 	_body_lbl.add_theme_font_size_override("font_size", 15)
@@ -185,6 +182,9 @@ func _build_ui() -> void:
 	_body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	body_clip.add_child(_body_lbl)
+	# Anchor-fill the clip: a free Label with only .size set does not reliably
+	# constrain autowrap width here; FULL_RECT to the fixed-size clip does.
+	_body_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	# Page dots
 	_dots_row = HBoxContainer.new()

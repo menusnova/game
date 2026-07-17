@@ -1273,17 +1273,17 @@ func _show_card_info(id: String) -> void:
 		desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(desc_clip)
 		var desc_lbl := Label.new()
-		desc_lbl.text = desc_str; desc_lbl.position = Vector2.ZERO
-		desc_lbl.custom_minimum_size = Vector2(288, 0)
-		desc_lbl.size = Vector2(288, 86)
+		desc_lbl.text = desc_str
 		desc_lbl.add_theme_font_size_override("font_size", 11)
 		desc_lbl.add_theme_constant_override("line_spacing", 6)
 		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
-		# WORD_SMART, not WORD: Thai has no spaces between words, so plain
-		# WORD mode can't find a break point and the line runs off the panel.
+		# Anchor-fill the clip so autowrap has a real fixed width. A free Label
+		# with only .size set does NOT reliably wrap here — it ran off the frame
+		# on one line. FULL_RECT (parent = the fixed-size clip) is what wraps.
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		desc_clip.add_child(desc_lbl)
+		desc_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	# Game effect
 	var effect_y := 196.0
@@ -1305,15 +1305,14 @@ func _show_card_info(id: String) -> void:
 		eff_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_info_panel.add_child(eff_clip)
 		var eff_lbl := Label.new()
-		eff_lbl.text = data["desc"]; eff_lbl.position = Vector2.ZERO
-		eff_lbl.custom_minimum_size = Vector2(288, 0)
-		eff_lbl.size = Vector2(288, 48)
+		eff_lbl.text = data["desc"]
 		eff_lbl.add_theme_font_size_override("font_size", 12)
 		eff_lbl.add_theme_constant_override("line_spacing", 5)
 		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 		eff_clip.add_child(eff_lbl)
+		eff_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	# What this element combines with — only shown once the resulting
 	# compound has actually been discovered in the lab minigame, so this
