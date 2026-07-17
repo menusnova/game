@@ -476,16 +476,20 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	# brief desc of each element
 	for elem in [elem_a, elem_b]:
 		if elem.is_empty(): continue
+		var e_clip := Control.new()
+		e_clip.position = Vector2(20, y)
+		e_clip.size = Vector2(W - 40, 28)
+		e_clip.clip_contents = true
+		e_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_result_panel.add_child(e_clip)
 		var e_lbl := Label.new()
 		e_lbl.text = "• %s: %s" % [str(elem.get("name", "")), str(elem.get("desc", ""))]
-		e_lbl.position = Vector2(20, y)
-		e_lbl.custom_minimum_size = Vector2(W - 40, 0)
-		e_lbl.size = Vector2(W - 40, 28)
 		e_lbl.add_theme_font_size_override("font_size", 10)
 		e_lbl.add_theme_color_override("font_color", Color(0.70, 0.85, 1, 0.60))
 		e_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		e_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_result_panel.add_child(e_lbl)
+		e_clip.add_child(e_lbl)
+		e_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		y += 32.0
 
 	var hdiv2 := ColorRect.new()
@@ -497,16 +501,21 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 	y += 8.0
 
 	# ── ข้อมูลสารประกอบ ───────────────────────────────────────────────
+	var desc_clip := Control.new()
+	desc_clip.position = Vector2(20, y)
+	desc_clip.size = Vector2(W - 40, 48)
+	desc_clip.clip_contents = true
+	desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(desc_clip)
 	var desc := Label.new()
 	desc.text = str(compound.get("description", ""))
-	desc.position = Vector2(20, y)
-	desc.custom_minimum_size = Vector2(W - 40, 0)
-	desc.size = Vector2(W - 40, 48)
 	desc.add_theme_font_size_override("font_size", 11)
+	desc.add_theme_constant_override("line_spacing", 5)
 	desc.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.82))
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(desc)
+	desc_clip.add_child(desc)
+	desc.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	y += 52.0
 
 	for pair in [["ประเภท", "type"], ["สถานะ", "state"]]:
@@ -521,16 +530,21 @@ func _build_compound_info(compound: Dictionary, is_new: bool) -> void:
 		y += 18.0
 
 	y += 4.0
+	var use_clip := Control.new()
+	use_clip.position = Vector2(20, y)
+	use_clip.size = Vector2(W - 40, 32)
+	use_clip.clip_contents = true
+	use_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_result_panel.add_child(use_clip)
 	var use := Label.new()
 	use.text = "การใช้งาน: " + str(compound.get("real_use", ""))
-	use.position = Vector2(20, y)
-	use.custom_minimum_size = Vector2(W - 40, 0)
-	use.size = Vector2(W - 40, 32)
 	use.add_theme_font_size_override("font_size", 10)
+	use.add_theme_constant_override("line_spacing", 5)
 	use.add_theme_color_override("font_color", Color(0.55, 0.85, 0.65, 0.8))
 	use.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	use.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_result_panel.add_child(use)
+	use_clip.add_child(use)
+	use.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	y += 36.0
 
 	if is_new:

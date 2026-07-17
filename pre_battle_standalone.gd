@@ -1261,6 +1261,12 @@ func _show_locked_char_msg() -> void:
 	panel.add_theme_stylebox_override("panel", sb)
 	ov.add_child(panel)
 
+	var lbl_clip := Control.new()
+	lbl_clip.position = Vector2(16, 12)
+	lbl_clip.size = Vector2(288, 80)
+	lbl_clip.clip_contents = true
+	lbl_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lbl_clip)
 	var lbl := Label.new()
 	lbl.text = "ตัวละครนี้ยังไม่ปลดล็อค ใช้เข้าต่อสู้ไม่ได้\nกรุณาเลือกตัวละครที่ปลดล็อคแล้ว"
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1268,10 +1274,8 @@ func _show_locked_char_msg() -> void:
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
 	lbl.add_theme_font_size_override("font_size", 15)
-	lbl.position = Vector2(16, 12)
-	lbl.custom_minimum_size = Vector2(288, 0)
-	lbl.size = Vector2(288, 80)
-	panel.add_child(lbl)
+	lbl_clip.add_child(lbl)
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var btn := Button.new()
 	btn.text = "ตกลง"
@@ -1301,6 +1305,12 @@ func _show_deck_required_msg() -> void:
 	panel.add_theme_stylebox_override("panel", sb)
 	ov.add_child(panel)
 
+	var lbl_clip := Control.new()
+	lbl_clip.position = Vector2(16, 12)
+	lbl_clip.size = Vector2(288, 80)
+	lbl_clip.clip_contents = true
+	lbl_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lbl_clip)
 	var lbl := Label.new()
 	var cur_total := _elem_deck_total() + _supp_deck_total()
 	lbl.text = "กรุณาจัดเด็คให้ครบ %d ใบก่อนเข้าสู่การต่อสู้!\nตอนนี้มี %d / %d ใบ" % [DECK_REQUIRED, cur_total, DECK_REQUIRED]
@@ -1309,10 +1319,8 @@ func _show_deck_required_msg() -> void:
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.85))
 	lbl.add_theme_font_size_override("font_size", 15)
-	lbl.position = Vector2(16, 12)
-	lbl.custom_minimum_size = Vector2(288, 0)
-	lbl.size = Vector2(288, 80)
-	panel.add_child(lbl)
+	lbl_clip.add_child(lbl)
+	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var btn := Button.new()
 	btn.text = "ตกลง"
