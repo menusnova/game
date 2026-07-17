@@ -1359,7 +1359,9 @@ func _show_card_info(id: String) -> void:
 				combo_lbl.text = "• %s + %s → %s" % [sym, other_name, result_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 			else:
-				combo_lbl.text = "• %s + %s → 🔒" % [sym, other_name]
+				# Not discovered yet — hide the partner element and the result
+				# so it's a full mystery (only the held card's own name shows).
+				combo_lbl.text = "• %s + ??? → ???" % [sym]
 				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
 			combo_lbl.position = Vector2(16, cy)
 			combo_lbl.custom_minimum_size = Vector2(288, 0)
