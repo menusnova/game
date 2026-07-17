@@ -575,21 +575,9 @@ func _make_element_card(elem: Dictionary) -> Control:
 		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(name_lbl)
 
-		# English · type — centred under the Thai name (aligned to the same
-		# centre). At font 7 even the longest type fits, so it doesn't get cut.
-		var sub := Label.new()
-		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(4, 112)
-		sub.size = Vector2(CW - 8, 16)
-		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		sub.add_theme_font_size_override("font_size", 7)
-		sub.add_theme_color_override("font_color", C_SUB)
-		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(sub)
-
-		# (No description on the small grid card — the name/type is enough;
-		# the full description shows in the detail popup when tapped.)
+		# (English name / type is intentionally NOT shown on the grid card —
+		# only the symbol + Thai name. The full English name, type, and
+		# description all still appear in the detail popup when tapped.)
 
 		card.gui_input.connect(func(ev):
 			if ev is InputEventMouseButton and ev.pressed:
