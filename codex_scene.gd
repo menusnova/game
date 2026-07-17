@@ -609,68 +609,24 @@ func _make_element_card(elem: Dictionary) -> Control:
 		cftex.material = cfmat
 		card.add_child(cftex)
 	else:
-		# Locked card: same centred symbol / name / type layout as a
-		# discovered one, but dimmed and NOT tappable — it stays "locked" (no
-		# description, not marked discovered), only the layout is arranged so
-		# it lines up with the unlocked cards.
-		var badge := Label.new()
-		badge.text = elem["symbol"]
-		badge.position = Vector2(0, 14)
-		badge.size = Vector2(CW, 64)
-		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		badge.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		badge.add_theme_font_size_override("font_size", 40)
-		badge.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.30))
-		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(badge)
-
-		var div1 := ColorRect.new()
-		div1.color = Color(0.5, 0.55, 0.7, 0.12)
-		div1.size = Vector2(CW - 24, 1)
-		div1.position = Vector2(12, 82)
-		div1.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(div1)
-
-		var name_lbl := Label.new()
-		name_lbl.text = elem["name_th"]
-		name_lbl.position = Vector2(4, 88)
-		name_lbl.size = Vector2(CW - 8, 22)
-		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		name_lbl.add_theme_font_size_override("font_size", 13)
-		name_lbl.add_theme_color_override("font_color", Color(C_TEXT.r, C_TEXT.g, C_TEXT.b, 0.45))
-		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(name_lbl)
-
-		var sub := Label.new()
-		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(4, 112)
-		sub.size = Vector2(CW - 8, 16)
-		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		sub.add_theme_font_size_override("font_size", 7)
-		sub.add_theme_color_override("font_color", Color(C_SUB.r, C_SUB.g, C_SUB.b, 0.45))
-		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(sub)
-
-		# Small lock badge + "ยังไม่ค้นพบ" so it still reads as locked
+		# Lock icon centered
 		var lock := TextureRect.new()
 		lock.texture      = preload("res://image/lock_chain_x.png")
 		lock.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 		lock.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		lock.size         = Vector2(22, 22)
-		lock.position     = Vector2(CW - 28, 6)
-		lock.modulate     = Color(1, 1, 1, 0.75)
+		lock.size         = Vector2(48, 48)
+		lock.position     = Vector2((CW - 48) * 0.5, 68)
+		lock.modulate     = Color(1, 1, 1, 0.70)
 		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(lock)
 
 		var locked_lbl := Label.new()
 		locked_lbl.text = "ยังไม่ค้นพบ"
-		locked_lbl.size = Vector2(CW, 20)
-		locked_lbl.position = Vector2(0, 150)
+		locked_lbl.size = Vector2(CW, 22)
+		locked_lbl.position = Vector2(0, 128)
 		locked_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		locked_lbl.add_theme_font_size_override("font_size", 10)
-		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.6))
+		locked_lbl.add_theme_font_size_override("font_size", 11)
+		locked_lbl.add_theme_color_override("font_color", Color(0.45, 0.5, 0.65, 0.65))
 		locked_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(locked_lbl)
 
