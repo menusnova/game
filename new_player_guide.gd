@@ -98,6 +98,9 @@ func _build_ui() -> void:
 	_panel.size = Vector2(PW, PH)
 	_panel.position = Vector2((VW - PW) * 0.5, (VH - PH) * 0.5)
 	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Hard guarantee: absolutely nothing inside (even mid slide-animation)
+	# can ever render past the panel's rounded frame.
+	_panel.clip_contents = true
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.06, 0.08, 0.16, 0.62)
 	sb.border_color = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.45)
