@@ -562,12 +562,14 @@ func _make_element_card(elem: Dictionary) -> Control:
 		div1.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(div1)
 
-		# Thai name
+		# Thai name — left-aligned so a long name (e.g. "คาร์บอนไดออกไซด์")
+		# reads from the start and trims at the end rather than being chopped
+		# on both sides when centred.
 		var name_lbl := Label.new()
 		name_lbl.text = elem["name_th"]
-		name_lbl.position = Vector2(4, 88)
-		name_lbl.size = Vector2(CW - 8, 22)
-		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.position = Vector2(10, 88)
+		name_lbl.size = Vector2(CW - 18, 22)
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		name_lbl.add_theme_font_size_override("font_size", 13)
 		name_lbl.add_theme_color_override("font_color", C_TEXT)
@@ -664,9 +666,9 @@ func _make_compound_card(compound: Dictionary, is_found: bool) -> Control:
 
 		var nm := Label.new()
 		nm.text = str(compound.get("name", ""))
-		nm.position = Vector2(4, 88)
-		nm.size = Vector2(CW - 8, 22)
-		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nm.position = Vector2(10, 88)
+		nm.size = Vector2(CW - 18, 22)
+		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		nm.add_theme_font_size_override("font_size", 13)
 		nm.add_theme_color_override("font_color", Color(0.88, 0.93, 1, 0.90))
