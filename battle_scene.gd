@@ -1672,13 +1672,12 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(div)
 
-	# Name — left-aligned so a long name (e.g. "Sodium Hydride") reads from the
-	# start and trims at the end with an ellipsis instead of a centred string
-	# spilling out past both edges of the card.
+	# Name — centred; a long name trims at the end with an ellipsis (single
+	# line, no wrap) so it neither overflows the card nor hugs the frame edge.
 	var name_lbl := Label.new()
 	name_lbl.text = data.get("name", id)
-	name_lbl.size = Vector2(CARD_W - 12, 28); name_lbl.position = Vector2(6, 72)
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	name_lbl.size = Vector2(CARD_W - 6, 28); name_lbl.position = Vector2(3, 72)
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_lbl.add_theme_font_size_override("font_size", 9)
