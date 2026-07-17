@@ -102,9 +102,6 @@ const ENEMY_TARGETED := [
 @export var enemy_pos:  Vector2 = Vector2(560, 200)
 
 # ── Nodes (built in _ready, matching the ElementCardSystem tree) ──
-var formula_circle: Node2D
-var circle_sprite:  Sprite2D
-var rotate_anim:    AnimationPlayer
 var water_fx:       GPUParticles2D
 var salt_fx:        GPUParticles2D
 var rust_fx:        GPUParticles2D
@@ -115,7 +112,6 @@ var _busy := false
 
 
 func _ready() -> void:
-	_build_formula_circle()
 	water_fx = _build_particles("WaterEffect", COL_CYAN)
 	salt_fx  = _build_particles("SaltEffect",  Color(0.95, 0.95, 1.0))
 	rust_fx  = _build_particles("RustEffect",  COL_MAGENTA)
@@ -204,82 +200,6 @@ func _play_generic(result: String) -> void:
 	_spawn_floating_label(EFFECT_TEXT.get(result, ""), pos + Vector2(0, -30), EFFECT_TEXT_COLOR.get(result, col), 17, 1.0)
 	await get_tree().create_timer(0.65).timeout
 	fx.queue_free()
-
-
-# ════════════════════════════════════════════════════════════
-#  FORMULA CIRCLE
-# ════════════════════════════════════════════════════════════
-func _build_formula_circle() -> void:
-	formula_circle = Node2D.new()
-	formula_circle.name = "FormulaCircle"
-	formula_circle.visible = false
-	add_child(formula_circle)
-
-	circle_sprite = Sprite2D.new()
-	circle_sprite.name = "CircleSprite"
-	circle_sprite.texture = _make_ring_texture(200)
-	formula_circle.add_child(circle_sprite)
-
-	rotate_anim = AnimationPlayer.new()
-	rotate_anim.name = "RotateAnim"
-	var anim := Animation.new()
-	var track := anim.add_track(Animation.TYPE_VALUE)
-	anim.track_set_path(track, NodePath("CircleSprite:rotation"))
-	anim.track_insert_key(track, 0.0, 0.0)
-	anim.track_insert_key(track, 2.0, TAU)
-	anim.loop_mode = Animation.LOOP_LINEAR
-	anim.length = 2.0
-	var lib := AnimationLibrary.new()
-	lib.add_animation("spin", anim)
-	rotate_anim.add_animation_library("", lib)
-	formula_circle.add_child(rotate_anim)
-
-
-func _show_formula_circle(pos: Vector2, color: Color) -> void:
-	formula_circle.position = pos
-	formula_circle.visible  = true
-	circle_sprite.modulate   = Color(color.r, color.g, color.b, 0.0)
-	circle_sprite.scale      = Vector2(0.3, 0.3)
-	rotate_anim.play("spin")
-
-	var t := create_tween().set_parallel(true)
-	t.tween_property(circle_sprite, "modulate:a", 0.9, 0.22)
-	t.tween_property(circle_sprite, "scale", Vector2(1.0, 1.0), 0.28)\
-		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	await t.finished
-
-
-func _hide_formula_circle() -> void:
-	var t := create_tween()
-	t.tween_property(circle_sprite, "modulate:a", 0.0, 0.3)
-	await t.finished
-	rotate_anim.stop()
-	formula_circle.visible = false
-
-
-## Procedurally draws a 200×200 glowing ring so no external art asset is required.
-func _make_ring_texture(size: int) -> ImageTexture:
-	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	var center := Vector2(size * 0.5, size * 0.5)
-	var outer  := size * 0.5 - 6.0
-	var inner  := outer * 0.86
-	var inner2 := outer * 0.68
-	var outer2 := outer * 0.74
-	for y in size:
-		for x in size:
-			var d := Vector2(x, y).distance_to(center)
-			var a := 0.0
-			a = maxf(a, _ring_alpha(d, inner, outer))
-			a = maxf(a, _ring_alpha(d, inner2, outer2) * 0.6)
-			img.set_pixel(x, y, Color(1, 1, 1, a))
-	return ImageTexture.create_from_image(img)
-
-
-func _ring_alpha(d: float, inner: float, outer: float) -> float:
-	if d < inner - 3.0 or d > outer + 3.0: return 0.0
-	if d >= inner and d <= outer: return 1.0
-	if d < inner: return 1.0 - (inner - d) / 3.0
-	return 1.0 - (d - outer) / 3.0
 
 
 # ════════════════════════════════════════════════════════════
