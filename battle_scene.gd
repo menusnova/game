@@ -904,7 +904,7 @@ func _build_action_ring() -> void:
 	const DEFS := [
 		["Attack",  "res://image/skill_void_strike.jpg",           "ATK",  Color(0.95,0.35,0.35),  -90.0],
 		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL",  Color(0.80,0.50,1.00),   -8.0],
-		["EndTurn", "res://image/endturn.jpg",                     "END",  Color(0.55,0.75,0.55),   74.0],
+		["EndTurn", "res://image/endturn.jpg",                     "END TURN",  Color(0.55,0.75,0.55),   74.0],
 		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF",  Color(0.35,0.65,1.00),  156.0],
 	]
 	const BTN_R := 34.0  # button half-size
