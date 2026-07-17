@@ -574,14 +574,14 @@ func _make_element_card(elem: Dictionary) -> Control:
 		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(name_lbl)
 
-		# English · type — smaller font so even long type names (e.g.
-		# "Alkaline Earth Metal") fit the card width and stay centred instead
-		# of overflowing and getting ellipsis-trimmed off-centre.
+		# English · type. Left-aligned so long type names (e.g. "Alkaline
+		# Earth Metal") read cleanly from the start and trim at the end with an
+		# ellipsis, instead of a centred string that gets chopped on both sides.
 		var sub := Label.new()
 		sub.text = "%s · %s" % [elem["name_en"], elem["type"]]
-		sub.position = Vector2(4, 112)
-		sub.size = Vector2(CW - 8, 16)
-		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sub.position = Vector2(10, 112)
+		sub.size = Vector2(CW - 18, 16)
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		sub.add_theme_font_size_override("font_size", 7)
 		sub.add_theme_color_override("font_color", C_SUB)

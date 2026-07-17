@@ -140,16 +140,26 @@ func _fill_character(slot: Panel, data: Dictionary) -> void:
 	var portrait_path: String = PORTRAITS.get(name_s, "")
 	var portrait_tex: Texture2D = AssetLoader.tex(portrait_path)
 	if portrait_tex:
+		# Top-biased cover-crop inside a clip: fills the width, keeps the head
+		# (a tall full-body source like Caelum's 512x1024 was centre-cropped
+		# by COVERED and lost the head) — shows head down to about the knee.
+		var pclip := Control.new()
+		pclip.position = Vector2(0, 6)
+		pclip.size = Vector2(CARD_W, 237)
+		pclip.clip_contents = true
+		pclip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(pclip)
+		var iw := float(portrait_tex.get_width())
+		var ih := float(portrait_tex.get_height())
+		var cover := maxf(CARD_W / iw, 237.0 / ih)
 		var ptex := TextureRect.new()
 		ptex.texture      = portrait_tex
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		# Full portrait height at CARD_W scale (413x604 source → ~237 tall)
-		# so no vertical cropping ever cuts into the head.
-		ptex.size         = Vector2(CARD_W, 237)
-		ptex.position     = Vector2(0, 6)
+		ptex.stretch_mode = TextureRect.STRETCH_SCALE
+		ptex.size         = Vector2(iw * cover, ih * cover)
+		ptex.position     = Vector2((CARD_W - iw * cover) * 0.5, (237.0 - ih * cover) * 0.06)
 		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(ptex)
+		pclip.add_child(ptex)
 	else:
 		var el := _lbl(elem_s, 48, Color(1, 1, 1, 0.85))
 		el.size = Vector2(CARD_W, portrait_h)
@@ -226,15 +236,26 @@ func _fill_locked(slot: Panel, data: Dictionary) -> void:
 	var portrait_path: String = PORTRAITS.get(name_s, "")
 	var portrait_tex: Texture2D = AssetLoader.tex(portrait_path)
 	if portrait_tex:
+		# Same top-biased cover-crop as the owned card so the locked preview
+		# keeps the head instead of centre-cropping to the torso.
+		var pclip := Control.new()
+		pclip.position = Vector2(0, 6)
+		pclip.size = Vector2(CARD_W, 237)
+		pclip.clip_contents = true
+		pclip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(pclip)
+		var iw := float(portrait_tex.get_width())
+		var ih := float(portrait_tex.get_height())
+		var cover := maxf(CARD_W / iw, 237.0 / ih)
 		var ptex := TextureRect.new()
 		ptex.texture      = portrait_tex
 		ptex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-		ptex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		ptex.size         = Vector2(CARD_W, 237)
-		ptex.position     = Vector2(0, 6)
+		ptex.stretch_mode = TextureRect.STRETCH_SCALE
+		ptex.size         = Vector2(iw * cover, ih * cover)
+		ptex.position     = Vector2((CARD_W - iw * cover) * 0.5, (237.0 - ih * cover) * 0.06)
 		ptex.modulate     = Color(1, 1, 1, 0.45)
 		ptex.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(ptex)
+		pclip.add_child(ptex)
 
 	slot.add_child(_crect(Vector2(0, 0), Vector2(CARD_W, CARD_H),
 		Color(0.01, 0.01, 0.05, 0.30)))
