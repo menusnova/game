@@ -112,6 +112,28 @@ func _ready() -> void:
 	if _skip_btn:
 		_skip_btn.icon = null
 		_skip_btn.pressed.connect(_on_skip)
+		# Clearer "skip" pill, moved to the top-right corner (was a faint,
+		# hard-to-see label at the bottom centre).
+		_skip_btn.text = "ข้าม  ›"
+		_skip_btn.position = Vector2(1030, 20)
+		_skip_btn.size = Vector2(100, 38)
+		_skip_btn.focus_mode = Control.FOCUS_NONE
+		_skip_btn.add_theme_font_size_override("font_size", 15)
+		_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+		var skip_normal := StyleBoxFlat.new()
+		skip_normal.bg_color = Color(0.10, 0.13, 0.24, 0.92)
+		skip_normal.border_color = Color(0.45, 0.70, 1.0, 0.85)
+		skip_normal.set_border_width_all(1)
+		skip_normal.set_corner_radius_all(19)
+		var skip_hover := StyleBoxFlat.new()
+		skip_hover.bg_color = Color(0.18, 0.24, 0.42, 1.0)
+		skip_hover.border_color = Color(0.6, 0.85, 1.0, 1.0)
+		skip_hover.set_border_width_all(1)
+		skip_hover.set_corner_radius_all(19)
+		_skip_btn.add_theme_stylebox_override("normal", skip_normal)
+		_skip_btn.add_theme_stylebox_override("hover", skip_hover)
+		_skip_btn.add_theme_stylebox_override("pressed", skip_hover)
+		_skip_btn.z_index = 30
 	if _result_ov:
 		_result_ov.visible = false
 
