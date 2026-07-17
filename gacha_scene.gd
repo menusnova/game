@@ -112,27 +112,18 @@ func _ready() -> void:
 	if _skip_btn:
 		_skip_btn.icon = null
 		_skip_btn.pressed.connect(_on_skip)
-		# Clearer "skip" pill, moved to the top-right corner (was a faint,
-		# hard-to-see label at the bottom centre).
-		_skip_btn.text = "ข้าม  ›"
+		# Frameless white "skip" text in the top-right corner — no background,
+		# just brightens on hover/press.
 		_skip_btn.position = Vector2(1030, 20)
 		_skip_btn.size = Vector2(100, 38)
 		_skip_btn.focus_mode = Control.FOCUS_NONE
-		_skip_btn.add_theme_font_size_override("font_size", 15)
-		_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-		var skip_normal := StyleBoxFlat.new()
-		skip_normal.bg_color = Color(0.10, 0.13, 0.24, 0.92)
-		skip_normal.border_color = Color(0.45, 0.70, 1.0, 0.85)
-		skip_normal.set_border_width_all(1)
-		skip_normal.set_corner_radius_all(19)
-		var skip_hover := StyleBoxFlat.new()
-		skip_hover.bg_color = Color(0.18, 0.24, 0.42, 1.0)
-		skip_hover.border_color = Color(0.6, 0.85, 1.0, 1.0)
-		skip_hover.set_border_width_all(1)
-		skip_hover.set_corner_radius_all(19)
-		_skip_btn.add_theme_stylebox_override("normal", skip_normal)
-		_skip_btn.add_theme_stylebox_override("hover", skip_hover)
-		_skip_btn.add_theme_stylebox_override("pressed", skip_hover)
+		_skip_btn.add_theme_font_size_override("font_size", 16)
+		_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.6))
+		_skip_btn.add_theme_color_override("font_hover_color", Color(1, 1, 1, 1.0))
+		_skip_btn.add_theme_color_override("font_pressed_color", Color(1, 1, 1, 1.0))
+		var blank := StyleBoxFlat.new(); blank.bg_color = Color(0, 0, 0, 0)
+		for s in ["normal", "hover", "pressed", "focus"]:
+			_skip_btn.add_theme_stylebox_override(s, blank)
 		_skip_btn.z_index = 30
 	if _result_ov:
 		_result_ov.visible = false
@@ -799,13 +790,16 @@ func _add_stars(parent: Node) -> void:
 # ── Input / skip ──────────────────────────────────────────────────
 # Tapping anywhere advances one card at a time; the Skip button reveals everything at once.
 func _input(ev: InputEvent) -> void:
-	if not _revealing: return
-	if ev is InputEventMouseButton and ev.pressed:
+	if not (ev is InputEventMouseButton and ev.pressed): return
+	if _revealing:
 		_advance_requested = true
+	elif is_instance_valid(_result_ov) and _result_ov.visible:
+		# Results are shown and there's no CLOSE button — a tap anywhere
+		# dismisses the result overlay.
+		_result_ov.visible = false
 
 func _on_skip() -> void:
 	if _revealing: _skip_to_end = true
-	else:          _result_ov.visible = false
 
 # Waits up to `seconds`, cut short by a screen tap (advance one) or Skip (skip all).
 func _interruptible_wait(seconds: float) -> void:
@@ -1017,7 +1011,9 @@ func _roll() -> Array:
 func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 	_revealing   = true
 	_skip_to_end = false
-	if is_instance_valid(_skip_btn): _skip_btn.text = "แตะเพื่อข้าม"
+	if is_instance_valid(_skip_btn):
+		_skip_btn.text = "แตะเพื่อข้าม"
+		_skip_btn.visible = true
 	for child in _result_con.get_children(): child.queue_free()
 	_result_ov.visible  = true
 	_result_con.visible = false
@@ -1050,7 +1046,8 @@ func _run_reveal(names: Array[String], rarities: Array[int]) -> void:
 
 	_revealing   = false
 	_skip_to_end = false
-	if is_instance_valid(_skip_btn): _skip_btn.text = "CLOSE"
+	# No CLOSE button — hide skip and let a tap anywhere dismiss the results.
+	if is_instance_valid(_skip_btn): _skip_btn.visible = false
 
 func _reveal_one(char_name: String, rarity: int) -> void:
 	if rarity == 5: await _reveal_5star(char_name)
