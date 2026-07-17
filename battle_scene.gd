@@ -139,6 +139,14 @@ var _reaction_gauge_used: bool = false  # once per turn
 
 var _main_action_done: bool = false
 var _ult_used:         bool = false
+# End Turn is locked until a main action (Attack/Defend/Skill) has been used
+# AND its effect has finished + a short delay — so the turn can't be ended
+# while an effect is still animating (see _arm_end_turn).
+var _end_turn_ready:   bool = false
+# Bumped every time End Turn is re-armed or force-locked; a pending arm timer
+# only applies if its captured id still matches (so an earlier action's timer
+# can't unlock End Turn in the middle of a later Ultimate's effect).
+var _end_turn_arm_id:  int  = 0
 var _skill_ap_boost:   bool = false  # recover full AP next turn after skill
 var _player_turn:      bool = true
 var _skill_cd:         int  = 0
@@ -1941,9 +1949,8 @@ func _refresh_effect_rows() -> void:
 
 func _on_attack() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
-	if _ap < 1: _msg("❌ AP ไม่พอ (ต้องการ 1 AP)"); return
 
-	_ap -= 1
+	# Attack costs no AP.
 	_main_action_done = true
 	_is_defending = false
 	_set_player_pose("atk")
@@ -1974,13 +1981,13 @@ func _on_attack() -> void:
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
+	_arm_end_turn()   # End Turn unlocks 0.5s after the hit effect
 
-# ── Null Barrier — Defend (1 AP, ใช้แทน Attack/Skill ได้อย่างเดียวต่อเทิร์น) ──
+# ── Null Barrier — Defend (ไม่เสีย AP, ใช้แทน Attack/Skill ได้อย่างเดียวต่อเทิร์น) ──
 func _on_defend() -> void:
 	if not _player_turn or _main_action_done or _battle_over: return
-	if _ap < 1: _msg("❌ AP ไม่พอ (ต้องการ 1 AP)"); return
 
-	_ap -= 1
+	# Defend costs no AP.
 	_main_action_done = true
 	_is_defending = true
 	_set_player_pose("def", 0.8)
@@ -1988,6 +1995,7 @@ func _on_defend() -> void:
 	_add_gauge(5)
 	_msg("🛡 Null Barrier — ลดดาเมจ 50%")
 	_refresh_ui()
+	_arm_end_turn()
 
 # ── Aether Pulse — Skill (2 AP, ใช้แทน Attack/Defend ได้อย่างเดียวต่อเทิร์น) ──
 func _on_skill() -> void:
@@ -2015,6 +2023,7 @@ func _on_skill() -> void:
 	_msg("✨ Aether Pulse — ฟื้น HP +%d  |  Void Shield พร้อม (รับดาเมจแทน HP 1 ครั้ง)" % heal)
 	_flash_msg()
 	_refresh_ui()
+	_arm_end_turn()
 
 # ── Absolute Zero Formula — Ultimate ─────────────────────
 func _on_ultimate() -> void:
@@ -2024,6 +2033,12 @@ func _on_ultimate() -> void:
 
 	_ult_used  = true
 	_ult_gauge = 0
+	# Ultimate re-locks End Turn while it animates (and cancels any pending
+	# unlock from an earlier action). It only re-unlocks if a main action was
+	# already done this turn — using Ultimate on its own (before any
+	# Attack/Defend/Skill) does NOT unlock End Turn.
+	_end_turn_ready = false
+	_end_turn_arm_id += 1
 	_set_player_pose("ult", 0.9)
 	if _battle_fx: _battle_fx.play_ultimate()
 
@@ -2049,9 +2064,26 @@ func _on_ultimate() -> void:
 	_flash_msg()
 	_refresh_ui()
 	_check_battle()
+	# Re-arm End Turn only if a main action was already done (otherwise
+	# Ultimate-first leaves End Turn locked until a main action is used).
+	if _main_action_done:
+		_arm_end_turn()
+
+## Unlocks the End Turn button 0.5s after an action's effect, so the turn can
+## never be ended while an effect is still playing. A newer action (bumping
+## _end_turn_arm_id) supersedes an older pending timer.
+func _arm_end_turn() -> void:
+	_end_turn_arm_id += 1
+	var my_id := _end_turn_arm_id
+	await get_tree().create_timer(0.5).timeout
+	if not is_instance_valid(self): return
+	if my_id != _end_turn_arm_id: return   # superseded by a later action
+	if _player_turn and not _battle_over:
+		_end_turn_ready = true
+		_refresh_ui()
 
 func _on_end_turn() -> void:
-	if not _player_turn or _battle_over: return
+	if not _player_turn or _battle_over or not _end_turn_ready: return
 	_player_turn = false
 	_selected_elem = ""
 	_selected_card_idx = -1
@@ -2137,6 +2169,7 @@ func _start_player_turn() -> void:
 	_player_turn          = true
 	_main_action_done     = false
 	_ult_used             = false
+	_end_turn_ready       = false
 	_reaction_gauge_used  = false
 
 	var ap_gain: int
@@ -2203,6 +2236,7 @@ func _next_stage() -> void:
 	_player_turn          = true
 	_main_action_done     = false
 	_ult_used             = false
+	_end_turn_ready       = false
 	_reaction_gauge_used  = false
 	_is_defending         = false
 	_selected_elem        = ""
@@ -2296,8 +2330,8 @@ func _refresh_ui() -> void:
 	# Buttons — Attack (1 AP) / Defend (1 AP) / Skill (2 AP) are mutually
 	# exclusive, pick exactly one per turn. Ultimate is independent.
 	var pt := _player_turn and not _battle_over
-	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done or _ap < 1
-	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done or _ap < 1
+	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done  # free, no AP
+	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done  # free, no AP
 	if _btn_skill:
 		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0 or _ap < 2
 	if _skill_cd_lbl:
@@ -2306,7 +2340,8 @@ func _refresh_ui() -> void:
 	if _btn_ult:
 		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used
 	if _btn_end:
-		_btn_end.disabled = not pt
+		# End Turn only after a main action's effect has resolved (+0.5s).
+		_btn_end.disabled = not pt or not _end_turn_ready
 
 func _set_buttons_enabled(on: bool) -> void:
 	for b in [_btn_attack, _btn_defend, _btn_skill, _btn_ult, _btn_end]:
