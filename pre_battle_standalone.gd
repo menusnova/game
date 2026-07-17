@@ -488,7 +488,7 @@ func _toggle_enemy_expand() -> void:
 			_toggle_enemy_expand())
 	_expand_overlay.add_child(dim)
 
-	var pw := 600.0; var ph := 460.0
+	var pw := 700.0; var ph := 500.0
 	var px := (SW - pw) / 2.0; var py := (SH - ph) / 2.0
 	var pop := Panel.new()
 	pop.position = Vector2(px, py)
@@ -512,13 +512,13 @@ func _toggle_enemy_expand() -> void:
 
 		var chip := Panel.new()
 		chip.position = Vector2(20, ey)
-		chip.size = Vector2(pw - 40, 82)
+		chip.size = Vector2(pw - 40, 116)
 		chip.add_theme_stylebox_override("panel", _sb(Color(0.12, 0.04, 0.06, 0.85), Color(0.8,0.25,0.25,0.2), 10))
 		pop.add_child(chip)
 
 		var icon_box := Control.new()
-		icon_box.position = Vector2(10, 10)
-		icon_box.size = Vector2(62, 62)
+		icon_box.position = Vector2(12, 12)
+		icon_box.size = Vector2(92, 92)
 		icon_box.clip_contents = true
 		icon_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		chip.add_child(icon_box)
@@ -542,13 +542,15 @@ func _toggle_enemy_expand() -> void:
 			icon_box.add_child(itex)
 		else:
 			_lbl(en["icon"], 32, Color.WHITE, icon_box, Vector2(15, 13))
-		_lbl(en["name"].to_upper(), 14, Color(1.0, 0.7, 0.7), chip, Vector2(80, 10))
+		# All text starts to the right of the enlarged icon (x12-104) so it
+		# never overlaps the monster art.
+		_lbl(en["name"].to_upper(), 15, Color(1.0, 0.7, 0.7), chip, Vector2(120, 16))
 		_lbl("Stage %d%s" % [stage_of + 1, " · FINAL" if stage_of == STAGE_ENEMIES.size()-1 else ""],
-			10, Color(1.0, 0.75, 0.3, 0.8), chip, Vector2(58, 28))
-		_lbl("HP: %d" % en["hp"], 11, Color(0.6, 1.0, 0.6, 0.85), chip, Vector2(58, 46))
-		_lbl("อ่อนแอต่อ:  " + "  /  ".join(en["weak"]), 11, Color(0.5, 0.85, 1.0, 0.9), chip, Vector2(200, 46))
+			11, Color(1.0, 0.75, 0.3, 0.8), chip, Vector2(120, 46))
+		_lbl("HP: %d" % en["hp"], 12, Color(0.6, 1.0, 0.6, 0.85), chip, Vector2(120, 74))
+		_lbl("อ่อนแอต่อ:  " + "  /  ".join(en["weak"]), 12, Color(0.5, 0.85, 1.0, 0.9), chip, Vector2(320, 74))
 
-		ey += 94.0
+		ey += 130.0
 
 # ── edit panel (slides in from left) ──
 const EDIT_W := 360.0
@@ -668,12 +670,17 @@ func _add_count_badge(parent: Control, count: int, badge_col: Color) -> void:
 	badge.add_child(bl)
 
 # ── character grid ──
+# Characters that exist for collection/showcase but are NOT playable in battle,
+# so they must never appear in the pre-battle team select — even once obtained
+# from the gacha.
+const NON_PLAYABLE_CHARS := ["Caelum Voss"]
+
 func _build_char_grid(parent: Control) -> void:
-	# Only owned characters are offered here — not-yet-obtained characters
-	# (e.g. Caelum Voss) are left out entirely instead of being shown as a
-	# locked preview.
+	# Only owned AND battle-playable characters are offered here. Caelum Voss
+	# is a showcase-only character: even after being summoned he must not show
+	# up in the pre-battle team select.
 	var roster: Array[Dictionary] = CharacterManager.get_roster().filter(
-		func(e): return e.get("owned", false)
+		func(e): return e.get("owned", false) and e.get("name", "") not in NON_PLAYABLE_CHARS
 	)
 
 	var cols := 3
