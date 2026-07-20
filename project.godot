@@ -31,7 +31,7 @@ AssetLoader="*res://asset_loader.gd"
 window/size/viewport_width=1152
 window/size/viewport_height=648
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
+window/stretch/aspect="ignore"
 window/handheld/orientation="sensor_landscape"
 
 [editor_plugins]
