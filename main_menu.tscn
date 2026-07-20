@@ -162,10 +162,13 @@ stretch_mode = 6
 
 [node name="CurrBox1" type="Panel" parent="." unique_id=1464954599]
 layout_mode = 0
-offset_left = 460.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -820.0
 offset_top = 7.0
-offset_right = 580.0
+offset_right = -700.0
 offset_bottom = 43.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
@@ -202,10 +205,13 @@ text = "+"
 
 [node name="CurrBox2" type="Panel" parent="." unique_id=1961644868]
 layout_mode = 0
-offset_left = 588.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -692.0
 offset_top = 7.0
-offset_right = 708.0
+offset_right = -572.0
 offset_bottom = 43.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
@@ -242,10 +248,13 @@ text = "+"
 
 [node name="CurrBox3" type="Panel" parent="." unique_id=157021780]
 layout_mode = 0
-offset_left = 716.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -564.0
 offset_top = 7.0
-offset_right = 836.0
+offset_right = -444.0
 offset_bottom = 43.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
@@ -282,10 +291,13 @@ text = "+"
 
 [node name="CurrBox4" type="Panel" parent="." unique_id=144192260]
 layout_mode = 0
-offset_left = 844.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -436.0
 offset_top = 7.0
-offset_right = 964.0
+offset_right = -316.0
 offset_bottom = 43.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_CurrPill")
 
@@ -324,10 +336,13 @@ text = "+"
 [node name="BtnSettings" type="Button" parent="." unique_id=1883020327]
 visible = false
 layout_mode = 0
-offset_left = 1082.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -198.0
 offset_top = 8.0
-offset_right = 1112.0
+offset_right = -168.0
 offset_bottom = 42.0
+grow_horizontal = 0
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("SB_Blank")
 theme_override_styles/pressed = SubResource("SB_Blank")
@@ -920,10 +935,13 @@ stretch_mode = 5
 
 [node name="AdventureCard" type="Panel" parent="." unique_id=760607397]
 layout_mode = 0
-offset_left = 840.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
 offset_top = 136.0
-offset_right = 1145.0
+offset_right = -135.0
 offset_bottom = 228.0
+grow_horizontal = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="AdventureCard" unique_id=545153171]
@@ -988,10 +1006,13 @@ stretch_mode = 5
 
 [node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
 layout_mode = 0
-offset_left = 840.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
 offset_top = 236.0
-offset_right = 1145.0
+offset_right = -135.0
 offset_bottom = 315.0
+grow_horizontal = 0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1074,10 +1095,13 @@ stretch_mode = 5
 
 [node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
 layout_mode = 0
-offset_left = 840.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
 offset_top = 323.0
-offset_right = 990.0
+offset_right = -290.0
 offset_bottom = 407.0
+grow_horizontal = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
 [node name="Title" type="Label" parent="ArenaCard" unique_id=7828574]
@@ -1180,10 +1204,13 @@ stretch_mode = 5
 
 [node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
 layout_mode = 0
-offset_left = 995.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -285.0
 offset_top = 323.0
-offset_right = 1145.0
+offset_right = -135.0
 offset_bottom = 407.0
+grow_horizontal = 0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("SB_Card2")
 
@@ -1257,9 +1284,12 @@ stretch_mode = 5
 
 [node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
 layout_mode = 0
-offset_top = 556.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -164.0
 offset_right = 362.0
-offset_bottom = 584.0
+offset_bottom = -136.0
+grow_vertical = 0
 mouse_filter = 2
 color = Color(0.01, 0.01, 0.04, 0.96)
 
@@ -1295,10 +1325,15 @@ text = "ระบบแชทยังไม่เปิดให้บริก
 [node name="NavBar" type="Panel" parent="." unique_id=729974613]
 layout_mode = 0
 z_index = 2
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = 592.0
-offset_right = 1140.0
-offset_bottom = 644.0
+offset_top = -128.0
+offset_right = -140.0
+offset_bottom = -76.0
+grow_horizontal = 2
+grow_vertical = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NavPill")
 
