@@ -60,7 +60,7 @@ func fade_to(path: String, duration: float = 0.28) -> void:
 
 func _notification(what: int) -> void:
 	# Android back button (and desktop window-close request).
-	if what == NOTIFICATION_WM_GO_BACK or what == NOTIFICATION_WM_CLOSE_REQUEST:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST or what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_handle_back()
 
 func _handle_back() -> void:
