@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="CHEMIA"
+config/icon="res://image/app_icon.png"
 run/main_scene="uid://bvtbdjlhtskvc"
 run/disable_stdout=true
 run/disable_stderr=true
