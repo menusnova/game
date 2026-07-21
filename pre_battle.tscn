@@ -180,7 +180,7 @@ theme_override_styles/hover = SubResource("SB_EditBtn")
 theme_override_styles/pressed = SubResource("SB_EditBtn")
 theme_override_colors/font_color = Color(0.784, 0.863, 1, 0.6)
 theme_override_font_sizes/font_size = 13
-text = "แก้ทีม"
+text = "เปลี่ยนเซ็ต"
 
 [node name="BtnStart" type="Button" parent="Root/Card/BtnRow"]
 custom_minimum_size = Vector2(300, 44)

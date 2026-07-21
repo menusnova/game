@@ -118,7 +118,7 @@ theme_override_styles/normal = SubResource("SB_EditBtn")
 theme_override_styles/hover = SubResource("SB_EditBtn")
 theme_override_styles/pressed = SubResource("SB_EditBtn")
 theme_override_styles/focus = SubResource("SB_Blank")
-text = "แก้ทีม"
+text = "เปลี่ยนเซ็ต"
 
 [node name="StartBtn" type="Button" parent="BottomBar"]
 layout_mode = 0
