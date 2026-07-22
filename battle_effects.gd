@@ -864,7 +864,7 @@ func spawn_number(pos: Vector2, amount: int, kind: String = "damage") -> void:
 ## ribbons sweeping upward, rising glowing particles, and soft embers.
 ## The shared "layered magical energy" look for skills/ultimate — no
 ## spinning rings, and it never covers the character (it rises past them).
-func rising_energy(base: Vector2, color: Color, ribbons := 5, height := 150.0, big := false) -> void:
+func rising_energy(base: Vector2, col: Color, ribbons := 5, height := 150.0, big := false) -> void:
 	# Light-ray ribbons: thin vertical streaks that rise, waver, and fade.
 	for i in ribbons:
 		var off := randf_range(-46.0, 46.0)
@@ -873,8 +873,8 @@ func rising_energy(base: Vector2, color: Color, ribbons := 5, height := 150.0, b
 		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
 		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
 		var grad := Gradient.new()
-		grad.set_color(0, Color(color.r, color.g, color.b, 0.0))
-		grad.add_point(0.4, Color(color.r, color.g, color.b, 0.85))
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+		grad.add_point(0.4, Color(col.r, col.g, col.b, 0.85))
 		grad.set_color(1, Color(1, 1, 1, 0.0))
 		ln.gradient = grad
 		var h := height * randf_range(0.7, 1.15)
@@ -893,7 +893,7 @@ func rising_energy(base: Vector2, color: Color, ribbons := 5, height := 150.0, b
 		t.tween_callback(ln.queue_free)
 
 	# Rising glowing particles drifting upward past the caster.
-	var motes := _spawn_particles(base, color, {
+	var motes := _spawn_particles(base, col, {
 		"amount": 22 if big else 14, "lifetime": 0.9, "one_shot": true,
 		"dir": Vector3(0, -1, 0), "spread": 22.0, "ring": 40.0,
 		"vmin": 90.0, "vmax": 190.0, "gravity": Vector3(0, -30, 0),
