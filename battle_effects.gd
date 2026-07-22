@@ -322,11 +322,15 @@ func _start_shield_idle() -> void:
 	_shield_pulse_tween.tween_property(shield_hex, "modulate:a", 0.95, 0.8)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# Flowing energy lines across the shield surface
+	# Flowing energy across the shield surface — a gentle sway + breath
+	# rather than a constant full rotation (keeps it elegant, not spinning).
 	if is_instance_valid(_shield_lines_tween): _shield_lines_tween.kill()
+	shield_hex_lines.rotation = -0.1
 	_shield_lines_tween = shield_hex_lines.create_tween().set_loops()
-	_shield_lines_tween.tween_property(shield_hex_lines, "rotation", TAU, 6.0)\
-		.set_trans(Tween.TRANS_LINEAR)
+	_shield_lines_tween.tween_property(shield_hex_lines, "rotation", 0.1, 2.6)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_shield_lines_tween.tween_property(shield_hex_lines, "rotation", -0.1, 2.6)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 	# Energy pulse ring every 0.8s
 	if is_instance_valid(_shield_energy_tween): _shield_energy_tween.kill()
@@ -494,8 +498,9 @@ func play_aether_pulse() -> void:
 	rt.tween_property(ring, "modulate:a", 0.85, 0.28)
 	rt.tween_property(ring, "scale", Vector2(0.55, 0.55), 0.32)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	var spin := ring.create_tween()
-	spin.tween_property(ring, "rotation", TAU, 0.9).set_trans(Tween.TRANS_LINEAR)
+	# Layered magical energy rising at the cast point (replaces the old
+	# spinning ring look); the ring stays as a soft glow underneath.
+	rising_energy(player_pos + Vector2(6, 34), COL_VIOLET, 5, 150.0)
 
 	var charge := _spawn_particles(cast_pos, COL_VIOLET, {
 		"amount": 26, "lifetime": 0.55, "one_shot": true,
@@ -645,8 +650,11 @@ func play_ultimate() -> void:
 	fct.tween_property(floor_circle, "modulate:a", 0.85, 0.35)
 	fct.tween_property(floor_circle, "scale", Vector2(1.3, 0.45), 0.4)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Slow, subtle ground rotation (ambient magic circle — not a fast
+	# spinning wheel) plus a magical aura erupting upward past the caster.
 	var fspin := floor_circle.create_tween().set_loops()
-	fspin.tween_property(floor_circle, "rotation", TAU, 2.2).set_trans(Tween.TRANS_LINEAR)
+	fspin.tween_property(floor_circle, "rotation", TAU, 8.0).set_trans(Tween.TRANS_LINEAR)
+	rising_energy(player_pos + Vector2(0, 40), COL_VIOLET, 7, 230.0, true)
 
 	var orbit := _spawn_particles(player_pos, COL_VIOLET, {
 		"amount": 28, "lifetime": 0.8, "one_shot": false,
@@ -849,6 +857,50 @@ func spawn_number(pos: Vector2, amount: int, kind: String = "damage") -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	t.tween_property(lbl, "modulate:a", 0.0, 0.9).set_delay(0.3)
 	t.chain().tween_callback(lbl.queue_free)
+
+
+## ── MAGICAL ENERGY LANGUAGE ─────────────────────────────────
+## Vertical flowing energy that builds at `base`: tapered light-ray
+## ribbons sweeping upward, rising glowing particles, and soft embers.
+## The shared "layered magical energy" look for skills/ultimate — no
+## spinning rings, and it never covers the character (it rises past them).
+func rising_energy(base: Vector2, color: Color, ribbons := 5, height := 150.0, big := false) -> void:
+	# Light-ray ribbons: thin vertical streaks that rise, waver, and fade.
+	for i in ribbons:
+		var off := randf_range(-46.0, 46.0)
+		var ln := Line2D.new()
+		ln.width = randf_range(3.0, 6.0) * (1.4 if big else 1.0)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(color.r, color.g, color.b, 0.0))
+		grad.add_point(0.4, Color(color.r, color.g, color.b, 0.85))
+		grad.set_color(1, Color(1, 1, 1, 0.0))
+		ln.gradient = grad
+		var h := height * randf_range(0.7, 1.15)
+		ln.add_point(Vector2(off, 0))
+		ln.add_point(Vector2(off + randf_range(-10, 10), -h * 0.5))
+		ln.add_point(Vector2(off + randf_range(-14, 14), -h))
+		ln.position = base
+		ln.z_index = 11
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 1.0, 0.14).set_delay(i * 0.03)
+		t.tween_interval(0.12)
+		t.tween_property(ln, "modulate:a", 0.0, 0.3)
+		t.parallel().tween_property(ln, "position", base + Vector2(0, -26), 0.5)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		t.tween_callback(ln.queue_free)
+
+	# Rising glowing particles drifting upward past the caster.
+	var motes := _spawn_particles(base, color, {
+		"amount": 22 if big else 14, "lifetime": 0.9, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 22.0, "ring": 40.0,
+		"vmin": 90.0, "vmax": 190.0, "gravity": Vector3(0, -30, 0),
+		"scale_min": 0.35, "scale_max": 0.85, "texture": _tex_dot,
+	})
+	motes.z_index = 10
+	_cleanup(motes, 1.1)
 
 
 ## ── BACKGROUND LAYER ────────────────────────────────────────
