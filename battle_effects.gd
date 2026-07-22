@@ -685,21 +685,10 @@ func play_ultimate() -> void:
 	var clear_t := screen_flash.create_tween()
 	clear_t.tween_property(screen_flash, "color:a", 0.0, 0.14)
 
-	var beam := Line2D.new()
-	beam.width   = 14.0
-	beam.z_index = 15
-	var beam_grad := Gradient.new()
-	beam_grad.set_color(0, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
-	beam_grad.add_point(0.5, Color(1, 1, 1, 0.95))
-	beam_grad.set_color(1, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0))
-	beam.gradient = beam_grad
-	beam.add_point(player_pos + Vector2(70, -20))
-	beam.add_point(enemy_pos)
-	add_child(beam)
-	var bt := beam.create_tween()
-	bt.tween_interval(0.12)
-	bt.tween_property(beam, "modulate:a", 0.0, 0.2)
-	bt.tween_callback(beam.queue_free)
+	# Three interconnected energy streams that merge into one blast — see
+	# _ultimate_beam(): a thick bright center plus two thinner, unevenly
+	# curved supporting beams that converge on the target.
+	_ultimate_beam(player_pos + Vector2(70, -20), enemy_pos)
 
 	_cleanup(orbit, 0.3)
 	_cleanup(floor_circle, 0.4)
@@ -901,6 +890,80 @@ func rising_energy(base: Vector2, col: Color, ribbons := 5, height := 150.0, big
 	})
 	motes.z_index = 10
 	_cleanup(motes, 1.1)
+
+
+## ── ULTIMATE ENERGY BEAM ────────────────────────────────────
+## Quadratic-bezier sample points from `a` to `b`, bowed sideways by
+## `curve` along the perpendicular so beams arc instead of going straight.
+func _beam_points(a: Vector2, b: Vector2, curve: float, segs := 14) -> PackedVector2Array:
+	var dir := (b - a)
+	var nrm := Vector2(-dir.y, dir.x).normalized()
+	var ctrl := a.lerp(b, 0.5) + nrm * curve
+	var pts := PackedVector2Array()
+	for i in segs + 1:
+		var t := float(i) / float(segs)
+		var p := a.lerp(ctrl, t).lerp(ctrl.lerp(b, t), t)  # quadratic bezier
+		pts.append(p)
+	return pts
+
+## One beam = layered Line2Ds (soft outer glow + mid body + bright core),
+## width tapering along its length so it compresses/expands, plus a subtle
+## alive flicker. `bright` scales overall intensity (center beam = 1.0).
+func _beam_stream(a: Vector2, b: Vector2, curve: float, w: float, col: Color, bright: float):
+	var pts := _beam_points(a, b, curve)
+	# Thickness varies along the beam: pinched at the caster, fullest
+	# mid-flight, tapering into the impact point.
+	var wc := Curve.new()
+	wc.add_point(Vector2(0.0, 0.35))
+	wc.add_point(Vector2(0.45, 1.0))
+	wc.add_point(Vector2(1.0, 0.55))
+	var layers := [
+		{"w": w * 2.3, "a": 0.22 * bright, "c": col},                       # outer glow
+		{"w": w * 1.2, "a": 0.55 * bright, "c": col.lerp(Color(1, 1, 1, 1), 0.4)},  # body
+		{"w": w * 0.5, "a": 0.95 * bright, "c": Color(1, 1, 1, 1)},          # bright core
+	]
+	var idx := 0
+	for lyr in layers:
+		var ln := Line2D.new()
+		ln.points = pts
+		ln.width = lyr["w"]
+		ln.width_curve = wc
+		ln.default_color = Color(lyr["c"].r, lyr["c"].g, lyr["c"].b, lyr["a"])
+		ln.joint_mode = Line2D.LINE_JOINT_ROUND
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.z_index = 15 + idx
+		ln.modulate.a = 0.0
+		add_child(ln)
+		# Snap in, flicker while flowing, then disperse — never static.
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 1.0, 0.06)
+		t.tween_property(ln, "modulate:a", 0.78, 0.05)
+		t.tween_property(ln, "modulate:a", 1.0, 0.05)
+		t.tween_interval(0.06)
+		t.tween_property(ln, "modulate:a", 0.0, 0.22)
+		t.tween_callback(ln.queue_free)
+		idx += 1
+
+## Full ultimate beam: three synchronized streams (thick bright center +
+## two thinner, unevenly curved supports) that visually merge on impact,
+## with glowing motes travelling along the blast.
+func _ultimate_beam(a: Vector2, b: Vector2) -> void:
+	# Supporting beams start slightly offset from the caster and bow in
+	# toward the center line — asymmetric on purpose (not mirrored).
+	_beam_stream(a + Vector2(-6, -22), b, -34.0, 9.0, COL_CYAN, 0.6)    # left support
+	_beam_stream(a + Vector2(2, 20), b, 22.0, 11.0, COL_VIOLET, 0.72)   # right support
+	_beam_stream(a, b, 8.0, 17.0, COL_VIOLET, 1.0)                      # center (dominant)
+	# Motes riding along the blast so the beam reads as flowing energy.
+	var mid := a.lerp(b, 0.5)
+	var stream := _spawn_particles(mid, Color(1, 1, 1, 1), {
+		"amount": 20, "lifetime": 0.3, "one_shot": true, "explosive": true,
+		"dir": Vector3(1, 0, 0), "spread": 10.0,
+		"vmin": 500.0, "vmax": 900.0,
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
+	})
+	stream.z_index = 18
+	_cleanup(stream, 0.5)
 
 
 ## ── BACKGROUND LAYER ────────────────────────────────────────
