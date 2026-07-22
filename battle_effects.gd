@@ -126,7 +126,12 @@ func play_void_strike() -> void:
 		"spread": 180.0, "vmin": 60.0, "vmax": 220.0,
 		"scale_min": 0.6, "scale_max": 1.4, "texture": _tex_dot,
 	})
-	_flash_node(enemy_node)
+	# Contact juice: spark + enemy recoil + a quick white flash & light punch.
+	hit_spark(enemy_pos, COL_CYAN)
+	enemy_hit_react()
+	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.16), 0.06)
+	shake(0.12, 4.0)
+	_camera_zoom(enemy_pos, 0.03, 0.22)
 	_cleanup(slash, 0.6)
 
 
@@ -554,6 +559,9 @@ func play_aether_pulse() -> void:
 	_camera_zoom(form_pos, 0.05, 0.28)
 	shake(0.15, 5.0)
 	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.28), 0.12)
+	# Contact juice on the enemy so the skill reads as a real hit.
+	hit_spark(enemy_pos, COL_VIOLET)
+	enemy_hit_react(44.0)
 
 	# Violet glow over the sprite (kept from the original effect)
 	var glow := ColorRect.new()
@@ -802,17 +810,86 @@ func spawn_number(pos: Vector2, amount: int, kind: String = "damage") -> void:
 	lbl.add_theme_constant_override("shadow_offset_x", 2)
 	lbl.add_theme_constant_override("shadow_offset_y", 2)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.position = pos - Vector2(40, 10) + Vector2(randf_range(-14, 14), 0)
 	lbl.size = Vector2(80, 40)
+	lbl.pivot_offset = Vector2(40, 20)
+	var arc := randf_range(-16, 16)
+	lbl.position = pos - Vector2(40, 10) + Vector2(arc * 0.4, 0)
 	lbl.z_index = 40
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Bigger crits (arbitrary threshold) pop harder for readable weight.
+	var pop: float = 1.35 if absi(amount) >= 120 else 1.2
+	lbl.scale = Vector2(0.4, 0.4)
 	floating_root.add_child(lbl)
 
+	# 1. POP — scale punch with a slight overshoot (no time freeze, ~0.16s).
+	var st := lbl.create_tween()
+	st.tween_property(lbl, "scale", Vector2(pop, pop), 0.1)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	st.tween_property(lbl, "scale", Vector2.ONE, 0.08)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# 2. ARC + RISE — drift sideways a touch, float up, then fade out.
 	var t := lbl.create_tween().set_parallel(true)
-	t.tween_property(lbl, "position:y", lbl.position.y - 60.0, 1.0)\
+	t.tween_property(lbl, "position:y", lbl.position.y - 62.0, 1.0)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	t.tween_property(lbl, "modulate:a", 0.0, 1.0).set_delay(0.2)
+	t.tween_property(lbl, "position:x", lbl.position.x + arc, 1.0)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	t.tween_property(lbl, "modulate:a", 0.0, 0.9).set_delay(0.3)
 	t.chain().tween_callback(lbl.queue_free)
+
+
+## Premium impact "hit spark" at `pos`: a bright core pop, a fast thin
+## shock ring, and a few streak shards radiating out. ~0.35s, no time
+## freeze — pure additive VFX to give the hit weight on contact.
+func hit_spark(pos: Vector2, color: Color = COL_CYAN) -> void:
+	# Bright white core that pops and vanishes fast.
+	var core := Sprite2D.new()
+	core.texture  = _tex_dot
+	core.position = pos
+	core.modulate = Color(2.4, 2.4, 2.4, 1.0)
+	core.scale    = Vector2(0.2, 0.2)
+	core.z_index  = 44
+	add_child(core)
+	var ct := core.create_tween().set_parallel(true)
+	ct.tween_property(core, "scale", Vector2(1.1, 1.1), 0.12)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	ct.tween_property(core, "modulate:a", 0.0, 0.18)
+	ct.chain().tween_callback(core.queue_free)
+
+	# Thin shock ring snapping outward.
+	var ring := Sprite2D.new()
+	ring.texture  = _tex_ring_thin
+	ring.position = pos
+	ring.modulate = Color(color.r, color.g, color.b, 0.95)
+	ring.scale    = Vector2(0.1, 0.1)
+	ring.z_index  = 43
+	add_child(ring)
+	var rt := ring.create_tween().set_parallel(true)
+	rt.tween_property(ring, "scale", Vector2(0.7, 0.7), 0.25)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	rt.tween_property(ring, "modulate:a", 0.0, 0.28)
+	rt.chain().tween_callback(ring.queue_free)
+
+	# Sharp streak shards flying off the impact point.
+	_spawn_particles(pos, Color(1, 1, 1, 1), {
+		"amount": 8, "lifetime": 0.28, "one_shot": true, "explosive": true,
+		"spread": 180.0, "vmin": 220.0, "vmax": 460.0,
+		"scale_min": 0.8, "scale_max": 1.6, "texture": _tex_streak,
+	})
+
+## Enemy reacts to being hit: a quick recoil kick backward that springs
+## back, plus a small shake and bright flash. Reusable on any impact.
+func enemy_hit_react(recoil: float = 34.0) -> void:
+	if not is_instance_valid(enemy_node) or not (enemy_node is Node2D or enemy_node is Control):
+		return
+	var orig: Vector2 = enemy_node.position
+	var t := enemy_node.create_tween()
+	t.tween_property(enemy_node, "position", orig + Vector2(recoil, 0), 0.07)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	t.tween_property(enemy_node, "position", orig, 0.22)\
+		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	_flash_node(enemy_node)
+	_shake_node(enemy_node, 5.0, 0.12)
 
 
 # ════════════════════════════════════════════════════════════
