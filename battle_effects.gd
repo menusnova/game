@@ -40,6 +40,11 @@ var floating_root:   Node2D
 var _tex_dot:    ImageTexture
 var _tex_streak: ImageTexture
 var _tex_ring:   ImageTexture
+var _tex_vignette: ImageTexture
+
+# Background layer: soft cutscene vignette/dim (kept below 30% opacity so
+# the battlefield never goes fully dark and characters stay readable).
+var _backdrop: TextureRect = null
 
 var _shield_pulse_tween: Tween
 
@@ -78,7 +83,9 @@ func _ready() -> void:
 	_tex_hex_lines = _make_hex_lines_texture(180, COL_CYAN)
 	_tex_ring_thin = _make_thin_ring_texture(140)
 	_tex_shard     = _make_shard_texture()
+	_tex_vignette  = _make_vignette_texture(256)
 
+	_build_backdrop()
 	_build_guard_shield()
 	_build_shield_pools()
 	_build_void_shield_orb()
@@ -472,6 +479,9 @@ func play_aether_pulse() -> void:
 	var cast_pos := player_pos + Vector2(0, -10)     # hands/chest — where energy gathers
 	var form_pos := player_pos + Vector2(34, -6)      # where the void shield forms — "impact" point
 
+	# ── 0. BACKGROUND — ease the vignette in to frame the cutscene ──
+	cutscene_backdrop_in(0.24, 0.24)
+
 	# ── 1. ENERGY CHARGE — rotating ring + rising particles at the cast point ──
 	var ring := Sprite2D.new()
 	ring.texture   = _tex_ring
@@ -498,6 +508,7 @@ func play_aether_pulse() -> void:
 	if not is_instance_valid(self): return
 
 	# ── 2. SKILL RELEASE — the charge ring flares and pops ──
+	speed_lines(player_pos + Vector2(10, -20), COL_VIOLET, 9)
 	var flash_t := ring.create_tween().set_parallel(true)
 	flash_t.tween_property(ring, "modulate", Color(2.2, 2.0, 2.6, 1.0), 0.08)
 	flash_t.tween_property(ring, "scale", Vector2(0.75, 0.75), 0.12)\
@@ -586,6 +597,9 @@ func play_aether_pulse() -> void:
 	_cleanup(aftermath, 1.8)
 	_cleanup(ring, 0.6)
 	_cleanup(charge, 0.9)
+
+	# ── BACKGROUND — release the vignette so the field returns to normal ──
+	cutscene_backdrop_out(0.32)
 
 func show_void_shield(active: bool) -> void:
 	if not is_instance_valid(void_shield_orb): return
@@ -816,14 +830,13 @@ func spawn_number(pos: Vector2, amount: int, kind: String = "damage") -> void:
 	lbl.position = pos - Vector2(40, 10) + Vector2(arc * 0.4, 0)
 	lbl.z_index = 40
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# Bigger crits (arbitrary threshold) pop harder for readable weight.
-	var pop: float = 1.35 if absi(amount) >= 120 else 1.2
-	lbl.scale = Vector2(0.4, 0.4)
+	# Readable pop per spec: 90% -> 110% -> 100% (no time freeze, ~0.18s).
+	lbl.scale = Vector2(0.9, 0.9)
 	floating_root.add_child(lbl)
 
-	# 1. POP — scale punch with a slight overshoot (no time freeze, ~0.16s).
+	# 1. POP — brief scale punch to 110% then settle at 100%.
 	var st := lbl.create_tween()
-	st.tween_property(lbl, "scale", Vector2(pop, pop), 0.1)\
+	st.tween_property(lbl, "scale", Vector2(1.1, 1.1), 0.1)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	st.tween_property(lbl, "scale", Vector2.ONE, 0.08)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
@@ -836,6 +849,47 @@ func spawn_number(pos: Vector2, amount: int, kind: String = "damage") -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	t.tween_property(lbl, "modulate:a", 0.0, 0.9).set_delay(0.3)
 	t.chain().tween_callback(lbl.queue_free)
+
+
+## ── BACKGROUND LAYER ────────────────────────────────────────
+## Fade the cutscene backdrop in: a soft vignette that darkens the edges
+## and gently dims the field, drawing the eye to the character. Capped
+## well below 30% so the background never blacks out. Call _out to clear.
+func cutscene_backdrop_in(peak: float = 0.26, dur: float = 0.22) -> void:
+	if not is_instance_valid(_backdrop): return
+	var t := _backdrop.create_tween()
+	t.tween_property(_backdrop, "modulate:a", clampf(peak, 0.0, 0.29), dur)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+func cutscene_backdrop_out(dur: float = 0.3) -> void:
+	if not is_instance_valid(_backdrop): return
+	var t := _backdrop.create_tween()
+	t.tween_property(_backdrop, "modulate:a", 0.0, dur)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+
+## Subtle converging speed lines around `center` to sell motion without
+## covering the character. A handful of thin streaks sweep inward and fade.
+func speed_lines(center: Vector2, color: Color = COL_CYAN, count: int = 9) -> void:
+	for i in count:
+		var ang := TAU * (float(i) / float(count)) + randf_range(-0.15, 0.15)
+		var dir := Vector2(cos(ang), sin(ang))
+		var far := center + dir * randf_range(230.0, 320.0)
+		var near := center + dir * randf_range(120.0, 160.0)
+		var ln := Line2D.new()
+		ln.width = randf_range(2.0, 3.5)
+		ln.default_color = Color(color.r, color.g, color.b, 0.0)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.add_point(far)
+		ln.add_point(near)
+		ln.z_index = 3
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 0.55, 0.1)
+		t.tween_property(ln, "modulate:a", 0.0, 0.22)
+		t.parallel().tween_property(ln, "position", dir * 40.0, 0.32)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		t.tween_callback(ln.queue_free)
 
 
 ## Premium impact "hit spark" at `pos`: a bright core pop, a fast thin
@@ -960,6 +1014,16 @@ func _build_screen_flash() -> void:
 	screen_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(screen_flash)
 
+func _build_backdrop() -> void:
+	_backdrop = TextureRect.new()
+	_backdrop.texture = _tex_vignette
+	_backdrop.stretch_mode = TextureRect.STRETCH_SCALE
+	_backdrop.size = Vector2(SCREEN_W, SCREEN_H)
+	_backdrop.modulate = Color(1, 1, 1, 0.0)
+	_backdrop.z_index = 2   # background layer: under slashes/impacts/UI
+	_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_backdrop)
+
 func _cleanup(node: Node, delay: float) -> void:
 	if not is_instance_valid(node): return
 	var t := create_tween()
@@ -1039,6 +1103,21 @@ func _make_dot_texture() -> ImageTexture:
 		for x in size:
 			var d := Vector2(x, y).distance_to(c) / (size * 0.5)
 			img.set_pixel(x, y, Color(1, 1, 1, clampf(1.0 - d, 0.0, 1.0)))
+	return ImageTexture.create_from_image(img)
+
+## Vignette: transparent center fading to dark toward the edges. The clear
+## middle keeps the character bright while the edges frame the shot.
+func _make_vignette_texture(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := Vector2(size * 0.5, size * 0.5)
+	var maxd := size * 0.5
+	for y in size:
+		for x in size:
+			var d := Vector2(x, y).distance_to(c) / maxd   # 0 center .. ~1.41 corner
+			# Start darkening past ~45% radius, ease up to the edge.
+			var a := clampf((d - 0.45) / 0.55, 0.0, 1.0)
+			a = a * a * 0.9                                 # softer falloff, cap alpha
+			img.set_pixel(x, y, Color(0, 0, 0, a))
 	return ImageTexture.create_from_image(img)
 
 func _make_streak_texture() -> ImageTexture:
