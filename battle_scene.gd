@@ -2075,11 +2075,8 @@ func _on_ultimate() -> void:
 ## never be ended while an effect is still playing. A newer action (bumping
 ## _end_turn_arm_id) supersedes an older pending timer.
 func _arm_end_turn() -> void:
+	# End Turn unlocks immediately after the action — no hold/delay.
 	_end_turn_arm_id += 1
-	var my_id := _end_turn_arm_id
-	await get_tree().create_timer(0.5).timeout
-	if not is_instance_valid(self): return
-	if my_id != _end_turn_arm_id: return   # superseded by a later action
 	if _player_turn and not _battle_over:
 		_end_turn_ready = true
 		_refresh_ui()
