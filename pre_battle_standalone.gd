@@ -1,6 +1,7 @@
 extends Control
 
 const SC_BATTLE := "res://battle_scene.tscn"
+const SC_MAIN   := "res://main_menu.tscn"
 const SW := 1152.0
 const SH := 648.0
 
@@ -268,6 +269,13 @@ func _ready() -> void:
 
 	$BottomBar/EditBtn.pressed.connect(_on_edit)
 	$BottomBar/StartBtn.pressed.connect(_on_start)
+
+	# Back button — top-left corner, returns to the main menu.
+	var back_sb := _sb(Color(0.04, 0.07, 0.16, 0.82), Color(0.22, 0.62, 1, 0.5), 10)
+	var back_b := _btn("‹  กลับ", 15, Color(0.9, 0.95, 1, 0.95), back_sb,
+		self, Vector2(16, 14), Vector2(84, 40))
+	back_b.z_index = 50
+	back_b.pressed.connect(_on_back)
 	_build_edit_panel()
 	_build_deck_preview()
 	_refresh_enemy_panel()
@@ -1189,6 +1197,10 @@ func _on_edit_close() -> void:
 	if is_instance_valid(_enemy_panel):
 		_enemy_panel.visible = true
 	_refresh_team_display()
+
+# ── back ──
+func _on_back() -> void:
+	SceneTransition.fade_to(SC_MAIN)
 
 # ── start ──
 const DECK_REQUIRED := 20
