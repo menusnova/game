@@ -1358,11 +1358,15 @@ func _show_card_info(id: String) -> void:
 				var result_name: String = CARD_DB.get(result, {}).get("name", result)
 				combo_lbl.text = "• %s + %s → %s" % [sym, other_name, result_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
-			else:
-				# Not discovered yet — show which element it pairs with (both
-				# are unlocked) but keep the result a mystery until it's mixed
-				# at the Lab.
+			elif _is_elem_unlocked(other):
+				# Compound not mixed yet, but the partner element is unlocked —
+				# show which element it pairs with; the result stays a mystery
+				# until it's discovered at the Lab.
 				combo_lbl.text = "• %s + %s → ???" % [sym, other_name]
+				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
+			else:
+				# Partner element itself not unlocked yet — full mystery.
+				combo_lbl.text = "• %s + ??? → ???" % [sym]
 				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
 			combo_lbl.position = Vector2(16, cy)
 			combo_lbl.custom_minimum_size = Vector2(288, 0)
@@ -1505,6 +1509,15 @@ func _start_enemy_bob() -> void:
 func _enemy_hit_pos() -> Vector2:
 	var yo := ENEMY_Y_OFFSET_FINAL if _current_stage >= FINAL_STAGE else ENEMY_Y_OFFSET_STAGE1
 	return Vector2(ENEMY_CX, ENEMY_CY + yo)
+
+## An element counts as "unlocked" (shown with a name / tappable in the
+## codex) if ReactionDB marks it unlocked or the player discovered it.
+func _is_elem_unlocked(sym: String) -> bool:
+	if sym in PlayerData.discovered_elements: return true
+	for e in ReactionDB.ELEMENTS:
+		if e.get("symbol", "") == sym:
+			return e.get("unlocked", false)
+	return false
 
 func _build_deck() -> void:
 	_deck = []
