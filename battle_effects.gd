@@ -129,18 +129,12 @@ func play_void_strike() -> void:
 	lt.tween_callback(line.queue_free)
 
 	await get_tree().create_timer(0.18).timeout
-	# Impact burst on the enemy (magenta)
-	_spawn_particles(enemy_pos, COL_MAGENTA, {
-		"amount": 26, "lifetime": 0.5, "one_shot": true, "explosive": true,
-		"spread": 180.0, "vmin": 60.0, "vmax": 220.0,
-		"scale_min": 0.6, "scale_max": 1.4, "texture": _tex_dot,
-	})
-	# Contact juice: spark + enemy recoil + a quick white flash & light punch.
-	hit_spark(enemy_pos, COL_CYAN)
+	# Layered atmospheric-pressure impact at the point of contact (white ->
+	# void violet), plus the physical feedback: enemy recoil, shake, punch.
+	_melee_impact(enemy_pos, COL_VIOLET)
 	enemy_hit_react()
-	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.16), 0.06)
-	shake(0.12, 4.0)
-	_camera_zoom(enemy_pos, 0.03, 0.22)
+	shake(0.14, 5.0)
+	_camera_zoom(enemy_pos, 0.035, 0.24)
 	_cleanup(slash, 0.6)
 
 
@@ -1198,6 +1192,112 @@ func enemy_hit_react(recoil: float = 34.0) -> void:
 		.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	_flash_node(enemy_node)
 	_shake_node(enemy_node, 5.0, 0.12)
+
+## Broken shockwave arc: a jittered partial ring (never a perfect circle)
+## that snaps outward with organic deformation, then fades.
+func _shock_arc(pos: Vector2, col: Color, base_r: float, thick: float, a0: float,
+		span: float, to_scale: float, dur: float, delay: float) -> void:
+	var ln := Line2D.new()
+	ln.width = thick
+	ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+	var segs := 14
+	var pts := PackedVector2Array()
+	for i in segs + 1:
+		var a := a0 + span * (float(i) / segs)
+		var r := base_r * (1.0 + randf_range(-0.13, 0.13))   # organic deform
+		pts.append(Vector2(cos(a) * r, sin(a) * r))
+	ln.points = pts
+	ln.position = pos
+	ln.z_index = 15
+	ln.scale = Vector2(0.4, 0.4)
+	ln.modulate = Color(col.r, col.g, col.b, 0.0)
+	add_child(ln)
+	var t := ln.create_tween()
+	t.tween_property(ln, "modulate:a", 0.9, 0.05).set_delay(delay)
+	t.parallel().tween_property(ln, "scale", Vector2(to_scale, to_scale), dur)\
+		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	t.tween_property(ln, "modulate:a", 0.0, dur * 0.5)
+	t.tween_callback(ln.queue_free)
+
+## An asymmetric wind crescent flung outward along `ang`: a short curved arc
+## that flies out, stretches, rotates a touch and fades — violent air.
+func _wind_crescent(pos: Vector2, col: Color, ang, size, dur, delay) -> void:
+	var ln := Line2D.new()
+	ln.width = randf_range(2.0, 4.5)
+	ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+	var grad := Gradient.new()
+	grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+	grad.add_point(0.5, Color(1, 1, 1, 0.85))
+	grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+	ln.gradient = grad
+	var span := randf_range(1.4, 2.2)
+	var curv := randf_range(0.7, 1.05)
+	var segs := 10
+	var pts := PackedVector2Array()
+	for i in segs + 1:
+		var a := -span * 0.5 + span * (float(i) / segs)
+		pts.append(Vector2(sin(a) * size, -cos(a) * size * curv))
+	ln.points = pts
+	ln.position = pos
+	ln.rotation = ang
+	ln.z_index = 14
+	ln.modulate = Color(1, 1, 1, 0.0)
+	ln.scale = Vector2(0.5, 0.5)
+	add_child(ln)
+	var dist := Vector2(cos(ang), sin(ang)) * randf_range(50.0, 92.0)
+	var t := ln.create_tween()
+	t.tween_property(ln, "modulate:a", randf_range(0.5, 0.9), 0.05).set_delay(delay)
+	t.parallel().tween_property(ln, "position", pos + dist, dur)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.parallel().tween_property(ln, "scale", Vector2(1.25, 1.25), dur)
+	t.parallel().tween_property(ln, "rotation", ang + randf_range(-0.4, 0.4), dur)
+	t.tween_property(ln, "modulate:a", 0.0, dur * 0.5)
+	t.tween_callback(ln.queue_free)
+
+## Layered melee impact at `pos`, blending pure white into element `col`:
+## staggered compression -> flash/spark -> broken shockwave arcs -> asymmetric
+## wind crescents -> residual drift. Atmospheric pressure, not a big blast.
+func _melee_impact(pos: Vector2, col: Color) -> void:
+	# L1 — bright compression core: pops in, snaps inward, releases.
+	var core := Sprite2D.new()
+	core.texture = _tex_dot
+	core.position = pos
+	core.scale = Vector2(1.7, 1.7)
+	core.modulate = Color(1.7, 1.7, 1.8, 0.0)
+	core.z_index = 17
+	add_child(core)
+	var ct := core.create_tween()
+	ct.tween_property(core, "modulate:a", 1.0, 0.02)
+	ct.tween_property(core, "scale", Vector2(0.7, 0.7), 0.05)
+	ct.tween_property(core, "modulate:a", 0.0, 0.13)
+	ct.tween_callback(core.queue_free)
+	# L2 — primary spark + fine glowing fragments shooting off the point.
+	hit_spark(pos, col)
+	_spawn_particles(pos, Color(1, 1, 1, 1), {
+		"amount": 8, "lifetime": 0.35, "one_shot": true, "explosive": true,
+		"spread": 180.0, "vmin": 180.0, "vmax": 420.0,
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
+	})
+	# L3 — broken shockwave arcs: different spans/speeds, some die sooner.
+	_shock_arc(pos, col, 30.0, 3.0, randf_range(0, TAU), 2.4, 3.2, 0.30, 0.02)
+	_shock_arc(pos, Color(1, 1, 1, 1), 26.0, 2.0, randf_range(0, TAU), 1.8, 2.6, 0.22, 0.04)
+	_shock_arc(pos, col, 34.0, 2.4, randf_range(0, TAU), 3.0, 4.2, 0.44, 0.06)
+	# L4/5 — asymmetric wind crescents flung outward, staggered.
+	var n := 5
+	for i in n:
+		var ang := TAU * (float(i) / n) + randf_range(-0.5, 0.5)
+		_wind_crescent(pos, col, ang, randf_range(14.0, 26.0), randf_range(0.3, 0.5), 0.06 + i * 0.015)
+	# L6 — residual: a few fragments drift up and fade out late.
+	var res := _spawn_particles(pos, col, {
+		"amount": 7, "lifetime": 0.7, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 120.0, "vmin": 20.0, "vmax": 70.0,
+		"gravity": Vector3(0, -14, 0),
+		"scale_min": 0.3, "scale_max": 0.6, "texture": _tex_dot,
+	})
+	res.z_index = 12
+	_cleanup(res, 0.9)
 
 
 # ════════════════════════════════════════════════════════════
