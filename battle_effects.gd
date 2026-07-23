@@ -11,6 +11,7 @@ extends Node2D
 # ════════════════════════════════════════════════════════════
 
 # ── CHEMIA palette ─────────────────────────────────────────
+const BarrierRingsScript := preload("res://barrier_rings.gd")
 const COL_CYAN    := Color("#00EAFF")
 const COL_VIOLET  := Color("#7F5AF0")
 const COL_MAGENTA := Color("#FF3CAC")
@@ -53,6 +54,7 @@ var shield_root:       Node2D    # container: feet ring + hex shield + ambient p
 var shield_feet_ring:  Sprite2D
 var shield_hex:        Sprite2D
 var shield_hex_lines:  Sprite2D
+var _barrier: Node2D = null      # two elliptical HUD rings (the visible barrier)
 var shield_ambient:    GPUParticles2D
 var shield_sparkle:    GPUParticles2D
 var _shield_active         := false
@@ -152,6 +154,13 @@ func _build_guard_shield() -> void:
 	shield_root.z_index = 9
 	shield_root.visible = false
 	add_child(shield_root)
+
+	# The visible barrier is now the two elliptical HUD rings; the old hex
+	# sprites stay in the tree (hit/break reactions reference them) but are
+	# kept invisible.
+	_barrier = BarrierRingsScript.new()
+	_barrier.visible = false
+	shield_root.add_child(_barrier)
 
 	shield_feet_ring = Sprite2D.new()
 	shield_feet_ring.texture  = _tex_ring_thin
@@ -287,39 +296,16 @@ func show_shield(active: bool) -> void:
 		_play_guard_dismiss()
 
 func _play_guard_formation() -> void:
-	shield_feet_ring.modulate.a = 0.0
-	shield_feet_ring.scale      = Vector2(0.15, 0.06)
-	var ft := shield_feet_ring.create_tween().set_parallel(true)
-	ft.tween_property(shield_feet_ring, "modulate:a", 0.85, 0.18)
-	ft.tween_property(shield_feet_ring, "scale", Vector2(0.62, 0.24), 0.22)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# The two elliptical HUD rings fade/spin in as the barrier itself.
+	if is_instance_valid(_barrier):
+		_barrier.call("activate")
 
-	await get_tree().create_timer(0.12).timeout
-	if not _shield_active or not is_instance_valid(shield_hex): return
-
-	shield_hex.modulate.a       = 0.0
-	shield_hex.scale            = Vector2(0.2, 0.2)
-	shield_hex_lines.modulate.a = 0.0
-	shield_hex_lines.scale      = Vector2(0.2, 0.2)
-	var ht := shield_hex.create_tween().set_parallel(true)
-	ht.tween_property(shield_hex, "modulate:a", 0.95, 0.22)
-	ht.tween_property(shield_hex, "scale", Vector2(1.0, 1.0), 0.3)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	var lt := shield_hex_lines.create_tween().set_parallel(true)
-	lt.tween_property(shield_hex_lines, "modulate:a", 0.55, 0.28)
-	lt.tween_property(shield_hex_lines, "scale", Vector2(1.0, 1.0), 0.34)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-	# Bold formation beat: a bright rim flash on the hex, an outward shock
-	# wave, and a brief ring of magical fragments snapping into place.
-	var rim := shield_hex.create_tween()
-	rim.tween_property(shield_hex, "modulate", Color(2.4, 2.4, 2.6, 0.95), 0.06)
-	rim.tween_property(shield_hex, "modulate", Color(1, 1, 1, 0.95), 0.18)
+	# Formation beat: a soft outward wave + a few light fragments settling.
 	energy_wave(player_pos, COL_CYAN, 1.15)
 	_spawn_particles(player_pos, COL_CYAN, {
-		"amount": 12, "lifetime": 0.5, "one_shot": true, "explosive": true,
+		"amount": 10, "lifetime": 0.5, "one_shot": true, "explosive": true,
 		"ring": 60.0, "spread": 180.0, "vmin": 40.0, "vmax": 90.0,
-		"scale_min": 0.5, "scale_max": 1.0, "texture": _tex_shard,
+		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_shard,
 	})
 
 	shield_ambient.restart();  shield_ambient.emitting  = true
@@ -375,11 +361,11 @@ func _play_guard_dismiss() -> void:
 	if not is_instance_valid(shield_root): return
 	shield_ambient.emitting = false
 	shield_sparkle.emitting = false
-	var t := shield_root.create_tween().set_parallel(true)
-	t.tween_property(shield_hex, "modulate:a", 0.0, 0.2)
-	t.tween_property(shield_hex_lines, "modulate:a", 0.0, 0.2)
-	t.tween_property(shield_feet_ring, "modulate:a", 0.0, 0.2)
-	t.chain().tween_callback(func():
+	if is_instance_valid(_barrier):
+		_barrier.call("dismiss")
+	var t := shield_root.create_tween()
+	t.tween_interval(0.28)
+	t.tween_callback(func():
 		if is_instance_valid(shield_root): shield_root.visible = false)
 
 ## Shield takes a hit: ripple wave from the shield, sparks, small shock ring,
