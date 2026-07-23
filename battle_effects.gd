@@ -479,6 +479,18 @@ func play_aether_pulse() -> void:
 	# silk ribbons (wrap_aura = ground glow + rising wrapping ribbons + wisps
 	# + a few premium motes) ──
 	wrap_aura(feet, COL_VIOLET, 8, 250.0)
+	# Animated internal energy veins threading up the body (foot -> head).
+	_rising_veins(feet, head, COL_CYAN)
+	# Soft magical mist rising with the flow.
+	var mist := _spawn_particles(feet, COL_VIOLET, {
+		"amount": 10, "lifetime": 1.4, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 30.0, "ring": 40.0,
+		"vmin": 25.0, "vmax": 60.0, "gravity": Vector3(0, -18, 0),
+		"scale_min": 1.2, "scale_max": 2.4, "texture": _tex_dot,
+	})
+	mist.modulate.a = 0.22
+	mist.z_index = 10
+	_cleanup(mist, 1.6)
 
 	# ── PHASE 2 — a bright current travels up the body, foot -> head ──
 	var current := Sprite2D.new()
@@ -994,6 +1006,41 @@ func _divine_geometry(pos: Vector2, s: float, intensity := 1.0) -> void:
 		t.tween_property(ln, "modulate:a", 0.8 * intensity, 0.08)
 		t.tween_interval(0.1)
 		t.tween_property(ln, "modulate:a", 0.0, 0.26)
+		t.tween_callback(ln.queue_free)
+
+## Animated internal energy veins climbing the body foot -> head: a few thin,
+## organically curving lines that light up from the feet upward in sequence,
+## like divine energy threading through the character.
+func _rising_veins(feet: Vector2, head: Vector2, col: Color) -> void:
+	var h := feet.y - head.y
+	for i in 5:
+		var side := (float(i) - 2.0) * 0.5
+		var ln := Line2D.new()
+		ln.width = randf_range(1.4, 2.6)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+		grad.add_point(0.5, Color(1, 1, 1, 0.8))
+		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+		ln.gradient = grad
+		var phase := randf_range(0.0, TAU)
+		var amp := randf_range(8.0, 20.0)
+		var segs := 14
+		var pts := PackedVector2Array()
+		for s in segs + 1:
+			var u := float(s) / segs
+			var bell := sin(u * PI)
+			var x := feet.x + side * 14.0 + sin(u * 4.0 + phase) * amp * bell
+			pts.append(Vector2(x, feet.y - u * h))
+		ln.points = pts
+		ln.z_index = 14
+		ln.modulate.a = 0.0
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 0.85, 0.16).set_delay(i * 0.06)
+		t.tween_interval(0.14)
+		t.tween_property(ln, "modulate:a", 0.0, 0.3)
 		t.tween_callback(ln.queue_free)
 
 ## A flowing wind sheet peeling forward from `pos` along the punch (+x): a
