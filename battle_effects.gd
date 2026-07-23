@@ -617,7 +617,11 @@ func play_ultimate() -> void:
 	crt.tween_property(crown, "scale", Vector2(0.8, 0.8), 0.08)
 	crt.tween_property(crown, "modulate:a", 0.0, 0.16)
 	crt.tween_callback(crown.queue_free)
-	hit_spark(epos, COL_VIOLET)
+	# Pressure surfaces wrap upward from the enemy (no circular shock ring):
+	# a tight upward pressure ribbon + two flowing sheets peeling off.
+	rising_energy(eground, COL_CYAN, 5, 170.0)
+	_wind_sheet(epos, COL_VIOLET, -0.4, 0.0)
+	_wind_sheet(epos, COL_VIOLET, 0.4, 0.03)
 	enemy_hit_react(40.0)
 	shake(0.4, 12.0)
 	_camera_zoom(epos, 0.06, 0.42)
@@ -928,45 +932,6 @@ func cutscene_backdrop_out(dur: float = 0.3) -> void:
 	var t := _backdrop.create_tween()
 	t.tween_property(_backdrop, "modulate:a", 0.0, dur)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-
-## Premium impact "hit spark" at `pos`: a bright core pop, a fast thin
-## shock ring, and a few streak shards radiating out. ~0.35s, no time
-## freeze — pure additive VFX to give the hit weight on contact.
-func hit_spark(pos: Vector2, color: Color = COL_CYAN) -> void:
-	# Bright white core that pops and vanishes fast.
-	var core := Sprite2D.new()
-	core.texture  = _tex_dot
-	core.position = pos
-	core.modulate = Color(2.4, 2.4, 2.4, 1.0)
-	core.scale    = Vector2(0.2, 0.2)
-	core.z_index  = 44
-	add_child(core)
-	var ct := core.create_tween().set_parallel(true)
-	ct.tween_property(core, "scale", Vector2(1.1, 1.1), 0.12)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	ct.tween_property(core, "modulate:a", 0.0, 0.18)
-	ct.chain().tween_callback(core.queue_free)
-
-	# Thin shock ring snapping outward.
-	var ring := Sprite2D.new()
-	ring.texture  = _tex_ring_thin
-	ring.position = pos
-	ring.modulate = Color(color.r, color.g, color.b, 0.95)
-	ring.scale    = Vector2(0.1, 0.1)
-	ring.z_index  = 43
-	add_child(ring)
-	var rt := ring.create_tween().set_parallel(true)
-	rt.tween_property(ring, "scale", Vector2(0.7, 0.7), 0.25)\
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	rt.tween_property(ring, "modulate:a", 0.0, 0.28)
-	rt.chain().tween_callback(ring.queue_free)
-
-	# Sharp streak shards flying off the impact point.
-	_spawn_particles(pos, Color(1, 1, 1, 1), {
-		"amount": 8, "lifetime": 0.28, "one_shot": true, "explosive": true,
-		"spread": 180.0, "vmin": 220.0, "vmax": 460.0,
-		"scale_min": 0.8, "scale_max": 1.6, "texture": _tex_streak,
-	})
 
 ## Enemy reacts to being hit: a quick recoil kick backward that springs
 ## back, plus a small shake and bright flash. Reusable on any impact.
