@@ -2108,7 +2108,7 @@ func _on_end_turn() -> void:
 	_selected_card_idx = -1
 	_set_buttons_enabled(false)
 	_refresh_ui()
-	get_tree().create_timer(0.4).timeout.connect(_enemy_turn)
+	get_tree().create_timer(0.2).timeout.connect(_enemy_turn)
 
 # ════════════════════════════════════════════════════════════
 #  ENEMY TURN
@@ -2124,7 +2124,7 @@ func _enemy_turn() -> void:
 		_refresh_ui()
 		if _enemy_hp <= 0:
 			_check_battle(); return
-		await get_tree().create_timer(0.7).timeout
+		await get_tree().create_timer(0.4).timeout
 		if not is_instance_valid(self): return
 
 	# Enemy attacks
@@ -2148,7 +2148,7 @@ func _enemy_turn() -> void:
 			_battle_fx.show_void_shield(false)
 		_msg("💠 Void Shield — ดูดซับดาเมจ %d ทั้งหมด!" % dmg)
 		_refresh_ui()
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.3).timeout
 		if not is_instance_valid(self): return
 		# เทิร์นยังดำเนินต่อ แต่ HP ไม่หาย
 		dmg = 0
