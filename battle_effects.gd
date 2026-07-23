@@ -527,21 +527,11 @@ func play_aether_pulse() -> void:
 	cutscene_backdrop_out(0.4)
 
 
-func show_void_shield(active: bool) -> void:
-	if not is_instance_valid(void_shield_orb): return
-	void_shield_orb.position = player_pos + Vector2(30, 0)
-	if active:
-		void_shield_orb.visible = true
-		void_shield_orb.modulate.a = 0.0
-		void_shield_orb.scale = Vector2(0.3, 0.3)
-		var t := void_shield_orb.create_tween()
-		t.tween_property(void_shield_orb, "modulate:a", 1.0, 0.2)
-		t.parallel().tween_property(void_shield_orb, "scale", Vector2(0.7, 0.7), 0.25)\
-			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	else:
-		var t := void_shield_orb.create_tween()
-		t.tween_property(void_shield_orb, "modulate:a", 0.0, 0.2)
-		t.tween_callback(func(): void_shield_orb.visible = false)
+func show_void_shield(_active: bool) -> void:
+	# The circular void-shield orb was removed by request; the shield status
+	# is already shown by the on-screen "Void Shield" label.
+	if is_instance_valid(void_shield_orb):
+		void_shield_orb.visible = false
 
 func _build_void_shield_orb() -> void:
 	void_shield_orb = _make_orb(COL_VIOLET, 0.45)
