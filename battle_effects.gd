@@ -1006,18 +1006,21 @@ func enemy_hit_react(recoil: float = 34.0) -> void:
 ## mechanical-fantasy layer; `s` scales it (Attack < Buff < Ultimate).
 func _divine_geometry(pos: Vector2, s: float, intensity := 1.0) -> void:
 	var col := COL_CYAN
-	# Broken arc segments at two radii — segmented, not a solid ring.
-	for ridx in 2:
-		var rad := (34.0 + ridx * 16.0) * s
+	var addm := CanvasItemMaterial.new()
+	addm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	# Broken arc segments at three radii — segmented, not a solid ring.
+	for ridx in 3:
+		var rad := (30.0 + ridx * 15.0) * s
 		var a := randf_range(0.0, TAU)
 		var segn := 3 + ridx
 		for k in segn:
-			var span := randf_range(0.35, 0.7)
+			var span := randf_range(0.3, 0.65)
 			var ln := Line2D.new()
-			ln.width = 1.6 if ridx == 0 else 1.2
+			ln.width = 1.7 - ridx * 0.3
 			ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
 			ln.end_cap_mode = Line2D.LINE_CAP_ROUND
 			ln.default_color = Color(col.r, col.g, col.b, 0.0)
+			ln.material = addm
 			var segs := 8
 			var pts := PackedVector2Array()
 			for j in segs + 1:
@@ -1026,13 +1029,33 @@ func _divine_geometry(pos: Vector2, s: float, intensity := 1.0) -> void:
 			ln.points = pts
 			ln.position = pos
 			ln.z_index = 15
+			ln.scale = Vector2(0.92, 0.92)
 			add_child(ln)
 			var t := ln.create_tween()
 			t.tween_property(ln, "modulate:a", 0.7 * intensity, 0.08).set_delay(k * 0.02)
 			t.tween_interval(0.12)
 			t.tween_property(ln, "modulate:a", 0.0, 0.28)
 			t.tween_callback(ln.queue_free)
+			# Organic breathing: segments drift open slightly as they glow.
+			ln.create_tween().tween_property(ln, "scale", Vector2(1.07, 1.07), 0.46)\
+				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			a += span + randf_range(0.3, 0.6)
+	# Fine dot markers dusting the mid radius (internal density).
+	for di in 6:
+		var dang := TAU * (float(di) / 6) + randf_range(-0.25, 0.25)
+		var dot := Sprite2D.new()
+		dot.texture = _tex_dot
+		dot.position = pos + Vector2(cos(dang), sin(dang)) * (44.0 * s)
+		dot.scale = Vector2(0.35, 0.35) * s
+		dot.modulate = Color(1, 1, 1, 0.0)
+		dot.material = addm
+		dot.z_index = 15
+		add_child(dot)
+		var dt := dot.create_tween()
+		dt.tween_property(dot, "modulate:a", 0.85 * intensity, 0.07).set_delay(di * 0.015)
+		dt.tween_interval(0.1)
+		dt.tween_property(dot, "modulate:a", 0.0, 0.26)
+		dt.tween_callback(dot.queue_free)
 	# Angular bracket markers ringing the geometry (divine mechanical detail).
 	var mk := 4
 	for i in mk:
@@ -1044,6 +1067,7 @@ func _divine_geometry(pos: Vector2, s: float, intensity := 1.0) -> void:
 		var ln := Line2D.new()
 		ln.width = 1.4
 		ln.default_color = Color(1, 1, 1, 0.0)
+		ln.material = addm
 		ln.add_point(base - tang * sz)
 		ln.add_point(base + tang * sz)
 		ln.add_point(base + tang * sz + outd * (sz * 0.5))
@@ -1117,6 +1141,9 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 	ln.modulate = Color(1, 1, 1, 0.0)
 	ln.scale = Vector2(0.5, 0.8)
 	ln.z_index = 15
+	var wmat := CanvasItemMaterial.new()
+	wmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	ln.material = wmat
 	add_child(ln)
 	var travel := pos + Vector2(randf_range(60.0, 100.0), voff * 20.0)
 	var dur := randf_range(0.28, 0.42)
@@ -1125,6 +1152,8 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 	t.parallel().tween_property(ln, "position", travel, dur)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	t.parallel().tween_property(ln, "scale", Vector2(1.4, 1.1), dur)
+	# Organic twist as it peels away.
+	t.parallel().tween_property(ln, "rotation", ln.rotation + randf_range(-0.3, 0.3), dur)
 	t.tween_property(ln, "modulate:a", 0.0, 0.18)
 	t.tween_callback(ln.queue_free)
 
