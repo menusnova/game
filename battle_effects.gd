@@ -623,269 +623,99 @@ func _build_void_shield_orb() -> void:
 # ════════════════════════════════════════════════════════════
 #  4. ABSOLUTE ZERO FORMULA  (ultimate)
 # ════════════════════════════════════════════════════════════
-## Absolute Zero Formula — Charge -> Screen Darken -> Time Stop (0.08s) ->
-## Release -> Massive Impact -> After Effect -> Fade Out. Fire-and-forget,
-## same as before — the actual damage in _on_ultimate() is applied
-## immediately and independently of this animation's timing.
-## Flowing energy veins spreading across the floor beneath `pos` — thin lines
-## radiating out along the ground, pulsing softly, then fading.
-func _energy_veins(pos: Vector2, col: Color) -> void:
-	var n := 7
-	for i in n:
-		var ang := TAU * (float(i) / n) + randf_range(-0.3, 0.3)
-		var dir := Vector2(cos(ang), sin(ang) * 0.42)   # flattened to the ground
-		var ln := Line2D.new()
-		ln.width = randf_range(1.5, 3.0)
-		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		var grad := Gradient.new()
-		grad.set_color(0, Color(col.r, col.g, col.b, 0.85))
-		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
-		ln.gradient = grad
-		var vlen := randf_range(70.0, 130.0)
-		var segs := 6
-		var pts := PackedVector2Array()
-		for s in segs + 1:
-			var u := float(s) / segs
-			var jit := Vector2(-dir.y, dir.x) * sin(u * 6.0) * 6.0
-			pts.append(dir * (vlen * u) + jit)
-		ln.points = pts
-		ln.position = pos
-		ln.z_index = 8
-		ln.modulate.a = 0.0
-		add_child(ln)
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 0.9, 0.18).set_delay(i * 0.02)
-		t.tween_interval(0.3)
-		t.tween_property(ln, "modulate:a", 0.0, 0.4)
-		t.tween_callback(ln.queue_free)
-
-## Large segmented divine halo behind `pos`: broken concentric arc segments,
-## semi-transparent, softly glowing, rotating slowly, then fading — frames
-## the enemy. Not a solid magic circle.
-func _divine_halo(pos: Vector2, col: Color) -> void:
-	var halo := Node2D.new()
-	halo.position = pos
-	halo.z_index = 7
-	halo.modulate = Color(1, 1, 1, 0.0)
-	add_child(halo)
-	for ridx in 2:
-		var rad := 118.0 + ridx * 28.0
-		var a := 0.0
-		while a < TAU:
-			var span := randf_range(0.3, 0.7)
-			var ln := Line2D.new()
-			ln.width = 2.0 if ridx == 0 else 1.4
-			ln.default_color = Color(col.r, col.g, col.b, 0.5 if ridx == 0 else 0.3)
-			var segs := 8
-			var pts := PackedVector2Array()
-			for s in segs + 1:
-				var ang := a + span * (float(s) / segs)
-				pts.append(Vector2(cos(ang) * rad, sin(ang) * rad))
-			ln.points = pts
-			halo.add_child(ln)
-			a += span + randf_range(0.25, 0.5)
-	var t := halo.create_tween()
-	t.tween_property(halo, "modulate:a", 1.0, 0.2)
-	t.parallel().tween_property(halo, "rotation", 0.4, 1.4)
-	t.tween_interval(0.5)
-	t.tween_property(halo, "modulate:a", 0.0, 0.5)
-	t.tween_callback(halo.queue_free)
-
-## Vertical light-rain columns around `pos`: varied height/width/tilt, soft,
-## some behind the eruption and some in front — divine light descending.
-func _light_columns(pos: Vector2, col: Color) -> void:
-	var n := 12
-	for i in n:
-		var behind := i % 2 == 0
-		var x := pos.x + randf_range(-90.0, 90.0)
-		var top := pos.y - randf_range(120.0, 240.0)
-		var ln := Line2D.new()
-		ln.width = randf_range(3.0, 9.0)
-		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		var grad := Gradient.new()
-		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
-		grad.add_point(0.5, Color(1, 1, 1, 0.5 if behind else 0.8))
-		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
-		ln.gradient = grad
-		var tilt := randf_range(-10.0, 10.0)
-		ln.add_point(Vector2(x + tilt, top))
-		ln.add_point(Vector2(x, pos.y + 20.0))
-		ln.z_index = 13 if behind else 16
-		ln.modulate.a = 0.0
-		add_child(ln)
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 1.0, 0.08).set_delay(0.02 * i)
-		t.tween_interval(0.1)
-		t.tween_property(ln, "modulate:a", 0.0, 0.3)
-		t.tween_callback(ln.queue_free)
-
-## Reality-fracture crack lines at `pos`: thin jagged white lines that snap in
-## for a couple of frames, then vanish — space briefly breaking.
-func _reality_cracks(pos: Vector2) -> void:
-	var n := 6
-	for i in n:
-		var ang := TAU * (float(i) / n) + randf_range(-0.4, 0.4)
-		var dir := Vector2(cos(ang), sin(ang))
-		var ln := Line2D.new()
-		ln.width = 1.6
-		ln.default_color = Color(1, 1, 1, 1)
-		var clen := randf_range(60.0, 120.0)
-		var segs := 4
-		var pts := PackedVector2Array()
-		for s in segs + 1:
-			var u := float(s) / segs
-			var perp := Vector2(-dir.y, dir.x) * randf_range(-8.0, 8.0)
-			pts.append(dir * (clen * u) + perp)
-		ln.points = pts
-		ln.position = pos
-		ln.z_index = 18
-		ln.modulate.a = 0.0
-		add_child(ln)
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 0.95, 0.03)
-		t.tween_interval(0.05)
-		t.tween_property(ln, "modulate:a", 0.0, 0.12)
-		t.tween_callback(ln.queue_free)
-
-## Sky echo: a few faint divine rays continuing skyward above `pos` after the
-## blast, with tiny light motes slowly drifting back down — residual blessing.
-func _sky_echo(pos: Vector2, col: Color) -> void:
-	for i in 4:
-		var x := pos.x + randf_range(-40.0, 40.0)
-		var ln := Line2D.new()
-		ln.width = randf_range(3.0, 6.0)
-		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		var grad := Gradient.new()
-		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
-		grad.add_point(0.5, Color(1, 1, 1, 0.4))
-		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
-		ln.gradient = grad
-		ln.add_point(Vector2(x, pos.y - 60.0))
-		ln.add_point(Vector2(x + randf_range(-8, 8), pos.y - randf_range(260.0, 360.0)))
-		ln.z_index = 12
-		ln.modulate.a = 0.0
-		add_child(ln)
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 1.0, 0.16).set_delay(i * 0.05)
-		t.tween_interval(0.2)
-		t.tween_property(ln, "modulate:a", 0.0, 0.5)
-		t.tween_callback(ln.queue_free)
-	# Tiny light motes slowly falling from high above.
-	var fall := _spawn_particles(pos + Vector2(0, -220.0), Color(0.9, 0.96, 1.0), {
-		"amount": 12, "lifetime": 2.2, "one_shot": true,
-		"dir": Vector3(0, 1, 0), "spread": 60.0, "ring": 90.0,
-		"vmin": 8.0, "vmax": 26.0, "gravity": Vector3(0, 14, 0),
-		"scale_min": 0.2, "scale_max": 0.45, "texture": _tex_dot,
-	})
-	fall.z_index = 11
-	_cleanup(fall, 2.4)
-
-## Absolute Zero Formula — a divine execution that erupts from beneath the
-## enemy (no travelling beam): silence -> ground awakening -> compression ->
-## eruption + halo + light rain -> atmospheric explosion + cracks + impact ->
-## ground shockwave -> residual. ~1.8s, staggered layers.
+## Absolute Zero Formula — one living energy form (a blooming divine flame)
+## erupting from beneath the enemy. Every layer — glow, ribbons, wind, spark,
+## impact, residual — shares the same upward organic flow. No halo, rings,
+## independent shockwaves, laser or decorative particles: just one flame that
+## seeds, gathers, blooms, peaks and dissipates. ~1.6s.
 func play_ultimate() -> void:
 	var epos := enemy_pos
 	var eground := enemy_pos + Vector2(0, 46)   # the floor beneath the enemy
 
-	# ── PHASE 1 — Atmospheric silence: darken + faint glow beneath enemy ──
-	cutscene_backdrop_in(0.36, 0.22)
-	var eglow := Sprite2D.new()
-	eglow.texture = _tex_dot
-	eglow.position = eground
-	eglow.scale = Vector2(3.0, 1.2)
-	eglow.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
-	eglow.z_index = 8
-	add_child(eglow)
-	var egt := eglow.create_tween()
-	egt.tween_property(eglow, "modulate:a", 0.55, 0.3)
-	var gather := _spawn_particles(epos, COL_VIOLET, {
-		"amount": 16, "lifetime": 0.7, "one_shot": false, "ring": 72.0,
-		"dir": Vector3(0, -1, 0), "spread": 40.0, "gravity": Vector3(0, -18, 0),
-		"vmin": 10.0, "vmax": 28.0, "scale_min": 0.3, "scale_max": 0.7,
+	# ── SEED — the field quiets; a soft ember gathers beneath the enemy and
+	# fine motes begin drifting upward (the flow the whole form inherits) ──
+	cutscene_backdrop_in(0.3, 0.2)
+	var seed_glow := Sprite2D.new()
+	seed_glow.texture = _tex_dot
+	seed_glow.position = eground
+	seed_glow.scale = Vector2(2.4, 1.0)
+	seed_glow.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	seed_glow.z_index = 8
+	add_child(seed_glow)
+	var sgt := seed_glow.create_tween()
+	sgt.tween_property(seed_glow, "modulate:a", 0.6, 0.28)
+	var gather := _spawn_particles(eground, COL_VIOLET, {
+		"amount": 14, "lifetime": 0.7, "one_shot": false, "ring": 40.0,
+		"dir": Vector3(0, -1, 0), "spread": 26.0, "gravity": Vector3(0, -22, 0),
+		"vmin": 20.0, "vmax": 40.0, "scale_min": 0.3, "scale_max": 0.6,
 		"texture": _tex_dot,
 	})
-	await get_tree().create_timer(0.4).timeout
-	if not is_instance_valid(self): return
-
-	# ── PHASE 2 — Ground awakening: energy veins spread across the floor ──
-	_energy_veins(eground, COL_VIOLET)
-	await get_tree().create_timer(0.3).timeout
-	if not is_instance_valid(self): return
-
-	# ── PHASE 3 — Compression: a ring collapses inward before the eruption ──
-	var comp := Sprite2D.new()
-	comp.texture = _tex_ring_thin
-	comp.position = epos
-	comp.modulate = Color(1, 1, 1, 0.0)
-	comp.scale = Vector2(2.4, 2.4)
-	comp.z_index = 14
-	add_child(comp)
-	var cmt := comp.create_tween().set_parallel(true)
-	cmt.tween_property(comp, "modulate:a", 0.8, 0.1)
-	cmt.tween_property(comp, "scale", Vector2(0.3, 0.3), 0.22)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	cmt.chain().tween_property(comp, "modulate:a", 0.0, 0.08)
-	cmt.chain().tween_callback(comp.queue_free)
-	gather.emitting = false
-	await get_tree().create_timer(0.22).timeout
-	if not is_instance_valid(self): return
-
-	# ── PHASE 4/7/8 — Eruption from beneath the enemy + halo + light rain ──
-	_divine_halo(epos, COL_CYAN)
-	_light_columns(epos, COL_CYAN)
-	rising_energy(eground, COL_VIOLET, 9, 300.0, true)
-	wrap_aura(eground, COL_VIOLET, 8, 270.0)
-	cutscene_backdrop_out(0.5)
-	await get_tree().create_timer(0.12).timeout
-	if not is_instance_valid(self): return
-
-	# ── PHASE 5/6/9/10 — Explosion + wind + reality fracture + main impact ──
-	_reality_cracks(epos)
-	_shock_arc(epos, COL_CYAN, 40.0, 3.4, randf_range(0, TAU), 3.0, 4.6, 0.5, 0.0)
-	_shock_arc(epos, Color(1, 1, 1, 1), 34.0, 2.4, randf_range(0, TAU), 2.2, 3.4, 0.36, 0.04)
-	for i in 8:
-		var ang := TAU * (float(i) / 8) + randf_range(-0.5, 0.5)
-		_wind_crescent(epos, COL_VIOLET, ang, randf_range(20.0, 40.0), randf_range(0.35, 0.6), i * 0.02)
-	_melee_impact(epos, COL_VIOLET)
-	shake(0.45, 14.0)
-	_camera_zoom(epos, 0.06, 0.42)
-	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.3), 0.14)
-
-	# ── PHASE 11 — ground shockwave (flattened wave across the floor) ──
-	var gwave := Sprite2D.new()
-	gwave.texture = _tex_ring_thin
-	gwave.position = eground
-	gwave.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.7)
-	gwave.scale = Vector2(0.3, 0.12)
-	gwave.z_index = 9
-	add_child(gwave)
-	var gwt := gwave.create_tween().set_parallel(true)
-	gwt.tween_property(gwave, "scale", Vector2(3.4, 1.1), 0.5)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	gwt.tween_property(gwave, "modulate:a", 0.0, 0.55)
-	gwt.chain().tween_callback(gwave.queue_free)
-	_cleanup(eglow, 0.5)
-	_cleanup(gather, 0.3)
-
 	await get_tree().create_timer(0.2).timeout
 	if not is_instance_valid(self): return
 
-	# ── PHASE 12 — sky echo: rays continue skyward, light motes drift down ──
-	_sky_echo(epos, COL_CYAN)
+	# ── GATHER — the ember pulls inward and brightens, restrained ──
+	var pull := seed_glow.create_tween()
+	pull.tween_property(seed_glow, "scale", Vector2(1.4, 0.6), 0.16)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	pull.parallel().tween_property(seed_glow, "modulate",
+		Color(1.4, 1.3, 1.6, 0.9), 0.16)
+	gather.emitting = false
+	await get_tree().create_timer(0.14).timeout
+	if not is_instance_valid(self): return
 
-	# ── PHASE 13 — residual energy lingering on the battlefield ──
-	rising_energy(eground, COL_VIOLET, 4, 150.0)
-	var embers := _spawn_particles(epos, COL_VIOLET, {
-		"amount": 20, "lifetime": 2.0, "one_shot": true,
-		"spread": 180.0, "vmin": 10.0, "vmax": 55.0, "gravity": Vector3(0, -18, 0),
-		"scale_min": 0.3, "scale_max": 0.9, "texture": _tex_dot,
+	# ── BLOOM — the flame blooms upward: layered ribbons growing organically,
+	# narrow core, outer layers spreading, edges dissolving into mist. This is
+	# the whole Ultimate — one form, not stacked effects ──
+	rising_energy(eground, COL_VIOLET, 9, 330.0, true)
+	wrap_aura(eground, COL_VIOLET, 10, 300.0)
+	wrap_aura(eground, COL_CYAN, 5, 250.0)
+	cutscene_backdrop_out(0.5)
+	await get_tree().create_timer(0.16).timeout
+	if not is_instance_valid(self): return
+
+	# ── PEAK — the flame's crown flares on the enemy; spark and fragments
+	# rise out of it (still the same upward flow), plus the physical weight ──
+	var crown := Sprite2D.new()
+	crown.texture = _tex_dot
+	crown.position = epos
+	crown.scale = Vector2(2.2, 2.2)
+	crown.modulate = Color(1.7, 1.7, 1.8, 0.0)
+	crown.z_index = 17
+	add_child(crown)
+	var crt := crown.create_tween()
+	crt.tween_property(crown, "modulate:a", 1.0, 0.04)
+	crt.tween_property(crown, "scale", Vector2(0.8, 0.8), 0.08)
+	crt.tween_property(crown, "modulate:a", 0.0, 0.16)
+	crt.tween_callback(crown.queue_free)
+	hit_spark(epos, COL_VIOLET)
+	enemy_hit_react(40.0)
+	shake(0.4, 12.0)
+	_camera_zoom(epos, 0.06, 0.42)
+	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.24), 0.12)
+	var shards := _spawn_particles(epos, Color(1, 1, 1, 1), {
+		"amount": 12, "lifetime": 0.6, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 55.0, "ring": 24.0,
+		"vmin": 160.0, "vmax": 340.0, "gravity": Vector3(0, -40, 0),
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
+	})
+	shards.z_index = 16
+	_cleanup(shards, 0.8)
+	_cleanup(seed_glow, 0.5)
+	_cleanup(gather, 0.3)
+	await get_tree().create_timer(0.2).timeout
+	if not is_instance_valid(self): return
+
+	# ── DISSIPATE — the flame dissolves upward into glowing motes and fades,
+	# leaving the field softly alive ──
+	rising_energy(eground, COL_VIOLET, 5, 210.0)
+	var embers := _spawn_particles(eground, COL_VIOLET, {
+		"amount": 18, "lifetime": 1.8, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 30.0,
+		"vmin": 20.0, "vmax": 60.0, "gravity": Vector3(0, -22, 0),
+		"scale_min": 0.3, "scale_max": 0.8, "texture": _tex_dot,
 	})
 	embers.modulate.a = 0.5
-	_cleanup(embers, 2.2)
+	_cleanup(embers, 2.0)
 
 
 # ════════════════════════════════════════════════════════════
