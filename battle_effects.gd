@@ -462,140 +462,70 @@ func break_shield() -> void:
 # ════════════════════════════════════════════════════════════
 #  3. AETHER PULSE  (heal + void shield)
 # ════════════════════════════════════════════════════════════
-## Aether Pulse — full Charge -> Release -> Travel -> Impact -> Fade sequence.
-## Self-targeted (heal + void shield), so "Travel/Impact" converge the energy
-## into the point in front of the caster where the void shield forms, rather
-## than flying out to the enemy. API/logic unchanged — visuals only.
+## Aether Pulse — one living current of divine energy that rises from beneath
+## the feet, climbs the body (foot -> head) and wraps it in silk-like flame
+## ribbons before dissolving overhead. Self-buff (heal + void shield) — no
+## rings, pillars, magic circles or enemy impact. Every layer (ground glow,
+## ribbons, travelling current, inner chest radiance, motes, residual) grows
+## from the same upward flow. API/logic unchanged — visuals only.
 func play_aether_pulse() -> void:
-	var cast_pos := player_pos + Vector2(0, -10)     # hands/chest — where energy gathers
-	var form_pos := player_pos + Vector2(34, -6)      # where the void shield forms — "impact" point
+	var feet := player_pos + Vector2(4, 78)
+	var chest := player_pos + Vector2(0, -6)
+	var head := player_pos + Vector2(0, -78)
 
-	# ── 0. BACKGROUND — ease the vignette in to frame the cutscene ──
-	cutscene_backdrop_in(0.24, 0.24)
+	cutscene_backdrop_in(0.2, 0.22)
 
-	# ── 1. ENERGY CHARGE — rotating ring + rising particles at the cast point ──
-	var ring := Sprite2D.new()
-	ring.texture   = _tex_ring
-	ring.position  = cast_pos
-	ring.modulate  = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
-	ring.scale     = Vector2(0.15, 0.15)
-	ring.z_index   = 14
-	add_child(ring)
-	var rt := ring.create_tween().set_parallel(true)
-	rt.tween_property(ring, "modulate:a", 0.85, 0.28)
-	rt.tween_property(ring, "scale", Vector2(0.55, 0.55), 0.32)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	# Charging aura that wraps around the character from the feet upward
-	# (replaces the old straight pillar/ring look). The ring stays as a
-	# soft glow underneath.
-	wrap_aura(player_pos + Vector2(4, 78), COL_VIOLET, 9, 215.0)
+	# ── PHASE 1/2/3 — energy awakens at the feet and blooms up the body as
+	# silk ribbons (wrap_aura = ground glow + rising wrapping ribbons + wisps
+	# + a few premium motes) ──
+	wrap_aura(feet, COL_VIOLET, 8, 250.0)
 
-	var charge := _spawn_particles(cast_pos, COL_VIOLET, {
-		"amount": 26, "lifetime": 0.55, "one_shot": true,
-		"dir": Vector3(0, -1, 0), "spread": 26.0, "gravity": Vector3(0, -40, 0),
-		"ring": 46.0, "vmin": 40.0, "vmax": 90.0,
-		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_dot,
-	})
+	# ── PHASE 2 — a bright current travels up the body, foot -> head ──
+	var current := Sprite2D.new()
+	current.texture = _tex_dot
+	current.position = feet
+	current.scale = Vector2(1.6, 1.1)
+	current.modulate = Color(1.4, 1.3, 1.7, 0.0)
+	current.z_index = 15
+	add_child(current)
+	var cut := current.create_tween()
+	cut.tween_property(current, "modulate:a", 0.9, 0.12)
+	cut.parallel().tween_property(current, "position", head, 0.5)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	cut.tween_property(current, "modulate:a", 0.0, 0.2)
+	cut.tween_callback(current.queue_free)
 
-	await get_tree().create_timer(0.32).timeout
+	await get_tree().create_timer(0.34).timeout
 	if not is_instance_valid(self): return
 
-	# ── 2. SKILL RELEASE — a final aura swell + shock wave ──
-	speed_lines(player_pos + Vector2(10, -20), COL_VIOLET, 9)
-	wrap_aura(player_pos + Vector2(4, 78), COL_CYAN, 6, 230.0)
-	energy_wave(player_pos + Vector2(8, 26), COL_CYAN, 1.0)
-	_screen_color_flash(hit_flash, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.18), 0.08)
-	var flash_t := ring.create_tween().set_parallel(true)
-	flash_t.tween_property(ring, "modulate", Color(2.2, 2.0, 2.6, 1.0), 0.08)
-	flash_t.tween_property(ring, "scale", Vector2(0.75, 0.75), 0.12)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_spawn_particles(cast_pos, COL_VIOLET, {
-		"amount": 34, "lifetime": 0.4, "one_shot": true, "explosive": true,
-		"spread": 180.0, "vmin": 60.0, "vmax": 160.0,
-		"scale_min": 0.5, "scale_max": 1.1, "texture": _tex_dot,
-	})
+	# ── PHASE 3 — a second, inner silk layer (cyan) rising, offset timing ──
+	wrap_aura(feet, COL_CYAN, 4, 230.0)
 
-	# ── 3. TRAVEL EFFECT — energy arcs from the hands into the shield point ──
-	var trail := Line2D.new()
-	trail.width = 4.0
-	trail.z_index = 13
-	var trail_grad := Gradient.new()
-	trail_grad.set_color(0, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
-	trail_grad.add_point(0.5, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.9))
-	trail_grad.set_color(1, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0))
-	trail.gradient = trail_grad
-	trail.add_point(cast_pos)
-	trail.add_point(cast_pos.lerp(form_pos, 0.5) + Vector2(0, -30))
-	trail.add_point(form_pos)
-	add_child(trail)
-	var tt := trail.create_tween()
-	tt.tween_interval(0.18)
-	tt.tween_property(trail, "modulate:a", 0.0, 0.25)
-	tt.tween_callback(trail.queue_free)
+	# ── PHASE 4/8 — inner radiance from the chest that softly breathes ──
+	var inner := Sprite2D.new()
+	inner.texture = _tex_dot
+	inner.position = chest
+	inner.scale = Vector2(2.2, 2.6)
+	inner.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	var imat := CanvasItemMaterial.new()
+	imat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	inner.material = imat
+	inner.z_index = 14
+	add_child(inner)
+	var it := inner.create_tween()
+	it.tween_property(inner, "modulate:a", 0.5, 0.22)
+	it.tween_property(inner, "modulate:a", 0.3, 0.35)
+	it.tween_property(inner, "modulate:a", 0.45, 0.3)
+	it.tween_property(inner, "modulate:a", 0.0, 0.4)
+	it.tween_callback(inner.queue_free)
 
-	await get_tree().create_timer(0.16).timeout
+	await get_tree().create_timer(0.4).timeout
 	if not is_instance_valid(self): return
 
-	# ── 4. IMPACT — burst, shock ring, energy dust, camera punch, cyan hit flash ──
-	for col in [COL_VIOLET, Color(1, 1, 1, 1)]:
-		_spawn_particles(form_pos, col, {
-			"amount": 24, "lifetime": 0.4, "one_shot": true, "explosive": true,
-			"spread": 180.0, "vmin": 60.0, "vmax": 170.0,
-			"scale_min": 0.5, "scale_max": 1.1, "texture": _tex_dot,
-		})
-	var dust := _spawn_particles(form_pos, COL_VIOLET, {
-		"amount": 16, "lifetime": 0.7, "one_shot": true, "explosive": false,
-		"spread": 180.0, "vmin": 15.0, "vmax": 45.0, "gravity": Vector3(0, -18, 0),
-		"scale_min": 0.3, "scale_max": 0.7, "texture": _tex_dot,
-	})
-	_cleanup(dust, 1.0)
+	# ── PHASE 9 — residual: a faint upward aura keeps flowing, then fades ──
+	wrap_aura(feet, COL_VIOLET, 3, 190.0)
+	cutscene_backdrop_out(0.4)
 
-	var shock := Sprite2D.new()
-	shock.texture  = _tex_ring_thin
-	shock.position = form_pos
-	shock.modulate = Color(1, 1, 1, 0.9)
-	shock.scale    = Vector2(0.15, 0.15)
-	shock.z_index  = 14
-	add_child(shock)
-	var st := shock.create_tween().set_parallel(true)
-	st.tween_property(shock, "scale", Vector2(0.8, 0.8), 0.28)\
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	st.tween_property(shock, "modulate:a", 0.0, 0.3)
-	st.chain().tween_callback(shock.queue_free)
-
-	_camera_zoom(form_pos, 0.05, 0.28)
-	shake(0.15, 5.0)
-	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.28), 0.12)
-	# Contact juice on the enemy so the skill reads as a real hit.
-	hit_spark(enemy_pos, COL_VIOLET)
-	enemy_hit_react(44.0)
-
-	# Violet glow over the sprite (kept from the original effect)
-	var glow := ColorRect.new()
-	glow.color = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
-	glow.size = Vector2(200, 260)
-	glow.position = player_pos - Vector2(100, 150)
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(glow)
-	var gt := glow.create_tween()
-	gt.tween_property(glow, "color:a", 0.20, 0.2)
-	gt.tween_interval(0.4)
-	gt.tween_property(glow, "color:a", 0.0, 0.3)
-	gt.tween_callback(glow.queue_free)
-
-	# ── 5. FADE OUT — lingering embers dissolve ──
-	var aftermath := _spawn_particles(form_pos, COL_VIOLET, {
-		"amount": 26, "lifetime": 1.4, "one_shot": true, "explosive": false,
-		"spread": 180.0, "vmin": 10.0, "vmax": 50.0, "gravity": Vector3(0, -16, 0),
-		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_dot,
-	})
-	aftermath.modulate.a = 0.6
-	_cleanup(aftermath, 1.8)
-	_cleanup(ring, 0.6)
-	_cleanup(charge, 0.9)
-
-	# ── BACKGROUND — release the vignette so the field returns to normal ──
-	cutscene_backdrop_out(0.32)
 
 func show_void_shield(active: bool) -> void:
 	if not is_instance_valid(void_shield_orb): return
@@ -998,31 +928,6 @@ func cutscene_backdrop_out(dur: float = 0.3) -> void:
 	var t := _backdrop.create_tween()
 	t.tween_property(_backdrop, "modulate:a", 0.0, dur)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-
-## Subtle converging speed lines around `center` to sell motion without
-## covering the character. A handful of thin streaks sweep inward and fade.
-func speed_lines(center: Vector2, color: Color = COL_CYAN, count: int = 9) -> void:
-	for i in count:
-		var ang := TAU * (float(i) / float(count)) + randf_range(-0.15, 0.15)
-		var dir := Vector2(cos(ang), sin(ang))
-		var far := center + dir * randf_range(230.0, 320.0)
-		var near := center + dir * randf_range(120.0, 160.0)
-		var ln := Line2D.new()
-		ln.width = randf_range(2.0, 3.5)
-		ln.default_color = Color(color.r, color.g, color.b, 0.0)
-		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.add_point(far)
-		ln.add_point(near)
-		ln.z_index = 3
-		add_child(ln)
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 0.55, 0.1)
-		t.tween_property(ln, "modulate:a", 0.0, 0.22)
-		t.parallel().tween_property(ln, "position", dir * 40.0, 0.32)\
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-		t.tween_callback(ln.queue_free)
-
 
 ## Premium impact "hit spark" at `pos`: a bright core pop, a fast thin
 ## shock ring, and a few streak shards radiating out. ~0.35s, no time
