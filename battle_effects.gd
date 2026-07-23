@@ -128,13 +128,8 @@ func play_void_strike() -> void:
 	lt.tween_property(line, "modulate:a", 0.0, 0.35)
 	lt.tween_callback(line.queue_free)
 
-	await get_tree().create_timer(0.18).timeout
-	# Layered atmospheric-pressure impact at the point of contact (white ->
-	# void violet), plus the physical feedback: enemy recoil, shake, punch.
-	_melee_impact(enemy_pos, COL_VIOLET)
-	enemy_hit_react()
-	shake(0.14, 5.0)
-	_camera_zoom(enemy_pos, 0.035, 0.24)
+	# The impact itself is handled by play_enemy_hit() (called on every
+	# Attack), so this fallback slash just cleans up its own streak.
 	_cleanup(slash, 0.6)
 
 
@@ -869,13 +864,12 @@ func play_player_hit() -> void:
 #  6. ENEMY HIT
 # ════════════════════════════════════════════════════════════
 func play_enemy_hit() -> void:
-	_flash_node(enemy_node)
-	_shake_node(enemy_node, 10.0, 0.15)
-	_spawn_particles(enemy_pos, COL_VIOLET, {
-		"amount": 20, "lifetime": 0.5, "one_shot": true, "explosive": true,
-		"spread": 180.0, "vmin": 60.0, "vmax": 200.0,
-		"scale_min": 0.5, "scale_max": 1.1, "texture": _tex_dot,
-	})
+	# Layered atmospheric-pressure impact at the enemy (this is the path the
+	# melee Attack actually runs — via slash_fx + play_enemy_hit).
+	_melee_impact(enemy_pos, COL_VIOLET)
+	enemy_hit_react()
+	shake(0.14, 5.0)
+	_camera_zoom(enemy_pos, 0.035, 0.24)
 
 
 # ════════════════════════════════════════════════════════════
