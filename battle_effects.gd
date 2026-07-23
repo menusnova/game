@@ -496,9 +496,10 @@ func play_aether_pulse() -> void:
 	rt.tween_property(ring, "modulate:a", 0.85, 0.28)
 	rt.tween_property(ring, "scale", Vector2(0.55, 0.55), 0.32)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	# Layered magical energy rising at the cast point (replaces the old
-	# spinning ring look); the ring stays as a soft glow underneath.
-	rising_energy(player_pos + Vector2(6, 34), COL_VIOLET, 5, 150.0)
+	# Charging aura that wraps around the character from the feet upward
+	# (replaces the old straight pillar/ring look). The ring stays as a
+	# soft glow underneath.
+	wrap_aura(player_pos + Vector2(4, 78), COL_VIOLET, 9, 215.0)
 
 	var charge := _spawn_particles(cast_pos, COL_VIOLET, {
 		"amount": 26, "lifetime": 0.55, "one_shot": true,
@@ -510,9 +511,9 @@ func play_aether_pulse() -> void:
 	await get_tree().create_timer(0.32).timeout
 	if not is_instance_valid(self): return
 
-	# ── 2. SKILL RELEASE — bold energy pillar erupts + shock wave ──
+	# ── 2. SKILL RELEASE — a final aura swell + shock wave ──
 	speed_lines(player_pos + Vector2(10, -20), COL_VIOLET, 9)
-	energy_pillar(player_pos + Vector2(8, 30), COL_VIOLET, 230.0)
+	wrap_aura(player_pos + Vector2(4, 78), COL_CYAN, 6, 230.0)
 	energy_wave(player_pos + Vector2(8, 26), COL_CYAN, 1.0)
 	_screen_color_flash(hit_flash, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.18), 0.08)
 	var flash_t := ring.create_tween().set_parallel(true)
@@ -967,38 +968,74 @@ func _ultimate_beam(a: Vector2, b: Vector2) -> void:
 	_cleanup(stream, 0.5)
 
 
-## Bold vertical energy pillar erupting at `base`: a bright thick core
-## that snaps up tall then dissolves — the visible centrepiece of a
-## skill release. Layered (wide soft glow + bright core), additive feel.
-func energy_pillar(base: Vector2, col: Color, height := 220.0) -> void:
-	for pass_i in 2:
-		var wide := pass_i == 0
+## Charging aura that wraps around the character's silhouette: flowing
+## energy ribbons rise from the feet and curve left/right around the body
+## (denser/low, spreading at the waist, dissolving overhead), faking a
+## behind-the-body pass by dimming as they cross the mid-line. Rising
+## motes travel up with the flow. No straight pillar, no rotating circle.
+func wrap_aura(feet: Vector2, col: Color, streams := 9, height := 210.0) -> void:
+	# Soft ground glow pooled at the feet.
+	var glow := Sprite2D.new()
+	glow.texture = _tex_dot
+	glow.position = feet
+	glow.scale = Vector2(7.0, 2.6)
+	glow.modulate = Color(col.r, col.g, col.b, 0.0)
+	glow.z_index = 9
+	add_child(glow)
+	var gt := glow.create_tween()
+	gt.tween_property(glow, "modulate:a", 0.5, 0.2)
+	gt.tween_interval(0.25)
+	gt.tween_property(glow, "modulate:a", 0.0, 0.4)
+	gt.tween_callback(glow.queue_free)
+
+	for i in streams:
+		var side := 1.0 if i % 2 == 0 else -1.0
+		var phase := randf_range(0.0, TAU)
+		var amp := randf_range(28.0, 46.0)          # how far it wraps sideways
+		var h := height * randf_range(0.82, 1.12)
 		var ln := Line2D.new()
-		ln.width = 46.0 if wide else 16.0
+		ln.width = randf_range(3.0, 6.0)
 		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
 		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		var g := Gradient.new()
-		var base_c: Color = col if wide else Color(1, 1, 1, 1)
-		g.set_color(0, Color(base_c.r, base_c.g, base_c.b, 0.9 if wide else 1.0))
-		g.add_point(0.6, Color(base_c.r, base_c.g, base_c.b, 0.5 if wide else 0.9))
-		g.set_color(1, Color(base_c.r, base_c.g, base_c.b, 0.0))
-		ln.gradient = g
-		# Local points (grows upward from the node origin = base).
-		ln.position = base
-		ln.add_point(Vector2(0, 0))
-		ln.add_point(Vector2(0, -height))
-		ln.z_index = 12 if wide else 13
+		ln.joint_mode = Line2D.LINE_JOINT_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+		grad.add_point(0.22, Color(1, 1, 1, 0.9))
+		grad.add_point(0.6, Color(col.r, col.g, col.b, 0.8))
+		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+		ln.gradient = grad
+		# Sample a rising, sideways-curving ribbon that hugs the body.
+		var pts := PackedVector2Array()
+		var segs := 16
+		for s in segs + 1:
+			var u := float(s) / segs                # 0 feet -> 1 overhead
+			var bell := sin(u * PI)                  # widest at the waist/torso
+			var x := feet.x + side * sin(u * 3.0 + phase) * amp * bell
+			var y := feet.y - u * h
+			pts.append(Vector2(x, y))
+		ln.points = pts
+		ln.z_index = 11
 		ln.modulate.a = 0.0
-		ln.scale = Vector2(1.0, 0.04)
 		add_child(ln)
+		# Continuous upward flow: fade in low, drift up, dissolve at the top.
 		var t := ln.create_tween()
-		# Erupt upward fast, hold a beat, then fade.
-		t.tween_property(ln, "scale", Vector2.ONE, 0.12)\
-			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-		t.parallel().tween_property(ln, "modulate:a", 1.0, 0.08)
-		t.tween_interval(0.08)
-		t.tween_property(ln, "modulate:a", 0.0, 0.28)
+		t.tween_property(ln, "modulate:a", 1.0, 0.14).set_delay(i * 0.05)
+		t.tween_interval(0.12)
+		t.parallel().tween_property(ln, "position", Vector2(0, -30), 0.5)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		t.tween_property(ln, "modulate:a", 0.0, 0.3)
 		t.tween_callback(ln.queue_free)
+
+	# Motes rising from the feet, shrinking as they climb with the energy.
+	var motes := _spawn_particles(feet, col, {
+		"amount": 20, "lifetime": 1.0, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 24.0, "ring": 34.0,
+		"vmin": 70.0, "vmax": 150.0, "gravity": Vector3(0, -26, 0),
+		"scale_min": 0.3, "scale_max": 0.8, "texture": _tex_dot,
+	})
+	motes.z_index = 12
+	_cleanup(motes, 1.2)
+
 
 ## Expanding thin shock ring at `pos` — a clean energy wave rippling out.
 func energy_wave(pos: Vector2, col: Color, to_scale := 1.0) -> void:
