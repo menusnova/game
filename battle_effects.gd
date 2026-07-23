@@ -500,6 +500,8 @@ func play_aether_pulse() -> void:
 
 	# ── PHASE 3 — a second, inner silk layer (cyan) rising, offset timing ──
 	wrap_aura(feet, COL_CYAN, 4, 230.0)
+	# Shared divine-geometry motif (medium — Buff sits between Attack & Ult).
+	_divine_geometry(chest, 1.1, 0.9)
 
 	# ── PHASE 4/8 — inner radiance from the chest that softly breathes ──
 	var inner := Sprite2D.new()
@@ -612,6 +614,8 @@ func play_ultimate() -> void:
 	rising_energy(eground, COL_CYAN, 5, 170.0)
 	_wind_sheet(epos, COL_VIOLET, -0.4, 0.0)
 	_wind_sheet(epos, COL_VIOLET, 0.4, 0.03)
+	# Shared divine-geometry motif (large — Ultimate is the most intense).
+	_divine_geometry(epos, 1.9, 1.0)
 	enemy_hit_react(40.0)
 	shake(0.4, 12.0)
 	_camera_zoom(epos, 0.06, 0.42)
@@ -937,6 +941,61 @@ func enemy_hit_react(recoil: float = 34.0) -> void:
 	_flash_node(enemy_node)
 	_shake_node(enemy_node, 5.0, 0.12)
 
+## Shared "divine geometry" motif — the same visual language as the defensive
+## barrier benchmark: broken concentric arc segments (never a full circle) plus
+## angular bracket markers that snap in and fade. Gives Attack/Buff/Ultimate one
+## mechanical-fantasy layer; `s` scales it (Attack < Buff < Ultimate).
+func _divine_geometry(pos: Vector2, s: float, intensity := 1.0) -> void:
+	var col := COL_CYAN
+	# Broken arc segments at two radii — segmented, not a solid ring.
+	for ridx in 2:
+		var rad := (34.0 + ridx * 16.0) * s
+		var a := randf_range(0.0, TAU)
+		var segn := 3 + ridx
+		for k in segn:
+			var span := randf_range(0.35, 0.7)
+			var ln := Line2D.new()
+			ln.width = 1.6 if ridx == 0 else 1.2
+			ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+			ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+			ln.default_color = Color(col.r, col.g, col.b, 0.0)
+			var segs := 8
+			var pts := PackedVector2Array()
+			for j in segs + 1:
+				var ang := a + span * (float(j) / segs)
+				pts.append(Vector2(cos(ang) * rad, sin(ang) * rad))
+			ln.points = pts
+			ln.position = pos
+			ln.z_index = 15
+			add_child(ln)
+			var t := ln.create_tween()
+			t.tween_property(ln, "modulate:a", 0.7 * intensity, 0.08).set_delay(k * 0.02)
+			t.tween_interval(0.12)
+			t.tween_property(ln, "modulate:a", 0.0, 0.28)
+			t.tween_callback(ln.queue_free)
+			a += span + randf_range(0.3, 0.6)
+	# Angular bracket markers ringing the geometry (divine mechanical detail).
+	var mk := 4
+	for i in mk:
+		var ang := TAU * (float(i) / mk) + randf_range(-0.2, 0.2)
+		var outd := Vector2(cos(ang), sin(ang))
+		var tang := Vector2(-outd.y, outd.x)
+		var base := pos + outd * (56.0 * s)
+		var sz := 7.0 * s
+		var ln := Line2D.new()
+		ln.width = 1.4
+		ln.default_color = Color(1, 1, 1, 0.0)
+		ln.add_point(base - tang * sz)
+		ln.add_point(base + tang * sz)
+		ln.add_point(base + tang * sz + outd * (sz * 0.5))
+		ln.z_index = 15
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 0.8 * intensity, 0.08)
+		t.tween_interval(0.1)
+		t.tween_property(ln, "modulate:a", 0.0, 0.26)
+		t.tween_callback(ln.queue_free)
+
 ## A flowing wind sheet peeling forward from `pos` along the punch (+x): a
 ## crescent of compressed air that widens, stretches forward and dissolves.
 ## `voff` offsets/tilts it so the 2-3 sheets differ and never mirror.
@@ -1000,6 +1059,8 @@ func _pressure_impact(pos: Vector2, col: Color) -> void:
 	# PHASE 3/5 — three flowing wind sheets peeling forward, staggered.
 	for i in 3:
 		_wind_sheet(pos, col, float(i - 1) * 0.5, i * 0.02)
+	# Shared divine-geometry motif (small — Attack is the least intense).
+	_divine_geometry(pos, 0.7, 0.75)
 	# PHASE 4 — compact impact core: a small flash + fine forward fragments.
 	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.1), 0.05)
 	var frags := _spawn_particles(pos, Color(1, 1, 1, 1), {
