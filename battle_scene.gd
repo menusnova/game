@@ -807,6 +807,12 @@ func _build_player_sprite() -> void:
 		_player_sprite.texture = ptex
 	body.add_child(_player_sprite)
 
+	# Pre-warm every pose's keyed texture now (during the load/fade-in) so the
+	# expensive background-keying never runs on the first Attack/Defend/Skill/
+	# Ultimate press — that on-demand cost was the delay before a move started.
+	for pose_path in PLAYER_POSE.values():
+		_get_keyed_texture(pose_path)
+
 	# Subtle idle breathe tween
 	var t := body.create_tween().set_loops()
 	t.tween_property(body, "position:y", PLAYER_Y - 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
