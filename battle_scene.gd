@@ -2109,7 +2109,7 @@ func _enemy_turn() -> void:
 
 	# Enemy attacks
 	if _battle_fx: _battle_fx.play_enemy_attack()
-	await get_tree().create_timer(0.15).timeout
+	await get_tree().create_timer(0.1).timeout
 	if not is_instance_valid(self): return
 	var raw_dmg: int = int(round(float(_enemy_data.get("attack", 10)) * _e_unit.atk_mult()))
 
