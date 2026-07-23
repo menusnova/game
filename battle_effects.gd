@@ -1041,36 +1041,85 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 ## one continuous pressure form.
 func _pressure_impact(pos: Vector2, col: Color) -> void:
 	var fwd := Vector2(1, 0)   # player stands left of the enemy → punch goes +x
-	# PHASE 2 — pressure bloom: a bright dense core that stretches forward.
-	var core := Sprite2D.new()
-	core.texture = _tex_dot
-	core.position = pos
-	core.scale = Vector2(0.6, 1.4)
-	core.modulate = Color(1.7, 1.7, 1.8, 0.0)
-	core.z_index = 17
-	add_child(core)
-	var ct := core.create_tween()
-	ct.tween_property(core, "modulate:a", 1.0, 0.03)
-	ct.parallel().tween_property(core, "scale", Vector2(2.6, 0.8), 0.12)\
-		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	ct.parallel().tween_property(core, "position", pos + fwd * 40.0, 0.14)
-	ct.tween_property(core, "modulate:a", 0.0, 0.14)
-	ct.tween_callback(core.queue_free)
-	# PHASE 3/5 — three flowing wind sheets peeling forward, staggered.
-	for i in 3:
-		_wind_sheet(pos, col, float(i - 1) * 0.5, i * 0.02)
-	# Shared divine-geometry motif (small — Attack is the least intense).
-	_divine_geometry(pos, 0.7, 0.75)
-	# PHASE 4 — compact impact core: a small flash + fine forward fragments.
+
+	# ── ATMOSPHERIC COMPRESSION — a beat before release the surrounding air
+	# is pulled inward: a few streaks snap toward the point, then vanish ──
+	for ci in 5:
+		var ang := TAU * (float(ci) / 5) + randf_range(-0.3, 0.3)
+		var d := Vector2(cos(ang), sin(ang))
+		var frag := Sprite2D.new()
+		frag.texture = _tex_streak
+		frag.position = pos + d * randf_range(60.0, 92.0)
+		frag.rotation = ang
+		frag.scale = Vector2(0.5, 0.3)
+		frag.modulate = Color(col.r, col.g, col.b, 0.0)
+		frag.z_index = 16
+		add_child(frag)
+		var ft := frag.create_tween()
+		ft.tween_property(frag, "modulate:a", 0.7, 0.04)
+		ft.parallel().tween_property(frag, "position", pos + d * 14.0, 0.08)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		ft.tween_property(frag, "modulate:a", 0.0, 0.06)
+		ft.tween_callback(frag.queue_free)
+
+	# ── DENSE IMPACT CORE — layered: a wide soft body under a bright inner
+	# core, both dense and stretching forward (never a circle) ──
+	for layer_i in 2:
+		var wide := layer_i == 0
+		var core := Sprite2D.new()
+		core.texture = _tex_dot
+		core.position = pos
+		core.scale = Vector2(0.9, 2.0) if wide else Vector2(0.5, 1.1)
+		core.modulate = Color(col.r, col.g, col.b, 0.0) if wide else Color(1.8, 1.8, 1.9, 0.0)
+		core.z_index = 16 if wide else 18
+		add_child(core)
+		var peak_a := 0.7 if wide else 1.0
+		var end_scale := Vector2(3.4, 1.1) if wide else Vector2(2.4, 0.7)
+		var fwd_dist := 48.0 if wide else 32.0
+		var ct := core.create_tween()
+		ct.tween_property(core, "modulate:a", peak_a, 0.03).set_delay(0.06)
+		ct.parallel().tween_property(core, "scale", end_scale, 0.13)\
+			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+		ct.parallel().tween_property(core, "position", pos + fwd * fwd_dist, 0.15)
+		ct.tween_property(core, "modulate:a", 0.0, 0.16)
+		ct.tween_callback(core.queue_free)
+
+	# ── SEGMENTED DIVINE GEOMETRY — the barrier's own language, layered in ──
+	_divine_geometry(pos, 0.85, 0.85)
+
+	# ── WIND SHEETS — five flowing pressure surfaces peeling forward ──
+	for i in 5:
+		_wind_sheet(pos, col, (float(i) - 2.0) * 0.35, 0.06 + i * 0.02)
+
+	# ── FINE FRAGMENTS + a small compact flash (no giant white screen) ──
 	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.1), 0.05)
 	var frags := _spawn_particles(pos, Color(1, 1, 1, 1), {
-		"amount": 7, "lifetime": 0.3, "one_shot": true, "explosive": true,
-		"dir": Vector3(1, 0, 0), "spread": 55.0,
-		"vmin": 220.0, "vmax": 460.0,
+		"amount": 9, "lifetime": 0.32, "one_shot": true, "explosive": true,
+		"dir": Vector3(1, 0, 0), "spread": 50.0, "vmin": 240.0, "vmax": 500.0,
 		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_streak,
 	})
-	frags.z_index = 16
+	frags.z_index = 17
 	_cleanup(frags, 0.5)
+
+	# ── SECONDARY BLOOM PULSE — a delayed softer forward swell for weight ──
+	var pulse := Sprite2D.new()
+	pulse.texture = _tex_dot
+	pulse.position = pos + fwd * 20.0
+	pulse.scale = Vector2(0.8, 1.4)
+	pulse.modulate = Color(col.r, col.g, col.b, 0.0)
+	pulse.z_index = 15
+	add_child(pulse)
+	var pt := pulse.create_tween()
+	pt.tween_property(pulse, "modulate:a", 0.5, 0.06).set_delay(0.18)
+	pt.parallel().tween_property(pulse, "scale", Vector2(2.6, 0.9), 0.22)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	pt.parallel().tween_property(pulse, "position", pos + fwd * 70.0, 0.22)
+	pt.tween_property(pulse, "modulate:a", 0.0, 0.2)
+	pt.tween_callback(pulse.queue_free)
+
+	# ── RESIDUAL FLOWING WIND — faint sheets drift forward late, then fade ──
+	_wind_sheet(pos + fwd * 30.0, col, -0.2, 0.24)
+	_wind_sheet(pos + fwd * 30.0, col, 0.25, 0.28)
 
 
 
