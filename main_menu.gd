@@ -353,8 +353,14 @@ func _spawn_orb(layer: Control, zone: Array) -> void:
 func _setup_tutorial_button() -> void:
 	var btn := Panel.new()
 	btn.name = "BtnTutorial"
-	btn.size     = Vector2(96, 28)
-	btn.position = Vector2(982, 9)
+	# Right-anchored to stay consistent with the right-anchored currency pills
+	# (fixed position drifted into the energy pill on wide screens).
+	btn.anchor_left  = 1.0
+	btn.anchor_right = 1.0
+	btn.offset_left   = -170.0
+	btn.offset_top    = 9.0
+	btn.offset_right  = -74.0
+	btn.offset_bottom = 37.0
 	btn.z_index  = 10
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	var sb := StyleBoxFlat.new()
