@@ -1976,12 +1976,8 @@ func _on_attack() -> void:
 	_main_action_done = true
 	_is_defending = false
 	_set_player_pose("atk")
-	if _slash_fx:
-		_slash_fx.play(_enemy_hit_pos())
-		if _battle_fx and _battle_fx.screen_flash:
-			_slash_fx.flash_screen(_battle_fx.screen_flash)
-	elif _battle_fx:
-		_battle_fx.play_void_strike()
+	# The attack visual is the single directional pressure wave in
+	# play_enemy_hit(); no separate slash trail or screen flash.
 
 	var base: int = CHARACTER["atk_base"]
 	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
