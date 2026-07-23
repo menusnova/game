@@ -600,9 +600,21 @@ func play_ultimate() -> void:
 	# ── BLOOM — the flame blooms upward: layered ribbons growing organically,
 	# narrow core, outer layers spreading, edges dissolving into mist. This is
 	# the whole Ultimate — one form, not stacked effects ──
-	rising_energy(eground, COL_VIOLET, 9, 330.0, true)
-	wrap_aura(eground, COL_VIOLET, 10, 300.0)
-	wrap_aura(eground, COL_CYAN, 5, 250.0)
+	rising_energy(eground, COL_VIOLET, 12, 430.0, true)
+	wrap_aura(eground, COL_VIOLET, 12, 380.0)
+	wrap_aura(eground, COL_CYAN, 6, 320.0)
+	# Internal detail inside the giant bloom: energy veins climbing the enemy
+	# and soft mist welling up with it.
+	_rising_veins(eground, epos + Vector2(0, -150.0), COL_CYAN)
+	var umist := _spawn_particles(eground, COL_VIOLET, {
+		"amount": 14, "lifetime": 1.6, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 70.0,
+		"vmin": 30.0, "vmax": 80.0, "gravity": Vector3(0, -24, 0),
+		"scale_min": 1.6, "scale_max": 3.2, "texture": _tex_dot,
+	})
+	umist.modulate.a = 0.22
+	umist.z_index = 10
+	_cleanup(umist, 1.8)
 	cutscene_backdrop_out(0.5)
 	await get_tree().create_timer(0.16).timeout
 	if not is_instance_valid(self): return
@@ -623,14 +635,32 @@ func play_ultimate() -> void:
 	crt.tween_callback(crown.queue_free)
 	# Pressure surfaces wrap upward from the enemy (no circular shock ring):
 	# a tight upward pressure ribbon + two flowing sheets peeling off.
-	rising_energy(eground, COL_CYAN, 5, 170.0)
-	_wind_sheet(epos, COL_VIOLET, -0.4, 0.0)
-	_wind_sheet(epos, COL_VIOLET, 0.4, 0.03)
-	# Shared divine-geometry motif (large — Ultimate is the most intense).
-	_divine_geometry(epos, 1.9, 1.0)
+	rising_energy(eground, COL_CYAN, 6, 200.0)
+	_wind_sheet(epos, COL_VIOLET, -0.6, 0.0)
+	_wind_sheet(epos, COL_VIOLET, 0.6, 0.03)
+	_wind_sheet(epos, COL_CYAN, 0.0, 0.05)
+	# Shared divine-geometry motif (largest — Ultimate is the most intense).
+	_divine_geometry(epos, 2.6, 1.0)
+	# One-frame reality crack: thin white lines snap in and vanish.
+	for ci in 6:
+		var cang := TAU * (float(ci) / 6) + randf_range(-0.4, 0.4)
+		var cdir := Vector2(cos(cang), sin(cang))
+		var crk := Line2D.new()
+		crk.width = 1.6
+		crk.default_color = Color(1, 1, 1, 1)
+		crk.add_point(cdir * 18.0)
+		crk.add_point(cdir * randf_range(90.0, 150.0))
+		crk.position = epos
+		crk.z_index = 19
+		crk.modulate.a = 0.0
+		add_child(crk)
+		var crkt := crk.create_tween()
+		crkt.tween_property(crk, "modulate:a", 0.9, 0.03)
+		crkt.tween_property(crk, "modulate:a", 0.0, 0.1)
+		crkt.tween_callback(crk.queue_free)
 	enemy_hit_react(40.0)
-	shake(0.4, 12.0)
-	_camera_zoom(epos, 0.06, 0.42)
+	shake(0.5, 15.0)
+	_camera_zoom(epos, 0.07, 0.46)
 	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.24), 0.12)
 	var shards := _spawn_particles(epos, Color(1, 1, 1, 1), {
 		"amount": 12, "lifetime": 0.6, "one_shot": true,
@@ -640,14 +670,31 @@ func play_ultimate() -> void:
 	})
 	shards.z_index = 16
 	_cleanup(shards, 0.8)
+	# Secondary bloom pulse — a big soft delayed swell for weight/scale.
+	var bpulse := Sprite2D.new()
+	bpulse.texture = _tex_dot
+	bpulse.position = epos
+	bpulse.scale = Vector2(3.0, 3.4)
+	bpulse.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+	var bmat := CanvasItemMaterial.new()
+	bmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	bpulse.material = bmat
+	bpulse.z_index = 13
+	add_child(bpulse)
+	var bpt := bpulse.create_tween()
+	bpt.tween_property(bpulse, "modulate:a", 0.4, 0.08).set_delay(0.14)
+	bpt.parallel().tween_property(bpulse, "scale", Vector2(6.5, 7.2), 0.4)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	bpt.tween_property(bpulse, "modulate:a", 0.0, 0.35)
+	bpt.tween_callback(bpulse.queue_free)
 	_cleanup(seed_glow, 0.5)
 	_cleanup(gather, 0.3)
 	await get_tree().create_timer(0.2).timeout
 	if not is_instance_valid(self): return
 
-	# ── DISSIPATE — the flame dissolves upward into glowing motes and fades,
-	# leaving the field softly alive ──
-	rising_energy(eground, COL_VIOLET, 5, 210.0)
+	# ── DISSIPATE — the flame dissolves upward into large glowing sheets and
+	# fades, leaving the field softly alive ──
+	rising_energy(eground, COL_VIOLET, 7, 280.0, true)
 	var embers := _spawn_particles(eground, COL_VIOLET, {
 		"amount": 18, "lifetime": 1.8, "one_shot": true,
 		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 30.0,
