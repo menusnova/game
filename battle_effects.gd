@@ -807,8 +807,8 @@ func play_enemy_attack() -> void:
 	if is_instance_valid(enemy_node) and (enemy_node is Node2D or enemy_node is Control):
 		var orig: Vector2 = enemy_node.position
 		var t := enemy_node.create_tween()
-		t.tween_property(enemy_node, "position", orig + Vector2(-80, 0), 0.15).set_trans(Tween.TRANS_BACK)
-		t.tween_property(enemy_node, "position", orig, 0.2)
+		t.tween_property(enemy_node, "position", orig + Vector2(-80, 0), 0.1).set_trans(Tween.TRANS_BACK)
+		t.tween_property(enemy_node, "position", orig, 0.14)
 	_spawn_particles(player_pos, COL_MAGENTA, {
 		"amount": 22, "lifetime": 0.5, "one_shot": true, "explosive": true,
 		"spread": 180.0, "vmin": 60.0, "vmax": 210.0,

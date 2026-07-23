@@ -2148,7 +2148,7 @@ func _enemy_turn() -> void:
 	_msg("👾 %s โจมตี — เสีย %d HP%s" % [_enemy_data.get("name","ศัตรู"), max(0,dmg), def_txt])
 	_refresh_ui()
 
-	await get_tree().create_timer(0.7).timeout
+	await get_tree().create_timer(0.3).timeout
 	if not is_instance_valid(self): return
 
 	if _player_hp <= 0:
