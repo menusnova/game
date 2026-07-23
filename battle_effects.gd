@@ -310,6 +310,18 @@ func _play_guard_formation() -> void:
 	lt.tween_property(shield_hex_lines, "scale", Vector2(1.0, 1.0), 0.34)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
+	# Bold formation beat: a bright rim flash on the hex, an outward shock
+	# wave, and a brief ring of magical fragments snapping into place.
+	var rim := shield_hex.create_tween()
+	rim.tween_property(shield_hex, "modulate", Color(2.4, 2.4, 2.6, 0.95), 0.06)
+	rim.tween_property(shield_hex, "modulate", Color(1, 1, 1, 0.95), 0.18)
+	energy_wave(player_pos, COL_CYAN, 1.15)
+	_spawn_particles(player_pos, COL_CYAN, {
+		"amount": 12, "lifetime": 0.5, "one_shot": true, "explosive": true,
+		"ring": 60.0, "spread": 180.0, "vmin": 40.0, "vmax": 90.0,
+		"scale_min": 0.5, "scale_max": 1.0, "texture": _tex_shard,
+	})
+
 	shield_ambient.restart();  shield_ambient.emitting  = true
 	shield_sparkle.restart();  shield_sparkle.emitting  = true
 	_start_shield_idle()
@@ -512,8 +524,11 @@ func play_aether_pulse() -> void:
 	await get_tree().create_timer(0.32).timeout
 	if not is_instance_valid(self): return
 
-	# ── 2. SKILL RELEASE — the charge ring flares and pops ──
+	# ── 2. SKILL RELEASE — bold energy pillar erupts + shock wave ──
 	speed_lines(player_pos + Vector2(10, -20), COL_VIOLET, 9)
+	energy_pillar(player_pos + Vector2(8, 30), COL_VIOLET, 230.0)
+	energy_wave(player_pos + Vector2(8, 26), COL_CYAN, 1.0)
+	_screen_color_flash(hit_flash, Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.18), 0.08)
 	var flash_t := ring.create_tween().set_parallel(true)
 	flash_t.tween_property(ring, "modulate", Color(2.2, 2.0, 2.6, 1.0), 0.08)
 	flash_t.tween_property(ring, "scale", Vector2(0.75, 0.75), 0.12)\
@@ -964,6 +979,55 @@ func _ultimate_beam(a: Vector2, b: Vector2) -> void:
 	})
 	stream.z_index = 18
 	_cleanup(stream, 0.5)
+
+
+## Bold vertical energy pillar erupting at `base`: a bright thick core
+## that snaps up tall then dissolves — the visible centrepiece of a
+## skill release. Layered (wide soft glow + bright core), additive feel.
+func energy_pillar(base: Vector2, col: Color, height := 220.0) -> void:
+	for pass_i in 2:
+		var wide := pass_i == 0
+		var ln := Line2D.new()
+		ln.width = 46.0 if wide else 16.0
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var g := Gradient.new()
+		var base_c: Color = col if wide else Color(1, 1, 1, 1)
+		g.set_color(0, Color(base_c.r, base_c.g, base_c.b, 0.9 if wide else 1.0))
+		g.add_point(0.6, Color(base_c.r, base_c.g, base_c.b, 0.5 if wide else 0.9))
+		g.set_color(1, Color(base_c.r, base_c.g, base_c.b, 0.0))
+		ln.gradient = g
+		# Local points (grows upward from the node origin = base).
+		ln.position = base
+		ln.add_point(Vector2(0, 0))
+		ln.add_point(Vector2(0, -height))
+		ln.z_index = 12 if wide else 13
+		ln.modulate.a = 0.0
+		ln.scale = Vector2(1.0, 0.04)
+		add_child(ln)
+		var t := ln.create_tween()
+		# Erupt upward fast, hold a beat, then fade.
+		t.tween_property(ln, "scale", Vector2.ONE, 0.12)\
+			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+		t.parallel().tween_property(ln, "modulate:a", 1.0, 0.08)
+		t.tween_interval(0.08)
+		t.tween_property(ln, "modulate:a", 0.0, 0.28)
+		t.tween_callback(ln.queue_free)
+
+## Expanding thin shock ring at `pos` — a clean energy wave rippling out.
+func energy_wave(pos: Vector2, col: Color, to_scale := 1.0) -> void:
+	var ring := Sprite2D.new()
+	ring.texture  = _tex_ring_thin
+	ring.position = pos
+	ring.modulate = Color(col.r, col.g, col.b, 0.9)
+	ring.scale    = Vector2(0.1, 0.1)
+	ring.z_index  = 12
+	add_child(ring)
+	var t := ring.create_tween().set_parallel(true)
+	t.tween_property(ring, "scale", Vector2(to_scale, to_scale), 0.32)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	t.tween_property(ring, "modulate:a", 0.0, 0.34)
+	t.chain().tween_callback(ring.queue_free)
 
 
 ## ── BACKGROUND LAYER ────────────────────────────────────────
