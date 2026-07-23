@@ -974,67 +974,119 @@ func _ultimate_beam(a: Vector2, b: Vector2) -> void:
 ## behind-the-body pass by dimming as they cross the mid-line. Rising
 ## motes travel up with the flow. No straight pillar, no rotating circle.
 func wrap_aura(feet: Vector2, col: Color, streams := 9, height := 210.0) -> void:
-	# Soft ground glow pooled at the feet.
+	# Layer 1 — soft ground glow that gently blooms outward at the feet.
 	var glow := Sprite2D.new()
 	glow.texture = _tex_dot
 	glow.position = feet
-	glow.scale = Vector2(7.0, 2.6)
+	glow.scale = Vector2(4.5, 1.7)
 	glow.modulate = Color(col.r, col.g, col.b, 0.0)
-	glow.z_index = 9
+	glow.z_index = 8
 	add_child(glow)
-	var gt := glow.create_tween()
-	gt.tween_property(glow, "modulate:a", 0.5, 0.2)
-	gt.tween_interval(0.25)
-	gt.tween_property(glow, "modulate:a", 0.0, 0.4)
-	gt.tween_callback(glow.queue_free)
+	var gt := glow.create_tween().set_parallel(true)
+	gt.tween_property(glow, "modulate:a", 0.5, 0.22)
+	gt.tween_property(glow, "scale", Vector2(8.5, 3.0), 0.7)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	gt.chain().tween_property(glow, "modulate:a", 0.0, 0.4)
+	gt.chain().tween_callback(glow.queue_free)
 
+	# Layer 3 — long flowing ribbons that hug the body, weave, and vary.
 	for i in streams:
 		var side := 1.0 if i % 2 == 0 else -1.0
 		var phase := randf_range(0.0, TAU)
-		var amp := randf_range(28.0, 46.0)          # how far it wraps sideways
-		var h := height * randf_range(0.82, 1.12)
+		var phase2 := randf_range(0.0, TAU)
+		var amp := randf_range(26.0, 48.0)          # how far it wraps sideways
+		var freq := randf_range(2.4, 3.6)            # weave frequency (varied)
+		var turb := randf_range(4.0, 9.0)            # turbulence amount
+		var h := height * randf_range(0.8, 1.14)
+		var behind := i % 3 == 0                     # some read as behind the body
 		var ln := Line2D.new()
-		ln.width = randf_range(3.0, 6.0)
+		ln.width = randf_range(2.5, 6.5)             # different widths
 		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
 		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
 		ln.joint_mode = Line2D.LINE_JOINT_ROUND
+		ln.width_curve = _aura_width_curve()
 		var grad := Gradient.new()
+		var hi_a := 0.7 if behind else 0.95
 		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
-		grad.add_point(0.22, Color(1, 1, 1, 0.9))
-		grad.add_point(0.6, Color(col.r, col.g, col.b, 0.8))
+		grad.add_point(0.2, Color(1, 1, 1, hi_a))
+		grad.add_point(0.58, Color(col.r, col.g, col.b, 0.8 if not behind else 0.6))
 		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
 		ln.gradient = grad
-		# Sample a rising, sideways-curving ribbon that hugs the body.
 		var pts := PackedVector2Array()
-		var segs := 16
+		var segs := 18
 		for s in segs + 1:
 			var u := float(s) / segs                # 0 feet -> 1 overhead
 			var bell := sin(u * PI)                  # widest at the waist/torso
-			var x := feet.x + side * sin(u * 3.0 + phase) * amp * bell
-			var y := feet.y - u * h
-			pts.append(Vector2(x, y))
+			# Weave (two frequencies) + turbulence so no two paths match.
+			var sway := sin(u * freq + phase) * amp * bell
+			sway += sin(u * freq * 2.3 + phase2) * (amp * 0.28) * bell
+			sway += randf_range(-turb, turb) * bell
+			pts.append(Vector2(feet.x + side * sway, feet.y - u * h))
 		ln.points = pts
-		ln.z_index = 11
-		ln.modulate.a = 0.0
+		ln.z_index = 11 if behind else 13
+		ln.modulate = Color(1, 1, 1, 0.0)
 		add_child(ln)
-		# Continuous upward flow: fade in low, drift up, dissolve at the top.
+		# Different speeds; energy accelerates slightly as it rises + fades.
+		var rise := randf_range(0.42, 0.6)
 		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 1.0, 0.14).set_delay(i * 0.05)
-		t.tween_interval(0.12)
-		t.parallel().tween_property(ln, "position", Vector2(0, -30), 0.5)\
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		t.tween_property(ln, "modulate:a", 1.0, 0.14).set_delay(i * 0.045)
+		t.tween_interval(0.1)
+		t.parallel().tween_property(ln, "position", Vector2(0, -36), rise)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		t.tween_property(ln, "modulate:a", 0.0, 0.3)
 		t.tween_callback(ln.queue_free)
+		# Layer 4/5 — a wisp detaches from mid-ribbon and drifts up, fading.
+		if i % 2 == 0:
+			var wp: Vector2 = pts[int(segs * 0.55)]
+			_aura_wisp(wp, col, i * 0.05)
 
-	# Motes rising from the feet, shrinking as they climb with the energy.
+	# Layer 4 — weightless motes drifting up with the flow, shrinking away.
 	var motes := _spawn_particles(feet, col, {
-		"amount": 20, "lifetime": 1.0, "one_shot": true,
-		"dir": Vector3(0, -1, 0), "spread": 24.0, "ring": 34.0,
-		"vmin": 70.0, "vmax": 150.0, "gravity": Vector3(0, -26, 0),
-		"scale_min": 0.3, "scale_max": 0.8, "texture": _tex_dot,
+		"amount": 18, "lifetime": 1.0, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 22.0, "ring": 32.0,
+		"vmin": 70.0, "vmax": 150.0, "gravity": Vector3(0, -30, 0),
+		"scale_min": 0.3, "scale_max": 0.75, "texture": _tex_dot,
 	})
 	motes.z_index = 12
 	_cleanup(motes, 1.2)
+
+	# Layer 5 — a few sparse magical sparks (low density, never noisy).
+	var sparks := _spawn_particles(feet + Vector2(0, -60), Color(1, 1, 1, 1), {
+		"amount": 5, "lifetime": 0.8, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 46.0,
+		"vmin": 40.0, "vmax": 110.0, "gravity": Vector3(0, -20, 0),
+		"scale_min": 0.25, "scale_max": 0.5, "texture": _tex_dot,
+	})
+	sparks.z_index = 14
+	_cleanup(sparks, 1.0)
+
+## Width curve for aura ribbons — thin at the feet, fuller mid-body, tapering
+## to nothing overhead, so each ribbon reads like a tongue of flame.
+func _aura_width_curve() -> Curve:
+	var c := Curve.new()
+	c.add_point(Vector2(0.0, 0.2))
+	c.add_point(Vector2(0.4, 1.0))
+	c.add_point(Vector2(1.0, 0.15))
+	return c
+
+## A small energy wisp that detaches from a ribbon and rises, gently swaying,
+## shrinking and fading — the "flowing magical flame" fine detail.
+func _aura_wisp(pos: Vector2, col: Color, delay: float) -> void:
+	var w := Sprite2D.new()
+	w.texture = _tex_dot
+	w.position = pos
+	w.scale = Vector2(0.9, 0.9)
+	w.modulate = Color(col.r, col.g, col.b, 0.0)
+	w.z_index = 12
+	add_child(w)
+	var drift := Vector2(randf_range(-14, 14), randf_range(-70, -95))
+	var t := w.create_tween()
+	t.tween_property(w, "modulate:a", 0.85, 0.12).set_delay(delay)
+	t.parallel().tween_property(w, "position", pos + drift, 0.7)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	t.parallel().tween_property(w, "scale", Vector2(0.2, 0.2), 0.7)
+	t.tween_property(w, "modulate:a", 0.0, 0.25)
+	t.tween_callback(w.queue_free)
 
 
 ## Expanding thin shock ring at `pos` — a clean energy wave rippling out.
