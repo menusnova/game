@@ -632,131 +632,228 @@ func _build_void_shield_orb() -> void:
 ## Release -> Massive Impact -> After Effect -> Fade Out. Fire-and-forget,
 ## same as before — the actual damage in _on_ultimate() is applied
 ## immediately and independently of this animation's timing.
+## Flowing energy veins spreading across the floor beneath `pos` — thin lines
+## radiating out along the ground, pulsing softly, then fading.
+func _energy_veins(pos: Vector2, col: Color) -> void:
+	var n := 7
+	for i in n:
+		var ang := TAU * (float(i) / n) + randf_range(-0.3, 0.3)
+		var dir := Vector2(cos(ang), sin(ang) * 0.42)   # flattened to the ground
+		var ln := Line2D.new()
+		ln.width = randf_range(1.5, 3.0)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.85))
+		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+		ln.gradient = grad
+		var vlen := randf_range(70.0, 130.0)
+		var segs := 6
+		var pts := PackedVector2Array()
+		for s in segs + 1:
+			var u := float(s) / segs
+			var jit := Vector2(-dir.y, dir.x) * sin(u * 6.0) * 6.0
+			pts.append(dir * (vlen * u) + jit)
+		ln.points = pts
+		ln.position = pos
+		ln.z_index = 8
+		ln.modulate.a = 0.0
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 0.9, 0.18).set_delay(i * 0.02)
+		t.tween_interval(0.3)
+		t.tween_property(ln, "modulate:a", 0.0, 0.4)
+		t.tween_callback(ln.queue_free)
+
+## Large segmented divine halo behind `pos`: broken concentric arc segments,
+## semi-transparent, softly glowing, rotating slowly, then fading — frames
+## the enemy. Not a solid magic circle.
+func _divine_halo(pos: Vector2, col: Color) -> void:
+	var halo := Node2D.new()
+	halo.position = pos
+	halo.z_index = 7
+	halo.modulate = Color(1, 1, 1, 0.0)
+	add_child(halo)
+	for ridx in 2:
+		var rad := 118.0 + ridx * 28.0
+		var a := 0.0
+		while a < TAU:
+			var span := randf_range(0.3, 0.7)
+			var ln := Line2D.new()
+			ln.width = 2.0 if ridx == 0 else 1.4
+			ln.default_color = Color(col.r, col.g, col.b, 0.5 if ridx == 0 else 0.3)
+			var segs := 8
+			var pts := PackedVector2Array()
+			for s in segs + 1:
+				var ang := a + span * (float(s) / segs)
+				pts.append(Vector2(cos(ang) * rad, sin(ang) * rad))
+			ln.points = pts
+			halo.add_child(ln)
+			a += span + randf_range(0.25, 0.5)
+	var t := halo.create_tween()
+	t.tween_property(halo, "modulate:a", 1.0, 0.2)
+	t.parallel().tween_property(halo, "rotation", 0.4, 1.4)
+	t.tween_interval(0.5)
+	t.tween_property(halo, "modulate:a", 0.0, 0.5)
+	t.tween_callback(halo.queue_free)
+
+## Vertical light-rain columns around `pos`: varied height/width/tilt, soft,
+## some behind the eruption and some in front — divine light descending.
+func _light_columns(pos: Vector2, col: Color) -> void:
+	var n := 12
+	for i in n:
+		var behind := i % 2 == 0
+		var x := pos.x + randf_range(-90.0, 90.0)
+		var top := pos.y - randf_range(120.0, 240.0)
+		var ln := Line2D.new()
+		ln.width = randf_range(3.0, 9.0)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+		grad.add_point(0.5, Color(1, 1, 1, 0.5 if behind else 0.8))
+		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+		ln.gradient = grad
+		var tilt := randf_range(-10.0, 10.0)
+		ln.add_point(Vector2(x + tilt, top))
+		ln.add_point(Vector2(x, pos.y + 20.0))
+		ln.z_index = 13 if behind else 16
+		ln.modulate.a = 0.0
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 1.0, 0.08).set_delay(0.02 * i)
+		t.tween_interval(0.1)
+		t.tween_property(ln, "modulate:a", 0.0, 0.3)
+		t.tween_callback(ln.queue_free)
+
+## Reality-fracture crack lines at `pos`: thin jagged white lines that snap in
+## for a couple of frames, then vanish — space briefly breaking.
+func _reality_cracks(pos: Vector2) -> void:
+	var n := 6
+	for i in n:
+		var ang := TAU * (float(i) / n) + randf_range(-0.4, 0.4)
+		var dir := Vector2(cos(ang), sin(ang))
+		var ln := Line2D.new()
+		ln.width = 1.6
+		ln.default_color = Color(1, 1, 1, 1)
+		var clen := randf_range(60.0, 120.0)
+		var segs := 4
+		var pts := PackedVector2Array()
+		for s in segs + 1:
+			var u := float(s) / segs
+			var perp := Vector2(-dir.y, dir.x) * randf_range(-8.0, 8.0)
+			pts.append(dir * (clen * u) + perp)
+		ln.points = pts
+		ln.position = pos
+		ln.z_index = 18
+		ln.modulate.a = 0.0
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 0.95, 0.03)
+		t.tween_interval(0.05)
+		t.tween_property(ln, "modulate:a", 0.0, 0.12)
+		t.tween_callback(ln.queue_free)
+
+## Absolute Zero Formula — a divine execution that erupts from beneath the
+## enemy (no travelling beam): silence -> ground awakening -> compression ->
+## eruption + halo + light rain -> atmospheric explosion + cracks + impact ->
+## ground shockwave -> residual. ~1.8s, staggered layers.
 func play_ultimate() -> void:
-	# ── 1. ENERGY CHARGE — void energy gathers around the caster, a large
-	# magic circle spreads out underfoot ──
-	var floor_circle := Sprite2D.new()
-	floor_circle.texture  = _tex_ring
-	floor_circle.position = player_pos + Vector2(0, 52)
-	floor_circle.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
-	floor_circle.scale    = Vector2(0.05, 0.02)
-	floor_circle.z_index  = 8
-	add_child(floor_circle)
-	var fct := floor_circle.create_tween().set_parallel(true)
-	fct.tween_property(floor_circle, "modulate:a", 0.85, 0.35)
-	fct.tween_property(floor_circle, "scale", Vector2(1.3, 0.45), 0.4)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	# Slow, subtle ground rotation (ambient magic circle — not a fast
-	# spinning wheel) plus a magical aura erupting upward past the caster.
-	var fspin := floor_circle.create_tween().set_loops()
-	fspin.tween_property(floor_circle, "rotation", TAU, 8.0).set_trans(Tween.TRANS_LINEAR)
-	rising_energy(player_pos + Vector2(0, 40), COL_VIOLET, 7, 230.0, true)
+	var epos := enemy_pos
+	var eground := enemy_pos + Vector2(0, 46)   # the floor beneath the enemy
 
-	var orbit := _spawn_particles(player_pos, COL_VIOLET, {
-		"amount": 28, "lifetime": 0.8, "one_shot": false,
-		"ring": 58.0, "vmin": 8.0, "vmax": 20.0,
-		"dir": Vector3(0, -1, 0), "spread": 30.0, "gravity": Vector3(0, -16, 0),
-		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_dot,
+	# ── PHASE 1 — Atmospheric silence: darken + faint glow beneath enemy ──
+	cutscene_backdrop_in(0.36, 0.22)
+	var eglow := Sprite2D.new()
+	eglow.texture = _tex_dot
+	eglow.position = eground
+	eglow.scale = Vector2(3.0, 1.2)
+	eglow.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	eglow.z_index = 8
+	add_child(eglow)
+	var egt := eglow.create_tween()
+	egt.tween_property(eglow, "modulate:a", 0.55, 0.3)
+	var gather := _spawn_particles(epos, COL_VIOLET, {
+		"amount": 16, "lifetime": 0.7, "one_shot": false, "ring": 72.0,
+		"dir": Vector3(0, -1, 0), "spread": 40.0, "gravity": Vector3(0, -18, 0),
+		"vmin": 10.0, "vmax": 28.0, "scale_min": 0.3, "scale_max": 0.7,
+		"texture": _tex_dot,
 	})
-
-	await get_tree().create_timer(0.42).timeout
+	await get_tree().create_timer(0.4).timeout
 	if not is_instance_valid(self): return
 
-	# ── 2. SCREEN DARKEN ──
-	screen_flash.color = Color(0, 0, 0, 0.0)
-	var dark_t := screen_flash.create_tween()
-	dark_t.tween_property(screen_flash, "color", Color(0, 0, 0, 0.42), 0.16)
-
-	await get_tree().create_timer(0.16).timeout
+	# ── PHASE 2 — Ground awakening: energy veins spread across the floor ──
+	_energy_veins(eground, COL_VIOLET)
+	await get_tree().create_timer(0.3).timeout
 	if not is_instance_valid(self): return
 
-	# ── 3. TIME STOP — a short held freeze-frame beat ──
-	orbit.emitting = false
-	await get_tree().create_timer(0.08).timeout
+	# ── PHASE 3 — Compression: a ring collapses inward before the eruption ──
+	var comp := Sprite2D.new()
+	comp.texture = _tex_ring_thin
+	comp.position = epos
+	comp.modulate = Color(1, 1, 1, 0.0)
+	comp.scale = Vector2(2.4, 2.4)
+	comp.z_index = 14
+	add_child(comp)
+	var cmt := comp.create_tween().set_parallel(true)
+	cmt.tween_property(comp, "modulate:a", 0.8, 0.1)
+	cmt.tween_property(comp, "scale", Vector2(0.3, 0.3), 0.22)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	cmt.chain().tween_property(comp, "modulate:a", 0.0, 0.08)
+	cmt.chain().tween_callback(comp.queue_free)
+	gather.emitting = false
+	await get_tree().create_timer(0.22).timeout
 	if not is_instance_valid(self): return
 
-	# ── 4. ULTIMATE RELEASE — the circle flares, darkness clears, energy launches ──
-	var release_t := floor_circle.create_tween()
-	release_t.tween_property(floor_circle, "modulate", Color(2.4, 2.2, 2.6, 1.0), 0.08)
-	var clear_t := screen_flash.create_tween()
-	clear_t.tween_property(screen_flash, "color:a", 0.0, 0.14)
-
-	# Three interconnected energy streams that merge into one blast — see
-	# _ultimate_beam(): a thick bright center plus two thinner, unevenly
-	# curved supporting beams that converge on the target.
-	_ultimate_beam(player_pos + Vector2(70, -20), enemy_pos)
-
-	_cleanup(orbit, 0.3)
-	_cleanup(floor_circle, 0.4)
-
-	await get_tree().create_timer(0.10).timeout
+	# ── PHASE 4/7/8 — Eruption from beneath the enemy + halo + light rain ──
+	_divine_halo(epos, COL_CYAN)
+	_light_columns(epos, COL_CYAN)
+	rising_energy(eground, COL_VIOLET, 9, 300.0, true)
+	wrap_aura(eground, COL_VIOLET, 8, 270.0)
+	cutscene_backdrop_out(0.5)
+	await get_tree().create_timer(0.12).timeout
 	if not is_instance_valid(self): return
 
-	# ── 5. MASSIVE IMPACT — shockwave, bloom halo, explosion, heavy shake + zoom, hit flash ──
-	var shock := Sprite2D.new()
-	shock.texture  = _tex_ring_thin
-	shock.position = enemy_pos
-	shock.modulate = Color(1, 1, 1, 1.0)
-	shock.scale    = Vector2(0.1, 0.1)
-	shock.z_index  = 16
-	add_child(shock)
-	var sht := shock.create_tween().set_parallel(true)
-	sht.tween_property(shock, "scale", Vector2(3.0, 3.0), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	sht.tween_property(shock, "modulate:a", 0.0, 0.4)
-	sht.chain().tween_callback(shock.queue_free)
+	# ── PHASE 5/6/9/10 — Explosion + wind + reality fracture + main impact ──
+	_reality_cracks(epos)
+	_shock_arc(epos, COL_CYAN, 40.0, 3.4, randf_range(0, TAU), 3.0, 4.6, 0.5, 0.0)
+	_shock_arc(epos, Color(1, 1, 1, 1), 34.0, 2.4, randf_range(0, TAU), 2.2, 3.4, 0.36, 0.04)
+	for i in 8:
+		var ang := TAU * (float(i) / 8) + randf_range(-0.5, 0.5)
+		_wind_crescent(epos, COL_VIOLET, ang, randf_range(20.0, 40.0), randf_range(0.35, 0.6), i * 0.02)
+	_melee_impact(epos, COL_VIOLET)
+	shake(0.45, 14.0)
+	_camera_zoom(epos, 0.06, 0.42)
+	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.3), 0.14)
 
-	# Soft additive halo standing in for bloom/distortion around the blast
-	var bloom := Sprite2D.new()
-	bloom.texture  = _tex_ring_thin
-	bloom.position = enemy_pos
-	bloom.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.55)
-	bloom.scale    = Vector2(0.3, 0.3)
-	var bmat := CanvasItemMaterial.new()
-	bmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	bloom.material = bmat
-	bloom.z_index = 15
-	add_child(bloom)
-	var bmt := bloom.create_tween().set_parallel(true)
-	bmt.tween_property(bloom, "scale", Vector2(2.0, 2.0), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	bmt.tween_property(bloom, "modulate:a", 0.0, 0.55)
-	bmt.chain().tween_callback(bloom.queue_free)
+	# ── PHASE 11 — ground shockwave (flattened wave across the floor) ──
+	var gwave := Sprite2D.new()
+	gwave.texture = _tex_ring_thin
+	gwave.position = eground
+	gwave.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.7)
+	gwave.scale = Vector2(0.3, 0.12)
+	gwave.z_index = 9
+	add_child(gwave)
+	var gwt := gwave.create_tween().set_parallel(true)
+	gwt.tween_property(gwave, "scale", Vector2(3.4, 1.1), 0.5)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	gwt.tween_property(gwave, "modulate:a", 0.0, 0.55)
+	gwt.chain().tween_callback(gwave.queue_free)
+	_cleanup(eglow, 0.5)
+	_cleanup(gather, 0.3)
 
-	screen_flash.color = Color(1, 1, 1, 0.0)
-	var sf := screen_flash.create_tween()
-	sf.tween_property(screen_flash, "color", Color(1, 1, 1, 0.85), 0.10)
-	sf.tween_property(screen_flash, "color", Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.25), 0.12)
-	sf.tween_property(screen_flash, "color:a", 0.0, 0.25)
-
-	shake(0.5, 16.0)
-	_camera_zoom(enemy_pos, 0.07, 0.4)
-
-	for col in [COL_VIOLET, Color(1, 1, 1, 1)]:
-		_spawn_particles(enemy_pos, col, {
-			"amount": 55, "lifetime": 0.7, "one_shot": true, "explosive": true,
-			"spread": 180.0, "vmin": 100.0, "vmax": 420.0,
-			"scale_min": 0.6, "scale_max": 1.7, "texture": _tex_dot,
-		})
-
-	await get_tree().create_timer(0.15).timeout
+	await get_tree().create_timer(0.2).timeout
 	if not is_instance_valid(self): return
 
-	# ── 6. AFTER EFFECT — lingering embers and light dust ──
-	var aftermath := _spawn_particles(enemy_pos, COL_VIOLET, {
-		"amount": 34, "lifetime": 2.0, "one_shot": true, "explosive": false,
+	# ── PHASE 12 — residual energy lingering on the battlefield ──
+	rising_energy(eground, COL_VIOLET, 4, 150.0)
+	var embers := _spawn_particles(epos, COL_VIOLET, {
+		"amount": 20, "lifetime": 2.0, "one_shot": true,
 		"spread": 180.0, "vmin": 10.0, "vmax": 55.0, "gravity": Vector3(0, -18, 0),
-		"scale_min": 0.4, "scale_max": 1.1, "texture": _tex_dot,
+		"scale_min": 0.3, "scale_max": 0.9, "texture": _tex_dot,
 	})
-	aftermath.modulate.a = 0.55
-	var dust := _spawn_particles(enemy_pos, Color(0.9, 0.96, 1.0), {
-		"amount": 18, "lifetime": 2.4, "one_shot": true, "explosive": false,
-		"spread": 180.0, "vmin": 6.0, "vmax": 24.0, "gravity": Vector3(0, -10, 0),
-		"scale_min": 0.2, "scale_max": 0.5, "texture": _tex_dot,
-	})
-	dust.modulate.a = 0.45
-
-	# ── 7. FADE OUT ──
-	_cleanup(aftermath, 2.4)
-	_cleanup(dust, 2.8)
+	embers.modulate.a = 0.5
+	_cleanup(embers, 2.2)
 
 
 # ════════════════════════════════════════════════════════════
@@ -886,80 +983,6 @@ func rising_energy(base: Vector2, col: Color, ribbons := 5, height := 150.0, big
 	})
 	motes.z_index = 10
 	_cleanup(motes, 1.1)
-
-
-## ── ULTIMATE ENERGY BEAM ────────────────────────────────────
-## Quadratic-bezier sample points from `a` to `b`, bowed sideways by
-## `curve` along the perpendicular so beams arc instead of going straight.
-func _beam_points(a: Vector2, b: Vector2, curve: float, segs := 14) -> PackedVector2Array:
-	var dir := (b - a)
-	var nrm := Vector2(-dir.y, dir.x).normalized()
-	var ctrl := a.lerp(b, 0.5) + nrm * curve
-	var pts := PackedVector2Array()
-	for i in segs + 1:
-		var t := float(i) / float(segs)
-		var p := a.lerp(ctrl, t).lerp(ctrl.lerp(b, t), t)  # quadratic bezier
-		pts.append(p)
-	return pts
-
-## One beam = layered Line2Ds (soft outer glow + mid body + bright core),
-## width tapering along its length so it compresses/expands, plus a subtle
-## alive flicker. `bright` scales overall intensity (center beam = 1.0).
-func _beam_stream(a: Vector2, b: Vector2, curve: float, w: float, col: Color, bright: float):
-	var pts := _beam_points(a, b, curve)
-	# Thickness varies along the beam: pinched at the caster, fullest
-	# mid-flight, tapering into the impact point.
-	var wc := Curve.new()
-	wc.add_point(Vector2(0.0, 0.35))
-	wc.add_point(Vector2(0.45, 1.0))
-	wc.add_point(Vector2(1.0, 0.55))
-	var layers := [
-		{"w": w * 2.3, "a": 0.22 * bright, "c": col},                       # outer glow
-		{"w": w * 1.2, "a": 0.55 * bright, "c": col.lerp(Color(1, 1, 1, 1), 0.4)},  # body
-		{"w": w * 0.5, "a": 0.95 * bright, "c": Color(1, 1, 1, 1)},          # bright core
-	]
-	var idx := 0
-	for lyr in layers:
-		var ln := Line2D.new()
-		ln.points = pts
-		ln.width = lyr["w"]
-		ln.width_curve = wc
-		ln.default_color = Color(lyr["c"].r, lyr["c"].g, lyr["c"].b, lyr["a"])
-		ln.joint_mode = Line2D.LINE_JOINT_ROUND
-		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
-		ln.z_index = 15 + idx
-		ln.modulate.a = 0.0
-		add_child(ln)
-		# Snap in, flicker while flowing, then disperse — never static.
-		var t := ln.create_tween()
-		t.tween_property(ln, "modulate:a", 1.0, 0.06)
-		t.tween_property(ln, "modulate:a", 0.78, 0.05)
-		t.tween_property(ln, "modulate:a", 1.0, 0.05)
-		t.tween_interval(0.06)
-		t.tween_property(ln, "modulate:a", 0.0, 0.22)
-		t.tween_callback(ln.queue_free)
-		idx += 1
-
-## Full ultimate beam: three synchronized streams (thick bright center +
-## two thinner, unevenly curved supports) that visually merge on impact,
-## with glowing motes travelling along the blast.
-func _ultimate_beam(a: Vector2, b: Vector2) -> void:
-	# Supporting beams start slightly offset from the caster and bow in
-	# toward the center line — asymmetric on purpose (not mirrored).
-	_beam_stream(a + Vector2(-6, -22), b, -34.0, 9.0, COL_CYAN, 0.6)    # left support
-	_beam_stream(a + Vector2(2, 20), b, 22.0, 11.0, COL_VIOLET, 0.72)   # right support
-	_beam_stream(a, b, 8.0, 17.0, COL_VIOLET, 1.0)                      # center (dominant)
-	# Motes riding along the blast so the beam reads as flowing energy.
-	var mid := a.lerp(b, 0.5)
-	var stream := _spawn_particles(mid, Color(1, 1, 1, 1), {
-		"amount": 20, "lifetime": 0.3, "one_shot": true, "explosive": true,
-		"dir": Vector3(1, 0, 0), "spread": 10.0,
-		"vmin": 500.0, "vmax": 900.0,
-		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
-	})
-	stream.z_index = 18
-	_cleanup(stream, 0.5)
 
 
 ## Charging aura that wraps around the character's silhouette: flowing
