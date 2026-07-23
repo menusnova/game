@@ -749,6 +749,40 @@ func _reality_cracks(pos: Vector2) -> void:
 		t.tween_property(ln, "modulate:a", 0.0, 0.12)
 		t.tween_callback(ln.queue_free)
 
+## Sky echo: a few faint divine rays continuing skyward above `pos` after the
+## blast, with tiny light motes slowly drifting back down — residual blessing.
+func _sky_echo(pos: Vector2, col: Color) -> void:
+	for i in 4:
+		var x := pos.x + randf_range(-40.0, 40.0)
+		var ln := Line2D.new()
+		ln.width = randf_range(3.0, 6.0)
+		ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+		var grad := Gradient.new()
+		grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+		grad.add_point(0.5, Color(1, 1, 1, 0.4))
+		grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+		ln.gradient = grad
+		ln.add_point(Vector2(x, pos.y - 60.0))
+		ln.add_point(Vector2(x + randf_range(-8, 8), pos.y - randf_range(260.0, 360.0)))
+		ln.z_index = 12
+		ln.modulate.a = 0.0
+		add_child(ln)
+		var t := ln.create_tween()
+		t.tween_property(ln, "modulate:a", 1.0, 0.16).set_delay(i * 0.05)
+		t.tween_interval(0.2)
+		t.tween_property(ln, "modulate:a", 0.0, 0.5)
+		t.tween_callback(ln.queue_free)
+	# Tiny light motes slowly falling from high above.
+	var fall := _spawn_particles(pos + Vector2(0, -220.0), Color(0.9, 0.96, 1.0), {
+		"amount": 12, "lifetime": 2.2, "one_shot": true,
+		"dir": Vector3(0, 1, 0), "spread": 60.0, "ring": 90.0,
+		"vmin": 8.0, "vmax": 26.0, "gravity": Vector3(0, 14, 0),
+		"scale_min": 0.2, "scale_max": 0.45, "texture": _tex_dot,
+	})
+	fall.z_index = 11
+	_cleanup(fall, 2.4)
+
 ## Absolute Zero Formula — a divine execution that erupts from beneath the
 ## enemy (no travelling beam): silence -> ground awakening -> compression ->
 ## eruption + halo + light rain -> atmospheric explosion + cracks + impact ->
@@ -840,7 +874,10 @@ func play_ultimate() -> void:
 	await get_tree().create_timer(0.2).timeout
 	if not is_instance_valid(self): return
 
-	# ── PHASE 12 — residual energy lingering on the battlefield ──
+	# ── PHASE 12 — sky echo: rays continue skyward, light motes drift down ──
+	_sky_echo(epos, COL_CYAN)
+
+	# ── PHASE 13 — residual energy lingering on the battlefield ──
 	rising_energy(eground, COL_VIOLET, 4, 150.0)
 	var embers := _spawn_particles(epos, COL_VIOLET, {
 		"amount": 20, "lifetime": 2.0, "one_shot": true,
