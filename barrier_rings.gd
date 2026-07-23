@@ -27,7 +27,7 @@ func _ready() -> void:
 
 ## Generate one ring's worth of asymmetric pieces (no repeated identical
 ## segments — each gets slightly different span/offset/detail).
-func _build_ring(cy: float, rx: float, ry: float, dir: float, rng) -> Dictionary:
+func _build_ring(cy, rx, ry, dir, rng: RandomNumberGenerator) -> Dictionary:
 	var pieces: Array = []
 	# 1. Concentric segmented arcs at a few radii, broken into uneven spans.
 	for r_scale in [0.82, 1.0, 1.16]:
@@ -112,7 +112,7 @@ func _pt(cx: float, cy: float, rx: float, ry: float, ang: float, rs := 1.0) -> V
 func _depth(ang: float) -> float:
 	return lerp(0.45, 1.0, (sin(ang) + 1.0) * 0.5)
 
-func _draw_arc_seg(cx, cy, rx, ry, rot, p: Dictionary, hi: float) -> void:
+func _draw_arc_seg(cx, cy, rx, ry, rot: float, p: Dictionary, hi: float) -> void:
 	var a0: float = p["a0"]
 	var a1: float = p["a1"]
 	var segs := maxi(4, int((a1 - a0) / 0.18))
