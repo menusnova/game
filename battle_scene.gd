@@ -244,8 +244,8 @@ const HAND_H   := 88.0
 const FAN_CENTER_X := 540.0
 const FAN_BASE_Y   := 636.0
 const FAN_ARC_R    := 520.0
-const CARD_W       := 84.0
-const CARD_H       := 110.0
+const CARD_W       := 108.0
+const CARD_H       := 142.0
 # Yu-Gi-Oh-style packed hand: below HAND_FULL_COUNT cards sit near full size
 # with a light overlap; growing the hand beyond that shrinks every card and
 # tightens the overlap automatically (down to PACK_SCALE_MIN / PACK_STEP_MIN),
@@ -1720,7 +1720,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
 	frame_tex.stretch_mode = TextureRect.STRETCH_SCALE
 	# Bigger than the card so frame fully covers all edges
-	const FRAME_PAD := 10.0
+	const FRAME_PAD := 12.0
 	frame_tex.size     = Vector2(CARD_W + FRAME_PAD * 2, CARD_H + FRAME_PAD * 2)
 	frame_tex.position = Vector2(-FRAME_PAD, -FRAME_PAD)
 	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1734,8 +1734,8 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		"reaction": tag_txt = "TIER%d %dAP" % [data.get("tier",1), data.get("ap",1)]
 		"support":  tag_txt = "SUPPORT %dAP" % data.get("ap",1)
 	var tag := Label.new()
-	tag.text = tag_txt; tag.position = Vector2(4, 5)
-	tag.add_theme_font_size_override("font_size", 7)
+	tag.text = tag_txt; tag.position = Vector2(5, 6)
+	tag.add_theme_font_size_override("font_size", 9)
 	tag.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.60))
 	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(tag)
@@ -1744,10 +1744,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	var sym: String = data.get("symbol", data.get("name","?"))
 	var sym_lbl := Label.new()
 	sym_lbl.text = sym
-	sym_lbl.size = Vector2(CARD_W, 50)
-	sym_lbl.position = Vector2(0, 16)
+	sym_lbl.size = Vector2(CARD_W, 64)
+	sym_lbl.position = Vector2(0, 22)
 	sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sym_lbl.add_theme_font_size_override("font_size", 28 if ctype == "element" else 14)
+	sym_lbl.add_theme_font_size_override("font_size", 36 if ctype == "element" else 18)
 	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.9))
 	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(sym_lbl)
@@ -1755,7 +1755,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	# Divider
 	var div := ColorRect.new()
 	div.color = Color(col.r, col.g, col.b, 0.18)
-	div.size  = Vector2(CARD_W - 10, 1); div.position = Vector2(5, 68)
+	div.size  = Vector2(CARD_W - 10, 1); div.position = Vector2(5, 88)
 	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(div)
 
@@ -1765,8 +1765,8 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	# rather than overflow. (A free Label's .size alone doesn't constrain its
 	# width, so a plain ellipsis wasn't trimming it.)
 	var name_clip := Control.new()
-	name_clip.position = Vector2(3, 70)
-	name_clip.size = Vector2(CARD_W - 6, 32)
+	name_clip.position = Vector2(3, 90)
+	name_clip.size = Vector2(CARD_W - 6, 44)
 	name_clip.clip_contents = true
 	name_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(name_clip)
@@ -1775,7 +1775,7 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.add_theme_font_size_override("font_size", 8)
+	name_lbl.add_theme_font_size_override("font_size", 10)
 	name_lbl.add_theme_color_override("font_color", C_TEXT)
 	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
 	name_clip.add_child(name_lbl)
