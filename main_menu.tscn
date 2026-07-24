@@ -446,8 +446,8 @@ text = "UID 700491823"
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 142.0
-offset_right = 128.0
-offset_bottom = 178.0
+offset_right = 160.0
+offset_bottom = 192.0
 mouse_filter = 0
 
 [node name="Bg" type="Panel" parent="MenuItem_Notice"]
@@ -462,10 +462,10 @@ theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Notice" unique_id=414290015]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
 mouse_filter = 2
 texture = ExtResource("8_iconnotice")
 expand_mode = 1
@@ -473,12 +473,12 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="MenuItem_Notice" unique_id=129403983]
 layout_mode = 0
-offset_left = 36.0
-offset_top = 9.0
-offset_right = 92.0
-offset_bottom = 27.0
+offset_left = 52.0
+offset_top = 15.0
+offset_right = 150.0
+offset_bottom = 35.0
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Notice"
 
 [node name="Dot" type="ColorRect" parent="MenuItem_Notice" unique_id=1721981280]
@@ -521,9 +521,9 @@ stretch_mode = 5
 [node name="MenuItem_Missions" type="Control" parent="." unique_id=1648236542]
 anchors_preset = 0
 offset_left = 10.0
-offset_top = 192.0
-offset_right = 128.0
-offset_bottom = 228.0
+offset_top = 202.0
+offset_right = 160.0
+offset_bottom = 252.0
 mouse_filter = 0
 
 [node name="Bg" type="Panel" parent="MenuItem_Missions"]
@@ -538,10 +538,10 @@ theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Missions" unique_id=1209083572]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
 mouse_filter = 2
 texture = ExtResource("9_iconmissions")
 expand_mode = 1
@@ -554,7 +554,7 @@ offset_top = 9.0
 offset_right = 108.0
 offset_bottom = 27.0
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Missions"
 
 [node name="Dot" type="ColorRect" parent="MenuItem_Missions" unique_id=1483586683]
@@ -580,9 +580,9 @@ color = Color(1, 1, 1, 0.0)
 [node name="MenuItem_Event" type="Control" parent="." unique_id=575111913]
 anchors_preset = 0
 offset_left = 10.0
-offset_top = 242.0
-offset_right = 128.0
-offset_bottom = 278.0
+offset_top = 262.0
+offset_right = 160.0
+offset_bottom = 312.0
 mouse_filter = 0
 
 [node name="Bg" type="Panel" parent="MenuItem_Event"]
@@ -597,10 +597,10 @@ theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Event" unique_id=503480489]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
 mouse_filter = 2
 texture = ExtResource("10_iconevent")
 expand_mode = 1
@@ -613,7 +613,7 @@ offset_top = 9.0
 offset_right = 94.0
 offset_bottom = 27.0
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Event"
 
 [node name="LockOverlay" type="Panel" parent="MenuItem_Event" unique_id=1930892657]
@@ -646,9 +646,9 @@ stretch_mode = 5
 [node name="MenuItem_Pass" type="Control" parent="." unique_id=504243076]
 anchors_preset = 0
 offset_left = 10.0
-offset_top = 292.0
-offset_right = 128.0
-offset_bottom = 328.0
+offset_top = 322.0
+offset_right = 160.0
+offset_bottom = 372.0
 mouse_filter = 0
 
 [node name="Bg" type="Panel" parent="MenuItem_Pass"]
@@ -663,10 +663,10 @@ theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Pass" unique_id=2057894540]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
 mouse_filter = 2
 texture = ExtResource("11_iconpass")
 expand_mode = 1
@@ -679,7 +679,7 @@ offset_top = 9.0
 offset_right = 84.0
 offset_bottom = 27.0
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Pass"
 
 [node name="LockOverlay" type="Panel" parent="MenuItem_Pass" unique_id=349557708]
@@ -712,9 +712,9 @@ stretch_mode = 5
 [node name="MenuItem_Shop" type="Control" parent="." unique_id=1051712999]
 anchors_preset = 0
 offset_left = 10.0
-offset_top = 342.0
-offset_right = 128.0
-offset_bottom = 378.0
+offset_top = 382.0
+offset_right = 160.0
+offset_bottom = 432.0
 mouse_filter = 0
 
 [node name="Bg" type="Panel" parent="MenuItem_Shop"]
@@ -729,10 +729,10 @@ theme_override_styles/panel = SubResource("SB_MenuItem")
 
 [node name="Icon" type="TextureRect" parent="MenuItem_Shop" unique_id=1647414986]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
 mouse_filter = 2
 texture = ExtResource("12_iconshop")
 expand_mode = 1
@@ -745,7 +745,7 @@ offset_top = 9.0
 offset_right = 84.0
 offset_bottom = 27.0
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Shop"
 
 [node name="BloomFlash" type="ColorRect" parent="MenuItem_Shop"]
