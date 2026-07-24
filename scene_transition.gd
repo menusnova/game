@@ -7,9 +7,15 @@ const SC_MAIN := "res://main_menu.tscn"
 # quit instead of navigating.
 # The battle scene is handled specially (opens its surrender/continue bar
 # instead of navigating), so it is intentionally NOT listed here.
+# Scenes where the back button does nothing — cutscenes / story so the
+# player can't bail out mid-sequence.
+const NO_BACK := [
+	"res://story_scene.tscn",
+	"res://transition_scene.tscn",
+]
+
 const BACK_TARGETS := {
 	"res://story_map.tscn":             SC_MAIN,
-	"res://story_scene.tscn":           SC_MAIN,
 	"res://profile_scene.tscn":         SC_MAIN,
 	"res://gacha_scene.tscn":           SC_MAIN,
 	"res://shop_scene.tscn":            SC_MAIN,
@@ -75,6 +81,9 @@ func _handle_back() -> void:
 	var path := ""
 	if scene != null:
 		path = scene.scene_file_path
+	if path in NO_BACK:
+		# Cutscene / story: swallow the back press, stay put.
+		return
 	if path == "res://battle_scene.tscn":
 		# In battle, back toggles the surrender / continue bar rather than
 		# leaving the fight.
