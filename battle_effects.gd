@@ -469,9 +469,12 @@ func break_shield() -> void:
 ## ribbons, travelling current, inner chest radiance, motes, residual) grows
 ## from the same upward flow. API/logic unchanged — visuals only.
 func play_aether_pulse() -> void:
-	var feet := player_pos + Vector2(4, 78)
-	var chest := player_pos + Vector2(0, -6)
-	var head := player_pos + Vector2(0, -78)
+	# player_pos is the sprite centre; drop the whole aura down so it awakens at
+	# the character's feet instead of the torso.
+	var drop := Vector2(0, 70)
+	var feet := player_pos + Vector2(4, 78) + drop
+	var chest := player_pos + Vector2(0, -6) + drop
+	var head := player_pos + Vector2(0, -78) + drop
 
 	cutscene_backdrop_in(0.2, 0.22)
 
