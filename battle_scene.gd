@@ -206,6 +206,7 @@ var _back_menu_open:   bool  = false
 var _deck_cnt_lbl:  Label   = null
 var _disc_cnt_lbl:  Label   = null
 var _info_panel:    Panel   = null
+var _info_backdrop: Control = null
 var _card_nodes:    Array[Control] = []
 var _press_card_id: String  = ""
 var _press_start:   float   = -1.0
@@ -1211,16 +1212,32 @@ func _set_ult_glow(on: bool) -> void:
 
 # ── Card info panel (slide in from right on hold) ─────────
 func _build_card_info_panel() -> void:
+	# Full-screen catcher shown once the info panel is open: a tap anywhere
+	# outside the panel frame closes it. Hidden until then. Sits above the
+	# cards but below the panel itself.
+	_info_backdrop = Control.new()
+	_info_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_info_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_info_backdrop.z_index = 110
+	_info_backdrop.visible = false
+	_info_backdrop.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			_hide_card_info()
+	)
+	add_child(_info_backdrop)
+
 	_info_panel = Panel.new()
 	_info_panel.size     = Vector2(320, 400)
 	_info_panel.position = Vector2(1160, 56)  # off-screen
 	_info_panel.add_theme_stylebox_override("panel",
 		_flat(Color(0.05, 0.07, 0.16, 0.97), Color(0.35, 0.62, 1.0, 0.35), 12, 1))
-	_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Panel absorbs taps inside the frame so tapping the description itself
+	# does not close it — only taps outside (on the backdrop) close it.
+	_info_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	# Hard safety net: nothing drawn inside can ever spill past the rounded
 	# frame, no matter how long a label's text is.
 	_info_panel.clip_contents = true
-	_info_panel.z_index = 20
+	_info_panel.z_index = 120
 	add_child(_info_panel)
 
 func _show_card_info(id: String) -> void:
@@ -1437,6 +1454,9 @@ func _show_card_info(id: String) -> void:
 
 func _hide_card_info() -> void:
 	if not is_instance_valid(_info_panel): return
+	if is_instance_valid(_info_backdrop):
+		_info_backdrop.visible = false
+	_info_shown = false
 	var t := _info_panel.create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 	t.tween_property(_info_panel, "position:x", 1160.0, 0.15)
 
@@ -1815,9 +1835,13 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 		else:
 			var held := Time.get_ticks_msec() / 1000.0 - _press_start
 			_press_start = -1.0
-			_hide_card_info()
-			_info_shown = false
-			if held < HOLD_THRESH and _player_turn and not _battle_over:
+			if _info_shown:
+				# Long-press opened the description — keep it open after the
+				# finger lifts. Arm the backdrop so the next tap outside the
+				# frame closes it. Don't treat this as a play tap.
+				if is_instance_valid(_info_backdrop):
+					_info_backdrop.visible = true
+			elif held < HOLD_THRESH and _player_turn and not _battle_over:
 				_on_card_tap(id, idx)
 	)
 	# Recover AP card is unplayable while AP is full — dim it so it reads as
