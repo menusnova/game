@@ -1820,6 +1820,10 @@ func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Cont
 			if held < HOLD_THRESH and _player_turn and not _battle_over:
 				_on_card_tap(id, idx)
 	)
+	# Recover AP card is unplayable while AP is full — dim it so it reads as
+	# disabled (the tap itself is blocked in _use_support_card).
+	if id == "RecoverAP" and _ap >= MAX_AP:
+		panel.modulate = Color(0.5, 0.52, 0.58, 0.7)
 	return panel
 
 # ════════════════════════════════════════════════════════════
@@ -1969,6 +1973,9 @@ func _use_reaction_card(id: String) -> void:
 func _use_support_card(id: String) -> void:
 	var data: Dictionary = CARD_DB.get(id, {})
 	var cost: int = data.get("ap", 1)
+	# Recover AP is pointless (and blocked) while AP is already full.
+	if id == "RecoverAP" and _ap >= MAX_AP:
+		_msg("❌ AP เต็มอยู่แล้ว"); return
 	if _ap < cost:
 		_msg("❌ AP ไม่พอ (ต้องการ %d AP)" % cost); return
 
