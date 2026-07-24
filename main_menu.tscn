@@ -116,8 +116,8 @@ border_width_bottom = 1
 border_color = Color(0.3, 0.5, 0.9, 0.25)
 corner_radius_top_left = 22
 corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
 
 
 [sub_resource type="StyleBoxFlat" id="SB_LockOverlay"]
@@ -1296,10 +1296,10 @@ text = "ระบบแชทยังไม่เปิดให้บริก
 [node name="NavBar" type="Panel" parent="." unique_id=729974613]
 layout_mode = 0
 z_index = 2
-offset_left = 12.0
+offset_left = 0.0
 offset_top = 572.0
-offset_right = 1140.0
-offset_bottom = 646.0
+offset_right = 1152.0
+offset_bottom = 648.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NavPill")
 
