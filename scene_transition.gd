@@ -5,8 +5,9 @@ const SC_MAIN := "res://main_menu.tscn"
 # Where the Android back button should go from each scene. Scenes not
 # listed here fall back to the main menu; the main menu itself asks to
 # quit instead of navigating.
+# The battle scene is handled specially (opens its surrender/continue bar
+# instead of navigating), so it is intentionally NOT listed here.
 const BACK_TARGETS := {
-	"res://battle_scene.tscn":          SC_MAIN,
 	"res://story_map.tscn":             SC_MAIN,
 	"res://story_scene.tscn":           SC_MAIN,
 	"res://profile_scene.tscn":         SC_MAIN,
@@ -74,7 +75,12 @@ func _handle_back() -> void:
 	var path := ""
 	if scene != null:
 		path = scene.scene_file_path
-	if path == SC_MAIN:
+	if path == "res://battle_scene.tscn":
+		# In battle, back toggles the surrender / continue bar rather than
+		# leaving the fight.
+		if scene != null and scene.has_method("_toggle_back_menu"):
+			scene.call("_toggle_back_menu")
+	elif path == SC_MAIN:
 		_show_quit_ask()
 	elif BACK_TARGETS.has(path):
 		fade_to(BACK_TARGETS[path])
