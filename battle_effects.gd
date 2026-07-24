@@ -1117,9 +1117,9 @@ func _rising_veins(feet: Vector2, head: Vector2, col: Color) -> void:
 ## A flowing wind sheet peeling forward from `pos` along the punch (+x): a
 ## crescent of compressed air that widens, stretches forward and dissolves.
 ## `voff` offsets/tilts it so the 2-3 sheets differ and never mirror.
-func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
+func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float, scl := 1.0) -> void:
 	var ln := Line2D.new()
-	ln.width = randf_range(3.0, 6.0)
+	ln.width = randf_range(3.0, 6.0) * scl
 	ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	ln.end_cap_mode = Line2D.LINE_CAP_ROUND
 	var grad := Gradient.new()
@@ -1127,7 +1127,7 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 	grad.add_point(0.5, Color(1, 1, 1, 0.8))
 	grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
 	ln.gradient = grad
-	var size := randf_range(30.0, 52.0)
+	var size := randf_range(30.0, 52.0) * scl
 	var curv := randf_range(0.5, 0.9)
 	var segs := 10
 	var pts := PackedVector2Array()
@@ -1145,8 +1145,8 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 	wmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	ln.material = wmat
 	add_child(ln)
-	var travel := pos + Vector2(randf_range(60.0, 100.0), voff * 20.0)
-	var dur := randf_range(0.28, 0.42)
+	var travel := pos + Vector2(randf_range(60.0, 100.0) * scl, voff * 20.0 * scl)
+	var dur := randf_range(0.28, 0.42) * (1.0 + (scl - 1.0) * 0.3)
 	var t := ln.create_tween()
 	t.tween_property(ln, "modulate:a", randf_range(0.5, 0.85), 0.05).set_delay(delay)
 	t.parallel().tween_property(ln, "position", travel, dur)\
@@ -1157,92 +1157,142 @@ func _wind_sheet(pos: Vector2, col: Color, voff: float, delay: float) -> void:
 	t.tween_property(ln, "modulate:a", 0.0, 0.18)
 	t.tween_callback(ln.queue_free)
 
-## One directional pressure wave for a melee hit at `pos`: compressed air
-## unfolding along the punch (+x). A bright core that stays dense then
-## stretches forward, 3 flowing wind sheets peeling off it, a compact white
-## flash and a few forward fragments. No circle, no radial burst, no slash —
-## one continuous pressure form.
+## A large pressure surface at `pos`: a broken, organically deformed arc that
+## expands outward while wrapping the target (partial span, slight vertical
+## squash → not a perfect circle), then fades. Big-scale shockwave building
+## block. Untyped numeric params keep the signature short.
+func _pressure_surface(pos, col, rad, a0, span, dur, delay, bright) -> void:
+	var ln := Line2D.new()
+	ln.width = rad * 0.02 + 1.8
+	ln.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	ln.end_cap_mode = Line2D.LINE_CAP_ROUND
+	var grad := Gradient.new()
+	grad.set_color(0, Color(col.r, col.g, col.b, 0.0))
+	grad.add_point(0.5, Color(1, 1, 1, 0.85))
+	grad.set_color(1, Color(col.r, col.g, col.b, 0.0))
+	ln.gradient = grad
+	var segs := 22
+	var pts := PackedVector2Array()
+	for i in segs + 1:
+		var a: float = a0 + span * (float(i) / segs)
+		var r: float = rad * (1.0 + randf_range(-0.1, 0.1))   # organic deform
+		pts.append(Vector2(cos(a) * r, sin(a) * r * 0.82))    # squashed → oval
+	ln.points = pts
+	ln.position = pos
+	ln.scale = Vector2(0.35, 0.35)
+	ln.modulate = Color(1, 1, 1, 0.0)
+	ln.z_index = 15
+	var m := CanvasItemMaterial.new()
+	m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	ln.material = m
+	add_child(ln)
+	var t := ln.create_tween()
+	t.tween_property(ln, "modulate:a", bright, 0.06).set_delay(delay)
+	t.parallel().tween_property(ln, "scale", Vector2.ONE, dur)\
+		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	t.tween_property(ln, "modulate:a", 0.0, dur * 0.5)
+	t.tween_callback(ln.queue_free)
+
+## Normal Attack — one large atmospheric pressure phenomenon (~40-60% of the
+## field around the enemy). Air compresses inward, a dense core stretches
+## forward, several layered broken pressure surfaces bloom and wrap the enemy,
+## large wind sheets peel off, segmented divine geometry + veins add internal
+## detail, a big air-distortion haze swells, and long residual wind trails off.
+## Directional (+x punch) — nothing expands as a perfect circle.
 func _pressure_impact(pos: Vector2, col: Color) -> void:
-	var fwd := Vector2(1, 0)   # player stands left of the enemy → punch goes +x
+	var fwd := Vector2(1, 0)
 
-	# ── ATMOSPHERIC COMPRESSION — a beat before release the surrounding air
-	# is pulled inward: a few streaks snap toward the point, then vanish ──
-	for ci in 5:
-		var ang := TAU * (float(ci) / 5) + randf_range(-0.3, 0.3)
+	# FRAME 1 — ATMOSPHERIC COMPRESSION: air dragged inward from a wide radius.
+	for ci in 12:
+		var ang := TAU * (float(ci) / 12) + randf_range(-0.25, 0.25)
 		var d := Vector2(cos(ang), sin(ang))
-		var frag := Sprite2D.new()
-		frag.texture = _tex_streak
-		frag.position = pos + d * randf_range(60.0, 92.0)
-		frag.rotation = ang
-		frag.scale = Vector2(0.5, 0.3)
-		frag.modulate = Color(col.r, col.g, col.b, 0.0)
-		frag.z_index = 16
-		add_child(frag)
-		var ft := frag.create_tween()
-		ft.tween_property(frag, "modulate:a", 0.7, 0.04)
-		ft.parallel().tween_property(frag, "position", pos + d * 14.0, 0.08)\
+		var strk := Sprite2D.new()
+		strk.texture = _tex_streak
+		strk.position = pos + d * randf_range(180.0, 300.0)
+		strk.rotation = ang
+		strk.scale = Vector2(1.3, 0.5)
+		strk.modulate = Color(col.r, col.g, col.b, 0.0)
+		strk.z_index = 15
+		add_child(strk)
+		var stt := strk.create_tween()
+		stt.tween_property(strk, "modulate:a", 0.7, 0.05)
+		stt.parallel().tween_property(strk, "position", pos + d * 55.0, 0.12)\
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		ft.tween_property(frag, "modulate:a", 0.0, 0.06)
-		ft.tween_callback(frag.queue_free)
+		stt.tween_property(strk, "modulate:a", 0.0, 0.06)
+		stt.tween_callback(strk.queue_free)
 
-	# ── DENSE IMPACT CORE — layered: a wide soft body under a bright inner
-	# core, both dense and stretching forward (never a circle) ──
+	# FRAME 2 — DENSE CORE: a wide soft body under a bright inner core, both
+	# large and stretching forward.
 	for layer_i in 2:
 		var wide := layer_i == 0
 		var core := Sprite2D.new()
 		core.texture = _tex_dot
 		core.position = pos
-		core.scale = Vector2(0.9, 2.0) if wide else Vector2(0.5, 1.1)
-		core.modulate = Color(col.r, col.g, col.b, 0.0) if wide else Color(1.8, 1.8, 1.9, 0.0)
-		core.z_index = 16 if wide else 18
+		core.scale = Vector2(1.4, 3.2) if wide else Vector2(0.8, 1.8)
+		core.modulate = Color(col.r, col.g, col.b, 0.0) if wide else Color(1.9, 1.9, 2.0, 0.0)
+		core.z_index = 16 if wide else 17
+		var cm := CanvasItemMaterial.new()
+		cm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		core.material = cm
 		add_child(core)
-		var peak_a := 0.7 if wide else 1.0
-		var end_scale := Vector2(3.4, 1.1) if wide else Vector2(2.4, 0.7)
-		var fwd_dist := 48.0 if wide else 32.0
+		var peak_a := 0.8 if wide else 1.0
+		var end_s := Vector2(6.5, 2.0) if wide else Vector2(4.4, 1.2)
 		var ct := core.create_tween()
-		ct.tween_property(core, "modulate:a", peak_a, 0.03).set_delay(0.06)
-		ct.parallel().tween_property(core, "scale", end_scale, 0.13)\
+		ct.tween_property(core, "modulate:a", peak_a, 0.04).set_delay(0.08)
+		ct.parallel().tween_property(core, "scale", end_s, 0.16)\
 			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-		ct.parallel().tween_property(core, "position", pos + fwd * fwd_dist, 0.15)
-		ct.tween_property(core, "modulate:a", 0.0, 0.16)
+		ct.parallel().tween_property(core, "position", pos + fwd * 70.0, 0.18)
+		ct.tween_property(core, "modulate:a", 0.0, 0.2)
 		ct.tween_callback(core.queue_free)
 
-	# ── SEGMENTED DIVINE GEOMETRY — the barrier's own language, layered in ──
-	_divine_geometry(pos, 0.85, 0.85)
+	# FRAME 3 — LAYERED PRESSURE SURFACES: broken arcs that bloom outward and
+	# wrap the enemy (opening biased forward, staggered speed/opacity).
+	var ba := -1.0
+	_pressure_surface(pos, col, 150.0, ba + randf_range(-0.3, 0.3), 3.4, 0.36, 0.08, 0.85)
+	_pressure_surface(pos, Color(1, 1, 1, 1), 120.0, ba + randf_range(-0.3, 0.3), 2.6, 0.30, 0.10, 0.7)
+	_pressure_surface(pos, col, 210.0, ba + randf_range(-0.4, 0.4), 3.8, 0.50, 0.13, 0.6)
+	_pressure_surface(pos, col, 275.0, ba + randf_range(-0.4, 0.4), 4.2, 0.60, 0.17, 0.45)
 
-	# ── WIND SHEETS — five flowing pressure surfaces peeling forward ──
-	for i in 5:
-		_wind_sheet(pos, col, (float(i) - 2.0) * 0.35, 0.06 + i * 0.02)
+	# FRAME 3b — WIND SHEETS: large, peeling off with different timing.
+	for i in 6:
+		_wind_sheet(pos, col, (float(i) - 2.5) * 0.4, 0.1 + i * 0.03, 2.6)
 
-	# ── FINE FRAGMENTS + a small compact flash (no giant white screen) ──
-	_screen_color_flash(hit_flash, Color(1, 1, 1, 0.1), 0.05)
-	var frags := _spawn_particles(pos, Color(1, 1, 1, 1), {
-		"amount": 9, "lifetime": 0.32, "one_shot": true, "explosive": true,
-		"dir": Vector3(1, 0, 0), "spread": 50.0, "vmin": 240.0, "vmax": 500.0,
-		"scale_min": 0.4, "scale_max": 0.9, "texture": _tex_streak,
-	})
-	frags.z_index = 17
-	_cleanup(frags, 0.5)
+	# FRAME 4 — INTERNAL DETAIL: large segmented divine geometry + energy veins.
+	_divine_geometry(pos, 2.2, 0.9)
+	_rising_veins(pos + Vector2(0, 60), pos + Vector2(0, -120), col)
 
-	# ── SECONDARY BLOOM PULSE — a delayed softer forward swell for weight ──
-	var pulse := Sprite2D.new()
-	pulse.texture = _tex_dot
-	pulse.position = pos + fwd * 20.0
-	pulse.scale = Vector2(0.8, 1.4)
-	pulse.modulate = Color(col.r, col.g, col.b, 0.0)
-	pulse.z_index = 15
-	add_child(pulse)
-	var pt := pulse.create_tween()
-	pt.tween_property(pulse, "modulate:a", 0.5, 0.06).set_delay(0.18)
-	pt.parallel().tween_property(pulse, "scale", Vector2(2.6, 0.9), 0.22)\
+	# FRAME 5 — LARGE AIR DISTORTION: a big faint haze swelling over the field.
+	var haze := Sprite2D.new()
+	haze.texture = _tex_dot
+	haze.position = pos
+	haze.scale = Vector2(4.0, 3.4)
+	haze.modulate = Color(col.r, col.g, col.b, 0.0)
+	var hm := CanvasItemMaterial.new()
+	hm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	haze.material = hm
+	haze.z_index = 11
+	add_child(haze)
+	var ht := haze.create_tween()
+	ht.tween_property(haze, "modulate:a", 0.15, 0.1).set_delay(0.08)
+	ht.parallel().tween_property(haze, "scale", Vector2(11.0, 8.0), 0.5)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	pt.parallel().tween_property(pulse, "position", pos + fwd * 70.0, 0.22)
-	pt.tween_property(pulse, "modulate:a", 0.0, 0.2)
-	pt.tween_callback(pulse.queue_free)
+	ht.tween_property(haze, "modulate:a", 0.0, 0.4)
+	ht.tween_callback(haze.queue_free)
 
-	# ── RESIDUAL FLOWING WIND — faint sheets drift forward late, then fade ──
-	_wind_sheet(pos + fwd * 30.0, col, -0.2, 0.24)
-	_wind_sheet(pos + fwd * 30.0, col, 0.25, 0.28)
+	# Fine forward fragments.
+	var frags := _spawn_particles(pos, Color(1, 1, 1, 1), {
+		"amount": 12, "lifetime": 0.4, "one_shot": true, "explosive": true,
+		"dir": Vector3(1, 0, 0), "spread": 60.0, "vmin": 260.0, "vmax": 560.0,
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
+	})
+	frags.z_index = 16
+	_cleanup(frags, 0.6)
+
+	# FRAME 6 — LONG RESIDUAL WIND: faint large sheets drift forward late.
+	for i in 4:
+		_wind_sheet(pos + fwd * 40.0, col, (float(i) - 1.5) * 0.4, 0.3 + i * 0.06, 2.2)
+
+
 
 
 
