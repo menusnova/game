@@ -1257,9 +1257,9 @@ stretch_mode = 5
 
 [node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
 layout_mode = 0
-offset_top = 556.0
+offset_top = 520.0
 offset_right = 362.0
-offset_bottom = 584.0
+offset_bottom = 548.0
 mouse_filter = 2
 color = Color(0.01, 0.01, 0.04, 0.96)
 
@@ -1296,22 +1296,22 @@ text = "ระบบแชทยังไม่เปิดให้บริก
 layout_mode = 0
 z_index = 2
 offset_left = 12.0
-offset_top = 592.0
+offset_top = 574.0
 offset_right = 1140.0
-offset_bottom = 644.0
+offset_bottom = 646.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("SB_NavPill")
 
 [node name="Nav0_Alchemist" type="Control" parent="NavBar" unique_id=152951613]
 anchors_preset = 0
 offset_right = 80.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 
 [node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=1479650524]
 visible = false
 layout_mode = 0
 offset_right = 80.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 mouse_filter = 2
 color = Color(0.22, 0.72, 1, 0.12)
 
@@ -1335,10 +1335,10 @@ color = Color(1, 0.3, 0.3, 1)
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav0_Alchemist" unique_id=867149864]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("17_navchar")
 expand_mode = 1
@@ -1346,11 +1346,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav0_Alchemist" unique_id=1908789204]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Alchemist"
 horizontal_alignment = 1
 
@@ -1358,7 +1358,7 @@ horizontal_alignment = 1
 anchors_preset = 0
 offset_left = 80.0
 offset_right = 160.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 
 [node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Lab" unique_id=850425920]
 visible = false
@@ -1372,10 +1372,10 @@ color = Color(1, 0.3, 0.3, 1)
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav2_Lab" unique_id=1254535148]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("18_navlab")
 expand_mode = 1
@@ -1383,11 +1383,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav2_Lab" unique_id=1419121623]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Lab"
 horizontal_alignment = 1
 
@@ -1395,14 +1395,14 @@ horizontal_alignment = 1
 anchors_preset = 0
 offset_left = 240.0
 offset_right = 320.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 mouse_filter = 0
 
 [node name="ActiveBg" type="ColorRect" parent="NavBar/Nav_Gacha" unique_id=391827466]
 visible = false
 layout_mode = 0
 offset_right = 80.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 mouse_filter = 2
 color = Color(0.22, 0.72, 1, 0.12)
 
@@ -1416,10 +1416,10 @@ color = Color(0.22, 0.72, 1, 1)
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav_Gacha" unique_id=391827468]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("19_navgacha")
 expand_mode = 1
@@ -1427,11 +1427,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav_Gacha" unique_id=391827469]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Void Gate"
 horizontal_alignment = 1
 
@@ -1439,14 +1439,14 @@ horizontal_alignment = 1
 anchors_preset = 0
 offset_left = 320.0
 offset_right = 400.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav3_Inventory" unique_id=968096375]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("20_navinv")
 expand_mode = 1
@@ -1454,11 +1454,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav3_Inventory" unique_id=2023141049]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Inventory"
 horizontal_alignment = 1
 
@@ -1497,14 +1497,14 @@ stretch_mode = 5
 anchors_preset = 0
 offset_left = 160.0
 offset_right = 240.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav4_Database" unique_id=794539360]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("21_navach")
 expand_mode = 1
@@ -1512,11 +1512,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav4_Database" unique_id=1555726201]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Achievement"
 horizontal_alignment = 1
 
@@ -1524,14 +1524,14 @@ horizontal_alignment = 1
 anchors_preset = 0
 offset_left = 400.0
 offset_right = 480.0
-offset_bottom = 52.0
+offset_bottom = 72.0
 
 [node name="Icon" type="TextureRect" parent="NavBar/Nav5_Guild" unique_id=1652080278]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 3.0
-offset_right = 56.0
-offset_bottom = 35.0
+offset_left = 18.0
+offset_top = 7.0
+offset_right = 62.0
+offset_bottom = 51.0
 mouse_filter = 2
 texture = ExtResource("22_navguild")
 expand_mode = 1
@@ -1539,11 +1539,11 @@ stretch_mode = 5
 
 [node name="Text" type="Label" parent="NavBar/Nav5_Guild" unique_id=1202741847]
 layout_mode = 0
-offset_top = 36.0
+offset_top = 52.0
 offset_right = 80.0
-offset_bottom = 50.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Guild"
 horizontal_alignment = 1
 

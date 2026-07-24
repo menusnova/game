@@ -1359,16 +1359,17 @@ func _show_card_info(id: String) -> void:
 			var lab_key: String = RESULT_TO_LAB_KEY.get(result, "")
 			var discovered: bool = lab_key != "" and PlayerData.discovered_compounds.has(lab_key)
 			var combo_lbl := Label.new()
-			var other_name: String = CARD_DB.get(other, {}).get("name", other)
+			# Partner shown by symbol/abbreviation (e.g. "O", "S", "K"), not the
+			# full element name, to keep each row short on the narrow panel.
+			var other_sym: String = CARD_DB.get(other, {}).get("symbol", other)
+			var result_name: String = CARD_DB.get(result, {}).get("name", result)
 			if discovered:
-				var result_name: String = CARD_DB.get(result, {}).get("name", result)
-				combo_lbl.text = "• %s + %s → %s" % [sym, other_name, result_name]
+				combo_lbl.text = "• %s + %s → %s" % [sym, other_sym, result_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 			elif _is_elem_unlocked(other):
-				# Compound not mixed yet, but the partner element is unlocked —
-				# show which element it pairs with; the result stays a mystery
-				# until it's discovered at the Lab.
-				combo_lbl.text = "• %s + %s → ???" % [sym, other_name]
+				# Partner element is unlocked — reveal which card the combo makes
+				# so the player knows what ability to aim for at the Lab.
+				combo_lbl.text = "• %s + %s → %s" % [sym, other_sym, result_name]
 				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
 			else:
 				# Partner element itself not unlocked yet — full mystery.
