@@ -89,6 +89,16 @@ const RESULT_TO_LAB_KEY := {
 	"Na3N": "sodium_nitride", "CaC2": "calcium_carbide",
 }
 
+# Reaction-card id -> Thai name, so the combo hint can show "ไทย (English)".
+const RESULT_TH := {
+	"Water": "น้ำ", "Salt": "เกลือ", "Rust": "สนิม",
+	"CO2": "คาร์บอนไดออกไซด์", "NO": "ไนตริกออกไซด์", "SO2": "ซัลเฟอร์ไดออกไซด์",
+	"CaO": "แคลเซียมออกไซด์", "MgO": "แมกนีเซียมออกไซด์", "K2O": "โพแทสเซียมออกไซด์",
+	"HCl": "กรดเกลือ", "FeS": "เหล็กซัลไฟด์", "NaH": "โซเดียมไฮไดรด์",
+	"CH4": "มีเทน", "H2S": "ไฮโดรเจนซัลไฟด์", "CaH2": "แคลเซียมไฮไดรด์",
+	"Na3N": "โซเดียมไนไตรด์", "CaC2": "แคลเซียมคาร์ไบด์",
+}
+
 # ── Character ─────────────────────────────────────────────
 const CHARACTER := {
 	"name":          "Lyra",
@@ -1354,27 +1364,29 @@ func _show_card_info(id: String) -> void:
 		for key in RECIPES.keys():
 			var parts: PackedStringArray = key.split("+")
 			if id not in parts: continue
+			# Partner is the other symbol/abbreviation in the recipe (e.g. "O").
 			var other: String = parts[0] if parts[1] == id else parts[1]
 			var result: String = RECIPES[key]
-			var lab_key: String = RESULT_TO_LAB_KEY.get(result, "")
-			var discovered: bool = lab_key != "" and PlayerData.discovered_compounds.has(lab_key)
-			var combo_lbl := Label.new()
-			# Partner shown by symbol/abbreviation (e.g. "O", "S", "K"), not the
-			# full element name, to keep each row short on the narrow panel.
-			var other_sym: String = CARD_DB.get(other, {}).get("symbol", other)
-			var result_name: String = CARD_DB.get(result, {}).get("name", result)
-			if discovered:
-				combo_lbl.text = "• %s + %s → %s" % [sym, other_sym, result_name]
-				combo_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
-			elif _is_elem_unlocked(other):
-				# Partner element is unlocked — reveal which card the combo makes
-				# so the player knows what ability to aim for at the Lab.
-				combo_lbl.text = "• %s + %s → %s" % [sym, other_sym, result_name]
-				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
+			var result_th: String = RESULT_TH.get(result, "")
+			var result_en: String = CARD_DB.get(result, {}).get("name", result)
+			var result_disp: String = result_en
+			if result_th != "":
+				result_disp = "%s (%s)" % [result_th, result_en]
+			var ability: String = CARD_DB.get(result, {}).get("desc", "")
+			# Name line: partner symbol + result "Thai (English)".
+			var name_text: String
+			var name_col: Color
+			if _is_elem_unlocked(other):
+				name_text = "• %s + %s → %s" % [sym, other, result_disp]
+				name_col = Color(0.4, 0.9, 0.65, 0.9)
 			else:
 				# Partner element itself not unlocked yet — full mystery.
-				combo_lbl.text = "• %s + ??? → ???" % [sym]
-				combo_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68, 0.75))
+				name_text = "• %s + ??? → ???" % [sym]
+				name_col = Color(0.55, 0.58, 0.68, 0.75)
+				ability = ""
+			var combo_lbl := Label.new()
+			combo_lbl.text = name_text
+			combo_lbl.add_theme_color_override("font_color", name_col)
 			combo_lbl.position = Vector2(16, cy)
 			combo_lbl.custom_minimum_size = Vector2(288, 0)
 			combo_lbl.size = Vector2(288, 16)
@@ -1382,7 +1394,21 @@ func _show_card_info(id: String) -> void:
 			combo_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			combo_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_info_panel.add_child(combo_lbl)
-			cy += 18.0
+			cy += 15.0
+			# Ability line underneath the name.
+			if ability != "":
+				var ab_lbl := Label.new()
+				ab_lbl.text = "     " + ability
+				ab_lbl.add_theme_color_override("font_color", Color(0.72, 0.80, 0.95, 0.7))
+				ab_lbl.position = Vector2(16, cy)
+				ab_lbl.custom_minimum_size = Vector2(288, 0)
+				ab_lbl.size = Vector2(288, 14)
+				ab_lbl.add_theme_font_size_override("font_size", 9)
+				ab_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				ab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				_info_panel.add_child(ab_lbl)
+				cy += 14.0
+			cy += 3.0
 
 	# AP cost
 	if data.has("ap"):

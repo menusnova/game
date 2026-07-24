@@ -304,6 +304,19 @@ const C_GOLD   := Color(1.00, 0.82, 0.25, 1.0)
 const C_DONE   := Color(0.30, 0.85, 0.55, 1.0)
 const C_LOCK   := Color(0.25, 0.28, 0.38, 1.0)
 
+# Reaction key (from ReactionDB) -> the codex compound card id, used to look
+# up the result's Thai/English name and its in-game ability for combo rows.
+const CMP_ELEM_ID := {
+	"water": "Water", "salt": "Salt", "rust": "Rust",
+	"carbon_dioxide": "CO2", "nitric_oxide": "NitricOxide",
+	"sulfur_dioxide": "SO2", "calcium_oxide": "CaO",
+	"magnesium_oxide": "MgO", "potassium_oxide": "K2O",
+	"hydrochloric_acid": "HCl", "iron_sulfide": "FeS",
+	"sodium_hydride": "NaH", "methane": "CH4",
+	"hydrogen_sulfide": "H2S", "calcium_hydride": "CaH2",
+	"sodium_nitride": "Na3N", "calcium_carbide": "CaC2",
+}
+
 var _tab := 0  # 0=elements (only tab)
 
 # Compound keys already shown in elements tab — skip in compounds tab
@@ -909,8 +922,9 @@ func _open_element_detail(elem: Dictionary) -> void:
 
 	var ry := 0.0
 	for r in elem["recipes"]:
+		var cparts: Array = _combo_line(elem["symbol"], r)
 		var rl := Label.new()
-		rl.text = "• " + r
+		rl.text = "• " + str(cparts[0])
 		rl.position = Vector2(0, ry)
 		rl.size = Vector2(IW, 18)
 		rl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -918,7 +932,20 @@ func _open_element_detail(elem: Dictionary) -> void:
 		rl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
 		rl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		rec_clip.add_child(rl)
-		ry += 20
+		ry += 18
+		var ability: String = str(cparts[1])
+		if ability != "":
+			var al := Label.new()
+			al.text = "     " + ability
+			al.position = Vector2(0, ry)
+			al.size = Vector2(IW, 16)
+			al.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			al.add_theme_font_size_override("font_size", 10)
+			al.add_theme_color_override("font_color", Color(0.75, 0.82, 0.95, 0.7))
+			al.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			rec_clip.add_child(al)
+			ry += 16
+		ry += 4
 
 	# Close button
 	var close_btn := Button.new()
@@ -1062,6 +1089,44 @@ func _section_label(txt: String) -> Control:
 	wrap.add_child(lbl)
 	return wrap
 
+
+func _elem_by_id(eid: String) -> Dictionary:
+	for e in ELEMENTS:
+		if e.get("id", "") == eid:
+			return e
+	return {}
+
+## Turn a recipe string into [name_line, ability]. Combo rows ("X + Y → ...")
+## become "X + Y → ไทย (English)" plus the result's in-game ability; ability-only
+## rows (compound cards) pass through unchanged with no ability sub-line.
+func _combo_line(elem_sym: String, r: String) -> Array:
+	var arrow := r.find("→")
+	if arrow == -1:
+		return [r, ""]
+	var left := r.substr(0, arrow).strip_edges()
+	var lparts := left.split("+")
+	var partner := lparts[1].strip_edges() if lparts.size() > 1 else ""
+	var key: String = ReactionDB.get_reaction(elem_sym, partner)
+	# Thai name defaults to whatever the recipe string already had (minus any
+	# "(...)" tail); overridden by the compound card's canonical name below.
+	var th := r.substr(arrow + 1).strip_edges()
+	var paren := th.find("(")
+	if paren != -1:
+		th = th.substr(0, paren).strip_edges()
+	var en := ""
+	var ability := ""
+	if CMP_ELEM_ID.has(key):
+		var ce := _elem_by_id(CMP_ELEM_ID[key])
+		if ce.get("name_th", "") != "":
+			th = ce["name_th"]
+		en = ce.get("name_en", "")
+		var recs: Array = ce.get("recipes", [])
+		if recs.size() > 0:
+			ability = recs[0]
+	else:
+		en = ReactionDB.get_compound(key).get("name", "")
+	var disp := th if en == "" else "%s (%s)" % [th, en]
+	return ["%s + %s → %s" % [elem_sym, partner, disp], ability]
 
 func _go_back() -> void:
 	SceneTransition.fade_to(SC_MAIN)
