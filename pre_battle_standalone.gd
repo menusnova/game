@@ -563,6 +563,9 @@ func _build_edit_panel() -> void:
 	_edit_panel.position = Vector2(-EDIT_W, 0)
 	_edit_panel.size = Vector2(EDIT_W, SH)
 	_edit_panel.visible = false
+	# Above the back button (z 50) so the sliding panel covers it instead of
+	# the back button poking through on top.
+	_edit_panel.z_index = 60
 	add_child(_edit_panel)
 
 	var bg := Panel.new()
