@@ -557,152 +557,154 @@ func _build_void_shield_orb() -> void:
 # ════════════════════════════════════════════════════════════
 #  4. ABSOLUTE ZERO FORMULA  (ultimate)
 # ════════════════════════════════════════════════════════════
-## Absolute Zero Formula — one living energy form (a blooming divine flame)
-## erupting from beneath the enemy. Every layer — glow, ribbons, wind, spark,
-## impact, residual — shares the same upward organic flow. No halo, rings,
-## independent shockwaves, laser or decorative particles: just one flame that
-## seeds, gathers, blooms, peaks and dissipates. ~1.6s.
+## Absolute Zero Formula — one gigantic living phenomenon that overwhelms the
+## field (~80% of the battlefield). Three staged impacts: (1) atmospheric
+## compression drags the whole field inward, (2) a divine bloom of many
+## layered translucent energy sheets/ribbons with segmented geometry moving
+## through it, (3) a massive multi-wave pressure release with screen-sweeping
+## wind and field-wide distortion — then long residual energy. ~2.4s.
 func play_ultimate() -> void:
 	var epos := enemy_pos
-	var eground := enemy_pos + Vector2(0, 46)   # the floor beneath the enemy
+	var eground := enemy_pos + Vector2(0, 60)
+	var addm := CanvasItemMaterial.new()
+	addm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 
-	# ── SEED — the field quiets; a soft ember gathers beneath the enemy and
-	# fine motes begin drifting upward (the flow the whole form inherits) ──
-	cutscene_backdrop_in(0.3, 0.2)
+	# ══ STAGE 1 — ATMOSPHERIC COMPRESSION (the field is dragged inward) ══
+	cutscene_backdrop_in(0.42, 0.24)
 	var seed_glow := Sprite2D.new()
 	seed_glow.texture = _tex_dot
 	seed_glow.position = eground
-	seed_glow.scale = Vector2(2.4, 1.0)
+	seed_glow.scale = Vector2(4.0, 1.6)
 	seed_glow.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	seed_glow.material = addm
 	seed_glow.z_index = 8
 	add_child(seed_glow)
-	var sgt := seed_glow.create_tween()
-	sgt.tween_property(seed_glow, "modulate:a", 0.6, 0.28)
-	var gather := _spawn_particles(eground, COL_VIOLET, {
-		"amount": 14, "lifetime": 0.7, "one_shot": false, "ring": 40.0,
-		"dir": Vector3(0, -1, 0), "spread": 26.0, "gravity": Vector3(0, -22, 0),
-		"vmin": 20.0, "vmax": 40.0, "scale_min": 0.3, "scale_max": 0.6,
+	seed_glow.create_tween().tween_property(seed_glow, "modulate:a", 0.7, 0.32)
+	for ci in 18:
+		var ang := TAU * (float(ci) / 18) + randf_range(-0.2, 0.2)
+		var d := Vector2(cos(ang), sin(ang))
+		var strk := Sprite2D.new()
+		strk.texture = _tex_streak
+		strk.position = epos + d * randf_range(360.0, 560.0)
+		strk.rotation = ang
+		strk.scale = Vector2(2.0, 0.7)
+		strk.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
+		strk.material = addm
+		strk.z_index = 12
+		add_child(strk)
+		var stt := strk.create_tween()
+		stt.tween_property(strk, "modulate:a", 0.7, 0.06).set_delay(randf_range(0.0, 0.12))
+		stt.parallel().tween_property(strk, "position", epos + d * 90.0, 0.24)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		stt.tween_property(strk, "modulate:a", 0.0, 0.08)
+		stt.tween_callback(strk.queue_free)
+	var gather := _spawn_particles(epos, COL_VIOLET, {
+		"amount": 22, "lifetime": 0.8, "one_shot": false, "ring": 120.0,
+		"dir": Vector3(0, -1, 0), "spread": 40.0, "gravity": Vector3(0, -20, 0),
+		"vmin": 12.0, "vmax": 34.0, "scale_min": 0.4, "scale_max": 0.8,
 		"texture": _tex_dot,
 	})
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.42).timeout
 	if not is_instance_valid(self): return
 
-	# ── GATHER — the ember pulls inward and brightens, restrained ──
-	var pull := seed_glow.create_tween()
-	pull.tween_property(seed_glow, "scale", Vector2(1.4, 0.6), 0.16)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	pull.parallel().tween_property(seed_glow, "modulate",
-		Color(1.4, 1.3, 1.6, 0.9), 0.16)
+	# ══ STAGE 2 — DIVINE BLOOM (a giant body of layered translucent energy) ══
 	gather.emitting = false
-	await get_tree().create_timer(0.14).timeout
+	# Core vertical bloom: several huge ribbon layers rising from the ground.
+	rising_energy(eground, COL_VIOLET, 16, 560.0, true)
+	rising_energy(eground, COL_CYAN, 10, 480.0, true)
+	wrap_aura(eground, COL_VIOLET, 16, 520.0)
+	wrap_aura(eground, COL_CYAN, 8, 430.0)
+	_rising_veins(eground, epos + Vector2(0, -240.0), COL_CYAN)
+	# 8-12 large flowing energy sheets fanning up and out, staggered timing.
+	for i in 11:
+		var voff := (float(i) - 5.0) * 0.34
+		_wind_sheet(eground, COL_VIOLET if i % 2 == 0 else COL_CYAN, voff, i * 0.028, 4.2)
+	# Segmented divine geometry moving through the body (a few, at scale).
+	_divine_geometry(epos, 3.2, 1.0)
+	_divine_geometry(epos + Vector2(0, -170.0), 2.2, 0.85)
+	cutscene_backdrop_out(0.7)
+	await get_tree().create_timer(0.24).timeout
 	if not is_instance_valid(self): return
 
-	# ── BLOOM — the flame blooms upward: layered ribbons growing organically,
-	# narrow core, outer layers spreading, edges dissolving into mist. This is
-	# the whole Ultimate — one form, not stacked effects ──
-	rising_energy(eground, COL_VIOLET, 12, 430.0, true)
-	wrap_aura(eground, COL_VIOLET, 12, 380.0)
-	wrap_aura(eground, COL_CYAN, 6, 320.0)
-	# Internal detail inside the giant bloom: energy veins climbing the enemy
-	# and soft mist welling up with it.
-	_rising_veins(eground, epos + Vector2(0, -150.0), COL_CYAN)
-	var umist := _spawn_particles(eground, COL_VIOLET, {
-		"amount": 14, "lifetime": 1.6, "one_shot": true,
-		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 70.0,
-		"vmin": 30.0, "vmax": 80.0, "gravity": Vector3(0, -24, 0),
-		"scale_min": 1.6, "scale_max": 3.2, "texture": _tex_dot,
-	})
-	umist.modulate.a = 0.22
-	umist.z_index = 10
-	_cleanup(umist, 1.8)
-	cutscene_backdrop_out(0.5)
-	await get_tree().create_timer(0.16).timeout
-	if not is_instance_valid(self): return
-
-	# ── PEAK — the flame's crown flares on the enemy; spark and fragments
-	# rise out of it (still the same upward flow), plus the physical weight ──
-	var crown := Sprite2D.new()
-	crown.texture = _tex_dot
-	crown.position = epos
-	crown.scale = Vector2(2.2, 2.2)
-	crown.modulate = Color(1.7, 1.7, 1.8, 0.0)
-	crown.z_index = 17
-	add_child(crown)
-	var crt := crown.create_tween()
-	crt.tween_property(crown, "modulate:a", 1.0, 0.04)
-	crt.tween_property(crown, "scale", Vector2(0.8, 0.8), 0.08)
-	crt.tween_property(crown, "modulate:a", 0.0, 0.16)
-	crt.tween_callback(crown.queue_free)
-	# Pressure surfaces wrap upward from the enemy (no circular shock ring):
-	# a tight upward pressure ribbon + two flowing sheets peeling off.
-	rising_energy(eground, COL_CYAN, 6, 200.0)
-	_wind_sheet(epos, COL_VIOLET, -0.6, 0.0)
-	_wind_sheet(epos, COL_VIOLET, 0.6, 0.03)
-	_wind_sheet(epos, COL_CYAN, 0.0, 0.05)
-	# Shared divine-geometry motif (largest — Ultimate is the most intense).
-	_divine_geometry(epos, 2.6, 1.0)
-	# One-frame reality crack: thin white lines snap in and vanish.
-	for ci in 6:
-		var cang := TAU * (float(ci) / 6) + randf_range(-0.4, 0.4)
+	# ══ STAGE 3 — MASSIVE PRESSURE RELEASE (multiple waves, field-wide) ══
+	# Multiple broken pressure surfaces bloom outward in staggered waves —
+	# huge radii, wrapping, never perfect circles.
+	var ba := -1.2
+	_pressure_surface(epos, Color(1, 1, 1, 1), 180.0, ba + randf_range(-0.3, 0.3), 3.2, 0.34, 0.0, 0.9)
+	_pressure_surface(epos, COL_CYAN, 280.0, ba + randf_range(-0.4, 0.4), 3.8, 0.5, 0.06, 0.7)
+	_pressure_surface(epos, COL_VIOLET, 380.0, ba + randf_range(-0.4, 0.4), 4.4, 0.62, 0.12, 0.55)
+	_pressure_surface(epos, COL_VIOLET, 480.0, ba + randf_range(-0.5, 0.5), 4.8, 0.78, 0.2, 0.4)
+	# Large wind sheets sweeping across the screen.
+	for i in 6:
+		_wind_sheet(epos, COL_CYAN, (float(i) - 2.5) * 0.5, i * 0.03, 5.0)
+	_divine_geometry(epos, 2.8, 1.0)
+	# One-frame reality crack.
+	for cri in 8:
+		var cang := TAU * (float(cri) / 8) + randf_range(-0.3, 0.3)
 		var cdir := Vector2(cos(cang), sin(cang))
 		var crk := Line2D.new()
-		crk.width = 1.6
+		crk.width = 1.8
 		crk.default_color = Color(1, 1, 1, 1)
-		crk.add_point(cdir * 18.0)
-		crk.add_point(cdir * randf_range(90.0, 150.0))
+		crk.add_point(cdir * 24.0)
+		crk.add_point(cdir * randf_range(140.0, 260.0))
 		crk.position = epos
 		crk.z_index = 19
 		crk.modulate.a = 0.0
 		add_child(crk)
-		var crkt := crk.create_tween()
-		crkt.tween_property(crk, "modulate:a", 0.9, 0.03)
-		crkt.tween_property(crk, "modulate:a", 0.0, 0.1)
-		crkt.tween_callback(crk.queue_free)
-	enemy_hit_react(40.0)
-	shake(0.5, 15.0)
-	_camera_zoom(epos, 0.07, 0.46)
-	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.24), 0.12)
-	var shards := _spawn_particles(epos, Color(1, 1, 1, 1), {
-		"amount": 12, "lifetime": 0.6, "one_shot": true,
-		"dir": Vector3(0, -1, 0), "spread": 55.0, "ring": 24.0,
-		"vmin": 160.0, "vmax": 340.0, "gravity": Vector3(0, -40, 0),
-		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_streak,
-	})
-	shards.z_index = 16
-	_cleanup(shards, 0.8)
-	# Secondary bloom pulse — a big soft delayed swell for weight/scale.
+		var crt := crk.create_tween()
+		crt.tween_property(crk, "modulate:a", 0.9, 0.03)
+		crt.tween_property(crk, "modulate:a", 0.0, 0.1)
+		crt.tween_callback(crk.queue_free)
+	# Field-wide atmospheric distortion.
+	var haze := Sprite2D.new()
+	haze.texture = _tex_dot
+	haze.position = epos
+	haze.scale = Vector2(6.0, 5.0)
+	haze.modulate = Color(COL_VIOLET.r, COL_VIOLET.g, COL_VIOLET.b, 0.0)
+	haze.material = addm
+	haze.z_index = 10
+	add_child(haze)
+	var ht := haze.create_tween()
+	ht.tween_property(haze, "modulate:a", 0.18, 0.12)
+	ht.parallel().tween_property(haze, "scale", Vector2(20.0, 15.0), 0.6)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	ht.tween_property(haze, "modulate:a", 0.0, 0.5)
+	ht.tween_callback(haze.queue_free)
+	# Screen: heavy shake, camera punch, secondary bloom pulse.
+	shake(0.6, 18.0)
+	_camera_zoom(epos, 0.08, 0.5)
+	_screen_color_flash(hit_flash, Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.26), 0.14)
 	var bpulse := Sprite2D.new()
 	bpulse.texture = _tex_dot
 	bpulse.position = epos
-	bpulse.scale = Vector2(3.0, 3.4)
+	bpulse.scale = Vector2(4.0, 4.4)
 	bpulse.modulate = Color(COL_CYAN.r, COL_CYAN.g, COL_CYAN.b, 0.0)
-	var bmat := CanvasItemMaterial.new()
-	bmat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	bpulse.material = bmat
+	bpulse.material = addm
 	bpulse.z_index = 13
 	add_child(bpulse)
 	var bpt := bpulse.create_tween()
-	bpt.tween_property(bpulse, "modulate:a", 0.4, 0.08).set_delay(0.14)
-	bpt.parallel().tween_property(bpulse, "scale", Vector2(6.5, 7.2), 0.4)\
+	bpt.tween_property(bpulse, "modulate:a", 0.42, 0.08).set_delay(0.12)
+	bpt.parallel().tween_property(bpulse, "scale", Vector2(11.0, 12.0), 0.45)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	bpt.tween_property(bpulse, "modulate:a", 0.0, 0.35)
+	bpt.tween_property(bpulse, "modulate:a", 0.0, 0.4)
 	bpt.tween_callback(bpulse.queue_free)
 	_cleanup(seed_glow, 0.5)
 	_cleanup(gather, 0.3)
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.26).timeout
 	if not is_instance_valid(self): return
 
-	# ── DISSIPATE — the flame dissolves upward into large glowing sheets and
-	# fades, leaving the field softly alive ──
-	rising_energy(eground, COL_VIOLET, 7, 280.0, true)
+	# ══ RESIDUAL — large sheets and embers linger, then slowly fade ══
+	rising_energy(eground, COL_VIOLET, 8, 340.0, true)
+	for i in 3:
+		_wind_sheet(epos, COL_VIOLET, (float(i) - 1.0) * 0.5, i * 0.08, 3.4)
 	var embers := _spawn_particles(eground, COL_VIOLET, {
-		"amount": 18, "lifetime": 1.8, "one_shot": true,
-		"dir": Vector3(0, -1, 0), "spread": 40.0, "ring": 30.0,
-		"vmin": 20.0, "vmax": 60.0, "gravity": Vector3(0, -22, 0),
-		"scale_min": 0.3, "scale_max": 0.8, "texture": _tex_dot,
+		"amount": 26, "lifetime": 2.2, "one_shot": true,
+		"dir": Vector3(0, -1, 0), "spread": 50.0, "ring": 60.0,
+		"vmin": 20.0, "vmax": 70.0, "gravity": Vector3(0, -20, 0),
+		"scale_min": 0.4, "scale_max": 1.0, "texture": _tex_dot,
 	})
 	embers.modulate.a = 0.5
-	_cleanup(embers, 2.0)
+	_cleanup(embers, 2.4)
 
 
 # ════════════════════════════════════════════════════════════
