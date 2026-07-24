@@ -1257,6 +1257,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
+visible = false
 layout_mode = 0
 offset_top = 520.0
 offset_right = 362.0
