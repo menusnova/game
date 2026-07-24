@@ -1238,11 +1238,21 @@ func _show_card_info(id: String) -> void:
 	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_info_panel.add_child(stripe)
 
-	# Symbol large
+	# Symbol large. Longer formulas (e.g. "NaH", "NaCl", "Fe₂O₃") are drawn at
+	# a smaller size so they stay inside the left column and never overlap the
+	# name/type text that begins at x=88.
 	var sym: String = data.get("symbol", data.get("name", id))
+	var sym_fs := 48
+	match sym.length():
+		1, 2: sym_fs = 48
+		3:    sym_fs = 34
+		4:    sym_fs = 26
+		_:    sym_fs = 22
 	var sym_lbl := Label.new()
 	sym_lbl.text = sym; sym_lbl.position = Vector2(16, 14)
-	sym_lbl.add_theme_font_size_override("font_size", 48)
+	sym_lbl.size = Vector2(66, 52)
+	sym_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	sym_lbl.add_theme_font_size_override("font_size", sym_fs)
 	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.88))
 	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_info_panel.add_child(sym_lbl)
