@@ -1,0 +1,2498 @@
+extends Control
+
+# ════════════════════════════════════════════════════════════
+#  CHEMIA — Battle Scene (rewritten)
+#  Portrait 1080×1920, canvas_items stretch
+# ════════════════════════════════════════════════════════════
+
+const SC_MAIN := "res://main_menu.tscn"
+
+# ── AP ────────────────────────────────────────────────────
+const MAX_AP     := 5
+const AP_RECOVER := 2
+const START_AP   := 5
+const START_HAND := 4
+
+# ── Ultimate ──────────────────────────────────────────────
+const MAX_GAUGE := 100
+
+# ── Card database ─────────────────────────────────────────
+const CARD_DB := {
+	# Element cards — no AP cost, combined to create Reaction Cards
+	"H":  {"type":"element","symbol":"H", "name":"Hydrogen","color":Color(0.50,0.85,1.00)},
+	"O":  {"type":"element","symbol":"O", "name":"Oxygen",  "color":Color(0.40,0.90,0.70)},
+	"Na": {"type":"element","symbol":"Na","name":"Sodium",  "color":Color(1.00,0.85,0.30)},
+	"Cl": {"type":"element","symbol":"Cl","name":"Chlorine","color":Color(0.70,1.00,0.40)},
+	"Fe": {"type":"element","symbol":"Fe","name":"Iron",    "color":Color(0.75,0.65,0.55)},
+	"C":  {"type":"element","symbol":"C", "name":"Carbon",  "color":Color(0.60,0.60,0.75)},
+	"N":  {"type":"element","symbol":"N", "name":"Nitrogen","color":Color(0.35,0.50,0.95)},
+	"S":  {"type":"element","symbol":"S", "name":"Sulfur",  "color":Color(1.00,0.85,0.10)},
+	"Ca": {"type":"element","symbol":"Ca","name":"Calcium", "color":Color(0.80,0.75,0.65)},
+	"Mg": {"type":"element","symbol":"Mg","name":"Magnesium","color":Color(0.60,0.85,0.60)},
+	"K":  {"type":"element","symbol":"K", "name":"Potassium","color":Color(0.75,0.30,0.70)},
+	# Support cards — cost AP, go to Discard after use
+	"Draw2":     {"type":"support","name":"Draw 2",    "desc":"จั่วการ์ด 2 ใบ","ap":1,"color":Color(0.60,0.40,1.00)},
+	"RecoverAP": {"type":"support","name":"Recover AP","desc":"ฟื้นฟู AP +2",  "ap":1,"color":Color(0.30,0.80,1.00)},
+	# Reaction cards — created mid-battle, vanish after use (not to Discard)
+	"Water": {"type":"reaction","name":"Water","symbol":"H₂O","desc":"ฟื้นฟู HP +20",    "ap":1,"tier":1,"color":Color(0.30,0.70,1.00)},
+	"Salt":  {"type":"reaction","name":"Salt", "symbol":"NaCl","desc":"Shield +20",       "ap":1,"tier":1,"color":Color(0.95,0.95,0.65)},
+	"Rust":  {"type":"reaction","name":"Rust", "symbol":"Fe₂O₃","desc":"วางพิษ +5/เทิร์น","ap":2,"tier":2,"color":Color(0.75,0.45,0.20)},
+	"CO2":   {"type":"reaction","name":"Carbon Dioxide", "symbol":"CO₂","desc":"ลดเกราะศัตรู 20% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.55,0.60)},
+	"NO":    {"type":"reaction","name":"Nitric Oxide",   "symbol":"NO", "desc":"ลด ATK ศัตรู 20% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.35,0.50,0.95)},
+	"SO2":   {"type":"reaction","name":"Sulfur Dioxide", "symbol":"SO₂","desc":"วางพิษ +4/เทิร์น (4 เทิร์น)","ap":2,"tier":2,"color":Color(1.00,0.85,0.10)},
+	"CaO":   {"type":"reaction","name":"Calcium Oxide",  "symbol":"CaO","desc":"Shield +15",                "ap":1,"tier":1,"color":Color(0.80,0.75,0.65)},
+	"MgO":   {"type":"reaction","name":"Magnesium Oxide","symbol":"MgO","desc":"ฟื้นฟู HP +15",              "ap":1,"tier":1,"color":Color(0.60,0.85,0.60)},
+	"K2O":   {"type":"reaction","name":"Potassium Oxide","symbol":"K₂O","desc":"เพิ่ม ATK 20% (2 เทิร์น)",   "ap":1,"tier":1,"color":Color(0.75,0.30,0.70)},
+	"HCl":   {"type":"reaction","name":"Hydrochloric Acid","symbol":"HCl","desc":"โจมตีศัตรู 25 ดาเมจ","ap":1,"tier":1,"color":Color(0.75,0.95,0.55)},
+	"FeS":   {"type":"reaction","name":"Iron Sulfide",     "symbol":"FeS","desc":"ลดเกราะศัตรู 15% (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.48,0.40)},
+	"NaH":   {"type":"reaction","name":"Sodium Hydride",   "symbol":"NaH","desc":"เพิ่ม ATK 15% (2 เทิร์น)",   "ap":2,"tier":2,"color":Color(0.95,0.90,0.55)},
+	"CH4":   {"type":"reaction","name":"Methane",          "symbol":"CH₄","desc":"วางพิษ +3/เทิร์น (3 เทิร์น)","ap":1,"tier":1,"color":Color(0.55,0.75,0.95)},
+	"H2S":   {"type":"reaction","name":"Hydrogen Sulfide", "symbol":"H₂S","desc":"วางพิษ +6/เทิร์น (2 เทิร์น)","ap":1,"tier":1,"color":Color(0.80,0.80,0.35)},
+	"CaH2":  {"type":"reaction","name":"Calcium Hydride",  "symbol":"CaH₂","desc":"Shield +20",              "ap":2,"tier":2,"color":Color(0.85,0.80,0.70)},
+	"Na3N":  {"type":"reaction","name":"Sodium Nitride",   "symbol":"Na₃N","desc":"ลด ATK ศัตรู 15% (2 เทิร์น)","ap":2,"tier":2,"color":Color(0.55,0.60,0.95)},
+	"CaC2":  {"type":"reaction","name":"Calcium Carbide",  "symbol":"CaC₂","desc":"โจมตีศัตรู 30 ดาเมจ","ap":2,"tier":2,"color":Color(0.65,0.55,0.45)},
+}
+
+# ── Recipes ───────────────────────────────────────────────
+# Every element card has at least one working recipe so nothing in the deck
+# is a dead draw.
+const RECIPES := {
+	"H+O":   "Water",
+	"Na+Cl": "Salt",
+	"Fe+O":  "Rust",
+	"C+O":   "CO2",
+	"N+O":   "NO",
+	"O+S":   "SO2",
+	"Ca+O":  "CaO",
+	"Mg+O":  "MgO",
+	"K+O":   "K2O",
+	"Cl+H":  "HCl",
+	"Fe+S":  "FeS",
+	"H+Na":  "NaH",
+	"C+H":   "CH4",
+	"H+S":   "H2S",
+	"Ca+H":  "CaH2",
+	"N+Na":  "Na3N",
+	"C+Ca":  "CaC2",
+}
+
+# Reaction-card id -> the lab minigame's compound key for PlayerData
+# .discovered_compounds, so the card-info popup can gate the recipe hint
+# behind actually having discovered it in the lab (not just having it as a
+# working battle reaction).
+const RESULT_TO_LAB_KEY := {
+	"Water": "water", "Salt": "salt", "Rust": "rust",
+	"CO2": "carbon_dioxide", "NO": "nitric_oxide", "SO2": "sulfur_dioxide",
+	"CaO": "calcium_oxide", "MgO": "magnesium_oxide", "K2O": "potassium_oxide",
+	"HCl": "hydrochloric_acid", "FeS": "iron_sulfide", "NaH": "sodium_hydride",
+	"CH4": "methane", "H2S": "hydrogen_sulfide", "CaH2": "calcium_hydride",
+	"Na3N": "sodium_nitride", "CaC2": "calcium_carbide",
+}
+
+# Reaction-card id -> Thai name, so the combo hint can show "ไทย (English)".
+const RESULT_TH := {
+	"Water": "น้ำ", "Salt": "เกลือ", "Rust": "สนิม",
+	"CO2": "คาร์บอนไดออกไซด์", "NO": "ไนตริกออกไซด์", "SO2": "ซัลเฟอร์ไดออกไซด์",
+	"CaO": "แคลเซียมออกไซด์", "MgO": "แมกนีเซียมออกไซด์", "K2O": "โพแทสเซียมออกไซด์",
+	"HCl": "กรดเกลือ", "FeS": "เหล็กซัลไฟด์", "NaH": "โซเดียมไฮไดรด์",
+	"CH4": "มีเทน", "H2S": "ไฮโดรเจนซัลไฟด์", "CaH2": "แคลเซียมไฮไดรด์",
+	"Na3N": "โซเดียมไนไตรด์", "CaC2": "แคลเซียมคาร์ไบด์",
+}
+
+# ── Character ─────────────────────────────────────────────
+const CHARACTER := {
+	"name":          "Lyra",
+	"max_hp":        1000,
+	"passive":       "Void Resonance",
+	"atk_base":      50,
+	"passive_bonus": 0.20,
+	"skill_name":    "Aether Pulse",
+	"skill_cd":      3,
+	"ult_name":      "Absolute Zero Formula",
+	"ult_dmg":       200,
+}
+
+# ════════════════════════════════════════════════════════════
+#  STATE
+# ════════════════════════════════════════════════════════════
+var _deck:    Array = []
+var _hand:    Array = []
+var _discard: Array = []
+var _element_fx: Node2D
+var _stage_clear_fx: Node
+var _battle_fx: Node2D
+var _slash_fx: Node2D
+var _enemy_circle: Panel
+var _enemy_shadow: TextureRect
+var _enemy_bob_tween: Tween
+var _player_sprite: TextureRect
+var _player_body:   Control
+var _enemy_sprite_tex: TextureRect
+var _enemy_sprite_lbl: Label
+var _reshuffle_count := 0
+
+var _player_hp:          int = 0
+var _player_shield:      int = 0
+
+var _enemy_data:          Dictionary = {}
+var _enemy_hp:            int = 0
+
+# ── Buff / Debuff / Status (see battle_stats.gd) ──
+# _player_hp/_enemy_hp above stay the display-facing source of truth for HP;
+# these Units hold everything buff/debuff/status-related for the damage formula.
+var _p_unit: BattleStats.Unit
+var _e_unit: BattleStats.Unit
+
+var _ap:                  int = START_AP
+var _ult_gauge:           int = 0
+var _reaction_gauge_used: bool = false  # once per turn
+
+var _main_action_done: bool = false
+var _ult_used:         bool = false
+# End Turn is locked until a main action (Attack/Defend/Skill) has been used
+# AND its effect has finished + a short delay — so the turn can't be ended
+# while an effect is still animating (see _arm_end_turn).
+var _end_turn_ready:   bool = false
+# Bumped every time End Turn is re-armed or force-locked; a pending arm timer
+# only applies if its captured id still matches (so an earlier action's timer
+# can't unlock End Turn in the middle of a later Ultimate's effect).
+var _end_turn_arm_id:  int  = 0
+var _skill_ap_boost:   bool = false  # recover full AP next turn after skill
+var _player_turn:      bool = true
+var _skill_cd:         int  = 0
+var _is_defending:        bool = false   # Null Barrier active (50% reduction)
+var _current_stage:       int  = 1
+var _battle_over:         bool = false
+
+# Reaction element selection (click-to-select, no drag)
+# _selected_elem drives which cards glow (all copies of the same element);
+# _selected_card_idx is the exact hand slot that was tapped — only that one
+# lifts/scales, so duplicate cards don't all "jump" together.
+var _selected_elem: String = ""
+var _selected_card_idx: int = -1
+
+# ── UI node refs ──────────────────────────────────────────
+var _msg_lbl:          Label
+var _turn_lbl:         Label
+var _ap_lbl:           Label
+var _ap_orbs:          Array = []
+var _gauge_bar:        TextureProgressBar
+var _ult_circle:       Panel
+var _ult_glow_ring:    Panel
+var _ult_glow_on:      bool = false
+var _ult_glow_tween:   Tween
+var _player_hp_bar:    Panel
+var _player_hp_lbl:    Label
+var _shield_lbl:       Label
+var _player_effect_row: HBoxContainer
+var _enemy_effect_row:  HBoxContainer
+var _enemy_name_lbl:   Label
+var _enemy_hp_bar:     Panel
+var _enemy_hp_lbl:     Label
+var _hand_container:   HBoxContainer
+var _deck_lbl:         Label
+var _discard_lbl:      Label
+var _stage_lbl:        Label
+var _btn_attack:       Button
+var _btn_defend:       Button
+var _btn_skill:        Button
+var _btn_ult:          Button
+var _btn_end:          Button
+var _skill_cd_lbl:     Label
+
+var _back_menu:        Panel = null
+var _back_menu_open:   bool  = false
+
+var _deck_cnt_lbl:  Label   = null
+var _disc_cnt_lbl:  Label   = null
+var _info_panel:    Panel   = null
+var _info_backdrop: Control = null
+var _card_nodes:    Array[Control] = []
+var _press_card_id: String  = ""
+var _press_start:   float   = -1.0
+var _info_shown:    bool    = false
+
+# ── Colors ────────────────────────────────────────────────
+const C_BG     := Color(0.04, 0.045, 0.10, 1.0)
+const C_PANEL  := Color(0.06, 0.08,  0.16, 0.92)
+const C_BORDER := Color(0.22, 0.50,  0.90, 0.25)
+const C_TEXT   := Color(0.90, 0.93,  1.00, 1.0)
+const C_SUB    := Color(0.55, 0.68,  0.90, 0.75)
+const C_GOLD   := Color(1.00, 0.82,  0.25, 1.0)
+const C_HP     := Color(0.25, 0.85,  0.45, 1.0)
+const C_ENEMY  := Color(0.95, 0.35,  0.35, 1.0)
+const C_AP     := Color(0.35, 0.72,  1.00, 1.0)
+const C_GAUGE  := Color(1.00, 0.75,  0.25, 1.0)
+
+# ── Layout constants (1152×648) ────────────────────────────
+# Enemy — center-top (feels far away / background)
+const ENEMY_CX := 560.0
+const ENEMY_CY := 200.0
+# Player sprite — bottom-left foreground (back view, large)
+const PLAYER_X := 20.0
+const PLAYER_Y := 250.0
+const PLAYER_W := 290.0
+const PLAYER_H := 350.0
+# Action ring center (bottom-right)
+const RING_CX  := 990.0
+const RING_CY  := 497.0
+const RING_R   := 88.0
+# Card hand strip
+const HAND_Y   := 556.0
+const HAND_H   := 88.0
+# Fan hand layout
+const FAN_CENTER_X := 540.0
+const FAN_BASE_Y   := 636.0
+const FAN_ARC_R    := 520.0
+const CARD_W       := 108.0
+const CARD_H       := 142.0
+# Yu-Gi-Oh-style packed hand: below HAND_FULL_COUNT cards sit near full size
+# with a light overlap; growing the hand beyond that shrinks every card and
+# tightens the overlap automatically (down to PACK_SCALE_MIN / PACK_STEP_MIN),
+# instead of spreading wider or spilling off-screen. Hover/select always pops
+# a card back up to HOVER_SCALE so it stays readable regardless of pack size.
+const HAND_FULL_COUNT := 5.0
+const HAND_MAX_COUNT  := 14.0
+const PACK_SCALE_MIN  := 0.72   # packed cards stay big enough to tap easily, not tiny
+const PACK_STEP_FULL  := 0.88   # center-to-center step as a fraction of card width, light hand
+const PACK_STEP_MIN   := 0.34   # ...tight overlap, packed hand
+# Deck / Discard circles — stacked vertically along the right edge, clear
+# of the hand, the action ring, and the top-right more-options button.
+const DECK_CX  := 1104.0
+const DECK_CY  := 160.0
+const DISC_CX  := 1104.0
+const DISC_CY  := 250.0
+const CIRC_R   := 28.0
+# Ultimate circle — center of action ring
+const ULT_CX   := RING_CX
+const ULT_CY   := RING_CY
+const ULT_R    := 46.0
+# Card hold threshold (seconds)
+const HOLD_THRESH := 0.32
+
+# ════════════════════════════════════════════════════════════
+#  ENTRY
+# ════════════════════════════════════════════════════════════
+const ENERGY_COST := 10
+
+func _ready() -> void:
+	# Energy not consumed for now — kept for later use
+	# CurrencyManager.spend_energy(ENERGY_COST)
+	_player_hp = CHARACTER["max_hp"]
+	_p_unit = BattleStats.Unit.new(CHARACTER["max_hp"], CHARACTER["atk_base"])
+	_build_ui()
+	_build_element_fx()
+	_build_battle_fx()
+	_build_slash_fx()
+	_build_stage_clear_fx()
+	_create_enemy()
+	_build_deck()
+	_draw_n(START_HAND)
+	_refresh_ui()
+	_msg("✨ เริ่มการต่อสู้! ผสมธาตุเพื่อสร้างปฏิกิริยา")
+
+# ════════════════════════════════════════════════════════════
+#  UI BUILD
+# ════════════════════════════════════════════════════════════
+func _flat(col: Color, border: Color = Color(0,0,0,0), r: int = 8, bw: int = 0) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = col
+	sb.border_color = border
+	sb.corner_radius_top_left     = r; sb.corner_radius_top_right    = r
+	sb.corner_radius_bottom_right = r; sb.corner_radius_bottom_left  = r
+	sb.border_width_left = bw; sb.border_width_right  = bw
+	sb.border_width_top  = bw; sb.border_width_bottom = bw
+	return sb
+
+func _load_png(path: String) -> Texture2D:
+	# Uses AssetLoader so freshly-uploaded images (no .import yet) still load.
+	return AssetLoader.tex(path)
+
+var _shadow_tex: ImageTexture   # shared soft round/oval ground-shadow texture, built once
+
+## Soft radial falloff disc baked at a fixed resolution — stretched to whatever
+## size/aspect a given shadow needs, so the ground shadow reads as a soft
+## circle/ellipse instead of a hard-edged rectangle.
+func _get_shadow_texture() -> ImageTexture:
+	if _shadow_tex: return _shadow_tex
+	var size := 96
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := size * 0.5
+	for y in size:
+		for x in size:
+			var nx := (x - c) / c
+			var ny := (y - c) / c
+			var d := sqrt(nx * nx + ny * ny)
+			var a := clampf(1.0 - d, 0.0, 1.0)
+			a = a * a
+			img.set_pixel(x, y, Color(1, 1, 1, a))
+	_shadow_tex = ImageTexture.create_from_image(img)
+	return _shadow_tex
+
+var _keyed_tex_cache: Dictionary = {}   # path -> ImageTexture (background-keyed, cached once)
+
+## Loads an uploaded character/enemy PNG and removes its flat background via a border
+## flood-fill: samples the image's own corner pixel as the background color, then only keys
+## out pixels connected to the edge and similar to it — enclosed same-color regions inside the
+## subject (e.g. white hair, a pale enemy limb) are left untouched. Cached per path.
+func _get_keyed_texture(path: String) -> Texture2D:
+	if _keyed_tex_cache.has(path):
+		return _keyed_tex_cache[path]
+	var src: Texture2D = _load_png(path)
+	if not src:
+		return null
+	var img: Image = src.get_image()
+	if img == null:
+		_keyed_tex_cache[path] = src
+		return src
+	# Already-imported textures are usually VRAM-compressed by default —
+	# get_pixel()/set_pixel() silently fail on a compressed Image, which
+	# would corrupt this whole pass. Decompress before touching any pixels,
+	# and if that fails for any reason, bail out with the plain original
+	# rather than risk a half-corrupted result.
+	if img.is_compressed():
+		if img.decompress() != OK:
+			_keyed_tex_cache[path] = src
+			return src
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	# Already a proper cutout (corner pixel already transparent) — nothing
+	# to key out, use as-is.
+	if img.get_pixel(0, 0).a <= 0.02:
+		_keyed_tex_cache[path] = src
+		return src
+	var bg_col := img.get_pixel(0, 0)
+	var TOLERANCE := 0.08
+	var visited := PackedByteArray()
+	visited.resize(w * h)
+	var queue: Array[Vector2i] = []
+
+	var is_bg := func(x: int, y: int) -> bool:
+		var c := img.get_pixel(x, y)
+		return absf(c.r - bg_col.r) <= TOLERANCE and absf(c.g - bg_col.g) <= TOLERANCE and absf(c.b - bg_col.b) <= TOLERANCE
+
+	for x in w:
+		queue.append(Vector2i(x, 0))
+		queue.append(Vector2i(x, h - 1))
+	for y in h:
+		queue.append(Vector2i(0, y))
+		queue.append(Vector2i(w - 1, y))
+
+	var qi := 0
+	var cleared := 0
+	while qi < queue.size():
+		var p: Vector2i = queue[qi]
+		qi += 1
+		if p.x < 0 or p.x >= w or p.y < 0 or p.y >= h: continue
+		var idx := p.y * w + p.x
+		if visited[idx] == 1: continue
+		visited[idx] = 1
+		if not is_bg.call(p.x, p.y): continue
+		var c := img.get_pixel(p.x, p.y)
+		img.set_pixel(p.x, p.y, Color(c.r, c.g, c.b, 0.0))
+		cleared += 1
+		queue.append(Vector2i(p.x + 1, p.y))
+		queue.append(Vector2i(p.x - 1, p.y))
+		queue.append(Vector2i(p.x, p.y + 1))
+		queue.append(Vector2i(p.x, p.y - 1))
+
+	# Safety net: a flat/dark-themed subject with no hard edge against the background can let
+	# the flood-fill leak straight through it and wipe the whole image. If more than 70% of the
+	# pixels got cleared, that's almost certainly a leak, not a real background — bail out and
+	# keep the original art intact rather than showing nothing.
+	if float(cleared) / float(w * h) > 0.70:
+		_keyed_tex_cache[path] = src
+		return src
+
+	# If the background isn't a simple flat/gradient color (e.g. real
+	# painted scenery bleeding into the corner), color-based keying can
+	# only clear a small sliver and leaves a hard, torn-looking edge
+	# around whatever solid background remains. Fade the art's own outer
+	# edges to transparent instead of attempting a partial, broken key —
+	# same fallback used for the main-menu avatar and pre-battle portraits.
+	if float(cleared) / float(w * h) < 0.20:
+		var faded: Image = src.get_image().duplicate()
+		if faded.is_compressed():
+			if faded.decompress() != OK:
+				_keyed_tex_cache[path] = src
+				return src
+		faded.convert(Image.FORMAT_RGBA8)
+		const EDGE_X := 0.14
+		const EDGE_Y := 0.14
+		for fy0 in h:
+			var fy: float = minf(float(fy0) / (h * EDGE_Y), minf(float(h - 1 - fy0) / (h * EDGE_Y), 1.0))
+			for fx0 in w:
+				var fx: float = minf(float(fx0) / (w * EDGE_X), minf(float(w - 1 - fx0) / (w * EDGE_X), 1.0))
+				var fc := faded.get_pixel(fx0, fy0)
+				faded.set_pixel(fx0, fy0, Color(fc.r, fc.g, fc.b, fc.a * fx * fy))
+		var faded_tex := ImageTexture.create_from_image(faded)
+		_keyed_tex_cache[path] = faded_tex
+		return faded_tex
+
+	# Some art has background-colored gaps fully enclosed by the silhouette
+	# (e.g. the negative space between an arm and the body) — not connected
+	# to the image border, so the flood-fill above correctly leaves them
+	# alone (that's what keeps small enclosed details like white hair
+	# intact). But a big enclosed patch is almost always a real gap, not a
+	# detail worth keeping, and left solid it reads as a torn/broken image.
+	# Clear any such patch above a minimum size. Real limb/body gaps run
+	# ~8,000-11,000px; a bright enclosed hair highlight can be ~2,000px and
+	# must NOT be caught here (that punched a visible hole through Lyra's
+	# hair) — 5,000 sits safely between the two.
+	const HOLE_MIN_SIZE := 5000
+	var hole_visited := PackedByteArray()
+	hole_visited.resize(w * h)
+	for y0 in h:
+		for x0 in w:
+			var idx0 := y0 * w + x0
+			if hole_visited[idx0] == 1: continue
+			if img.get_pixel(x0, y0).a <= 0.01:
+				hole_visited[idx0] = 1
+				continue
+			if not is_bg.call(x0, y0):
+				hole_visited[idx0] = 1
+				continue
+			var comp: Array[Vector2i] = [Vector2i(x0, y0)]
+			hole_visited[idx0] = 1
+			var head := 0
+			while head < comp.size():
+				var cp: Vector2i = comp[head]
+				head += 1
+				for nb in [Vector2i(cp.x + 1, cp.y), Vector2i(cp.x - 1, cp.y), Vector2i(cp.x, cp.y + 1), Vector2i(cp.x, cp.y - 1)]:
+					if nb.x < 0 or nb.x >= w or nb.y < 0 or nb.y >= h: continue
+					var nidx: int = nb.y * w + nb.x
+					if hole_visited[nidx] == 1: continue
+					hole_visited[nidx] = 1
+					if img.get_pixel(nb.x, nb.y).a <= 0.01: continue
+					if not is_bg.call(nb.x, nb.y): continue
+					comp.append(nb)
+			if comp.size() >= HOLE_MIN_SIZE:
+				for cp2 in comp:
+					var c2 := img.get_pixel(cp2.x, cp2.y)
+					img.set_pixel(cp2.x, cp2.y, Color(c2.r, c2.g, c2.b, 0.0))
+
+	# Anti-aliased pixels along the original silhouette edge are a blend of
+	# subject + background color, so they're too different from bg_col to pass
+	# the hard flood-fill test above and are left behind as an opaque
+	# white/light fringe. Feather them: any opaque pixel touching a now-
+	# transparent one gets its alpha reduced by how close its color still is
+	# to the background, so the fringe fades out instead of staying solid.
+	var EDGE_TOLERANCE := 0.55
+	var feathered := img.duplicate() as Image
+	for y in h:
+		for x in w:
+			if img.get_pixel(x, y).a <= 0.01: continue
+			var touches_cleared := false
+			for d in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+				var nx: int = x + d.x
+				var ny: int = y + d.y
+				if nx < 0 or nx >= w or ny < 0 or ny >= h: continue
+				if img.get_pixel(nx, ny).a <= 0.01:
+					touches_cleared = true
+					break
+			if not touches_cleared: continue
+			var c := img.get_pixel(x, y)
+			var dist := (absf(c.r - bg_col.r) + absf(c.g - bg_col.g) + absf(c.b - bg_col.b)) / 3.0
+			if dist < EDGE_TOLERANCE:
+				var keep := clampf(dist / EDGE_TOLERANCE, 0.0, 1.0)
+				feathered.set_pixel(x, y, Color(c.r, c.g, c.b, c.a * keep))
+	img = feathered
+
+	var tex := ImageTexture.create_from_image(img)
+	_keyed_tex_cache[path] = tex
+	return tex
+
+## Keys out a near-black background using normal blending, so the art properly occludes
+## whatever sits behind it (unlike BLEND_MODE_ADD, which lets background bleed through).
+func _make_black_key_material() -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	var sh: Shader = load("res://shaders/black_key.gdshader")
+	mat.shader = sh
+	return mat
+
+## Soft-edged filled disc, used as the ULT gauge's radial progress texture (no rectangular corners).
+func _make_disc_texture(diameter: int, color: Color) -> ImageTexture:
+	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
+	var center := Vector2(diameter * 0.5, diameter * 0.5)
+	var r := diameter * 0.5 - 2.0
+	for y in diameter:
+		for x in diameter:
+			var d := Vector2(x, y).distance_to(center)
+			var a := 0.0
+			if d <= r - 3.0:
+				a = 0.85
+			elif d <= r:
+				a = 0.85 * (r - d) / 3.0
+			img.set_pixel(x, y, Color(color.r, color.g, color.b, a))
+	return ImageTexture.create_from_image(img)
+
+func _mk_label(txt: String, fs: int, col: Color, parent: Control,
+		pos: Vector2, sz: Vector2 = Vector2.ZERO, center: bool = false) -> Label:
+	var l := Label.new()
+	l.text = txt
+	l.position = pos
+	if sz != Vector2.ZERO: l.size = sz
+	l.add_theme_font_size_override("font_size", fs)
+	l.add_theme_color_override("font_color", col)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if center: l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	parent.add_child(l)
+	return l
+
+func _build_ui() -> void:
+	# ── Background ─────────────────────────────────────────────
+	var bg_tex: Texture2D = AssetLoader.tex("res://image/tower_battle_bg.png")
+	if bg_tex:
+		var bg := TextureRect.new()
+		bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bg.texture      = bg_tex
+		bg.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(bg)
+	else:
+		# Fallback: sky top -> ground bottom gradient
+		var sky := ColorRect.new()
+		sky.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		sky.color = Color(0.05, 0.06, 0.14, 1.0)
+		sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(sky)
+
+		# Horizon glow — warm strip at mid-height
+		var horizon := ColorRect.new()
+		horizon.size     = Vector2(1152, 120)
+		horizon.position = Vector2(0, 260)
+		horizon.color    = Color(0.18, 0.10, 0.28, 0.55)
+		horizon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(horizon)
+
+		# Ground plane — darker, slightly purple-tinted
+		var ground := ColorRect.new()
+		ground.size     = Vector2(1152, 300)
+		ground.position = Vector2(0, 348)
+		ground.color    = Color(0.03, 0.02, 0.08, 1.0)
+		ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(ground)
+
+		# Ground line (horizon divider)
+		var gline := ColorRect.new()
+		gline.size     = Vector2(1152, 2)
+		gline.position = Vector2(0, 347)
+		gline.color    = Color(0.40, 0.28, 0.70, 0.35)
+		gline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(gline)
+
+	# Vignette overlay
+	var vig := ColorRect.new()
+	vig.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vig.color = Color(0.0, 0.0, 0.05, 0.42)
+	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(vig)
+
+	_build_topbar()
+	_build_enemy_panel()
+	_build_player_sprite()
+	_build_player_hud()
+	_build_hand_panel()
+	_build_deck_discard_circles()
+	_build_action_ring()
+	_build_ult_button()
+	_build_card_info_panel()
+
+# ── Top bar ───────────────────────────────────────────────
+func _build_topbar() -> void:
+	var bar := Panel.new()
+	bar.size = Vector2(1152, 40)
+	bar.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
+	add_child(bar)
+
+	_stage_lbl = _mk_label("Stage 1", 12, C_SUB, bar, Vector2(14, 11))
+	_turn_lbl  = _mk_label("เทิร์นของคุณ", 13, C_GOLD, bar, Vector2(426, 11), Vector2(300, 18), true)
+
+	_build_back_menu(bar)
+
+# ── Back button → expands left into Surrender / Continue choices ──
+const BACK_X := 1104.0
+const BACK_Y := 4.0
+const BACK_W := 42.0
+const BACK_H := 45.0
+const BACK_MENU_W := 220.0
+
+func _build_back_menu(bar: Panel) -> void:
+	_back_menu = Panel.new()
+	_back_menu.size = Vector2(BACK_MENU_W, BACK_H)
+	_back_menu.position = Vector2(BACK_X + BACK_W, BACK_Y)   # tucked away, off past the back btn
+	_back_menu.visible = false
+	_back_menu.z_index = 19
+	var msb := StyleBoxFlat.new()
+	msb.bg_color = Color(0.03, 0.05, 0.14, 0.96)
+	msb.border_color = Color(0.45, 0.72, 1.0, 0.5)
+	msb.set_border_width_all(1)
+	msb.set_corner_radius_all(10)
+	_back_menu.add_theme_stylebox_override("panel", msb)
+	_back_menu.mouse_filter = Control.MOUSE_FILTER_STOP
+	bar.add_child(_back_menu)
+
+	var surrender_btn := Button.new()
+	surrender_btn.text = "ยอมแพ้"
+	surrender_btn.position = Vector2(8, 6)
+	surrender_btn.size = Vector2(96, 33)
+	surrender_btn.focus_mode = Control.FOCUS_NONE
+	surrender_btn.add_theme_font_size_override("font_size", 12)
+	surrender_btn.add_theme_color_override("font_color", Color(1.0, 0.75, 0.75, 1.0))
+	var surrender_sb := _flat(Color(0.45, 0.10, 0.10, 0.9), Color(0.90, 0.30, 0.30, 0.6), 8, 1)
+	for s in ["normal", "hover", "pressed"]:
+		surrender_btn.add_theme_stylebox_override(s, surrender_sb)
+	surrender_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	surrender_btn.pressed.connect(_on_surrender)
+	_back_menu.add_child(surrender_btn)
+
+	var continue_btn := Button.new()
+	continue_btn.text = "เล่นต่อ"
+	continue_btn.position = Vector2(112, 6)
+	continue_btn.size = Vector2(100, 33)
+	continue_btn.focus_mode = Control.FOCUS_NONE
+	continue_btn.add_theme_font_size_override("font_size", 12)
+	continue_btn.add_theme_color_override("font_color", Color(0.75, 0.90, 1.0, 1.0))
+	var continue_sb := _flat(Color(0.10, 0.20, 0.45, 0.9), Color(0.40, 0.65, 1.0, 0.6), 8, 1)
+	for s in ["normal", "hover", "pressed"]:
+		continue_btn.add_theme_stylebox_override(s, continue_sb)
+	continue_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	continue_btn.pressed.connect(_close_back_menu)
+	_back_menu.add_child(continue_btn)
+
+	var back := _make_back_btn(Vector2(BACK_X, BACK_Y), Vector2(BACK_W, BACK_H), func():
+		_toggle_back_menu()
+	)
+	back.z_index = 21   # stays above the sliding menu
+	bar.add_child(back)
+
+func _toggle_back_menu() -> void:
+	if _back_menu_open: _close_back_menu()
+	else:               _open_back_menu()
+
+func _open_back_menu() -> void:
+	if _battle_over: return
+	_back_menu_open = true
+	_back_menu.visible = true
+	var t := _back_menu.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	# Stop fully clear of the ⋮ button (to its left) instead of tucking
+	# underneath it, so "เล่นต่อ" doesn't look like it's covered by the dots.
+	t.tween_property(_back_menu, "position:x", BACK_X - BACK_MENU_W - 8.0, 0.22)
+
+func _close_back_menu() -> void:
+	if not _back_menu_open: return
+	_back_menu_open = false
+	var t := _back_menu.create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_back_menu, "position:x", BACK_X + BACK_W, 0.18)
+	t.tween_callback(func():
+		if is_instance_valid(_back_menu): _back_menu.visible = false
+	)
+
+func _on_surrender() -> void:
+	_close_back_menu()
+	if _battle_over: return
+	_battle_over = true
+	_refresh_ui()
+	_set_buttons_enabled(false)
+	await get_tree().create_timer(0.6).timeout
+	if not is_instance_valid(self): return
+	_stage_clear_fx.show_defeat("ยอมแพ้")
+
+# ── Enemy — center-top, smaller (distance perspective) ───
+func _build_enemy_panel() -> void:
+	# Shadow on ground below enemy — soft oval, resized/repositioned per stage
+	# in _start_enemy_bob() to match the enemy's current size.
+	var shadow := TextureRect.new()
+	shadow.texture = _get_shadow_texture()
+	shadow.stretch_mode = TextureRect.STRETCH_SCALE
+	shadow.size     = Vector2(140, 34)
+	shadow.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY + 110.0)
+	shadow.modulate = Color(0, 0, 0, 0.35)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shadow)
+	_enemy_shadow = shadow
+
+	# Enemy sprite — smaller than player (far away). Size/position are set
+	# per-stage in _start_enemy_bob() (e.g. the final-stage boss is bigger).
+	var circle := Panel.new()
+	circle.size = Vector2(140, 140)
+	circle.position = Vector2(ENEMY_CX - 70.0, ENEMY_CY - 70.0)
+	circle.clip_contents = true
+	_enemy_circle = circle
+	# No backing at all — just the monster art floating over the battle
+	# background, not a dark circle around it.
+	circle.add_theme_stylebox_override("panel",
+		_flat(Color(0,0,0,0), Color(0,0,0,0), 70, 0))
+	add_child(circle)
+
+	_enemy_sprite_lbl = Label.new()
+	_enemy_sprite_lbl.text = "👾"
+	_enemy_sprite_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_enemy_sprite_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_enemy_sprite_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	_enemy_sprite_lbl.add_theme_font_size_override("font_size", 56)
+	_enemy_sprite_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circle.add_child(_enemy_sprite_lbl)
+
+	_enemy_sprite_tex = TextureRect.new()
+	_enemy_sprite_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_enemy_sprite_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	# CENTERED (not COVERED) — the source art is a tall portrait; COVERED cropped
+	# it down to a thin horizontal slice instead of showing the whole monster.
+	_enemy_sprite_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_enemy_sprite_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_enemy_sprite_tex.visible = false
+	circle.add_child(_enemy_sprite_tex)
+
+	_start_enemy_bob()
+
+	# Enemy HUD bar — floats above enemy (no frame)
+	var ep := Panel.new()
+	ep.size     = Vector2(280, 52)
+	ep.position = Vector2(ENEMY_CX - 140.0, ENEMY_CY - 138.0)
+	ep.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
+	add_child(ep)
+
+	_enemy_name_lbl = _mk_label("", 13, C_TEXT, ep, Vector2(10, 4))
+
+	var ehb_bg := Panel.new()
+	ehb_bg.size     = Vector2(260, 9)
+	ehb_bg.position = Vector2(10, 24)
+	ehb_bg.add_theme_stylebox_override("panel",
+		_flat(Color(1,1,1,0.10), Color(C_ENEMY.r, C_ENEMY.g, C_ENEMY.b, 0.55), 5, 1))
+	ehb_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ep.add_child(ehb_bg)
+
+	_enemy_hp_bar = Panel.new()
+	_enemy_hp_bar.size     = Vector2(260, 9)
+	_enemy_hp_bar.position = Vector2(10, 24)
+	_enemy_hp_bar.add_theme_stylebox_override("panel", _flat(C_ENEMY, Color(0,0,0,0), 5, 0))
+	_enemy_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ep.add_child(_enemy_hp_bar)
+
+	_enemy_hp_lbl     = _mk_label("", 10, C_ENEMY, ep, Vector2(10, 36))
+
+	_enemy_effect_row = HBoxContainer.new()
+	_enemy_effect_row.position = Vector2(10, 50)
+	_enemy_effect_row.size = Vector2(260, 32)
+	_enemy_effect_row.add_theme_constant_override("separation", 4)
+	_enemy_effect_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ep.add_child(_enemy_effect_row)
+
+const PLAYER_POSE := {
+	"idle":  "res://image/lyra_guard.png",
+	"atk":   "res://image/lyra_attack.png",
+	"def":   "res://image/lyra_guard.png",
+	"skl":   "res://image/lyra_skill.png",
+	"ult":   "res://image/lyra_ultimate.png",
+	"hit":   "res://image/lyra_hit.png",
+}
+
+# ── Player sprite — back view, large, bottom-left ─────────
+func _build_player_sprite() -> void:
+	# Ground shadow — soft oval, not a hard-edged rectangle
+	var shadow := TextureRect.new()
+	shadow.texture = _get_shadow_texture()
+	shadow.stretch_mode = TextureRect.STRETCH_SCALE
+	shadow.size     = Vector2(150, 34)
+	shadow.position = Vector2(PLAYER_X + 45.0, PLAYER_Y + PLAYER_H - 18.0)
+	shadow.modulate = Color(0, 0, 0, 0.45)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shadow)
+
+	var body := Control.new()
+	body.size     = Vector2(PLAYER_W, PLAYER_H)
+	body.position = Vector2(PLAYER_X, PLAYER_Y)
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(body)
+
+	_player_sprite = TextureRect.new()
+	_player_sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_player_sprite.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	_player_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_player_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var ptex: Texture2D = _get_keyed_texture(PLAYER_POSE["idle"])
+	if ptex:
+		_player_sprite.texture = ptex
+	body.add_child(_player_sprite)
+
+	# Pre-warm every pose's keyed texture now (during the load/fade-in) so the
+	# expensive background-keying never runs on the first Attack/Defend/Skill/
+	# Ultimate press — that on-demand cost was the delay before a move started.
+	for pose_path in PLAYER_POSE.values():
+		_get_keyed_texture(pose_path)
+
+	# Subtle idle breathe tween
+	var t := body.create_tween().set_loops()
+	t.tween_property(body, "position:y", PLAYER_Y - 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property(body, "position:y", PLAYER_Y + 4.0, 2.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_player_body = body
+
+## Swaps Lyra's battle pose (attack/defend/skill/ultimate/hit), then returns to idle after a beat.
+func _set_player_pose(pose: String, hold: float = 0.5) -> void:
+	if not _player_sprite: return
+	var tex: Texture2D = _get_keyed_texture(PLAYER_POSE.get(pose, PLAYER_POSE["idle"]))
+	if not tex: return
+	_player_sprite.texture = tex
+	if pose == "idle": return
+	await get_tree().create_timer(hold).timeout
+	if is_instance_valid(_player_sprite):
+		var idle_tex: Texture2D = _get_keyed_texture(PLAYER_POSE["idle"])
+		if idle_tex: _player_sprite.texture = idle_tex
+
+# ── Player HUD — floats above hand strip, left side ───────
+func _build_player_hud() -> void:
+	var pp := Panel.new()
+	pp.size     = Vector2(312, 120)
+	pp.position = Vector2(8, HAND_Y - 118.0)
+	pp.clip_contents = false
+	pp.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
+	add_child(pp)
+
+	_mk_label(CHARACTER["name"], 12, C_TEXT, pp, Vector2(12, 6))
+
+	# HP bar — rounded pill shape with a colored border on the track
+	var phb_bg := Panel.new()
+	phb_bg.size     = Vector2(288, 10)
+	phb_bg.position = Vector2(12, 26)
+	phb_bg.add_theme_stylebox_override("panel",
+		_flat(Color(1,1,1,0.08), Color(C_HP.r, C_HP.g, C_HP.b, 0.55), 5, 1))
+	phb_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(phb_bg)
+
+	_player_hp_bar = Panel.new()
+	_player_hp_bar.size     = Vector2(288, 10)
+	_player_hp_bar.position = Vector2(12, 26)
+	_player_hp_bar.add_theme_stylebox_override("panel", _flat(C_HP, Color(0,0,0,0), 5, 0))
+	_player_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(_player_hp_bar)
+
+	_player_hp_lbl = _mk_label("", 10, C_HP,              pp, Vector2(12, 40))
+	_shield_lbl    = _mk_label("", 10, Color(0.7,0.9,1.0), pp, Vector2(180, 40))
+
+	_player_effect_row = HBoxContainer.new()
+	_player_effect_row.position = Vector2(12, 122)   # sits just below the HUD panel, not clipped
+	_player_effect_row.size = Vector2(288, 26)
+	_player_effect_row.add_theme_constant_override("separation", 4)
+	_player_effect_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(_player_effect_row)
+
+	# AP section — image slot left + dots fill remaining width
+	var ap_row := Panel.new()
+	ap_row.size     = Vector2(288, 56)
+	ap_row.position = Vector2(12, 56)
+	ap_row.add_theme_stylebox_override("panel", _flat(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
+	ap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pp.add_child(ap_row)
+
+	# AP orbs — individual Panel circles (filled = big glow, used = small hollow ring)
+	const ORB_SZ  := 22.0
+	const ORB_GAP := 10.0
+	_ap_orbs = []
+	for i in MAX_AP:
+		var orb := Panel.new()
+		orb.size = Vector2(ORB_SZ, ORB_SZ)
+		orb.position = Vector2(4.0 + i * (ORB_SZ + ORB_GAP), 14.0)
+		orb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ap_row.add_child(orb)
+		_ap_orbs.append(orb)
+	# keep _ap_lbl alive (hidden) so other code refs don't crash
+	_ap_lbl = Label.new(); _ap_lbl.visible = false; ap_row.add_child(_ap_lbl)
+
+	# hidden refs for _refresh_ui (still needed)
+	_deck_lbl    = Label.new(); _deck_lbl.visible    = false; pp.add_child(_deck_lbl)
+	_discard_lbl = Label.new(); _discard_lbl.visible = false; pp.add_child(_discard_lbl)
+
+# ── Hand area — bottom strip ───────────────────────────────
+func _build_hand_panel() -> void:
+	# No background strip — cards float as fan (UNO style)
+	_hand_container = HBoxContainer.new()
+	_hand_container.visible = false
+	add_child(_hand_container)
+
+# ── Action ring — Persona-style circle, bottom-right ──────
+func _build_action_ring() -> void:
+	# Background disc
+	var disc := Panel.new()
+	disc.size     = Vector2(220, 220)
+	disc.position = Vector2(RING_CX - 110.0, RING_CY - 110.0)
+	disc.add_theme_stylebox_override("panel",
+		_flat(Color(0.04,0.05,0.12,0.82), Color(0.20,0.40,0.80,0.18), 110, 1))
+	disc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(disc)
+
+	# 5 buttons arranged in a circle
+	# Angles: spread around bottom-right arc (right side)
+	# 0=Attack(top), 1=Skill, 2=EndTurn(bottom), 3=Defend, 4=Ult (center-right)
+	const DEFS := [
+		["Attack",  "res://image/skill_void_strike.jpg",           "ATK",  Color(0.95,0.35,0.35),  -90.0],
+		["Skill",   "res://image/skill_aether_pulse.jpg",          "SKL",  Color(0.80,0.50,1.00),   -8.0],
+		["EndTurn", "res://image/endturn.jpg",                     "END TURN",  Color(0.55,0.75,0.55),   74.0],
+		["Defend",  "res://image/skill_null_barrier.jpg",          "DEF",  Color(0.35,0.65,1.00),  156.0],
+	]
+	const BTN_R := 34.0  # button half-size
+
+	for d in DEFS:
+		var id: String  = d[0]
+		var icon_path: String = d[1]
+		var lbl_txt: String = d[2]
+		var col: Color  = d[3]
+		var angle_deg: float = d[4]
+		var rad := deg_to_rad(angle_deg)
+		var bx := RING_CX + RING_R * cos(rad) - BTN_R
+		var by := RING_CY + RING_R * sin(rad) - BTN_R
+
+		var btn := Button.new()
+		btn.text     = "" if icon_path != "" else lbl_txt
+		btn.size     = Vector2(BTN_R * 2.0, BTN_R * 2.0)
+		btn.position = Vector2(bx, by)
+		btn.add_theme_font_size_override("font_size", 11)
+		var bg_col  := Color(col.r*0.14, col.g*0.14, col.b*0.20, 0.95)
+		var brd_col := Color(col.r, col.g, col.b, 0.50)
+		btn.add_theme_stylebox_override("normal",   _flat(bg_col, brd_col, int(BTN_R), 2))
+		btn.add_theme_stylebox_override("hover",    _flat(Color(col.r*0.28,col.g*0.28,col.b*0.40,1.0), Color(col.r,col.g,col.b,0.90), int(BTN_R), 2))
+		btn.add_theme_stylebox_override("pressed",  _flat(Color(col.r*0.08,col.g*0.08,col.b*0.12,1.0), Color(col.r,col.g,col.b,1.00), int(BTN_R), 2))
+		btn.add_theme_stylebox_override("disabled", _flat(Color(0.08,0.09,0.12,0.80), Color(0.25,0.28,0.35,0.25), int(BTN_R), 1))
+		btn.add_theme_color_override("font_color",          C_TEXT)
+		btn.add_theme_color_override("font_color_disabled", Color(0.30,0.33,0.42))
+		add_child(btn)
+
+		if icon_path != "":
+			var clip := Control.new()
+			clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			clip.clip_contents = true
+			clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			btn.add_child(clip)
+			var itex := TextureRect.new()
+			itex.texture = _load_png(icon_path)
+			if id == "EndTurn":
+				# EndTurn's art is a busy sci-fi emblem that bleeds all the
+				# way to its own edges — filling the button edge-to-edge
+				# swallowed the button's own colored border ring (the
+				# normal/hover/pressed indicator), making it unclear it's
+				# tappable. Inset it so that ring stays visible around it.
+				const INSET := 10.0
+				itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				itex.offset_left   += INSET
+				itex.offset_top    += INSET
+				itex.offset_right  -= INSET
+				itex.offset_bottom -= INSET
+			else:
+				itex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			itex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+			# EndTurn's art is a wide (non-square) image — COVERED crops it to
+			# fill the round button without squashing/distorting it the way
+			# SCALE did on a non-square source.
+			itex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED if id == "EndTurn" else TextureRect.STRETCH_SCALE
+			itex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			itex.modulate = Color(1, 1, 1, 0.85)
+			if id == "EndTurn":
+				# Mask to a circle so the square source art's corners don't
+				# poke out past the round button border.
+				itex.material = ShaderMaterial.new()
+				itex.material.shader = load("res://shaders/circle_mask.gdshader")
+			else:
+				var itex_mat := CanvasItemMaterial.new()
+				itex_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+				itex.material = itex_mat
+			clip.add_child(itex)
+
+			# Caption sits snug just below the button, as a sibling (not a
+			# child of the circular clip) so it's never cut off by the mask.
+			# Attack sits at the TOP of the ring, right above the Ultimate
+			# circle, so its caption goes ABOVE the button instead — putting
+			# it below would land on top of the Ultimate circle.
+			var caption := Label.new()
+			caption.text = lbl_txt
+			var cap_y := (by - 18.0) if id == "Attack" else (by + BTN_R * 2.0 + 2.0)
+			caption.position = Vector2(bx - 10.0, cap_y)
+			caption.size = Vector2(BTN_R * 2.0 + 20.0, 16.0)
+			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			caption.add_theme_font_size_override("font_size", 10)
+			caption.add_theme_color_override("font_color", C_TEXT)
+			caption.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+			caption.add_theme_constant_override("shadow_offset_x", 1)
+			caption.add_theme_constant_override("shadow_offset_y", 1)
+			caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(caption)
+
+			# Skill cooldown badge — top-left corner of the Skill button,
+			# instead of overwriting the button's own text over the icon.
+			if id == "Skill":
+				var cd_badge := Label.new()
+				cd_badge.position = Vector2(bx - 6.0, by - 6.0)
+				cd_badge.size = Vector2(48.0, 16.0)
+				cd_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				cd_badge.add_theme_font_size_override("font_size", 10)
+				cd_badge.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+				cd_badge.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+				cd_badge.add_theme_constant_override("shadow_offset_x", 1)
+				cd_badge.add_theme_constant_override("shadow_offset_y", 1)
+				cd_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				cd_badge.visible = false
+				add_child(cd_badge)
+				_skill_cd_lbl = cd_badge
+
+		match id:
+			"Attack":  _btn_attack = btn; btn.pressed.connect(_on_attack)
+			"Defend":  _btn_defend = btn; btn.pressed.connect(_on_defend)
+			"Skill":   _btn_skill  = btn; btn.pressed.connect(_on_skill)
+			"EndTurn": _btn_end    = btn; btn.pressed.connect(_on_end_turn)
+
+# ── Deck / Discard circles ────────────────────────────────
+func _build_deck_discard_circles() -> void:
+	for is_deck in [true, false]:
+		var cx    := DECK_CX if is_deck else DISC_CX
+		var cy    := DECK_CY if is_deck else DISC_CY
+		var label := "เด็ค" if is_deck else "ทิ้ง"
+		var col   := Color(0.35, 0.62, 1.0) if is_deck else Color(0.65, 0.45, 0.40)
+
+		var circ := Panel.new()
+		circ.size     = Vector2(CIRC_R * 2, CIRC_R * 2)
+		circ.position = Vector2(cx - CIRC_R, cy - CIRC_R)
+		circ.add_theme_stylebox_override("panel",
+			_flat(Color(col.r*0.10, col.g*0.10, col.b*0.18, 0.92),
+				  Color(col.r, col.g, col.b, 0.50), int(CIRC_R), 2))
+		circ.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.z_index = 4
+		add_child(circ)
+
+		# TextureRect placeholder for future image
+		var tex := TextureRect.new()
+		tex.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		tex.offset_left  = -16; tex.offset_right  = 16
+		tex.offset_top   = -16; tex.offset_bottom = 16
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(tex)
+
+		# Count label (center)
+		var cnt := Label.new()
+		cnt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		cnt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cnt.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		cnt.add_theme_font_size_override("font_size", 16)
+		cnt.add_theme_color_override("font_color", Color(col.r + 0.1, col.g + 0.05, col.b, 0.9))
+		cnt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(cnt)
+		if is_deck: _deck_cnt_lbl = cnt
+		else:       _disc_cnt_lbl = cnt
+
+		# Label below circle
+		var lbl := Label.new()
+		lbl.text = label
+		lbl.size = Vector2(CIRC_R * 2, 14)
+		lbl.position = Vector2(0, CIRC_R * 2 + 2)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.55))
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		circ.add_child(lbl)
+
+# ── Ultimate standalone circle ────────────────────────────
+func _build_ult_button() -> void:
+	var col := C_GAUGE
+
+	# Ready-glow ring — sits outside the circle's own bounds so it never dims/washes out the icon art
+	var glow_pad := 10.0
+	_ult_glow_ring = Panel.new()
+	_ult_glow_ring.size     = Vector2(ULT_R * 2 + glow_pad * 2, ULT_R * 2 + glow_pad * 2)
+	_ult_glow_ring.position = Vector2(ULT_CX - ULT_R - glow_pad, ULT_CY - ULT_R - glow_pad)
+	_ult_glow_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ult_glow_ring.z_index = 3
+	var glow_sb := StyleBoxFlat.new()
+	glow_sb.bg_color     = Color(0, 0, 0, 0)
+	glow_sb.border_color = Color(col.r, col.g, col.b, 0.0)
+	glow_sb.set_border_width_all(3)
+	glow_sb.set_corner_radius_all(int(ULT_R + glow_pad))
+	glow_sb.shadow_color = Color(col.r, col.g, col.b, 0.0)
+	glow_sb.shadow_size  = 10
+	_ult_glow_ring.add_theme_stylebox_override("panel", glow_sb)
+	add_child(_ult_glow_ring)
+
+	var circ := Panel.new()
+	circ.size     = Vector2(ULT_R * 2, ULT_R * 2)
+	circ.position = Vector2(ULT_CX - ULT_R, ULT_CY - ULT_R)
+	circ.add_theme_stylebox_override("panel",
+		_flat(Color(col.r*0.10, col.g*0.08, col.b*0.04, 0.92),
+			  Color(col.r, col.g, col.b, 0.45), int(ULT_R), 2))
+	circ.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.z_index = 4
+	add_child(circ)
+
+	circ.clip_contents = true
+
+	# Gauge fill — radial reveal, stays inside the circular frame (no square corners)
+	_gauge_bar = TextureProgressBar.new()
+	_gauge_bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_gauge_bar.texture_progress = _make_disc_texture(int(ULT_R * 2.0), col)
+	_gauge_bar.fill_mode      = TextureProgressBar.FILL_CLOCKWISE
+	_gauge_bar.radial_initial_angle = -90.0
+	_gauge_bar.min_value = 0.0
+	_gauge_bar.max_value = 100.0
+	_gauge_bar.value     = 0.0
+	_gauge_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_gauge_bar.z_index = 0
+	circ.add_child(_gauge_bar)
+
+	# Ultimate art (Absolute Zero Formula) — normal-blended with a black-key shader so it
+	# actually occludes the gauge fill behind it, instead of BLEND_MODE_ADD bleeding through
+	var clip := Control.new()
+	clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	clip.clip_contents = true
+	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip.z_index = 1
+	circ.add_child(clip)
+	var tex := TextureRect.new()
+	tex.texture = load("res://image/skill_absolute_zero_formula.jpg")
+	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_SCALE
+	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tex.material = _make_black_key_material()
+	clip.add_child(tex)
+
+	_ult_circle = circ
+
+	# Clickable button overlay
+	var btn := Button.new()
+	btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	btn.add_theme_stylebox_override("normal",   _flat(Color(0,0,0,0), Color(0,0,0,0), int(ULT_R)))
+	btn.add_theme_stylebox_override("hover",    _flat(Color(1,1,1,0.10), Color(col.r,col.g,col.b,0.6), int(ULT_R), 2))
+	btn.add_theme_stylebox_override("pressed",  _flat(Color(0,0,0,0.15), Color(0,0,0,0), int(ULT_R)))
+	btn.add_theme_stylebox_override("disabled", _flat(Color(0,0,0,0), Color(0,0,0,0)))
+	btn.add_theme_stylebox_override("focus",    StyleBoxFlat.new())
+	btn.text = ""
+	btn.pressed.connect(_on_ultimate)
+	btn.z_index = 1
+	circ.add_child(btn)
+	_btn_ult = btn
+
+	# "ULT" label sits as a small strip inside the circle's own bottom edge
+	# (with a dark backing bar for legibility over the art) rather than
+	# below it — the ring is tight enough that a label below the circle
+	# lands underneath the EndTurn button right below it.
+	var lbl_bg := Panel.new()
+	lbl_bg.size     = Vector2(ULT_R * 2, 15)
+	lbl_bg.position = Vector2(0, ULT_R * 2 - 15)
+	lbl_bg.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0.45), Color(0,0,0,0), 0))
+	lbl_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(lbl_bg)
+
+	var lbl := Label.new()
+	lbl.text = "ULT"
+	lbl.size = Vector2(ULT_R * 2, 15)
+	lbl.position = Vector2(0, ULT_R * 2 - 15)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 10)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	circ.add_child(lbl)
+
+## Brightens (and gently pulses) the ULT circle once the gauge is fully charged, in place of a % readout.
+func _set_ult_glow(on: bool) -> void:
+	if on == _ult_glow_on: return
+	_ult_glow_on = on
+	if not is_instance_valid(_ult_glow_ring): return
+	var sb: StyleBoxFlat = _ult_glow_ring.get_theme_stylebox("panel")
+	if is_instance_valid(_ult_glow_tween): _ult_glow_tween.kill()
+	if on:
+		_ult_glow_tween = _ult_glow_ring.create_tween().set_loops()
+		_ult_glow_tween.tween_property(sb, "border_color:a", 0.55, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.parallel().tween_property(sb, "shadow_color:a", 0.35, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.chain().tween_property(sb, "border_color:a", 0.15, 0.5).set_trans(Tween.TRANS_SINE)
+		_ult_glow_tween.parallel().tween_property(sb, "shadow_color:a", 0.08, 0.5).set_trans(Tween.TRANS_SINE)
+	else:
+		_ult_glow_tween = _ult_glow_ring.create_tween().set_parallel(true)
+		_ult_glow_tween.tween_property(sb, "border_color:a", 0.0, 0.25)
+		_ult_glow_tween.tween_property(sb, "shadow_color:a", 0.0, 0.25)
+
+# ── Card info panel (slide in from right on hold) ─────────
+func _build_card_info_panel() -> void:
+	# Full-screen catcher shown once the info panel is open: a tap anywhere
+	# outside the panel frame closes it. Hidden until then. Sits above the
+	# cards but below the panel itself.
+	_info_backdrop = Control.new()
+	_info_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_info_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_info_backdrop.z_index = 110
+	_info_backdrop.visible = false
+	_info_backdrop.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed:
+			_hide_card_info()
+	)
+	add_child(_info_backdrop)
+
+	_info_panel = Panel.new()
+	_info_panel.size     = Vector2(320, 400)
+	_info_panel.position = Vector2(1160, 56)  # off-screen
+	_info_panel.add_theme_stylebox_override("panel",
+		_flat(Color(0.05, 0.07, 0.16, 0.97), Color(0.35, 0.62, 1.0, 0.35), 12, 1))
+	# Panel absorbs taps inside the frame so tapping the description itself
+	# does not close it — only taps outside (on the backdrop) close it.
+	_info_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Hard safety net: nothing drawn inside can ever spill past the rounded
+	# frame, no matter how long a label's text is.
+	_info_panel.clip_contents = true
+	_info_panel.z_index = 120
+	add_child(_info_panel)
+
+func _show_card_info(id: String) -> void:
+	if not is_instance_valid(_info_panel): return
+	var data: Dictionary = CARD_DB.get(id, {})
+	if data.is_empty(): return
+	for c in _info_panel.get_children(): c.queue_free()
+
+	var col: Color = data.get("color", Color(0.5,0.5,0.8))
+	var ctype: String = data.get("type","element")
+
+	# Top color stripe
+	var stripe := ColorRect.new()
+	stripe.size  = Vector2(320, 3); stripe.color = Color(col.r, col.g, col.b, 0.7)
+	stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(stripe)
+
+	# Symbol large. Longer formulas (e.g. "NaH", "NaCl", "Fe₂O₃") are drawn at
+	# a smaller size so they stay inside the left column and never overlap the
+	# name/type text that begins at x=88.
+	var sym: String = data.get("symbol", data.get("name", id))
+	var sym_fs := 48
+	match sym.length():
+		1, 2: sym_fs = 48
+		3:    sym_fs = 34
+		4:    sym_fs = 26
+		_:    sym_fs = 22
+	var sym_lbl := Label.new()
+	sym_lbl.text = sym; sym_lbl.position = Vector2(16, 14)
+	sym_lbl.size = Vector2(66, 52)
+	sym_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	sym_lbl.add_theme_font_size_override("font_size", sym_fs)
+	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.88))
+	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(sym_lbl)
+
+	# Name + type — width-capped so long names (e.g. "Magnesium Oxide")
+	# truncate with an ellipsis instead of running past the panel edge.
+	var name_lbl := Label.new()
+	name_lbl.text = data.get("name", id)
+	name_lbl.position = Vector2(88, 18)
+	name_lbl.size = Vector2(216, 26)
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	name_lbl.add_theme_font_size_override("font_size", 18)
+	name_lbl.add_theme_color_override("font_color", C_TEXT)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(name_lbl)
+
+	# Type chip
+	var type_info: Dictionary = ELEM_INFO.get(id, {})
+	var type_str: String = type_info.get("type", ctype.to_upper())
+	var type_lbl := Label.new()
+	type_lbl.text = type_str; type_lbl.position = Vector2(88, 42)
+	type_lbl.size = Vector2(216, 18)
+	type_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	type_lbl.add_theme_font_size_override("font_size", 11)
+	type_lbl.add_theme_color_override("font_color", Color(col.r + 0.1, col.g, col.b, 0.75))
+	type_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(type_lbl)
+
+	# Divider
+	var div := ColorRect.new()
+	div.color = Color(1,1,1,0.08); div.size = Vector2(288, 1); div.position = Vector2(16, 76)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info_panel.add_child(div)
+
+	# Real-world description
+	var desc_str: String = type_info.get("desc", data.get("desc", ""))
+	if not desc_str.is_empty():
+		var hdr := Label.new()
+		hdr.text = "ข้อมูลจริง"; hdr.position = Vector2(16, 86)
+		hdr.add_theme_font_size_override("font_size", 10)
+		hdr.add_theme_color_override("font_color", C_GOLD)
+		hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(hdr)
+		# Label lives inside a hard-clipped Control (same proven pattern as the
+		# codex detail popup) so a long Thai description is bounded both across
+		# and down — it can never run past the panel edge or bleed into the
+		# section below it.
+		var desc_clip := Control.new()
+		desc_clip.position = Vector2(16, 102)
+		desc_clip.size = Vector2(288, 86)
+		desc_clip.clip_contents = true
+		desc_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(desc_clip)
+		var desc_lbl := Label.new()
+		desc_lbl.text = desc_str
+		desc_lbl.add_theme_font_size_override("font_size", 11)
+		desc_lbl.add_theme_constant_override("line_spacing", 6)
+		desc_lbl.add_theme_color_override("font_color", Color(0.80, 0.88, 1.0, 0.80))
+		# Anchor-fill the clip so autowrap has a real fixed width. A free Label
+		# with only .size set does NOT reliably wrap here — it ran off the frame
+		# on one line. FULL_RECT (parent = the fixed-size clip) is what wraps.
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+		desc_clip.add_child(desc_lbl)
+		desc_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	# Game effect
+	var effect_y := 196.0
+	if data.has("desc") and ctype != "element":
+		var div2 := ColorRect.new()
+		div2.color = Color(1,1,1,0.08); div2.size = Vector2(288,1); div2.position = Vector2(16, effect_y - 8)
+		div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(div2)
+		var eff_hdr := Label.new()
+		eff_hdr.text = "ผลในเกม"; eff_hdr.position = Vector2(16, effect_y)
+		eff_hdr.add_theme_font_size_override("font_size", 10)
+		eff_hdr.add_theme_color_override("font_color", C_GOLD)
+		eff_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(eff_hdr)
+		var eff_clip := Control.new()
+		eff_clip.position = Vector2(16, effect_y + 16)
+		eff_clip.size = Vector2(288, 48)
+		eff_clip.clip_contents = true
+		eff_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(eff_clip)
+		var eff_lbl := Label.new()
+		eff_lbl.text = data["desc"]
+		eff_lbl.add_theme_font_size_override("font_size", 12)
+		eff_lbl.add_theme_constant_override("line_spacing", 5)
+		eff_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.65, 0.9))
+		eff_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		eff_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+		eff_clip.add_child(eff_lbl)
+		eff_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	# What this element combines with — only shown once the resulting
+	# compound has actually been discovered in the lab minigame, so this
+	# doesn't just hand out every recipe for free from the battle screen.
+	if ctype == "element":
+		var combo_y := 196.0
+		var div3 := ColorRect.new()
+		div3.color = Color(1,1,1,0.08); div3.size = Vector2(288,1); div3.position = Vector2(16, combo_y - 8)
+		div3.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(div3)
+		var combo_hdr := Label.new()
+		# One-time hint here, so each row below can stay short (a "(ผสมที่ Lab
+		# เพื่อค้นพบ)" tail on every locked row overran the narrow panel).
+		combo_hdr.text = "ผสมกับ  (🔒 = ยังไม่ค้นพบ ผสมที่ Lab)"
+		combo_hdr.position = Vector2(16, combo_y)
+		combo_hdr.custom_minimum_size = Vector2(288, 0)
+		combo_hdr.size = Vector2(288, 14)
+		combo_hdr.add_theme_font_size_override("font_size", 10)
+		combo_hdr.add_theme_color_override("font_color", C_GOLD)
+		combo_hdr.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		combo_hdr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(combo_hdr)
+
+		var cy := combo_y + 18.0
+		for key in RECIPES.keys():
+			var parts: PackedStringArray = key.split("+")
+			if id not in parts: continue
+			# Partner is the other symbol/abbreviation in the recipe (e.g. "O").
+			var other: String = parts[0] if parts[1] == id else parts[1]
+			var result: String = RECIPES[key]
+			var result_th: String = RESULT_TH.get(result, "")
+			var result_en: String = CARD_DB.get(result, {}).get("name", result)
+			var result_disp: String = result_en
+			if result_th != "":
+				result_disp = "%s (%s)" % [result_th, result_en]
+			var ability: String = CARD_DB.get(result, {}).get("desc", "")
+			# Name line: partner symbol + result "Thai (English)".
+			var name_text: String
+			var name_col: Color
+			if _is_elem_unlocked(other):
+				name_text = "• %s + %s → %s" % [sym, other, result_disp]
+				name_col = Color(0.4, 0.9, 0.65, 0.9)
+			else:
+				# Partner element itself not unlocked yet — full mystery.
+				name_text = "• %s + ??? → ???" % [sym]
+				name_col = Color(0.55, 0.58, 0.68, 0.75)
+				ability = ""
+			var combo_lbl := Label.new()
+			combo_lbl.text = name_text
+			combo_lbl.add_theme_color_override("font_color", name_col)
+			combo_lbl.position = Vector2(16, cy)
+			combo_lbl.custom_minimum_size = Vector2(288, 0)
+			combo_lbl.size = Vector2(288, 16)
+			combo_lbl.add_theme_font_size_override("font_size", 10)
+			combo_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			combo_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_info_panel.add_child(combo_lbl)
+			cy += 15.0
+			# Ability line underneath the name.
+			if ability != "":
+				var ab_lbl := Label.new()
+				ab_lbl.text = "     " + ability
+				ab_lbl.add_theme_color_override("font_color", Color(0.72, 0.80, 0.95, 0.7))
+				ab_lbl.position = Vector2(16, cy)
+				ab_lbl.custom_minimum_size = Vector2(288, 0)
+				ab_lbl.size = Vector2(288, 14)
+				ab_lbl.add_theme_font_size_override("font_size", 9)
+				ab_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				ab_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				_info_panel.add_child(ab_lbl)
+				cy += 14.0
+			cy += 3.0
+
+	# AP cost
+	if data.has("ap"):
+		var ap_lbl2 := Label.new()
+		ap_lbl2.text = "AP Cost: %d" % data["ap"]
+		ap_lbl2.position = Vector2(16, 370)
+		ap_lbl2.add_theme_font_size_override("font_size", 11)
+		ap_lbl2.add_theme_color_override("font_color", C_AP)
+		ap_lbl2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_info_panel.add_child(ap_lbl2)
+
+	# Slide in — stops well clear of the ⋮ "more options" button (top-right,
+	# x 1104-1148) instead of tucking its right edge almost underneath it.
+	var t := _info_panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_info_panel, "position:x", 760.0, 0.20)
+
+func _hide_card_info() -> void:
+	if not is_instance_valid(_info_panel): return
+	if is_instance_valid(_info_backdrop):
+		_info_backdrop.visible = false
+	_info_shown = false
+	var t := _info_panel.create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+	t.tween_property(_info_panel, "position:x", 1160.0, 0.15)
+
+# ── Card tap handler (replaces old _on_card_click) ────────
+func _on_card_tap(id: String, idx: int) -> void:
+	if not _player_turn or _battle_over: return
+	var data: Dictionary = CARD_DB.get(id, {})
+	match data.get("type", "element"):
+		"element":  _handle_element_select(id, idx)
+		"reaction": _use_reaction_card(id)
+		"support":  _use_support_card(id)
+
+# ════════════════════════════════════════════════════════════
+#  GAME SETUP
+# ════════════════════════════════════════════════════════════
+func _build_stage_clear_fx() -> void:
+	var fx := preload("res://stage_clear_screen.gd").new()
+	add_child(fx)
+	fx.return_to_menu_requested.connect(func(): SceneTransition.fade_to(SC_MAIN))
+	_stage_clear_fx = fx
+
+func _build_element_fx() -> void:
+	var fx := preload("res://element_card_system.gd").new()
+	fx.player_pos = Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + PLAYER_H * 0.5)
+	fx.enemy_pos  = Vector2(ENEMY_CX, ENEMY_CY)
+	fx.z_index    = 25
+	add_child(fx)
+	_element_fx = fx
+
+func _build_battle_fx() -> void:
+	var fx := preload("res://battle_effects.gd").new()
+	fx.player_pos  = Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + PLAYER_H * 0.5)
+	fx.enemy_pos   = Vector2(ENEMY_CX, ENEMY_CY)
+	fx.player_node = _player_sprite
+	fx.enemy_node  = _enemy_circle
+	fx.shake_root  = self
+	fx.z_index     = 26
+	add_child(fx)
+	_battle_fx = fx
+
+func _build_slash_fx() -> void:
+	var fx := preload("res://slash_effect.gd").new()
+	fx.shake_root = self
+	fx.z_index    = 27
+	add_child(fx)
+	_slash_fx = fx
+
+func _create_enemy() -> void:
+	# Matches the enemy-info popup shown before battle: Stage 1 = Void Beast, Stage 2 (final) = Void Dragon
+	# weak_reaction = the reaction card that exploits this enemy's weakness (see _use_reaction_card)
+	if _current_stage >= FINAL_STAGE:
+		_enemy_data = {"name":"Void Dragon","hp":1000,"attack":50,"type":"boss","img":"res://image/void_dragon.png","weak_reaction":"Water"}
+	else:
+		_enemy_data = {"name":"Void Beast","hp":1000,"attack":50,"type":"attack","img":"res://image/void_beast.png","weak_reaction":"Rust"}
+	_enemy_hp = _enemy_data["hp"]
+	_e_unit = BattleStats.Unit.new(int(_enemy_data["hp"]), int(_enemy_data.get("attack", 10)))
+	_refresh_enemy_sprite()
+
+func _refresh_enemy_sprite() -> void:
+	if not _enemy_sprite_tex: return
+	var img_path: String = str(_enemy_data.get("img", ""))
+	var tex: Texture2D = _get_keyed_texture(img_path) if img_path != "" else null
+	if tex:
+		_enemy_sprite_tex.texture  = tex
+		_enemy_sprite_tex.visible  = true
+		_enemy_sprite_lbl.visible  = false
+	else:
+		_enemy_sprite_tex.visible  = false
+		_enemy_sprite_lbl.visible  = true
+	_start_enemy_bob()
+
+## Idle bob loop for the enemy circle. Stage 1 (Void Beast) sits a bit lower than
+## the default perch height, per request.
+const ENEMY_BASE_SIZE       := 140.0
+const ENEMY_SCALE_STAGE1    := 1.25   # Void Beast reads a bit bigger/clearer
+const ENEMY_SCALE_FINAL     := 2.3    # final-stage boss reads even bigger/more imposing
+const ENEMY_Y_OFFSET_STAGE1 := 125.0  # stage-1 monster sits further down than the boss
+# Keeps the same top-edge clearance as before (below the HP panel + its buff
+# row) at the new larger scale: half-size grew from 133 to 161, so the
+# offset grows by the same 28px to keep the top edge in the same place.
+const ENEMY_Y_OFFSET_FINAL  := 113.0
+
+func _start_enemy_bob() -> void:
+	if not is_instance_valid(_enemy_circle): return
+	if is_instance_valid(_enemy_bob_tween): _enemy_bob_tween.kill()
+
+	var is_final    := _current_stage >= FINAL_STAGE
+	var scale_mult  := ENEMY_SCALE_FINAL if is_final else ENEMY_SCALE_STAGE1
+	var size        := ENEMY_BASE_SIZE * scale_mult
+	var y_offset     := ENEMY_Y_OFFSET_FINAL if is_final else ENEMY_Y_OFFSET_STAGE1
+
+	_enemy_circle.size = Vector2(size, size)
+	# No backing circle — stays fully transparent regardless of size.
+	_enemy_circle.add_theme_stylebox_override("panel",
+		_flat(Color(0,0,0,0), Color(0,0,0,0), int(size * 0.5), 0))
+
+	if _enemy_shadow:
+		var shadow_w := 140.0 * scale_mult
+		var shadow_h := 34.0 * scale_mult
+		_enemy_shadow.size     = Vector2(shadow_w, shadow_h)
+		_enemy_shadow.position = Vector2(ENEMY_CX - shadow_w * 0.5, ENEMY_CY + 110.0 + y_offset)
+
+	var base_y := ENEMY_CY - size * 0.5 + y_offset
+	_enemy_circle.position = Vector2(ENEMY_CX - size * 0.5, base_y)
+	_enemy_bob_tween = _enemy_circle.create_tween().set_loops()
+	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y - 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_enemy_bob_tween.tween_property(_enemy_circle, "position:y", base_y + 6.0, 1.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+## Screen position of the monster's visual centre — damage numbers and the
+## slash land here. The enemy is drawn at ENEMY_CY plus its per-stage Y offset
+## (same offset used in _start_enemy_bob), so hits must use the same value or
+## they float up above the monster's head.
+func _enemy_hit_pos() -> Vector2:
+	var yo := ENEMY_Y_OFFSET_FINAL if _current_stage >= FINAL_STAGE else ENEMY_Y_OFFSET_STAGE1
+	return Vector2(ENEMY_CX, ENEMY_CY + yo)
+
+## An element counts as "unlocked" (shown with a name / tappable in the
+## codex) if ReactionDB marks it unlocked or the player discovered it.
+func _is_elem_unlocked(sym: String) -> bool:
+	if sym in PlayerData.discovered_elements: return true
+	for e in ReactionDB.ELEMENTS:
+		if e.get("symbol", "") == sym:
+			return e.get("unlocked", false)
+	return false
+
+func _build_deck() -> void:
+	_deck = []
+	if PlayerData.battle_deck_ready:
+		for sym in PlayerData.battle_elem_deck:
+			if not CARD_DB.has(sym): continue
+			var cnt: int = PlayerData.battle_elem_deck[sym]
+			for _i in cnt: _deck.append(sym)
+		for sname in PlayerData.battle_supp_deck:
+			if not CARD_DB.has(sname): continue
+			var cnt2: int = PlayerData.battle_supp_deck[sname]
+			for _i in cnt2: _deck.append(sname)
+	if _deck.is_empty():
+		# Fallback default 20-card deck: 16 elements + 4 supports
+		for _i in 4: _deck.append("H")
+		for _i in 4: _deck.append("O")
+		for _i in 3: _deck.append("Na")
+		for _i in 3: _deck.append("Cl")
+		for _i in 2: _deck.append("Fe")
+		for _i in 2: _deck.append("Draw2")
+		for _i in 2: _deck.append("RecoverAP")
+	_deck.shuffle()
+	_discard = []
+	_reshuffle_count = 0
+
+# ════════════════════════════════════════════════════════════
+#  DECK / DRAW
+# ════════════════════════════════════════════════════════════
+func _draw_n(n: int) -> void:
+	for _i in n:
+		if _deck.is_empty():
+			_reshuffle()
+			if _deck.is_empty():
+				break
+		var idx := randi() % _deck.size()
+		_hand.append(_deck[idx])
+		_deck.remove_at(idx)
+	_refresh_hand()
+
+func _draw_one() -> void:
+	if _deck.is_empty():
+		_reshuffle()
+		if _deck.is_empty():
+			return
+	var idx := randi() % _deck.size()
+	_hand.append(_deck[idx])
+	_deck.remove_at(idx)
+	_refresh_hand()
+
+func _reshuffle() -> void:
+	if _discard.is_empty():
+		return
+	_reshuffle_count += 1
+	_deck = _discard.duplicate()
+	_discard.clear()
+	_deck.shuffle()
+	_msg("🔀 สับเด็คใหม่ (ครั้งที่ %d)" % _reshuffle_count)
+
+# ════════════════════════════════════════════════════════════
+#  HAND RENDERING
+# ════════════════════════════════════════════════════════════
+func _refresh_hand() -> void:
+	for c in _card_nodes:
+		if is_instance_valid(c): c.queue_free()
+	_card_nodes.clear()
+	var n := _hand.size()
+	for i in n:
+		var id: String = _hand[i]
+		var data: Dictionary = CARD_DB.get(id, {})
+		if data.is_empty(): continue
+		var card := _make_card_node(id, data, i, n)
+		add_child(card)
+		_card_nodes.append(card)
+
+const ELEM_INFO := {
+	"H":  {"desc":"ธาตุที่เบาที่สุด พบมากที่สุดในจักรวาล 75% ของมวลสาร ใช้เป็นเชื้อเพลิงสะอาด", "type":"Nonmetal"},
+	"O":  {"desc":"ก๊าซ 21% ของบรรยากาศโลก จำเป็นต่อการหายใจของสิ่งมีชีวิต",                     "type":"Nonmetal"},
+	"Na": {"desc":"โลหะอ่อนสีเงิน ระเบิดรุนแรงเมื่อสัมผัสน้ำ ควบคุมแรงดันเลือดในร่างกาย",       "type":"Alkali Metal"},
+	"Cl": {"desc":"แก๊สพิษสีเหลือง-เขียว เคยใช้เป็นอาวุธในสงครามโลก ปัจจุบันใช้ฆ่าเชื้อ",       "type":"Halogen"},
+	"Fe": {"desc":"โลหะที่พบมากที่สุดในโลก เป็นส่วนประกอบหลักของแกนโลก ใช้ในการก่อสร้าง",       "type":"Transition Metal"},
+	"C":  {"desc":"พบในสิ่งมีชีวิตทุกชนิด รากฐานของสารอินทรีย์ มีทั้งรูปกราไฟต์และเพชร",         "type":"Nonmetal"},
+	"N":  {"desc":"ก๊าซ 78% ของบรรยากาศโลก จำเป็นต่อโปรตีนและ DNA",                          "type":"Nonmetal"},
+	"S":  {"desc":"ธาตุสีเหลือง พบใกล้ภูเขาไฟ ใช้ผลิตกรดกำมะถันและยาง",                        "type":"Nonmetal"},
+	"Ca": {"desc":"โลหะที่พบมากในกระดูกและฟัน จำเป็นต่อการหดตัวของกล้ามเนื้อ",                  "type":"Alkaline Earth Metal"},
+	"Mg": {"desc":"โลหะเบา จำเป็นต่อคลอโรฟิลล์ในพืชและการทำงานของกล้ามเนื้อ",                   "type":"Alkaline Earth Metal"},
+	"K":  {"desc":"โลหะอ่อนสีเงิน ควบคุมสัญญาณประสาทและการเต้นของหัวใจ",                        "type":"Alkali Metal"},
+}
+
+func _make_card_node(id: String, data: Dictionary, idx: int, total: int) -> Control:
+	var ctype: String = data.get("type", "element")
+	var col:   Color  = data.get("color", Color(0.5,0.5,0.6))
+	# "glowing": every card of the selected element lights up (border/tint).
+	# "lifted": only the exact card that was tapped rises/scales up — duplicate
+	# copies of the same element just glow in place instead of jumping too.
+	var glowing := (_selected_elem == id and ctype == "element")
+	var lifted  := (glowing and _selected_card_idx == idx)
+
+	# Pack factor: 0 at/under HAND_FULL_COUNT cards, 1 at/over HAND_MAX_COUNT —
+	# drives both the per-card scale and how tightly cards overlap.
+	var pack_t: float = clampf((float(total) - HAND_FULL_COUNT) / (HAND_MAX_COUNT - HAND_FULL_COUNT), 0.0, 1.0)
+	var pack_scale := lerpf(1.0, PACK_SCALE_MIN, pack_t)
+	var step_frac  := lerpf(PACK_STEP_FULL, PACK_STEP_MIN, pack_t)
+
+	# Fan position on arc — step is a pixel distance (scaled card width x
+	# overlap fraction) converted to an arc angle, so a bigger/smaller hand
+	# packs tighter automatically instead of spreading wider off-screen.
+	var half      := (total - 1) / 2.0
+	var step_px   := CARD_W * pack_scale * step_frac
+	var step_rad  := step_px / FAN_ARC_R
+	var angle_rad := (idx - half) * step_rad
+	var bx        := FAN_CENTER_X + FAN_ARC_R * sin(angle_rad)
+	var by        := FAN_BASE_Y   + FAN_ARC_R * (1.0 - cos(angle_rad))
+
+	var border_a := 0.9 if glowing else 0.35
+	var bg_r     := 0.28 if glowing else 0.10
+	var bw       := 2   if glowing else 1
+	var panel    := Panel.new()
+	panel.size          = Vector2(CARD_W, CARD_H)
+	panel.position      = Vector2(bx - CARD_W * 0.5, by - CARD_H)
+	panel.pivot_offset  = Vector2(CARD_W * 0.5, CARD_H)
+	# Cards keep the fan SPREAD (arc positions above still use the full angle)
+	# but stay upright — no per-card tilt — so the symbol and name always sit
+	# dead-centre and horizontal instead of leaning off to one side.
+	panel.rotation      = 0.0
+	panel.z_index       = 8 + idx
+	panel.mouse_filter  = Control.MOUSE_FILTER_STOP
+	panel.add_theme_stylebox_override("panel",
+		_flat(Color(col.r*bg_r, col.g*bg_r, col.b*(bg_r+0.06), 1.0),
+			  Color(col.r, col.g, col.b, border_a), 12, bw))
+
+	# Build frame tex — added last so it renders on top of all content
+	var frame_tier := 1
+	if ctype == "reaction":
+		frame_tier = clampi(int(data.get("tier", 1)), 1, 4)
+	var frame_tex := TextureRect.new()
+	frame_tex.texture      = load("res://image/g%d.jpg" % frame_tier)
+	frame_tex.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
+	frame_tex.stretch_mode = TextureRect.STRETCH_SCALE
+	# Bigger than the card so frame fully covers all edges
+	const FRAME_PAD := 12.0
+	frame_tex.size     = Vector2(CARD_W + FRAME_PAD * 2, CARD_H + FRAME_PAD * 2)
+	frame_tex.position = Vector2(-FRAME_PAD, -FRAME_PAD)
+	frame_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame_mat := CanvasItemMaterial.new()
+	frame_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	frame_tex.material = frame_mat
+
+	var tag_txt: String
+	match ctype:
+		"element":  tag_txt = "ELEMENT"
+		"reaction": tag_txt = "TIER%d %dAP" % [data.get("tier",1), data.get("ap",1)]
+		"support":  tag_txt = "SUPPORT %dAP" % data.get("ap",1)
+	var tag := Label.new()
+	tag.text = tag_txt; tag.position = Vector2(5, 6)
+	tag.add_theme_font_size_override("font_size", 9)
+	tag.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.60))
+	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(tag)
+
+	# Big symbol
+	var sym: String = data.get("symbol", data.get("name","?"))
+	var sym_lbl := Label.new()
+	sym_lbl.text = sym
+	sym_lbl.size = Vector2(CARD_W, 64)
+	sym_lbl.position = Vector2(0, 22)
+	sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sym_lbl.add_theme_font_size_override("font_size", 36 if ctype == "element" else 18)
+	sym_lbl.add_theme_color_override("font_color", Color(col.r, col.g, col.b, 0.9))
+	sym_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(sym_lbl)
+
+	# Divider
+	var div := ColorRect.new()
+	div.color = Color(col.r, col.g, col.b, 0.18)
+	div.size  = Vector2(CARD_W - 10, 1); div.position = Vector2(5, 88)
+	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(div)
+
+	# Name — centred inside a hard clip so a long name (e.g. "Hydrogen
+	# Sulfide") can never spill past the card edges: the clip bounds it, a
+	# smaller font helps it fit, and autowrap lets it break onto a 2nd line
+	# rather than overflow. (A free Label's .size alone doesn't constrain its
+	# width, so a plain ellipsis wasn't trimming it.)
+	var name_clip := Control.new()
+	name_clip.position = Vector2(3, 90)
+	name_clip.size = Vector2(CARD_W - 6, 44)
+	name_clip.clip_contents = true
+	name_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(name_clip)
+	var name_lbl := Label.new()
+	name_lbl.text = data.get("name", id)
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_lbl.add_theme_font_size_override("font_size", 10)
+	name_lbl.add_theme_color_override("font_color", C_TEXT)
+	name_lbl.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	name_clip.add_child(name_lbl)
+	name_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	# Selection glow — every card sharing the selected element lights up,
+	# even the ones that aren't physically lifted.
+	if glowing:
+		var glow := ColorRect.new()
+		glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		glow.color = Color(col.r, col.g, col.b, 0.12)
+		glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.add_child(glow)
+
+	# Frame on top of all content (BLEND_MODE_ADD: dark center = transparent)
+	panel.add_child(frame_tex)
+
+	# Hover / lifted: rise up, scale up slightly, and bring to front so the
+	# active card is never obscured by its overlapping neighbors. Only the
+	# exact tapped card lifts — duplicates of the same element just glow.
+	var base_y   := by - CARD_H
+	var base_z   := 8 + idx
+	const HOVER_LIFT  := 18.0
+	const HOVER_SCALE := 1.10   # absolute pop-up scale, independent of pack_scale
+	var base_scale := Vector2(pack_scale, pack_scale)
+	panel.scale = base_scale
+	if lifted:
+		panel.position.y = base_y - HOVER_LIFT
+		panel.scale       = Vector2(HOVER_SCALE, HOVER_SCALE)
+		panel.z_index     = 100
+
+	panel.mouse_entered.connect(func():
+		panel.z_index = 100
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
+		t.tween_property(panel, "position:y", base_y - HOVER_LIFT, 0.14)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE), 0.14)
+	)
+	panel.mouse_exited.connect(func():
+		var still_lifted := _selected_elem == id and ctype == "element" and _selected_card_idx == idx
+		var t := panel.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC).set_parallel(true)
+		t.tween_property(panel, "position:y", base_y - HOVER_LIFT if still_lifted else base_y, 0.12)
+		t.tween_property(panel, "scale", Vector2(HOVER_SCALE, HOVER_SCALE) if still_lifted else base_scale, 0.12)
+		if not still_lifted:
+			t.chain().tween_callback(func(): panel.z_index = base_z)
+		else:
+			panel.z_index = 100
+	)
+
+	# Tap / Hold detection
+	panel.gui_input.connect(func(ev: InputEvent):
+		if not (ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT):
+			return
+		if ev.pressed:
+			_press_card_id = id
+			_press_start   = Time.get_ticks_msec() / 1000.0
+			_info_shown    = false
+		else:
+			var held := Time.get_ticks_msec() / 1000.0 - _press_start
+			_press_start = -1.0
+			if _info_shown:
+				# Long-press opened the description — keep it open after the
+				# finger lifts. Arm the backdrop so the next tap outside the
+				# frame closes it. Don't treat this as a play tap.
+				if is_instance_valid(_info_backdrop):
+					_info_backdrop.visible = true
+			elif held < HOLD_THRESH and _player_turn and not _battle_over:
+				_on_card_tap(id, idx)
+	)
+	# Recover AP card is unplayable while AP is full — dim it so it reads as
+	# disabled (the tap itself is blocked in _use_support_card).
+	if id == "RecoverAP" and _ap >= MAX_AP:
+		panel.modulate = Color(0.5, 0.52, 0.58, 0.7)
+	return panel
+
+# ════════════════════════════════════════════════════════════
+#  CARD INTERACTION
+# ════════════════════════════════════════════════════════════
+func _handle_element_select(id: String, idx: int) -> void:
+	if _selected_elem == "":
+		_selected_elem = id
+		_selected_card_idx = idx
+		_refresh_hand()
+	elif _selected_elem == id:
+		# Deselect — same element type tapped again
+		_selected_elem = ""
+		_selected_card_idx = -1
+		_refresh_hand()
+		_msg("ยกเลิกการเลือก")
+	else:
+		_try_reaction(_selected_elem, id)
+
+func _try_reaction(a: String, b: String) -> void:
+	var pair: Array[String] = [a, b]
+	pair.sort()
+	var key: String = pair[0] + "+" + pair[1]
+
+	_selected_elem = ""
+	_selected_card_idx = -1
+
+	if RECIPES.has(key):
+		var result: String = RECIPES[key]
+		_remove_from_hand(a)
+		_remove_from_hand(b)
+		_discard.append(a)
+		_discard.append(b)
+		_hand.append(result)
+		# First successful reaction per turn gives +20 gauge
+		if not _reaction_gauge_used:
+			_add_gauge(20)
+			_reaction_gauge_used = true
+		_msg("⚗ %s + %s → %s! ✨" % [CARD_DB[a]["name"], CARD_DB[b]["name"], result])
+		_refresh_hand()
+		_refresh_ui()
+		if _element_fx: _element_fx.play_craft(result)
+	else:
+		_msg("❌ %s + %s ไม่เกิดปฏิกิริยา" % [CARD_DB[a]["name"], CARD_DB[b]["name"]])
+		_refresh_hand()
+		if _element_fx: _element_fx.play_no_reaction()
+
+func _use_reaction_card(id: String) -> void:
+	var data: Dictionary = CARD_DB.get(id, {})
+	var cost: int = data.get("ap", 1)
+	if _ap < cost:
+		_msg("❌ AP ไม่พอ (ต้องการ %d AP)" % cost); return
+
+	_ap -= cost
+	_add_gauge(15)
+	_remove_from_hand(id)
+	# Reaction cards vanish — not added to discard
+
+	match id:
+		"Water":
+			BattleStats.apply_effect(_p_unit, {"kind": "heal", "amount": 20}, "Water")
+			_player_hp = _p_unit.hp
+			_msg("💧 Water — ฟื้นฟู HP +20")
+			if _element_fx: _element_fx.play_use("Water")
+		"Salt":
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 20}, "Salt")
+			_player_shield = _p_unit.shield_hp
+			_msg("🧂 Salt — Shield +20")
+			if _element_fx: _element_fx.play_use("Salt")
+		"Rust":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 5, "turns": 4}, "Rust")
+			_msg("🦠 Rust — ศัตรูติดพิษ +5/เทิร์น (4 เทิร์น)")
+			if _element_fx: _element_fx.play_use("Rust")
+		"CO2":
+			BattleStats.apply_effect(_e_unit, {"kind": "def_down", "value": 0.20, "turns": 2}, "CO2")
+			_msg("💨 Carbon Dioxide — ลดเกราะศัตรู 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("CO2")
+		"NO":
+			BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.20, "turns": 2}, "NO")
+			_msg("☁ Nitric Oxide — ลด ATK ศัตรู 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("NO")
+		"SO2":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 4, "turns": 4}, "SO2")
+			_msg("☠ Sulfur Dioxide — ศัตรูติดพิษ +4/เทิร์น (4 เทิร์น)")
+			if _element_fx: _element_fx.play_use("SO2")
+		"CaO":
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 15}, "CaO")
+			_player_shield = _p_unit.shield_hp
+			_msg("🛡 Calcium Oxide — Shield +15")
+			if _element_fx: _element_fx.play_use("CaO")
+		"MgO":
+			BattleStats.apply_effect(_p_unit, {"kind": "heal", "amount": 15}, "MgO")
+			_player_hp = _p_unit.hp
+			_msg("💊 Magnesium Oxide — ฟื้นฟู HP +15")
+			if _element_fx: _element_fx.play_use("MgO")
+		"K2O":
+			BattleStats.apply_effect(_p_unit, {"kind": "atk_up", "value": 0.20, "turns": 2}, "K2O")
+			_msg("🔥 Potassium Oxide — เพิ่ม ATK 20% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("K2O")
+		"HCl":
+			BattleStats.apply_damage_with_shields(_e_unit, 25)
+			_enemy_hp = _e_unit.hp
+			_msg("🧪 Hydrochloric Acid — โจมตีศัตรู 25 ดาเมจ")
+			if _element_fx: _element_fx.play_use("HCl")
+		"FeS":
+			BattleStats.apply_effect(_e_unit, {"kind": "def_down", "value": 0.15, "turns": 2}, "FeS")
+			_msg("⛏ Iron Sulfide — ลดเกราะศัตรู 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("FeS")
+		"NaH":
+			BattleStats.apply_effect(_p_unit, {"kind": "atk_up", "value": 0.15, "turns": 2}, "NaH")
+			_msg("⚡ Sodium Hydride — เพิ่ม ATK 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("NaH")
+		"CH4":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 3, "turns": 3}, "CH4")
+			_msg("🔥 Methane — ศัตรูติดพิษ +3/เทิร์น (3 เทิร์น)")
+			if _element_fx: _element_fx.play_use("CH4")
+		"H2S":
+			BattleStats.apply_effect(_e_unit, {"kind": "poison", "amount": 6, "turns": 2}, "H2S")
+			_msg("☠ Hydrogen Sulfide — ศัตรูติดพิษ +6/เทิร์น (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("H2S")
+		"CaH2":
+			BattleStats.apply_effect(_p_unit, {"kind": "shield", "amount": 20}, "CaH2")
+			_player_shield = _p_unit.shield_hp
+			_msg("🛡 Calcium Hydride — Shield +20")
+			if _element_fx: _element_fx.play_use("CaH2")
+		"Na3N":
+			BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.15, "turns": 2}, "Na3N")
+			_msg("☁ Sodium Nitride — ลด ATK ศัตรู 15% (2 เทิร์น)")
+			if _element_fx: _element_fx.play_use("Na3N")
+		"CaC2":
+			BattleStats.apply_damage_with_shields(_e_unit, 30)
+			_enemy_hp = _e_unit.hp
+			_msg("💥 Calcium Carbide — โจมตีศัตรู 30 ดาเมจ")
+			if _element_fx: _element_fx.play_use("CaC2")
+
+	# Weakness break: using the reaction this enemy is weak to exposes it,
+	# raising the damage it takes for 2 turns (see BattleStats "weak" status)
+	if id == str(_enemy_data.get("weak_reaction", "")):
+		BattleStats.apply_effect(_e_unit, {"kind": "weak", "amount": 50, "turns": 2}, id)
+		_msg("💥 จุดอ่อน! %s เปิดจุดอ่อน — รับดาเมจเพิ่ม 50%% (2 เทิร์น)" % _enemy_data.get("name","ศัตรู"))
+	_refresh_effect_rows()
+
+	_refresh_hand()
+	_refresh_ui()
+	_check_battle()
+
+func _use_support_card(id: String) -> void:
+	var data: Dictionary = CARD_DB.get(id, {})
+	var cost: int = data.get("ap", 1)
+	# Recover AP is pointless (and blocked) while AP is already full.
+	if id == "RecoverAP" and _ap >= MAX_AP:
+		_msg("❌ AP เต็มอยู่แล้ว"); return
+	if _ap < cost:
+		_msg("❌ AP ไม่พอ (ต้องการ %d AP)" % cost); return
+
+	_ap -= cost
+	_add_gauge(5)
+	_remove_from_hand(id)
+	_discard.append(id)
+
+	match id:
+		"Draw2":
+			_draw_n(2)
+			_msg("📖 Draw 2 — จั่วการ์ด 2 ใบ")
+		"RecoverAP":
+			_ap = min(_ap + 2, MAX_AP)
+			_msg("⚡ Recover AP — ฟื้นฟู AP +2")
+
+	_refresh_hand()
+	_refresh_ui()
+
+func _remove_from_hand(id: String) -> void:
+	var i := _hand.find(id)
+	if i >= 0: _hand.remove_at(i)
+
+# ════════════════════════════════════════════════════════════
+#  MAIN ACTIONS
+# ════════════════════════════════════════════════════════════
+# ── Void Strike — Basic ATK ──────────────────────────────
+# ── Void Resonance passive — active only after using an element/reaction
+# card this turn, or while the enemy carries an active debuff ────────────
+func _void_resonance_active() -> bool:
+	return _reaction_gauge_used or _e_unit.has_debuff("ATK_DOWN")
+
+## HP/UI-facing refresh of the buff/debuff/status chip rows (see battle_stats.gd).
+func _refresh_effect_rows() -> void:
+	if _player_effect_row and _p_unit: BattleStats.rebuild_effect_row(_player_effect_row, _p_unit)
+	if _enemy_effect_row and _e_unit:  BattleStats.rebuild_effect_row(_enemy_effect_row, _e_unit)
+
+func _on_attack() -> void:
+	if not _player_turn or _main_action_done or _battle_over: return
+
+	# Attack costs no AP.
+	_main_action_done = true
+	_is_defending = false
+	_set_player_pose("atk")
+	# The attack visual is the single directional pressure wave in
+	# play_enemy_hit(); no separate slash trail or screen flash.
+
+	var base: int = CHARACTER["atk_base"]
+	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
+	var pre_weak_dmg := int(ceil(base * (1.0 + bonus)))   # 24, or ×1.20 = 28.8 → 29 when active
+	var weak := _e_unit.has_status("weak")
+	var dmg := BattleStats.compute_damage(_p_unit, _e_unit, pre_weak_dmg)
+
+	BattleStats.apply_damage_with_shields(_e_unit, dmg)
+	_enemy_hp = _e_unit.hp
+	_add_gauge(10)
+	if _battle_fx:
+		_battle_fx.play_enemy_hit()
+		_battle_fx.spawn_number(_enemy_hit_pos(), dmg, "damage")
+	var weak_txt := "  💥จุดอ่อน" if weak else ""
+	if bonus > 0.0:
+		_msg("🌀 Void Strike — %d DMG  (+%.0f%% Void Resonance)%s" % [dmg, bonus * 100, weak_txt])
+	else:
+		_msg("🌀 Void Strike — %d DMG%s" % [dmg, weak_txt])
+	_flash_msg()
+	_refresh_ui()
+	_check_battle()
+	_arm_end_turn()   # End Turn unlocks 0.5s after the hit effect
+
+# ── Null Barrier — Defend (ไม่เสีย AP, ใช้แทน Attack/Skill ได้อย่างเดียวต่อเทิร์น) ──
+func _on_defend() -> void:
+	if not _player_turn or _main_action_done or _battle_over: return
+
+	# Defend costs no AP.
+	_main_action_done = true
+	_is_defending = true
+	_set_player_pose("def", 0.8)
+	if _battle_fx: _battle_fx.show_shield(true)
+	_add_gauge(5)
+	_msg("🛡 Null Barrier — ลดดาเมจ 50%")
+	_refresh_ui()
+	_arm_end_turn()
+
+# ── Aether Pulse — Skill (2 AP, ใช้แทน Attack/Defend ได้อย่างเดียวต่อเทิร์น) ──
+func _on_skill() -> void:
+	if not _player_turn or _main_action_done or _battle_over: return
+	if _skill_cd > 0: _msg("⏳ Aether Pulse CD เหลือ %d เทิร์น" % _skill_cd); return
+	if _ap < 2: _msg("❌ AP ไม่พอ (ต้องการ 2 AP)"); return
+
+	_ap -= 2
+	_main_action_done = true
+	_skill_cd = CHARACTER["skill_cd"]   # 3 turns
+	_set_player_pose("skl", 0.7)
+
+	# ฟื้น HP 15%
+	var heal := int(CHARACTER["max_hp"] * 0.15)
+	_player_hp = mini(_player_hp + heal, CHARACTER["max_hp"])
+
+	# สร้าง Void Shield
+	_p_unit.void_shield_charges += 1
+	if _battle_fx:
+		_battle_fx.play_aether_pulse()
+		_battle_fx.show_void_shield(true)
+		_battle_fx.spawn_number(Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + 40), heal, "heal")
+
+	_add_gauge(12)
+	_msg("✨ Aether Pulse — ฟื้น HP +%d  |  Void Shield พร้อม (รับดาเมจแทน HP 1 ครั้ง)" % heal)
+	_flash_msg()
+	_refresh_ui()
+	_arm_end_turn()
+
+# ── Absolute Zero Formula — Ultimate ─────────────────────
+func _on_ultimate() -> void:
+	if not _player_turn or _battle_over: return
+	if _ult_gauge < MAX_GAUGE: _msg("❌ Gauge ยังไม่เต็ม (%d/%d)" % [_ult_gauge, MAX_GAUGE]); return
+	if _ult_used:              _msg("❌ ใช้ Ultimate แล้วในเทิร์นนี้"); return
+
+	_ult_used  = true
+	_ult_gauge = 0
+	# Ultimate re-locks End Turn while it animates (and cancels any pending
+	# unlock from an earlier action). It only re-unlocks if a main action was
+	# already done this turn — using Ultimate on its own (before any
+	# Attack/Defend/Skill) does NOT unlock End Turn.
+	_end_turn_ready = false
+	_end_turn_arm_id += 1
+	_set_player_pose("ult", 0.9)
+	if _battle_fx: _battle_fx.play_ultimate()
+
+	# 55 DMG, + Void Resonance 20% only if already primed (reaction card
+	# used this turn, or enemy already carries a debuff from a prior cast)
+	var base_dmg: int = CHARACTER["ult_dmg"]
+	var bonus: float = CHARACTER["passive_bonus"] if _void_resonance_active() else 0.0
+	var pre_weak_dmg := int(ceil(base_dmg * (1.0 + bonus)))   # 55, or ×1.20 = 66 when active
+	var dmg := BattleStats.compute_damage(_p_unit, _e_unit, pre_weak_dmg)
+
+	BattleStats.apply_damage_with_shields(_e_unit, dmg)
+	_enemy_hp = _e_unit.hp
+	if _battle_fx: _battle_fx.spawn_number(_enemy_hit_pos(), dmg, "damage")
+
+	# debuff: ลด ATK ศัตรู 30% เป็นเวลา 2 เทิร์น
+	BattleStats.apply_effect(_e_unit, {"kind": "atk_down", "value": 0.30, "turns": 2}, "Absolute Zero Formula")
+	_refresh_effect_rows()
+
+	if bonus > 0.0:
+		_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว (+%.0f%% Void Resonance) | ลด ATK ศัตรู 30%% × 2 เทิร์น" % [dmg, bonus * 100])
+	else:
+		_msg("🌑 Absolute Zero Formula — %d DMG ทุกตัว | ลด ATK ศัตรู 30%% × 2 เทิร์น" % dmg)
+	_flash_msg()
+	_refresh_ui()
+	_check_battle()
+	# Re-arm End Turn only if a main action was already done (otherwise
+	# Ultimate-first leaves End Turn locked until a main action is used).
+	if _main_action_done:
+		_arm_end_turn()
+
+## Unlocks the End Turn button 0.5s after an action's effect, so the turn can
+## never be ended while an effect is still playing. A newer action (bumping
+## _end_turn_arm_id) supersedes an older pending timer.
+func _arm_end_turn() -> void:
+	# End Turn unlocks immediately after the action — no hold/delay.
+	_end_turn_arm_id += 1
+	if _player_turn and not _battle_over:
+		_end_turn_ready = true
+		_refresh_ui()
+
+func _on_end_turn() -> void:
+	if not _player_turn or _battle_over or not _end_turn_ready: return
+	_player_turn = false
+	_selected_elem = ""
+	_selected_card_idx = -1
+	_set_buttons_enabled(false)
+	_refresh_ui()
+	get_tree().create_timer(0.2).timeout.connect(_enemy_turn)
+
+# ════════════════════════════════════════════════════════════
+#  ENEMY TURN
+# ════════════════════════════════════════════════════════════
+func _enemy_turn() -> void:
+	# ── 1. Status Damage (poison, burn, ...) ──
+	for tick in _e_unit.tick_status_damage():
+		var amt: int = tick["amount"]
+		_enemy_hp = maxi(0, _enemy_hp - amt)
+		_e_unit.hp = _enemy_hp
+		_msg("☠ %s — ศัตรูเสีย %d HP" % [tick["name"].capitalize(), amt])
+		if _battle_fx: _battle_fx.spawn_number(_enemy_hit_pos(), amt, "damage")
+		_refresh_ui()
+		if _enemy_hp <= 0:
+			_check_battle(); return
+		await get_tree().create_timer(0.4).timeout
+		if not is_instance_valid(self): return
+
+	# Enemy attacks
+	if _battle_fx: _battle_fx.play_enemy_attack()
+	await get_tree().create_timer(0.1).timeout
+	if not is_instance_valid(self): return
+	var raw_dmg: int = int(round(float(_enemy_data.get("attack", 10)) * _e_unit.atk_mult()))
+
+	var dmg := raw_dmg
+
+	# Null Barrier — ลดดาเมจ 50%
+	if _is_defending:
+		dmg = max(0, dmg / 2)
+		if _battle_fx: _battle_fx.flash_shield()
+
+	# Void Shield — รับดาเมจแทน HP 1 ครั้ง (ดาเมจหายทั้งหมด)
+	if _p_unit.void_shield_charges > 0 and dmg > 0:
+		_p_unit.void_shield_charges -= 1
+		if _battle_fx:
+			_battle_fx.flash_shield()
+			_battle_fx.show_void_shield(false)
+		_msg("💠 Void Shield — ดูดซับดาเมจ %d ทั้งหมด!" % dmg)
+		_refresh_ui()
+		await get_tree().create_timer(0.3).timeout
+		if not is_instance_valid(self): return
+		# เทิร์นยังดำเนินต่อ แต่ HP ไม่หาย
+		dmg = 0
+
+	# Salt shield
+	dmg = BattleStats.apply_damage_with_shields(_p_unit, dmg) if dmg > 0 else 0
+	_player_shield = _p_unit.shield_hp
+	_player_hp = _p_unit.hp
+	if dmg > 0:
+		_add_gauge(5)
+		_set_player_pose("hit", 0.4)
+		if _battle_fx:
+			_battle_fx.play_player_hit()
+			_battle_fx.spawn_number(Vector2(PLAYER_X + PLAYER_W * 0.5, PLAYER_Y + 60), dmg, "damage")
+
+	var def_txt := "  [Null Barrier -50%]" if _is_defending and raw_dmg > dmg else ""
+	_msg("👾 %s โจมตี — เสีย %d HP%s" % [_enemy_data.get("name","ศัตรู"), max(0,dmg), def_txt])
+	_refresh_ui()
+
+	await get_tree().create_timer(0.3).timeout
+	if not is_instance_valid(self): return
+
+	if _player_hp <= 0:
+		_check_battle(); return
+
+	# ── 2. Buff / Debuff decay ──
+	if _is_defending and _battle_fx: _battle_fx.break_shield()
+	_is_defending = false   # Null Barrier expires after taking 1 hit
+	if _skill_cd > 0: _skill_cd -= 1
+	_p_unit.decay()
+	_e_unit.decay()
+	_refresh_effect_rows()
+
+	_start_player_turn()
+
+func _start_player_turn() -> void:
+	_player_turn          = true
+	_main_action_done     = false
+	_ult_used             = false
+	_end_turn_ready       = false
+	_reaction_gauge_used  = false
+
+	var ap_gain: int
+	if _skill_ap_boost:
+		_skill_ap_boost = false
+		ap_gain = MAX_AP - _ap
+		_ap = MAX_AP
+		_msg("✨ เทิร์นของคุณ — AP ฟื้นฟูเต็ม! (%d)" % MAX_AP)
+	else:
+		ap_gain = AP_RECOVER
+		_ap = min(_ap + AP_RECOVER, MAX_AP)
+		_msg("✨ เทิร์นของคุณ — AP ฟื้นฟู +%d" % ap_gain)
+	_draw_one()
+
+	_set_buttons_enabled(true)
+	_refresh_ui()
+
+# ════════════════════════════════════════════════════════════
+#  WIN / LOSE
+# ════════════════════════════════════════════════════════════
+func _check_battle() -> void:
+	if _enemy_hp <= 0:
+		_enemy_hp = 0
+		_battle_over = true
+		_refresh_ui()
+		_set_buttons_enabled(false)
+		DomainManager.add_points("battle")
+		await get_tree().create_timer(0.6).timeout
+		if not is_instance_valid(self): return
+		_grant_stage_reward()
+		if _current_stage >= FINAL_STAGE:
+			_stage_clear_fx.show_victory()
+		else:
+			await _stage_clear_fx.show_stage_clear(_current_stage)
+			await get_tree().create_timer(2.0).timeout
+			if not is_instance_valid(self): return
+			await _stage_clear_fx.hide_stage_clear()
+			if not is_instance_valid(self): return
+			_next_stage()
+		return
+
+	if _player_hp <= 0:
+		_player_hp = 0
+		_battle_over = true
+		_refresh_ui()
+		_set_buttons_enabled(false)
+		await get_tree().create_timer(0.6).timeout
+		if not is_instance_valid(self): return
+		_stage_clear_fx.show_defeat("Stage %d — พ่ายแพ้" % _current_stage)
+
+const FINAL_STAGE := 2   # only 2 stages exist — winning stage 2 ends the run
+
+func _grant_stage_reward() -> void:
+	var gold_gain: int = 100 + _current_stage * 50
+	var crystal_gain: int = 5 if (_current_stage % 3 == 0 or _current_stage >= FINAL_STAGE) else 0
+	CurrencyManager.add_gold(gold_gain)
+	CurrencyManager.add_free_crystal(crystal_gain)
+
+
+func _next_stage() -> void:
+	_current_stage += 1
+	_battle_over   = false
+	_create_enemy()
+	_player_turn          = true
+	_main_action_done     = false
+	_ult_used             = false
+	_end_turn_ready       = false
+	_reaction_gauge_used  = false
+	_is_defending         = false
+	_selected_elem        = ""
+	_selected_card_idx    = -1
+	_ap                   = START_AP
+	_player_shield        = 0
+	_p_unit.shield_hp          = 0
+	_p_unit.void_shield_charges = 0
+	_p_unit.buffs.clear()
+	_p_unit.debuffs.clear()
+	_p_unit.status.clear()
+	# _e_unit is rebuilt fresh inside _create_enemy() above
+	_draw_n(1)
+	_set_buttons_enabled(true)
+	_refresh_effect_rows()
+	_refresh_ui()
+	_msg("📍 Stage %d — ศัตรูใหม่ปรากฎ!" % _current_stage)
+
+# ════════════════════════════════════════════════════════════
+#  GAUGE
+# ════════════════════════════════════════════════════════════
+func _add_gauge(amount: int) -> void:
+	_ult_gauge = mini(_ult_gauge + amount, MAX_GAUGE)
+
+# ════════════════════════════════════════════════════════════
+#  UI REFRESH
+# ════════════════════════════════════════════════════════════
+func _process(_delta: float) -> void:
+	if _press_start >= 0.0 and not _info_shown:
+		if Time.get_ticks_msec() / 1000.0 - _press_start >= HOLD_THRESH:
+			_show_card_info(_press_card_id)
+			_info_shown = true
+
+func _refresh_ui() -> void:
+	if _stage_lbl:   _stage_lbl.text = "Stage %d" % _current_stage
+	if _turn_lbl:    _turn_lbl.text  = "เทิร์นของคุณ" if _player_turn else "เทิร์นศัตรู"
+	_refresh_effect_rows()
+
+	# AP orbs: filled = large glow circle, used = small hollow ring
+	for i in _ap_orbs.size():
+		var orb := _ap_orbs[i] as Panel
+		var sb := StyleBoxFlat.new()
+		if i < _ap:
+			sb.bg_color    = C_AP
+			sb.border_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.0)
+			sb.set_border_width_all(0)
+			sb.set_corner_radius_all(11)
+			sb.shadow_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.70)
+			sb.shadow_size  = 8
+			orb.size        = Vector2(22, 22)
+			orb.position.y  = 14.0
+		else:
+			sb.bg_color    = Color(C_AP.r * 0.04, C_AP.g * 0.04, C_AP.b * 0.10, 0.6)
+			sb.border_color = Color(C_AP.r, C_AP.g, C_AP.b, 0.35)
+			sb.set_border_width_all(2)
+			sb.set_corner_radius_all(8)
+			sb.shadow_size  = 0
+			orb.size        = Vector2(16, 16)
+			orb.position.y  = 17.0
+		orb.add_theme_stylebox_override("panel", sb)
+
+	# Ultimate gauge — radial fill inside the circle; brightens when fully charged
+	var ult_ratio := _ult_gauge / float(MAX_GAUGE)
+	if _gauge_bar: _gauge_bar.value = ult_ratio * 100.0
+	_set_ult_glow(_ult_gauge >= MAX_GAUGE and not _ult_used)
+
+	# Deck / Discard circles
+	if _deck_cnt_lbl: _deck_cnt_lbl.text = str(_deck.size())
+	if _disc_cnt_lbl: _disc_cnt_lbl.text = str(_discard.size())
+
+	# Player HP
+	var max_hp: float = float(CHARACTER["max_hp"])
+	if _player_hp_bar: _player_hp_bar.size.x = 288.0 * (maxi(0, _player_hp) / max_hp)
+	if _player_hp_lbl: _player_hp_lbl.text = "%d" % maxi(0, _player_hp)
+	var shield_parts: Array[String] = []
+	if _player_shield > 0: shield_parts.append("🛡 %d" % _player_shield)
+	if _p_unit and _p_unit.void_shield_charges > 0: shield_parts.append("💠 Void Shield")
+	if _is_defending:       shield_parts.append("🌀 Barrier")
+	if _shield_lbl: _shield_lbl.text = "  ".join(shield_parts)
+
+	# Enemy
+	var emax: float = float(_enemy_data.get("hp", 100))
+	if _enemy_name_lbl: _enemy_name_lbl.text = _enemy_data.get("name", "")
+	if _enemy_hp_bar:   _enemy_hp_bar.size.x = 260.0 * (maxi(0, _enemy_hp) / emax)
+	if _enemy_hp_lbl:   _enemy_hp_lbl.text = "%d" % maxi(0, _enemy_hp)
+
+	# Deck/Discard
+	if _deck_lbl:    _deck_lbl.text    = "Deck: %d" % _deck.size()
+	if _discard_lbl: _discard_lbl.text = "Discard: %d" % _discard.size()
+
+	# Buttons — Attack (1 AP) / Defend (1 AP) / Skill (2 AP) are mutually
+	# exclusive, pick exactly one per turn. Ultimate is independent.
+	var pt := _player_turn and not _battle_over
+	if _btn_attack: _btn_attack.disabled = not pt or _main_action_done  # free, no AP
+	if _btn_defend: _btn_defend.disabled = not pt or _main_action_done  # free, no AP
+	if _btn_skill:
+		_btn_skill.disabled = not pt or _main_action_done or _skill_cd > 0 or _ap < 2
+	if _skill_cd_lbl:
+		_skill_cd_lbl.visible = _skill_cd > 0
+		_skill_cd_lbl.text = "CD:%d" % _skill_cd
+	if _btn_ult:
+		_btn_ult.disabled = not pt or _ult_gauge < MAX_GAUGE or _ult_used
+	if _btn_end:
+		# End Turn only after a main action's effect has resolved (+0.5s).
+		_btn_end.disabled = not pt or not _end_turn_ready
+
+func _set_buttons_enabled(on: bool) -> void:
+	for b in [_btn_attack, _btn_defend, _btn_skill, _btn_ult, _btn_end]:
+		if b: b.disabled = not on
+
+# ════════════════════════════════════════════════════════════
+#  HELPERS
+# ════════════════════════════════════════════════════════════
+func _msg(text: String) -> void:
+	if _msg_lbl: _msg_lbl.text = text
+
+func _flash_msg() -> void:
+	if _msg_lbl:
+		_msg_lbl.modulate = Color(1.0, 0.85, 0.3)
+		var t := _msg_lbl.create_tween()
+		t.tween_property(_msg_lbl, "modulate", Color(1,1,1,1), 0.45)
+
+# ════════════════════════════════════════════════════════════
+#  NAVIGATION
+# ════════════════════════════════════════════════════════════
+## Circular "more options" (⋮) button — opens the surrender/continue menu.
+func _make_back_btn(pos: Vector2, _sz: Vector2, callback: Callable) -> Control:
+	const D := 44.0
+	var btn := Panel.new()
+	btn.position = pos
+	btn.z_index = 20
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.03, 0.07, 0.18, 0.68)
+	sb.border_color = Color(0.55, 0.80, 1.0, 0.85)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(int(D / 2.0))
+	sb.shadow_color = Color(0.35, 0.65, 1.0, 0.35)
+	sb.shadow_size  = 6
+	btn.add_theme_stylebox_override("panel", sb)
+	btn.size         = Vector2(D, D)
+	btn.pivot_offset = Vector2(D / 2.0, D / 2.0)
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Soft ambient pulse on the glow so the button reads as alive, not flat/static
+	var pulse := btn.create_tween().set_loops()
+	pulse.tween_property(sb, "shadow_color:a", 0.60, 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	pulse.tween_property(sb, "shadow_color:a", 0.30, 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# Three dots, vertically stacked and centered
+	for i in 3:
+		var dot := Panel.new()
+		dot.size = Vector2(6, 6)
+		dot.position = Vector2((D - 6.0) / 2.0, D / 2.0 - 11.0 + i * 9.0)
+		var dsb := StyleBoxFlat.new()
+		dsb.bg_color = Color(0.75, 0.90, 1.0, 0.95)
+		dsb.set_corner_radius_all(3)
+		dot.add_theme_stylebox_override("panel", dsb)
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(dot)
+
+	btn.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+			var tw := btn.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			tw.tween_property(btn, "scale", Vector2(0.78, 0.78), 0.08)
+			tw.tween_property(btn, "scale", Vector2(1.0,  1.0),  0.22)
+			tw.tween_callback(callback)
+	)
+	btn.mouse_entered.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
+		tw.tween_property(btn, "modulate", Color(1.2, 1.25, 1.35, 1.0), 0.10)
+	)
+	btn.mouse_exited.connect(func():
+		var tw := btn.create_tween().set_ease(Tween.EASE_OUT)
+		tw.tween_property(btn, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+	)
+	return btn

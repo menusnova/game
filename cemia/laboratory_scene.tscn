@@ -1,0 +1,209 @@
+[gd_scene load_steps=10 format=3 uid="uid://dlab0scene001"]
+
+[ext_resource type="Script" path="res://laboratory_scene.gd" id="1_lab"]
+
+[ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
+
+[ext_resource type="Texture2D" path="res://image/labbg.jpg" id="EXT_LABBG"]
+
+[sub_resource type="StyleBoxFlat" id="SB_TopBar"]
+bg_color = Color(0.03, 0.06, 0.14, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_color = Color(0.30, 0.50, 1.0, 0.20)
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.0, 0.05, 0.15, 0.55)
+border_color = Color(0.45, 0.72, 1.0, 0.90)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="SB_LeftPanel"]
+bg_color = Color(0.03, 0.06, 0.14, 0.90)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.30, 0.50, 1.0, 0.12)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_RightPanel"]
+bg_color = Color(0.03, 0.06, 0.14, 0.90)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.30, 0.50, 1.0, 0.12)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="SB_ArchBtn"]
+bg_color = Color(0.18, 0.10, 0.38, 0.80)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.38, 1.0, 0.35)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="LaboratoryScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_lab")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("EXT_LABBG")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TopBar" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 52.0
+z_index = 5
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_TopBar")
+
+[node name="BackBtn" type="Panel" parent="TopBar"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 52.0
+offset_bottom = 55.0
+pivot_offset = Vector2(21, 22)
+z_index = 10
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BackIcon" type="TextureRect" parent="TopBar/BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("EXT_BACK_PNG")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 0.0
+offset_right = 260.0
+offset_bottom = 52.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+text = "Lab"
+vertical_alignment = 1
+
+
+[node name="LeftPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 62.0
+offset_right = 230.0
+offset_bottom = 640.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LeftPanel")
+
+[node name="ElementsHdr" type="Label" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 32.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.50, 0.85, 1.0, 0.65)
+text = "Elements"
+
+[node name="ElemDivider" type="ColorRect" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 212.0
+offset_bottom = 35.0
+mouse_filter = 2
+color = Color(0.30, 0.50, 1.0, 0.10)
+
+[node name="ElemScroll" type="ScrollContainer" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 40.0
+offset_right = 216.0
+offset_bottom = 570.0
+mouse_filter = 1
+horizontal_scroll_mode = 0
+
+[node name="ElemGrid" type="GridContainer" parent="LeftPanel/ElemScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 4
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="CenterArea" type="Control" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 62.0
+offset_right = 620.0
+offset_bottom = 648.0
+mouse_filter = 2
+
+[node name="ChamberLabel" type="Label" parent="CenterArea"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 14.0
+offset_right = 380.0
+offset_bottom = 36.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.50, 0.85, 1.0, 0.45)
+text = "Reaction Chamber"
+horizontal_alignment = 1
+
+[node name="RightPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 630.0
+offset_top = 62.0
+offset_right = 1142.0
+offset_bottom = 640.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_RightPanel")
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+z_index = 100
+color = Color(0, 0, 0, 1)

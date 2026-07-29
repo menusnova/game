@@ -1,0 +1,197 @@
+[gd_scene format=3 uid="uid://bvtbdjlhtskvc"]
+
+[ext_resource type="Script" uid="uid://ccvjko2qief6a" path="res://loading.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://d830attg16wu" path="res://bar_layer.gd" id="2_barlayer"]
+[ext_resource type="Texture2D" uid="uid://bs2vh0q5gkyqr" path="res://image/0ef05712-8898-4c56-9557-a58c058e02db.png" id="2_mrh31"]
+[ext_resource type="Shader" uid="uid://hb6nb1ldfy7f" path="res://bar_fill.gdshader" id="3_barshader"]
+[ext_resource type="Texture2D" uid="uid://boqag71cesmw3" path="res://bar_textures/glow_core.png" id="7_core"]
+[ext_resource type="Texture2D" uid="uid://omytdfr4lkpm" path="res://bar_textures/particle_trail.png" id="8_trail"]
+[ext_resource type="Texture2D" uid="uid://jjmih2jw2aq8" path="res://bar_textures/particle_spark.png" id="9_spark"]
+[ext_resource type="Shader" uid="uid://clmpdwfenctxe" path="res://bar_textures/plasma_ring.gdshader" id="10_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
+shader = ExtResource("3_barshader")
+shader_parameter/progress = 0.0
+shader_parameter/bar_alpha = 1.0
+shader_parameter/pulse_val = 1.0
+shader_parameter/time_val = 0.0
+
+[sub_resource type="CanvasItemMaterial" id="Mat_add"]
+blend_mode = 1
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_trail"]
+direction = Vector3(-1, 0, 0)
+spread = 20.0
+initial_velocity_min = 50.0
+initial_velocity_max = 160.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 1.6
+color = Color(0.3, 0.8, 1, 1)
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_spark"]
+direction = Vector3(0, -1, 0)
+spread = 85.0
+initial_velocity_min = 25.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 80, 0)
+scale_min = 0.2
+scale_max = 0.9
+color = Color(0.5, 0.85, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+shader = ExtResource("10_shader")
+shader_parameter/time = 0.0
+shader_parameter/show = 0.0
+
+[node name="Loading" type="Control" unique_id=212147617]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=2007042048]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_mrh31")
+expand_mode = 2
+stretch_mode = 6
+
+[node name="Logo" type="TextureRect" parent="." unique_id=1100000001]
+visible = false
+layout_mode = 0
+offset_left = 276.0
+offset_top = 140.0
+offset_right = 876.0
+offset_bottom = 500.0
+mouse_filter = 2
+texture = ExtResource("2_mrh31")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BarFillRect" type="ColorRect" parent="." unique_id=-293967295]
+material = SubResource("ShaderMaterial_bar")
+layout_mode = 0
+offset_left = 80.0
+offset_top = 562.0
+offset_right = 1072.0
+offset_bottom = 606.0
+mouse_filter = 2
+
+[node name="BarLayer" type="Control" parent="." unique_id=-1293967295]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_barlayer")
+
+[node name="ParticlesTrail" type="GPUParticles2D" parent="." unique_id=1171249768]
+material = SubResource("Mat_add")
+position = Vector2(80, 584)
+amount = 60
+texture = ExtResource("8_trail")
+lifetime = 0.5
+randomness = 0.8
+process_material = SubResource("PPM_trail")
+
+[node name="ParticlesSpark" type="GPUParticles2D" parent="." unique_id=1080075692]
+material = SubResource("Mat_add")
+position = Vector2(80, 584)
+amount = 30
+texture = ExtResource("9_spark")
+lifetime = 0.7
+randomness = 1.0
+process_material = SubResource("PPM_spark")
+
+[node name="PlasmaRing" type="ColorRect" parent="." unique_id=1581429405]
+modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_ring")
+layout_mode = 0
+offset_left = 10.0
+offset_top = 514.0
+offset_right = 150.0
+offset_bottom = 654.0
+color = Color(0, 0, 0, 0)
+
+[node name="GlowCore" type="TextureRect" parent="." unique_id=1360021295]
+modulate = Color(1, 1, 1, 0)
+material = SubResource("Mat_add")
+layout_mode = 0
+offset_left = 28.0
+offset_top = 541.0
+offset_right = 102.0
+offset_bottom = 625.0
+texture = ExtResource("7_core")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MsgLabel" type="Label" parent="." unique_id=1288783438]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 526.0
+offset_right = 1072.0
+offset_bottom = 552.0
+theme_override_colors/font_color = Color(0.65, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "SYNTHESIZING ELEMENTS"
+horizontal_alignment = 1
+
+[node name="PctLabel" type="Label" parent="." unique_id=745401419]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 612.0
+offset_right = 1072.0
+offset_bottom = 640.0
+theme_override_colors/font_color = Color(0.55, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "◇ 0% ◇"
+horizontal_alignment = 1
+
+[node name="QuoteLabel" type="Label" parent="." unique_id=393792648]
+visible = false
+layout_mode = 0
+offset_left = 150.0
+offset_top = 554.0
+offset_right = 1002.0
+offset_bottom = 592.0
+theme_override_colors/font_color = Color(0.85, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 21
+horizontal_alignment = 1
+
+[node name="PressLabel" type="Label" parent="." unique_id=842481160]
+visible = false
+layout_mode = 0
+offset_left = 376.0
+offset_top = 612.0
+offset_right = 776.0
+offset_bottom = 636.0
+theme_override_colors/font_color = Color(0.6, 0.85, 1, 0.8)
+theme_override_font_sizes/font_size = 14
+text = "PRESS ANYWHERE TO CONTINUE"
+horizontal_alignment = 1
+
+[node name="Fade" type="ColorRect" parent="." unique_id=1912207804]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="DotTimer" type="Timer" parent="." unique_id=953304299]
+wait_time = 0.45
+
+[connection signal="timeout" from="DotTimer" to="." method="_on_dot_timer_timeout"]

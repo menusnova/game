@@ -1,0 +1,346 @@
+[gd_scene load_steps=13 format=3 uid="uid://gacha_scene"]
+
+[ext_resource type="Script" path="res://gacha_scene.gd" id="1_script"]
+
+[ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
+
+[ext_resource type="Texture2D" path="res://image/lyra_1.png" id="EXT_LYRA1_PNG"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bannerpanel"]
+bg_color = Color(0.031, 0.055, 0.118, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+border_width_top = 1
+border_color = Color(0.37, 0.62, 1, 0.15)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_infopanel"]
+bg_color = Color(0.031, 0.055, 0.118, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+border_width_top = 1
+border_color = Color(0.37, 0.62, 1, 0.15)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bannertag"]
+bg_color = Color(0.37, 0.62, 1, 0.2)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pull1"]
+bg_color = Color(0.133, 0.267, 0.6, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pull1_hover"]
+bg_color = Color(0.18, 0.33, 0.7, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pull10"]
+bg_color = Color(0.37, 0.62, 1.0, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pull10_hover"]
+bg_color = Color(0.5, 0.72, 1.0, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_history"]
+bg_color = Color(1, 1, 1, 0.05)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_width_left = 1
+border_color = Color(1, 1, 1, 0.1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back"]
+bg_color = Color(0.0, 0.05, 0.15, 0.55)
+border_color = Color(0.45, 0.72, 1.0, 0.90)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[node name="GachaScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BgDim" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 0.55)
+
+[node name="BannerCard" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 740.0
+offset_bottom = 380.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bannerpanel")
+
+[node name="BannerArt" type="TextureRect" parent="BannerCard"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = -80.0
+offset_right = 720.0
+offset_bottom = 360.0
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("EXT_LYRA1_PNG")
+
+[node name="BannerTitle" type="Label" parent="BannerCard"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 300.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.37, 0.62, 1, 0.6)
+text = "LIMITED BANNER"
+
+[node name="BannerName" type="Label" parent="BannerCard"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 36.0
+offset_right = 400.0
+offset_bottom = 62.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Lyra"
+
+[node name="BannerTag" type="Panel" parent="BannerCard"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 316.0
+offset_right = 120.0
+offset_bottom = 340.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bannertag")
+
+[node name="BannerTagLabel" type="Label" parent="BannerCard/BannerTag"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 2.0
+offset_right = 104.0
+offset_bottom = 22.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.7, 0.87, 1, 1)
+text = "5★ Rate Up"
+
+[node name="PityBar" type="ProgressBar" parent="BannerCard"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 348.0
+offset_right = 710.0
+offset_bottom = 360.0
+max_value = 90.0
+value = 0.0
+show_percentage = false
+
+[node name="PityLabel" type="Label" parent="BannerCard"]
+layout_mode = 0
+offset_left = 714.0
+offset_top = 345.0
+offset_right = 780.0
+offset_bottom = 363.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+text = "0 / 90"
+
+[node name="InfoPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 20.0
+offset_right = 1132.0
+offset_bottom = 380.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_infopanel")
+
+[node name="CurrencyRow" type="HBoxContainer" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 340.0
+offset_bottom = 40.0
+
+[node name="GemCount" type="Label" parent="InfoPanel/CurrencyRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "3200"
+
+[node name="RateLabel" type="Label" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 56.0
+offset_right = 340.0
+offset_bottom = 74.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+text = "อัตราการได้รับ 5★"
+
+[node name="Rate5Star" type="Label" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 78.0
+offset_right = 340.0
+offset_bottom = 108.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+text = "1.600%"
+
+[node name="Rate4Star" type="Label" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 112.0
+offset_right = 340.0
+offset_bottom = 134.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.5, 1, 1)
+text = "5.100%"
+
+[node name="PityInfo" type="Label" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 140.0
+offset_right = 340.0
+offset_bottom = 158.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+text = "รับประกันที่ 90 ครั้ง"
+
+[node name="SoftPityInfo" type="Label" parent="InfoPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 162.0
+offset_right = 340.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.3)
+text = "Soft pity เริ่มที่ 75"
+
+[node name="PullBtn1" type="Button" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 400.0
+offset_right = 370.0
+offset_bottom = 460.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_pull1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pull1_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pull1")
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "สุ่ม 1 ครั้ง  •  160 💎"
+
+[node name="PullBtn10" type="Button" parent="."]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 400.0
+offset_right = 740.0
+offset_bottom = 460.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_pull10")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pull10_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pull10")
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "สุ่ม 10 ครั้ง  •  1,600 💎"
+
+[node name="HistoryBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 400.0
+offset_right = 940.0
+offset_bottom = 460.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_history")
+theme_override_styles/hover = SubResource("StyleBoxFlat_history")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_history")
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "ประวัติ"
+
+[node name="BackBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 490.0
+offset_right = 120.0
+offset_bottom = 530.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_back")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back")
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "◀"
+
+[node name="ResultOverlay" type="Control" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+visible = false
+
+[node name="ResultDim" type="ColorRect" parent="ResultOverlay"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 0.85)
+mouse_filter = 0
+
+[node name="ResultContainer" type="HBoxContainer" parent="ResultOverlay"]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 90.0
+offset_right = 1076.0
+offset_bottom = 520.0
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="SkipBtn" type="Button" parent="ResultOverlay"]
+layout_mode = 0
+offset_left = 480.0
+offset_top = 560.0
+offset_right = 672.0
+offset_bottom = 600.0
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+text = "แตะเพื่อดำเนินการต่อ"

@@ -1,0 +1,266 @@
+[gd_scene load_steps=11 format=3 uid="uid://shop_scene_001"]
+
+[ext_resource type="Script" path="res://shop_scene.gd" id="1_shop"]
+[ext_resource type="Texture2D" uid="uid://2xpv5st2hhk8" path="res://image/icon_gold.png" id="2_gold"]
+[ext_resource type="Texture2D" uid="uid://fybvqrm46eke" path="res://image/crystal_gem.png" id="3_gem"]
+[ext_resource type="Texture2D" uid="uid://d2cr12fqf0208" path="res://image/icon_paid.png" id="4_paid"]
+[ext_resource type="Texture2D" uid="uid://cityshop_png_001" path="res://image/cityshop.png" id="5_cityshop"]
+
+[ext_resource type="Texture2D" path="res://image/back.png" id="EXT_BACK_PNG"]
+
+[sub_resource type="StyleBoxFlat" id="SB_BackBtn"]
+bg_color = Color(0.0, 0.05, 0.15, 0.55)
+border_color = Color(0.45, 0.72, 1.0, 0.90)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="SB_Pill"]
+bg_color = Color(0.08, 0.09, 0.14, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="ShopScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_shop")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("5_cityshop")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BgDim" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.04, 0.04, 0.07, 0.72)
+
+[node name="Sidebar" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 190.0
+offset_bottom = 648.0
+mouse_filter = 2
+color = Color(0.055, 0.058, 0.082, 1.0)
+
+[node name="SidebarLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 189.0
+offset_top = 0.0
+offset_right = 190.0
+offset_bottom = 648.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.07)
+
+[node name="StoreHeader" type="Label" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 12.0
+offset_right = 182.0
+offset_bottom = 44.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.55, 0.60, 0.74, 0.80)
+text = "Shop"
+vertical_alignment = 1
+
+[node name="BackBtn" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 1102.0
+offset_top = 8.0
+offset_right = 1144.0
+offset_bottom = 53.0
+pivot_offset = Vector2(21, 22)
+z_index = 20
+theme_override_styles/panel = SubResource("SB_BackBtn")
+mouse_filter = 0
+
+[node name="BackIcon" type="TextureRect" parent="BackBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("EXT_BACK_PNG")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WalletRow" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -420.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="GoldPill" type="Panel" parent="WalletRow"]
+custom_minimum_size = Vector2(110, 30)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Pill")
+
+[node name="GoldIcon" type="TextureRect" parent="WalletRow/GoldPill"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 4.0
+offset_right = 27.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("2_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldVal" type="Label" parent="WalletRow/GoldPill"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 0.0
+offset_right = 91.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.0, 1.0)
+text = "0"
+vertical_alignment = 1
+
+[node name="GoldPlus" type="Label" parent="WalletRow/GoldPill"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 0.0
+offset_right = 110.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 0.80)
+text = "+"
+vertical_alignment = 1
+
+[node name="FreePill" type="Panel" parent="WalletRow"]
+custom_minimum_size = Vector2(110, 30)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Pill")
+
+[node name="FreeIcon" type="TextureRect" parent="WalletRow/FreePill"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 4.0
+offset_right = 27.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("3_gem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FreeVal" type="Label" parent="WalletRow/FreePill"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 0.0
+offset_right = 91.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.0, 1.0)
+text = "0"
+vertical_alignment = 1
+
+[node name="FreePlus" type="Label" parent="WalletRow/FreePill"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 0.0
+offset_right = 110.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 0.80)
+text = "+"
+vertical_alignment = 1
+
+[node name="PaidPill" type="Panel" parent="WalletRow"]
+custom_minimum_size = Vector2(110, 30)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_Pill")
+
+[node name="PaidIcon" type="TextureRect" parent="WalletRow/PaidPill"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 4.0
+offset_right = 27.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("4_paid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaidVal" type="Label" parent="WalletRow/PaidPill"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 0.0
+offset_right = 91.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.93, 0.96, 1.0, 1.0)
+text = "0"
+vertical_alignment = 1
+
+[node name="PaidPlus" type="Label" parent="WalletRow/PaidPill"]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 0.0
+offset_right = 110.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 0.80)
+text = "+"
+vertical_alignment = 1
+
+[node name="ContentScroll" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 52.0
+offset_right = 1152.0
+offset_bottom = 648.0
+horizontal_scroll_mode = 0
+
+[node name="ContentRoot" type="Control" parent="ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(962, 596)
+mouse_filter = 2
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

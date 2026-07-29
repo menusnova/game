@@ -1,0 +1,1583 @@
+[gd_scene format=3 uid="uid://r8uhvpetutfn"]
+
+[ext_resource type="Script" uid="uid://bglgbc6mrtvy3" path="res://main_menu.gd" id="1_7vrkn"]
+[ext_resource type="Texture2D" uid="uid://d286thjevyd2i" path="res://image/8d1dbfd3-0513-45de-ade8-5b9c89b08cc2.png" id="2_fu7sn"]
+[ext_resource type="Texture2D" uid="uid://c4hscoe02b0gn" path="res://image/lock_chain_x.png" id="3_lockchain"]
+[ext_resource type="Texture2D" uid="uid://fybvqrm46eke" path="res://image/crystal_gem.png" id="4_crystalgem"]
+[ext_resource type="Texture2D" uid="uid://2xpv5st2hhk8" path="res://image/icon_gold.png" id="5_icongold"]
+[ext_resource type="Texture2D" uid="uid://d2cr12fqf0208" path="res://image/icon_paid.png" id="6_iconpaid"]
+[ext_resource type="Texture2D" uid="uid://bcwfrjymsrppb" path="res://image/icon_energy.png" id="7_iconenergy"]
+[ext_resource type="Texture2D" uid="uid://fbkm15w7nvk" path="res://image/icon_notice.png" id="8_iconnotice"]
+[ext_resource type="Texture2D" uid="uid://dq4pk0pce3h1i" path="res://image/icon_missions.png" id="9_iconmissions"]
+[ext_resource type="Texture2D" uid="uid://cobfjfaayqiso" path="res://image/icon_event.png" id="10_iconevent"]
+[ext_resource type="Texture2D" uid="uid://ccjfxaecbxna7" path="res://image/icon_pass.png" id="11_iconpass"]
+[ext_resource type="Texture2D" uid="uid://cafofnrbillak" path="res://image/icon_shop.png" id="12_iconshop"]
+[ext_resource type="Texture2D" uid="uid://bsvju0nro1t3y" path="res://image/bstory.jpg" id="13_bstory"]
+[ext_resource type="Texture2D" uid="uid://bhxx62ri1mrim" path="res://image/bsimu.jpg" id="14_bsimu"]
+[ext_resource type="Texture2D" uid="uid://clp5h7aedo172" path="res://image/barena.jpg" id="15_barena"]
+[ext_resource type="Texture2D" uid="uid://427nvf40b0dy" path="res://image/chl.jpg" id="16_chl"]
+[ext_resource type="Texture2D" uid="uid://d2hel3h7oc2ir" path="res://image/icon_nav_character.png" id="17_navchar"]
+[ext_resource type="Texture2D" uid="uid://da0kpi760km8y" path="res://image/icon_nav_lab.png" id="18_navlab"]
+[ext_resource type="Texture2D" uid="uid://cmqayno86a6yg" path="res://image/icon_nav_gacha.jpg" id="19_navgacha"]
+[ext_resource type="Texture2D" uid="uid://dy0urndyuncfk" path="res://image/icon_nav_inventory.png" id="20_navinv"]
+[ext_resource type="Texture2D" uid="uid://dhm1gehiu2ff2" path="res://image/icon_nav_achievement.jpg" id="21_navach"]
+[ext_resource type="Texture2D" uid="uid://d3ow6y721b7sm" path="res://image/icon_nav_guild.jpg" id="22_navguild"]
+
+
+[sub_resource type="StyleBoxFlat" id="SB_Blank"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="SB_CurrPill"]
+bg_color = Color(0.03, 0.06, 0.18, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.62, 1, 0.35)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_Card"]
+bg_color = Color(0.04, 0.08, 0.2, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_AvatarRing"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.72, 1, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="SB_Event"]
+bg_color = Color(0.1, 0.03, 0.24, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.65, 0.35, 1, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_EventTag"]
+bg_color = Color(0.44, 0.07, 0.66, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2R8"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+
+[sub_resource type="StyleBoxFlat" id="SB_Card2"]
+bg_color = Color(0.06, 0.11, 0.26, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.5, 0.9, 0.45)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="SB_NavPill"]
+bg_color = Color(1, 1, 1, 0.09)
+border_width_left = 1
+border_width_top = 0
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.28)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+
+[sub_resource type="StyleBoxFlat" id="SB_LockOverlay"]
+bg_color = Color(0, 0, 0, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="SB_MenuItem"]
+bg_color = Color(1, 1, 1, 0.04)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="MainMenu" type="Control" unique_id=1743482336]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7vrkn")
+
+[node name="Background" type="TextureRect" parent="." unique_id=808464426]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_fu7sn")
+expand_mode = 2
+stretch_mode = 6
+
+
+[node name="CurrBox1" type="Panel" parent="." unique_id=1464954599]
+layout_mode = 0
+offset_left = 460.0
+offset_top = 7.0
+offset_right = 580.0
+offset_bottom = 43.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_CurrPill")
+
+[node name="CurrIcon1" type="TextureRect" parent="CurrBox1" unique_id=1488611840]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 29.0
+offset_bottom = 29.0
+mouse_filter = 2
+texture = ExtResource("5_icongold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CurrVal1" type="Label" parent="CurrBox1" unique_id=1636922136]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 9.0
+offset_right = 98.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "5,000,000"
+
+[node name="CurrPlus1" type="Label" parent="CurrBox1" unique_id=494581591]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 8.0
+offset_right = 114.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
+theme_override_font_sizes/font_size = 14
+text = "+"
+
+[node name="CurrBox2" type="Panel" parent="." unique_id=1961644868]
+layout_mode = 0
+offset_left = 588.0
+offset_top = 7.0
+offset_right = 708.0
+offset_bottom = 43.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_CurrPill")
+
+[node name="CurrIcon2" type="TextureRect" parent="CurrBox2" unique_id=1033820548]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 29.0
+offset_bottom = 29.0
+mouse_filter = 2
+texture = ExtResource("4_crystalgem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CurrVal2" type="Label" parent="CurrBox2" unique_id=994946769]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 9.0
+offset_right = 98.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "100,000"
+
+[node name="CurrPlus2" type="Label" parent="CurrBox2" unique_id=229464890]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 8.0
+offset_right = 114.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
+theme_override_font_sizes/font_size = 14
+text = "+"
+
+[node name="CurrBox3" type="Panel" parent="." unique_id=157021780]
+layout_mode = 0
+offset_left = 716.0
+offset_top = 7.0
+offset_right = 836.0
+offset_bottom = 43.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_CurrPill")
+
+[node name="CurrIcon3" type="TextureRect" parent="CurrBox3" unique_id=324355364]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 29.0
+offset_bottom = 29.0
+mouse_filter = 2
+texture = ExtResource("6_iconpaid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CurrVal3" type="Label" parent="CurrBox3" unique_id=2143750906]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 9.0
+offset_right = 98.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "0"
+
+[node name="CurrPlus3" type="Label" parent="CurrBox3" unique_id=1913953434]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 8.0
+offset_right = 114.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
+theme_override_font_sizes/font_size = 14
+text = "+"
+
+[node name="CurrBox4" type="Panel" parent="." unique_id=144192260]
+layout_mode = 0
+offset_left = 844.0
+offset_top = 7.0
+offset_right = 964.0
+offset_bottom = 43.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_CurrPill")
+
+[node name="CurrIcon4" type="TextureRect" parent="CurrBox4" unique_id=1720555261]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 29.0
+offset_bottom = 29.0
+mouse_filter = 2
+texture = ExtResource("7_iconenergy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CurrVal4" type="Label" parent="CurrBox4" unique_id=815542728]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 9.0
+offset_right = 98.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "240/240"
+
+[node name="CurrPlus4" type="Label" parent="CurrBox4" unique_id=751668686]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 8.0
+offset_right = 114.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.65, 0.65, 0.70, 1)
+theme_override_font_sizes/font_size = 14
+text = "+"
+
+
+[node name="BtnSettings" type="Button" parent="." unique_id=1883020327]
+visible = false
+layout_mode = 0
+offset_left = 1082.0
+offset_top = 8.0
+offset_right = 1112.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("SB_Blank")
+theme_override_styles/pressed = SubResource("SB_Blank")
+theme_override_styles/hover = SubResource("SB_Blank")
+theme_override_styles/focus = SubResource("SB_Blank")
+text = "⚙"
+
+[node name="LeftLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 80.0
+offset_right = 2.0
+offset_bottom = 572.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="ProfileCard" type="Panel" parent="." unique_id=1502547384]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 268.0
+offset_bottom = 77.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Card")
+
+[node name="Avatar" type="TextureRect" parent="ProfileCard" unique_id=926039462]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 60.0
+offset_bottom = 60.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AvatarRing" type="Panel" parent="ProfileCard" unique_id=243186877]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 62.0
+offset_bottom = 62.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_AvatarRing")
+
+[node name="NotifDot" type="Label" parent="ProfileCard" unique_id=1652614734]
+visible = false
+layout_mode = 0
+offset_left = 52.0
+offset_top = 5.0
+offset_right = 62.0
+offset_bottom = 16.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 8
+text = "!"
+
+[node name="PlayerName" type="Label" parent="ProfileCard" unique_id=1675923923]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 6.0
+offset_right = 240.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "CHEMIA"
+
+[node name="LevelLabel" type="Label" parent="ProfileCard" unique_id=1749506213]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 24.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Lv.70"
+
+[node name="MaxLabel" type="Label" parent="ProfileCard" unique_id=77741968]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 24.0
+offset_right = 130.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 9
+text = "MAX"
+
+[node name="ExpBg" type="ColorRect" parent="ProfileCard" unique_id=1340243707]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 40.0
+offset_right = 246.0
+offset_bottom = 44.0
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.12, 0.96)
+
+[node name="ExpBar" type="ColorRect" parent="ProfileCard" unique_id=1455851219]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 40.0
+offset_right = 246.0
+offset_bottom = 44.0
+mouse_filter = 2
+color = Color(0.22, 0.62, 1.0, 1)
+
+[node name="UIDLabel" type="Label" parent="ProfileCard" unique_id=1965427362]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 48.0
+offset_right = 246.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
+theme_override_font_sizes/font_size = 8
+text = "UID 700491823"
+
+[node name="MenuItem_Notice" type="Control" parent="." unique_id=802706443]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 142.0
+offset_right = 160.0
+offset_bottom = 192.0
+mouse_filter = 0
+
+[node name="Bg" type="Panel" parent="MenuItem_Notice"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
+[node name="Icon" type="TextureRect" parent="MenuItem_Notice" unique_id=414290015]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
+mouse_filter = 2
+texture = ExtResource("8_iconnotice")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="MenuItem_Notice" unique_id=129403983]
+layout_mode = 0
+offset_left = 52.0
+offset_top = 15.0
+offset_right = 150.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Notice"
+
+[node name="Dot" type="ColorRect" parent="MenuItem_Notice" unique_id=1721981280]
+visible = false
+layout_mode = 0
+offset_left = 15.0
+offset_top = 1.0
+offset_right = 23.0
+offset_bottom = 9.0
+mouse_filter = 2
+color = Color(1, 0.3, 0.3, 1)
+
+[node name="LockOverlay" type="Panel" parent="MenuItem_Notice" unique_id=1579286546]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Notice/LockOverlay" unique_id=1155824030]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuItem_Missions" type="Control" parent="." unique_id=1648236542]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 202.0
+offset_right = 160.0
+offset_bottom = 252.0
+mouse_filter = 0
+
+[node name="Bg" type="Panel" parent="MenuItem_Missions"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
+[node name="Icon" type="TextureRect" parent="MenuItem_Missions" unique_id=1209083572]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
+mouse_filter = 2
+texture = ExtResource("9_iconmissions")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="MenuItem_Missions" unique_id=2016122916]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 9.0
+offset_right = 108.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Missions"
+
+[node name="Dot" type="ColorRect" parent="MenuItem_Missions" unique_id=1483586683]
+visible = false
+layout_mode = 0
+offset_left = 15.0
+offset_top = 1.0
+offset_right = 23.0
+offset_bottom = 9.0
+mouse_filter = 2
+color = Color(1, 0.3, 0.3, 1)
+
+[node name="BloomFlash" type="ColorRect" parent="MenuItem_Missions"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.0)
+
+[node name="MenuItem_Event" type="Control" parent="." unique_id=575111913]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 262.0
+offset_right = 160.0
+offset_bottom = 312.0
+mouse_filter = 0
+
+[node name="Bg" type="Panel" parent="MenuItem_Event"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
+[node name="Icon" type="TextureRect" parent="MenuItem_Event" unique_id=503480489]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
+mouse_filter = 2
+texture = ExtResource("10_iconevent")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="MenuItem_Event" unique_id=269105067]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 9.0
+offset_right = 94.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Event"
+
+[node name="LockOverlay" type="Panel" parent="MenuItem_Event" unique_id=1930892657]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Event/LockOverlay" unique_id=1444874310]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuItem_Pass" type="Control" parent="." unique_id=504243076]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 322.0
+offset_right = 160.0
+offset_bottom = 372.0
+mouse_filter = 0
+
+[node name="Bg" type="Panel" parent="MenuItem_Pass"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
+[node name="Icon" type="TextureRect" parent="MenuItem_Pass" unique_id=2057894540]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
+mouse_filter = 2
+texture = ExtResource("11_iconpass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="MenuItem_Pass" unique_id=2127806526]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 9.0
+offset_right = 84.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Pass"
+
+[node name="LockOverlay" type="Panel" parent="MenuItem_Pass" unique_id=349557708]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="MenuItem_Pass/LockOverlay" unique_id=2480587]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuItem_Shop" type="Control" parent="." unique_id=1051712999]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 382.0
+offset_right = 160.0
+offset_bottom = 432.0
+mouse_filter = 0
+
+[node name="Bg" type="Panel" parent="MenuItem_Shop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_MenuItem")
+
+[node name="Icon" type="TextureRect" parent="MenuItem_Shop" unique_id=1647414986]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 44.0
+offset_bottom = 43.0
+mouse_filter = 2
+texture = ExtResource("12_iconshop")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="MenuItem_Shop" unique_id=409609419]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 9.0
+offset_right = 84.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Shop"
+
+[node name="BloomFlash" type="ColorRect" parent="MenuItem_Shop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.0)
+
+[node name="EventBanner" type="Panel" parent="." unique_id=1029562533]
+visible = false
+layout_mode = 0
+offset_left = 10.0
+offset_top = 390.0
+offset_right = 268.0
+offset_bottom = 538.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Event")
+
+[node name="TagBg" type="Panel" parent="EventBanner" unique_id=1936235381]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 104.0
+offset_bottom = 21.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_EventTag")
+
+[node name="TagText" type="Label" parent="EventBanner/TagBg" unique_id=2039297185]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 2.0
+offset_right = 96.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 7
+text = "LIMITED EVENT"
+
+[node name="Title1" type="Label" parent="EventBanner" unique_id=124480356]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 26.0
+offset_right = 148.0
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "STARFALL"
+
+[node name="Title2" type="Label" parent="EventBanner" unique_id=1157286411]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 48.0
+offset_right = 148.0
+offset_bottom = 68.0
+theme_override_colors/font_color = Color(0.65, 0.35, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "INVOCATION"
+
+[node name="SubText" type="Label" parent="EventBanner" unique_id=1962334947]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 76.0
+offset_right = 148.0
+offset_bottom = 88.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "New Character Rate UP!"
+
+[node name="Dot0" type="ColorRect" parent="EventBanner" unique_id=873806564]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 130.0
+offset_right = 17.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(0.65, 0.35, 1, 1)
+
+[node name="Dot1" type="ColorRect" parent="EventBanner" unique_id=259165016]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 130.0
+offset_right = 29.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot2" type="ColorRect" parent="EventBanner" unique_id=1564158927]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 130.0
+offset_right = 41.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot3" type="ColorRect" parent="EventBanner" unique_id=976419711]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 130.0
+offset_right = 53.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot4" type="ColorRect" parent="EventBanner" unique_id=353775627]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 130.0
+offset_right = 65.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot5" type="ColorRect" parent="EventBanner" unique_id=653742762]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 130.0
+offset_right = 77.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="Dot6" type="ColorRect" parent="EventBanner" unique_id=2140999950]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 130.0
+offset_right = 89.0
+offset_bottom = 135.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.22)
+
+[node name="EventArt" type="TextureRect" parent="EventBanner" unique_id=237482752]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 8.0
+offset_right = 251.0
+offset_bottom = 140.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockOverlay" type="Panel" parent="EventBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="EventBanner/LockOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+
+
+[node name="AdventureCard" type="Panel" parent="." unique_id=760607397]
+layout_mode = 0
+offset_left = 840.0
+offset_top = 136.0
+offset_right = 1145.0
+offset_bottom = 228.0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="AdventureCard" unique_id=545153171]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Adventure"
+
+[node name="Sub" type="Label" parent="AdventureCard" unique_id=1948971470]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "MAIN STORY"
+
+[node name="Chapter" type="Label" parent="AdventureCard" unique_id=1872702596]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 70.0
+offset_right = 200.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
+theme_override_font_sizes/font_size = 9
+text = ""
+
+[node name="Arrow" type="Label" parent="AdventureCard" unique_id=802940588]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 36.0
+offset_right = 305.0
+offset_bottom = 54.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "▶"
+
+[node name="ArtBg" type="ColorRect" parent="AdventureCard" unique_id=356579752]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 2.0
+offset_right = 303.0
+offset_bottom = 90.0
+mouse_filter = 2
+color = Color(0.04, 0.08, 0.22, 0.6)
+
+[node name="AdventureArt" type="TextureRect" parent="AdventureCard" unique_id=1283019413]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 301.0
+offset_bottom = 88.0
+mouse_filter = 2
+texture = ExtResource("13_bstory")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SimulationCard" type="Panel" parent="." unique_id=464494343]
+layout_mode = 0
+offset_left = 840.0
+offset_top = 236.0
+offset_right = 1145.0
+offset_bottom = 315.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="SimulationCard" unique_id=539456200]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Simulation"
+
+[node name="Sub" type="Label" parent="SimulationCard" unique_id=1577960465]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "RESOURCE"
+
+[node name="Arrow" type="Label" parent="SimulationCard" unique_id=1961993866]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 30.0
+offset_right = 305.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.25, 1, 0.55, 1)
+theme_override_font_sizes/font_size = 14
+text = "▶"
+
+[node name="ArtBg" type="ColorRect" parent="SimulationCard" unique_id=1553582026]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 2.0
+offset_right = 303.0
+offset_bottom = 77.0
+mouse_filter = 2
+color = Color(0.03, 0.12, 0.1, 0.6)
+
+[node name="SimulationArt" type="TextureRect" parent="SimulationCard" unique_id=2022707788]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 301.0
+offset_bottom = 75.0
+mouse_filter = 2
+texture = ExtResource("14_bsimu")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockOverlay" type="Panel" parent="SimulationCard" unique_id=2124898553]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="SimulationCard/LockOverlay" unique_id=493159142]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ArenaCard" type="Panel" parent="." unique_id=1686272878]
+layout_mode = 0
+offset_left = 840.0
+offset_top = 323.0
+offset_right = 990.0
+offset_bottom = 407.0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="ArenaCard" unique_id=7828574]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 100.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Arena"
+
+[node name="Sub" type="Label" parent="ArenaCard" unique_id=909394885]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "PVP"
+
+[node name="DiamondIcon" type="TextureRect" parent="ArenaCard" unique_id=1027677153]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 44.0
+offset_right = 30.0
+offset_bottom = 64.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DiamondText" type="Label" parent="ArenaCard" unique_id=1676329087]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 46.0
+offset_right = 140.0
+offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "Diamond I"
+
+[node name="RatingText" type="Label" parent="ArenaCard" unique_id=44737698]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 59.0
+offset_right = 140.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.88, 0.92, 1.0, 0.88)
+theme_override_font_sizes/font_size = 8
+text = "3200/3500"
+
+[node name="Arrow" type="Label" parent="ArenaCard" unique_id=991533476]
+layout_mode = 0
+offset_left = 132.0
+offset_top = 34.0
+offset_right = 150.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.22, 0.72, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "▶"
+
+[node name="ArenaArt" type="TextureRect" parent="ArenaCard" unique_id=221280184]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 2.0
+offset_right = 150.0
+offset_bottom = 88.0
+mouse_filter = 2
+texture = ExtResource("15_barena")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockOverlay" type="Panel" parent="ArenaCard" unique_id=1309592588]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="ArenaCard/LockOverlay" unique_id=1283503224]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ExpeditionCard" type="Panel" parent="." unique_id=378903978]
+layout_mode = 0
+offset_left = 995.0
+offset_top = 323.0
+offset_right = 1145.0
+offset_bottom = 407.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("SB_Card2")
+
+[node name="Title" type="Label" parent="ExpeditionCard" unique_id=1092544986]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 120.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Expedition"
+
+[node name="Sub" type="Label" parent="ExpeditionCard" unique_id=809949886]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = 120.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.58, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "CHALLENGE"
+
+[node name="Arrow" type="Label" parent="ExpeditionCard" unique_id=553799822]
+layout_mode = 0
+offset_left = 138.0
+offset_top = 34.0
+offset_right = 156.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(1, 0.58, 0.14, 1)
+theme_override_font_sizes/font_size = 12
+text = "▶"
+
+[node name="ExpeditionArt" type="TextureRect" parent="ExpeditionCard" unique_id=593617963]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 2.0
+offset_right = 154.0
+offset_bottom = 88.0
+mouse_filter = 2
+texture = ExtResource("16_chl")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockOverlay" type="Panel" parent="ExpeditionCard" unique_id=820891561]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="ExpeditionCard/LockOverlay" unique_id=1570346313]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ChatBar" type="ColorRect" parent="." unique_id=1091856000]
+visible = false
+layout_mode = 0
+offset_top = 520.0
+offset_right = 362.0
+offset_bottom = 548.0
+mouse_filter = 2
+color = Color(0.01, 0.01, 0.04, 0.96)
+
+[node name="ChatLine" type="ColorRect" parent="ChatBar" unique_id=601221272]
+layout_mode = 0
+offset_right = 820.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.3, 0.3, 0.3, 0.2)
+
+[node name="ChatIcon" type="TextureRect" parent="ChatBar" unique_id=1512941828]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 24.0
+mouse_filter = 2
+modulate = Color(0.45, 0.45, 0.45, 1)
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ChatText" type="Label" parent="ChatBar" unique_id=507499625]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 7.0
+offset_right = 456.0
+offset_bottom = 21.0
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "ระบบแชทยังไม่เปิดให้บริการ"
+
+[node name="NavBar" type="Panel" parent="." unique_id=729974613]
+layout_mode = 0
+z_index = 2
+offset_left = 0.0
+offset_top = 572.0
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_NavPill")
+
+[node name="Nav0_Alchemist" type="Control" parent="NavBar" unique_id=152951613]
+anchors_preset = 0
+offset_right = 80.0
+offset_bottom = 74.0
+
+[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=1479650524]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 74.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 0.12)
+
+[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=828936899]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 1)
+
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav0_Alchemist" unique_id=859417099]
+visible = false
+layout_mode = 0
+offset_left = 44.0
+offset_top = 5.0
+offset_right = 52.0
+offset_bottom = 13.0
+mouse_filter = 2
+color = Color(1, 0.3, 0.3, 1)
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav0_Alchemist" unique_id=867149864]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("17_navchar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav0_Alchemist" unique_id=1908789204]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Alchemist"
+horizontal_alignment = 1
+
+[node name="Nav2_Lab" type="Control" parent="NavBar" unique_id=651659044]
+anchors_preset = 0
+offset_left = 80.0
+offset_right = 160.0
+offset_bottom = 74.0
+
+[node name="NotifDot" type="ColorRect" parent="NavBar/Nav2_Lab" unique_id=850425920]
+visible = false
+layout_mode = 0
+offset_left = 44.0
+offset_top = 5.0
+offset_right = 52.0
+offset_bottom = 13.0
+mouse_filter = 2
+color = Color(1, 0.3, 0.3, 1)
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav2_Lab" unique_id=1254535148]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("18_navlab")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav2_Lab" unique_id=1419121623]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Lab"
+horizontal_alignment = 1
+
+[node name="Nav_Gacha" type="Control" parent="NavBar" unique_id=391827465]
+anchors_preset = 0
+offset_left = 240.0
+offset_right = 320.0
+offset_bottom = 74.0
+mouse_filter = 0
+
+[node name="ActiveBg" type="ColorRect" parent="NavBar/Nav_Gacha" unique_id=391827466]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 74.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 0.12)
+
+[node name="ActiveBar" type="ColorRect" parent="NavBar/Nav_Gacha" unique_id=391827467]
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.22, 0.72, 1, 1)
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav_Gacha" unique_id=391827468]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("19_navgacha")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav_Gacha" unique_id=391827469]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Void Gate"
+horizontal_alignment = 1
+
+[node name="Nav3_Inventory" type="Control" parent="NavBar" unique_id=145821883]
+anchors_preset = 0
+offset_left = 320.0
+offset_right = 400.0
+offset_bottom = 74.0
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav3_Inventory" unique_id=968096375]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("20_navinv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav3_Inventory" unique_id=2023141049]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Inventory"
+horizontal_alignment = 1
+
+[node name="LockOverlay" type="Panel" parent="NavBar/Nav3_Inventory" unique_id=892808481]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav3_Inventory/LockOverlay" unique_id=163214461]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Nav4_Database" type="Control" parent="NavBar" unique_id=483944133]
+anchors_preset = 0
+offset_left = 160.0
+offset_right = 240.0
+offset_bottom = 74.0
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav4_Database" unique_id=794539360]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("21_navach")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav4_Database" unique_id=1555726201]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Achievement"
+horizontal_alignment = 1
+
+[node name="Nav5_Guild" type="Control" parent="NavBar" unique_id=1675595296]
+anchors_preset = 0
+offset_left = 400.0
+offset_right = 480.0
+offset_bottom = 74.0
+
+[node name="Icon" type="TextureRect" parent="NavBar/Nav5_Guild" unique_id=1652080278]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 9.0
+offset_right = 62.0
+offset_bottom = 53.0
+mouse_filter = 2
+texture = ExtResource("22_navguild")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="NavBar/Nav5_Guild" unique_id=1202741847]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 80.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Guild"
+horizontal_alignment = 1
+
+[node name="LockOverlay" type="Panel" parent="NavBar/Nav5_Guild" unique_id=84009174]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_LockOverlay")
+
+[node name="LockIcon" type="TextureRect" parent="NavBar/Nav5_Guild/LockOverlay" unique_id=1872648954]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_lockchain")
+expand_mode = 1
+stretch_mode = 5
+
+

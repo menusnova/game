@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3 uid="uid://dialogue_box_001"]
+
+[ext_resource type="Script" path="res://dialogue_box.gd" id="1_dlgbox"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.031, 0.051, 0.11, 0.94)
+border_width_top = 1
+border_color = Color(0.39, 0.627, 1, 0.15)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+
+[node name="DialogueBox" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_dlgbox")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="CharacterArt" type="TextureRect" parent="Root"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 120.0
+offset_right = 380.0
+offset_bottom = 480.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Box" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 480.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+mouse_filter = 0
+
+[node name="SpeakerName" type="Label" parent="Root/Box"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 14.0
+offset_right = 400.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.478, 0.722, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Lyra"
+
+[node name="DialogueText" type="RichTextLabel" parent="Root/Box"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 40.0
+offset_right = 1100.0
+offset_bottom = 120.0
+theme_override_colors/default_color = Color(0.863, 0.925, 1, 0.95)
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = ""
+fit_content = false
+
+[node name="NextHint" type="Label" parent="Root/Box"]
+layout_mode = 0
+offset_left = 1050.0
+offset_top = 100.0
+offset_right = 1140.0
+offset_bottom = 120.0
+theme_override_colors/font_color = Color(0.478, 0.722, 1, 0.5)
+theme_override_font_sizes/font_size = 11
+text = "แตะเพื่อต่อไป ›"
+horizontal_alignment = 2
+
+[node name="ProgressDots" type="HBoxContainer" parent="Root/Box"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 130.0
+offset_right = 200.0
+offset_bottom = 148.0

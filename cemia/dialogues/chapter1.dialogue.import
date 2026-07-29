@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://d3jbegetivbox"
+path="res://.godot/imported/chapter1.dialogue-3e23a63b586f753e656609635cacd7f6.tres"
+
+[deps]
+
+source_file="res://dialogues/chapter1.dialogue"
+dest_files=["res://.godot/imported/chapter1.dialogue-3e23a63b586f753e656609635cacd7f6.tres"]
+
+[params]
+
+defaults=true
